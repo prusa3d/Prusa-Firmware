@@ -2519,8 +2519,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Filament unerwartet erkannt. Stellen Sie sicher, dass kein Filament geladen"
-" ist. Überprüfen Sie die Sensoren und die Verkabelung."
+"Filament unerwartet erkannt. Stellen Sie sicher, dass kein Filament geladen "
+"ist. Überprüfen Sie die Sensoren und die Verkabelung."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2532,10 +2532,9 @@ msgstr ""
 msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
-
 msgstr ""
-"Laden in den Extruder fehlgeschlagen. Überprüfe die Form der"
-" Filamentspitze. Verfeiner die Sensorkalibrierung, falls erforderlich."
+"Laden in den Extruder fehlgeschlagen. Überprüfe die Form der Filamentspitze."
+" Verfeiner die Sensorkalibrierung, falls erforderlich."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2551,7 +2550,8 @@ msgstr ""
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Entfernen Sie das ausgeworfene Filament von der Vorderseite der MMU-Einheit."
+msgstr ""
+"Entfernen Sie das ausgeworfene Filament von der Vorderseite der MMU-Einheit."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2573,8 +2573,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Die Firmware-Version der MMU-Einheit ist mit der FW des Druckers nicht kompatibel."
-" Update auf Version 2.1.9."
+"Die Firmware-Version der MMU-Einheit ist mit der FW des Druckers nicht "
+"kompatibel. Update auf Version 2.1.9."
 
 #~ msgid "Eject filament"
 #~ msgstr "Filamentauswurf"

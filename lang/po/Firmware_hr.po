@@ -2523,8 +2523,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Učitavanje u ekstruder nije uspjelo. Provjerite oblik vrha žarne niti."
-" Poboljšajte kalibraciju senzora, ako je potrebno."
+"Učitavanje u ekstruder nije uspjelo. Provjerite oblik vrha žarne niti. "
+"Poboljšajte kalibraciju senzora, ako je potrebno."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2553,8 +2553,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
-"Selektor se ne može pomaknuti jer FINDA otkriva nit. Uvjerite se da niti"
-" jedna nit nije u selektoru i da FINDA radi ispravno."
+"Selektor se ne može pomaknuti jer FINDA otkriva nit. Uvjerite se da niti "
+"jedna nit nije u selektoru i da FINDA radi ispravno."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2562,8 +2562,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Verzija firmware-a MMU jedinice nekompatibilna s FW-om pisača. Ažuriranje"
-" na verziju 2.1.9."
+"Verzija firmware-a MMU jedinice nekompatibilna s FW-om pisača. Ažuriranje na"
+" verziju 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

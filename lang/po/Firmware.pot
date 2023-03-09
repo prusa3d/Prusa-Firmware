@@ -1119,6 +1119,11 @@ msgstr ""
 msgid "MMU SELFTEST FAILED"
 msgstr ""
 
+#. MSG_MMU_CONNECTED c=18
+#: ../../Firmware/ultralcd.cpp:1658
+msgid "MMU connected"
+msgstr ""
+
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:67 ../../Firmware/ultralcd.cpp:1144
 #: ../../Firmware/ultralcd.cpp:1169
@@ -1148,11 +1153,6 @@ msgstr ""
 msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
-msgstr ""
-
-#. MSG_MMU_CONNECTED c=18
-#: ../../Firmware/ultralcd.cpp:1658
-msgid "MMU connected"
 msgstr ""
 
 #. MSG_MAGNETS_COMP c=13

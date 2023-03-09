@@ -2506,8 +2506,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Načítání do extrudéru se nezdařilo. Zkontrolujte tvar špičky vlákna. V"
-" případě potřeby upřesněte kalibraci snímače."
+"Načítání do extrudéru se nezdařilo. Zkontrolujte tvar špičky vlákna. V "
+"případě potřeby upřesněte kalibraci snímače."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2524,7 +2524,6 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
 msgstr "Odstraňte vysunuté filament z přední části jednotky MMU."
-
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341

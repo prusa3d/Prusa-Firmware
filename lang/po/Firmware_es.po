@@ -1782,9 +1782,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"El fil. solicitado no está disponible en este hardware. Revise el "
-"código G para si el índice de herramienta está fuera de rango "
-"(T0-T4)."
+"El fil. solicitado no está disponible en este hardware. Revise el código G "
+"para si el índice de herramienta está fuera de rango (T0-T4)."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2729
@@ -2517,8 +2516,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Filamento detectado inesperadamente. Asegúrese de que no haya ningún filamento"
-" cargado. Compruebe los sensores y el cableado."
+"Filamento detectado inesperadamente. Asegúrese de que no haya ningún "
+"filamento cargado. Compruebe los sensores y el cableado."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2531,8 +2530,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Error al cargar en la extrusora. Inspeccione la forma de la punta del"
-" filamento. Refine la calibración del sensor, si es necesario."
+"Error al cargar en la extrusora. Inspeccione la forma de la punta del "
+"filamento. Refine la calibración del sensor, si es necesario."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2561,8 +2560,9 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
-"El selector no se puede mover debido a que FINDA detecta un filamento. Asegúrese"
-" de que no haya fil. en el selector y que FINDA funcione correctamente."
+"El selector no se puede mover debido a que FINDA detecta un filamento. "
+"Asegúrese de que no haya fil. en el selector y que FINDA funcione "
+"correctamente."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2570,8 +2570,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"La versión de firmware de la unidad MMU es incompatible con el FW de la"
-" impresora. Actualizar a la versión 2.1.9."
+"La versión de firmware de la unidad MMU es incompatible con el FW de la "
+"impresora. Actualizar a la versión 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

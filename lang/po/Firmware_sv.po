@@ -2504,8 +2504,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Filament upptäcktes oväntat. Se till att ingen filament är laddad. Kontrollera"
-" sensorerna och kablarna."
+"Filament upptäcktes oväntat. Se till att ingen filament är laddad. "
+"Kontrollera sensorerna och kablarna."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2518,8 +2518,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Det gick inte att ladda till extrudern. Inspektera filamentspetsens form."
-" Förfina sensorkalibreringen vid behov."
+"Det gick inte att ladda till extrudern. Inspektera filamentspetsens form. "
+"Förfina sensorkalibreringen vid behov."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2548,8 +2548,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
-"Väljaren kan inte röra sig på grund av att FINDA detekterar en filament. Se till"
-" att inget glödtråd är i väljaren och att FINDA fungerar korrekt."
+"Väljaren kan inte röra sig på grund av att FINDA detekterar en filament. Se "
+"till att inget glödtråd är i väljaren och att FINDA fungerar korrekt."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2557,8 +2557,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"MMU-enhetens firmwareversion är inkompatibel med skrivarens FW. Uppdatering"
-" till version 2.1.9."
+"MMU-enhetens firmwareversion är inkompatibel med skrivarens FW. Uppdatering "
+"till version 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
