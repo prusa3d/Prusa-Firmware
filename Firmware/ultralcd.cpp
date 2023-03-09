@@ -1548,7 +1548,7 @@ void TestPullupCrash() {
 //! If MMU is connected
 //! 
 //! 	@code{.unparsed}
-//! 	| MMU2 connected     |	c=18
+//! 	| MMU connected     |	c=18
 //! 	|  FW: 1.0.6-7064523 |
 //! 	@endcode
 //! 
@@ -1660,7 +1660,7 @@ static void lcd_support_menu()
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (MMU2::mmu2.Enabled())
 	{
-		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////MSG_MMU_CONNECTED c=18
+		MENU_ITEM_BACK_P(_i("MMU connected"));  ////MSG_MMU_CONNECTED c=18
 		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
