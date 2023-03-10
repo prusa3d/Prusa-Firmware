@@ -1668,7 +1668,7 @@ static void lcd_support_menu()
 		}
 	}
 	else
-		MENU_ITEM_BACK_P(PSTR("MMU2       N/A"));
+		MENU_ITEM_BACK_P(PSTR("MMU        N/A"));
 
 
   // Show the FlashAir IP address, if the card is available.
