@@ -2514,7 +2514,7 @@ msgstr ""
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
 msgid "LOAD TO EXTR. FAILED"
-msgstr ""
+msgstr "FALL CARICA SU EXTR."
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
@@ -2544,7 +2544,7 @@ msgstr "Rimuovere il filamento espulso dalla parte anteriore dell MMU."
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
 msgid "RstMMU"
-msgstr ""
+msgstr "RstMMU"
 
 #. MSG_DESC_INSPECT_FINDA c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:282
