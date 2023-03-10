@@ -1183,7 +1183,7 @@ msgstr ""
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1658
 msgid "MMU connected"
-msgstr "MMU2 connecte"
+msgstr "MMU connecte"
 
 #. MSG_MAGNETS_COMP c=13
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5684
