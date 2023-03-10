@@ -2603,8 +2603,8 @@ msgstr ""
 #~ msgid "MK3 firmware detected on MK3S printer"
 #~ msgstr "MK3 firmware detekovan na MK3S tiskarne"
 
-#msgid "MK3S firmware detected on MK3 printer"
-#msgstr "MK3S firmware detekovan na tiskarne MK3"
+#~msgid "MK3S firmware detected on MK3 printer"
+#~msgstr "MK3S firmware detekovan na tiskarne MK3"
 
 #~ msgid "MMU OK. Resuming position..."
 #~ msgstr "MMU OK. Pokracuji v tisku..."
