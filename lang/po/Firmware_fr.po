@@ -2547,7 +2547,7 @@ msgstr "MCU SOUS-TENSION VCC"
 #: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:1121
 #: ../../Firmware/ultralcd.cpp:1195
 msgid "Material changes"
-msgstr ""
+msgstr "Changes matériels"
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
