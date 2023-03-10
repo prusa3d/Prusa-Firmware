@@ -788,7 +788,7 @@ msgid ""
 "For a Nozzle change please read\n"
 "prusa.io/nozzle-mk3s"
 msgstr ""
-"För byte av munstycke, läs\n"
+"För byte av munstycke, se\n"
 " prusa.io/nozzle-mk3s"
 
 #. MSG_SELFTEST_PART_FAN c=20
