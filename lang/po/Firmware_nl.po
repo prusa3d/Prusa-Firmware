@@ -996,10 +996,10 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
-"Interne runtime fout. Probeer de MMU-eenheid te resetten of de firmware bij "
+"Interne runtime fout. Probeer de MMU te resetten of de firmware bij "
 "te werken. Als het probleem aanhoudt, neem dan contact op met support."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
@@ -1162,19 +1162,19 @@ msgstr "MMU laadfout"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
-"MMU eenheid reageert niet correct. Controleer de bedrading en connectoren. "
+"MMU reageert niet correct. Controleer de bedrading en connectoren. "
 "Als het probleem aanhoudt, neem dan contact op met support."
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"MMU eenheid reageert niet. Controleer de bedrading en connectoren. Als het "
+"MMU reageert niet. Controleer de bedrading en connectoren. Als het "
 "probleem aanhoudt, neem dan contact op met support."
 
 #. MSG_MMU_CONNECTED c=18
@@ -2541,9 +2541,9 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
+msgid "Remove the ejected filament from the front of the MMU."
 msgstr ""
-"Verwijder het uitgeworpen filament uit de voorkant van de MMU-eenheid."
+"Verwijder het uitgeworpen filament uit de voorkant van de MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2562,10 +2562,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"De firmwareversie van de MMU-eenheid is niet compatibel met de firmware van "
+"De firmwareversie van de MMU is niet compatibel met de firmware van "
 "de printer. Update naar versie 2.1.9."
 
 #~ msgid "⏬"
@@ -2578,7 +2578,7 @@ msgstr ""
 #~ msgstr "Kies extruder:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "De MMU meldt dat zijn FW-versie niet compatibel is met de firmware van de "
@@ -2612,8 +2612,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 of nieuwer"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Los het probleem op en druk vervolgens op de knop op de MMU-eenheid."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Los het probleem op en druk vervolgens op de knop op de MMU."
 
 #~ msgid "Load all"
 #~ msgstr "Laad alle"

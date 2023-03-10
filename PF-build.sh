@@ -1511,7 +1511,7 @@ if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
 fi
 
 # For MMU2S
-    if [[ "$mk404_flag" == "2" || "$mk404_flag" == "MMU2" || "$mk404_flag" == "MMU2S" ]]; then # Check if MMU2 is selected only for MK3/S
+    if [[ "$mk404_flag" == "2" || "$mk404_flag" == "MMU2" || "$mk404_flag" == "MMU2S" ]]; then # Check if MMU is selected only for MK3/S
         mk404_flag=2
     fi
 

@@ -991,10 +991,10 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
-"Interna pogreska vremena izvodjenja. Pokušajte resetirati MMU jedinicu ili "
+"Interna pogreska vremena izvodjenja. Pokušajte resetirati MMU ili "
 "azurirati firmware. Ako se problem nastavi, obratite se podrsci."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
@@ -1157,19 +1157,19 @@ msgstr "Neusp. MMU punj"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
-"MMU jedinica ne reagira ispravno. Provjerite ozicenje i konektore. Ako se "
+"MMU ne reagira ispravno. Provjerite ozicenje i konektore. Ako se "
 "problem nastavi, obratite se podrsci."
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"MMU jedinica ne reagira. Provjerite ozicenje i konektore. Ako se problem "
+"MMU ne reagira. Provjerite ozicenje i konektore. Ako se problem "
 "nastavi, obratite se podrsci."
 
 #. MSG_MMU_CONNECTED c=18
@@ -2532,8 +2532,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Uklonite izbačenu nit s prednje strane MMU jedinice."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Uklonite izbačenu nit s prednje strane MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2552,10 +2552,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Verzija firmware-a MMU jedinice nekompatibilna s FW-om pisača. Ažuriranje na"
+"Verzija firmware-a MMU nekompatibilna s FW-om pisača. Ažuriranje na"
 " verziju 2.1.9."
 
 #~ msgid "⏬"
@@ -2568,10 +2568,10 @@ msgstr ""
 #~ msgstr "Odaberite ekstruder:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
-#~ "MMU jedinica prijavljuje svoju FW verziju nekompatibilnu s firmwerom "
+#~ "MMU prijavljuje svoju FW verziju nekompatibilnu s firmwerom "
 #~ "printera. Provjerite je li MMU firmware azuriran."
 
 #~ msgid ""
@@ -2602,8 +2602,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS v0.4 ili noviji"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Rijesite problem, a zatim pritisnite gumb na MMU jedinici."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Rijesite problem, a zatim pritisnite gumb na MMU."
 
 #~ msgid "Load all"
 #~ msgstr "Napuni sve"

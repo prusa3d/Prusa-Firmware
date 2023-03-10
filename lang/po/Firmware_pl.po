@@ -993,7 +993,7 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
 "Wewnetrzny blad dzialania. Resetuj MMU lub zaktualizuj FW. Skontaktuj sie z "
@@ -1159,7 +1159,7 @@ msgstr "Bledy lad. MMU"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
 "MMU nie dziala. Sprawdz okablowanie i zlacza. Jesli problem nadal wystepuje,"
@@ -1168,7 +1168,7 @@ msgstr ""
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
 "MMU nie reaguje. Sprawdz okablowanie i zlacza. Jesli problem nadal "
@@ -1552,7 +1552,7 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Wsun filament do pierwszego kanalu w MMU2 i nacisnij pokretlo, aby go "
+"Wsun filament do pierwszego kanalu w MMU i nacisnij pokretlo, aby go "
 "zaladowac."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
@@ -2533,8 +2533,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Usuń wyrzucony filament z przodu jednostki MMU."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Usuń wyrzucony filament z przodu MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2553,10 +2553,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Wersja oprogramowania układowego modułu MMU jest niezgodna z oprogramowaniem"
+"Wersja oprogramowania układowego MMU jest niezgodna z oprogramowaniem"
 " sprzętowym drukarki. Zaktualizuj do wersji 2.1.9."
 
 #~ msgid "⏬"
@@ -2569,7 +2569,7 @@ msgstr ""
 #~ msgstr "Wybierz ekstruder:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "MMU zglasza wersje FW niezgodna z FW drukarki. Upewnij sie, ze FW MMU jest "
@@ -2602,7 +2602,7 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 lub nowszy"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
+#~ msgid "Fix the issue and then press button on MMU."
 #~ msgstr "Rozwiaz problem i wcisnij przycisk na MMU."
 
 #~ msgid "Load all"

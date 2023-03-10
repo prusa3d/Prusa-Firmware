@@ -30,7 +30,7 @@ struct Version {
 };
 
 /// Top-level interface between Logic and Marlin.
-/// Intentionally named MMU2 to be (almost) a drop-in replacement for the previous implementation.
+/// Intentionally named MMU to be (almost) a drop-in replacement for the previous implementation.
 /// Most of the public methods share the original naming convention as well.
 class MMU2 {
 public:

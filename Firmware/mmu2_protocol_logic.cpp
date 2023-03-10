@@ -20,7 +20,7 @@ namespace MMU2 {
 /// Changing the supportedMmuVersion numbers requires patching MSG_DESC_FW_UPDATE_NEEDED and all its related translations by hand.
 ///
 /// The message reads:
-///   "The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.6."
+///   "The MMU firmware version incompatible with the printer's FW. Update to version 2.1.6."
 ///
 /// Currently, this is not possible to perform automatically at compile time with the existing languages/translations infrastructure.
 /// To save space a "dumb" solution was chosen + a few static_assert checks in errors_list.h preventing the code from compiling when the string doesn't match.

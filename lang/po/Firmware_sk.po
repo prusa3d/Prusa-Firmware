@@ -989,7 +989,7 @@ msgstr "Vlozte filament (nezavadzajte) do extruderu a stlacte tlacidlo"
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
 "Interna chyba. Skuste resetovat MMU alebo aktualizovat firmware. Ak chyba "
@@ -1155,7 +1155,7 @@ msgstr "MMU zlyhalo"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
 "MMU neodpoveda spravne. Skontrolujte zapojenie a konektory. Ak chyba "
@@ -1164,7 +1164,7 @@ msgstr ""
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
 "MMU neodpoveda. Skontrolujte zapojenie a konektory. Ak chyba pretrvava, "
@@ -2521,8 +2521,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Odstráňte vysunuté filament z prednej časti jednotky MMU."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Odstráňte vysunuté filament z prednej časti MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2541,10 +2541,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Verzia firmvéru jednotky MMU nekompatibilná s FW tlačiarne. Aktualizácia na "
+"Verzia firmvéru MMU nekompatibilná s FW tlačiarne. Aktualizácia na "
 "verziu 2.1.9."
 
 #~ msgid "⏬"
@@ -2557,7 +2557,7 @@ msgstr ""
 #~ msgstr "Zvolte extruder:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "Verzia FW MMU je nekompatibilna s FW tlaciarne. Skontrolujte aktualizacie "
@@ -2590,8 +2590,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 a novsie"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Opravte chybu a potom stlacte tlacidlo na jednotke MMU."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Opravte chybu a potom stlacte tlacidlo na MMU."
 
 #~ msgid "Load all"
 #~ msgstr "Zaviest vsetko"
@@ -2627,7 +2627,7 @@ msgstr ""
 #~ msgstr "Prosim vyberte filament a potom stlacte tlacidlo."
 
 #~ msgid "Please update firmware in your MMU2. Waiting for reset."
-#~ msgstr "Prosim aktualizujte firmware v vasej MMU2 jednotke. Cakam na reset."
+#~ msgstr "Prosim aktualizujte firmware v vasej MMU2. Cakam na reset."
 
 #~ msgid "Press the knob to resume nozzle temperature."
 #~ msgstr "Pre pokracovanie nahrievania trysky stlacte tlacidlo."

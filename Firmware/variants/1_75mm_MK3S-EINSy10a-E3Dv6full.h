@@ -681,7 +681,7 @@
 
 #define MMU_REQUIRED_FW_BUILDNR 83
 #define MMU_HWRESET
-#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
 
 // This is experimental feature requested by our test department.
