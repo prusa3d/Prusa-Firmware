@@ -589,7 +589,7 @@ msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
 msgstr ""
-"FINDA triggades inte vid inladdning av filamment.Se till att filament kan "
+"FINDA triggades inte vid inladdning av filamment. Se till att filament kan "
 "röra sig och att FINDA fungerar."
 
 #. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
@@ -736,7 +736,7 @@ msgid ""
 "filament reached the fsensor and the sensor works."
 msgstr ""
 "Filamentsensorn triggades inte av när filamentet ladddades in.Se till att "
-"filamentet kan röra sig och att sensornfungerar."
+"filamentet kan röra sig och att sensorn fungerar."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:230 ../../Firmware/mmu2/errors_list.h:281
@@ -787,7 +787,9 @@ msgstr "Flöde"
 msgid ""
 "For a Nozzle change please read\n"
 "prusa.io/nozzle-mk3s"
-msgstr "För byte av munstycke, läsprusa.io/nozzle-mk3s"
+msgstr ""
+"För byte av munstycke, läs\n"
+" prusa.io/nozzle-mk3s"
 
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.cpp:87 ../../Firmware/ultralcd.cpp:6840
