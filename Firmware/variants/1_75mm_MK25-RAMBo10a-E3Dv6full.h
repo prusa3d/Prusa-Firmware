@@ -508,7 +508,7 @@
 
 #define MMU_REQUIRED_FW_BUILDNR 132
 #define MMU_FORCE_STEALTH_MODE
-#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
 
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning

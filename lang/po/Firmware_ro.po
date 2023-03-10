@@ -994,10 +994,10 @@ msgstr "Infige filamentul (nu-l incarca) in extruder si apasa butonul."
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
-"ERR de rulare interna. Incercati sa resetati unitatea MMU sau actualizati "
+"ERR de rulare interna. Incercati sa resetati MMU sau actualizati "
 "firmwarul. Daca problema persista, contactati dep. support"
 
 #. MSG_FILAMENT_LOADED c=20 r=3
@@ -1160,19 +1160,19 @@ msgstr "Err. incarc MMU"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
-"Unitatea MMU nu raspunde corect. Verificati cablajul si conectorii. Daca "
+"MMU nu raspunde corect. Verificati cablajul si conectorii. Daca "
 "problema persista, contactati dep. support"
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"Unitatea MMU nu raspunde. Verificati cablajul si conectorii. Daca problema "
+"MMU nu raspunde. Verificati cablajul si conectorii. Daca problema "
 "persista, contactati dep. support"
 
 #. MSG_MMU_CONNECTED c=18
@@ -2537,8 +2537,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Scoateți filamentul ejectat din partea din față a unității MMU."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Scoateți filamentul ejectat din partea din față a MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2558,10 +2558,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Versiunea de firmware a unității MMU este incompatibilă cu FW-ul "
+"Versiunea de firmware a MMU este incompatibilă cu FW-ul "
 "imprimantei. Actualizați la versiunea 2.1.9."
 
 #~ msgid "⏬"
@@ -2574,7 +2574,7 @@ msgstr ""
 #~ msgstr "Alege extruderul:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "Versiune FW MMU este incompatibil cu cea a imprimantei. Asigurati-va ca FW "
@@ -2607,8 +2607,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 / mai nou"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Rezolvati problema si apasati butonul pe unitatea MMU."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Rezolvati problema si apasati butonul pe MMU."
 
 #~ msgid "Load all"
 #~ msgstr "Incarcati toate"

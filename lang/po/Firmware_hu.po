@@ -994,7 +994,7 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
 "Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret. Ha a "
@@ -1160,7 +1160,7 @@ msgstr "MMU bet. hibak"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
 "Az MMU helytelenul valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a "
@@ -1169,7 +1169,7 @@ msgstr ""
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
 "Az MMU nem valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a problema"
@@ -2537,8 +2537,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Távolítsa el a kilökött izzószálat az MMU egység elejéről."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Távolítsa el a kilökött izzószálat az MMU elejéről."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2557,10 +2557,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Az MMU egység firmware-verziója nem kompatibilis a nyomtató FW-vel. "
+"Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. "
 "Frissítés a 2.1.9-es verzióra."
 
 #~ msgid "⏬"
@@ -2573,7 +2573,7 @@ msgstr ""
 #~ msgstr "Extruder valasztas:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "Az MMU FW verzioja nem kompatibilis a nyomtatoeval. Kerlek frissitsd az MMU "
@@ -2605,7 +2605,7 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS v0.4 vagy ujabb"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
+#~ msgid "Fix the issue and then press button on MMU."
 #~ msgstr "Hozd helyre a hibat, majd nyomd meg a gombot az MMU egysegen."
 
 #~ msgid "Load all"
@@ -2644,8 +2644,8 @@ msgstr ""
 #~ msgid "Please remove filament and then press the knob."
 #~ msgstr "Kerlek, tavolitsd el a filamentet, majd nyomd meg a gombot."
 
-#~ msgid "Please update firmware in your MMU2. Waiting for reset."
-#~ msgstr "Kerlek, frissitsd az MMU2 firmverjet. Varom az ujrainditast."
+#~ msgid "Please update firmware in your MMU. Waiting for reset."
+#~ msgstr "Kerlek, frissitsd az MMU firmverjet. Varom az ujrainditast."
 
 #~ msgid "Press the knob to resume nozzle temperature."
 #~ msgstr "Nyomd meg a gombot a fuvoka ismetelt felfutesehez."

@@ -1555,7 +1555,7 @@ void TestPullupCrash() {
 //! If MMU is not connected
 //! 
 //! 	@code{.unparsed}
-//! 	| MMU2       N/A     |	c=18
+//! 	| MMU        N/A     |	c=18
 //! 	@endcode
 //! 
 //! If Flash Air is connected

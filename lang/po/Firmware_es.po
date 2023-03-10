@@ -992,7 +992,7 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
 "Error interno de ejecucion. Intenta reiniciar la MMU o actualizar el "
@@ -1159,7 +1159,7 @@ msgstr "Carga MMU falla"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
 "La MMU no responde correcta-mente. Comprueba el cableado y los conectores. "
@@ -1168,7 +1168,7 @@ msgstr ""
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
 "La MMU no responde. Comprueba el cableado y los conectores. Si el problema "
@@ -2539,8 +2539,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Retire el filamento expulsado de la parte frontal de la unidad MMU."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Retire el filamento expulsado de la parte frontal de la MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2560,10 +2560,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"La versión de firmware de la unidad MMU es incompatible con el FW de la "
+"La versión de firmware de la MMU es incompatible con el FW de la "
 "impresora. Actualizar a la versión 2.1.9."
 
 #~ msgid "⏬"
@@ -2576,7 +2576,7 @@ msgstr ""
 #~ msgstr "Elegir extrusor:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "La MMU informa que su FW no es compatible con el de la impresora. Asegurate "
@@ -2610,8 +2610,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 o mas nueva"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Corrige el problema y pulsa el boton en la unidad MMU."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Corrige el problema y pulsa el boton en la MMU."
 
 #~ msgid "Load all"
 #~ msgstr "Intr. todos fil."

@@ -987,10 +987,10 @@ msgstr "Sett inn filamentet i ekstruderen og deretter trykk inn valghjulet."
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
-"Intern runtime feil. Prøv omstart av MMU enheten eller oppdater fastvaren. "
+"Intern runtime feil. Prøv omstart av MMU eller oppdater fastvaren. "
 "Hvis feilen vedvarer, kontakt kundestøtte."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
@@ -1153,19 +1153,19 @@ msgstr "MMU lastefeil"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
-"MMU enhet svarer ikke riktig. Sjekk ledninger og koblinger. Hvis problemet "
+"MMU svarer ikke riktig. Sjekk ledninger og koblinger. Hvis problemet "
 "vedvarer, kontakt støtte"
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"MMU enhet svarer ikke. Sjekk ledninger og koblinger. Hvis problemet "
+"MMU svarer ikke. Sjekk ledninger og koblinger. Hvis problemet "
 "vedvarer, kontakt støtte"
 
 #. MSG_MMU_CONNECTED c=18
@@ -1546,7 +1546,7 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Sett inn filament i det første røret bak MMU-enheten og trykk valghjulet for"
+"Sett inn filament i det første røret bak MMU og trykk valghjulet for"
 " å laste."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
@@ -2514,8 +2514,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Fjern det utkastede filamentet fra fronten av MMU-enheten."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Fjern det utkastede filamentet fra fronten av MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2534,10 +2534,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"MMU-enhetens fastvareversjon er inkompatibel med skriverens FW. Oppdatering "
+"MMU fastvareversjon er inkompatibel med skriverens FW. Oppdatering "
 "til versjon 2.1.9."
 
 #~ msgid "⏬"
@@ -2550,10 +2550,10 @@ msgstr ""
 #~ msgstr "Velg ekstruder:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
-#~ "MMU enheten raporterer at fastvareversjonen ikke er kompatibel med "
+#~ "MMU raporterer at fastvareversjonen ikke er kompatibel med "
 #~ "printerens fastvare. Vær sikker på at MMU fastvaren er oppdatert."
 
 #~ msgid ""
@@ -2583,8 +2583,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 eller nyere"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Løs problemet og trykk på MM-enhetens knapp."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Løs problemet og trykk på MMU knapp."
 
 #~ msgid "Load all"
 #~ msgstr "Last alle"
@@ -2619,8 +2619,8 @@ msgstr ""
 #~ msgid "Please remove filament and then press the knob."
 #~ msgstr "Fjern filamentet og trykk valghjulet."
 
-#~ msgid "Please update firmware in your MMU2. Waiting for reset."
-#~ msgstr "Oppdater din MMU2 systemvare. Venter på omstart..."
+#~ msgid "Please update firmware in your MMU. Waiting for reset."
+#~ msgstr "Oppdater din MMU systemvare. Venter på omstart..."
 
 #~ msgid "Press the knob to resume nozzle temperature."
 #~ msgstr "Trykk valghjulet for å fortsette oppvarming."

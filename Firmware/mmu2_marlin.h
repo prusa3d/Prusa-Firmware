@@ -1,8 +1,8 @@
 /// @file
-/// The sole purpose of this interface is to separate Marlin1/Marlin2 from the MMU2 top logic layer.
+/// The sole purpose of this interface is to separate Marlin1/Marlin2 from the MMU top logic layer.
 /// Why?
 /// - unify implementation among MK3 and Buddy FW
-/// - enable unit testing of MMU2 top layer
+/// - enable unit testing of MMU top layer
 #pragma once
 #include <stdint.h>
 

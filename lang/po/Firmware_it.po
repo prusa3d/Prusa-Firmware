@@ -995,10 +995,10 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU unit or updating the firmware."
+"Internal runtime error. Try resetting the MMU or updating the firmware."
 " If the issue persists, contact support."
 msgstr ""
-"Errore runtime interno. Provare a resettare l'unità MMU o ad aggiornare il "
+"Errore runtime interno. Provare a resettare la MMU o ad aggiornare il "
 "FW. Se il problema persiste, contattare l'assistenza."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
@@ -1161,19 +1161,19 @@ msgstr "Car MMU falliti"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
 msgid ""
-"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"MMU not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
-"Unità MMU non risponde correttamente. Controlla cavi e connettori. Se il "
+"MMU non risponde correttamente. Controlla cavi e connettori. Se il "
 "problema persiste contatta il supporto."
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
 msgid ""
-"MMU unit not responding. Check the wiring and connectors. If the issue "
+"MMU not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"Unità MMU non risponde. Controlla cavi e connettori. Se il problema persiste"
+"MMU non risponde. Controlla cavi e connettori. Se il problema persiste"
 " contatta il supporto."
 
 #. MSG_MMU_CONNECTED c=18
@@ -2538,8 +2538,8 @@ msgstr ""
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
-msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr "Rimuovere il filamento espulso dalla parte anteriore dell'unità MMU."
+msgid "Remove the ejected filament from the front of the MMU."
+msgstr "Rimuovere il filamento espulso dalla parte anteriore dell MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2558,10 +2558,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU unit firmware version incompatible with the printer's FW. Update to "
+"The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"La versione del firmware dell'unità MMU non è compatibile con il firmware "
+"La versione del firmware dell MMU non è compatibile con il firmware "
 "della stampante. Aggiornamento alla versione 2.1.9."
 
 #~ msgid "⏬"
@@ -2574,10 +2574,10 @@ msgstr ""
 #~ msgstr "Seleziona estrusore:"
 
 #~ msgid ""
-#~ "The MMU unit reports its FW version incompatible with the printer's "
+#~ "The MMU reports its FW version incompatible with the printer's "
 #~ "firmware. Make sure the MMU firmware is up to date."
 #~ msgstr ""
-#~ "L'unità MMU segnala la sua versione FW incompatibile con il FW della "
+#~ "La MMU segnala la sua versione FW incompatibile con il FW della "
 #~ "stampante. Verifica che il FW della MMU sia aggiornato."
 
 #~ msgid ""
@@ -2607,8 +2607,8 @@ msgstr ""
 #~ msgid "FS v0.4 or newer"
 #~ msgstr "FS 0.4 o superiore"
 
-#~ msgid "Fix the issue and then press button on MMU unit."
-#~ msgstr "Risolvere il problema e premere il bottone sull'unita MMU."
+#~ msgid "Fix the issue and then press button on MMU."
+#~ msgstr "Risolvere il problema e premere il bottone sull MMU."
 
 #~ msgid "Load all"
 #~ msgstr "Caricare tutti"
