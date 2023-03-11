@@ -5277,17 +5277,17 @@ void process_commands()
                 custom_message_type = CustomMsg::Status; // let the lcd display the name of the printed G-code file in farm mode
             }
         }
-        lcd_ignore_click();				//call lcd_ignore_click also for else ???
         st_synchronize();
         previous_millis_cmd.start();
         if (codenum > 0 ) {
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
-            while(_millis() < codenum && !lcd_clicked()) {
+            wait_for_user = true;    // LCD click or M108 will clear this
+            while(_millis() < codenum && wait_for_user) {
                 delay_keep_alive(0);
             }
             KEEPALIVE_STATE(IN_HANDLER);
-            lcd_ignore_click(false);
+            wait_for_user = false; // set to false, in case of timeout
         } else {
             marlin_wait_for_click();
         }

@@ -169,9 +169,8 @@ extern bool cancel_heatup;
 extern bool isPrintPaused;
 
 extern uint8_t scrollstuff;
+extern bool wait_for_user;
 
-
-void lcd_ignore_click(bool b=true);
 void lcd_commands();
 
 

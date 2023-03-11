@@ -65,6 +65,8 @@ uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
+bool wait_for_user;
+
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 static bool extraPurgeNeeded = false; ///< lcd_commands - detect if extra purge after MMU-toolchange is necessary or not
@@ -254,9 +256,6 @@ bool lcd_oldcardstatus;
 #endif
 
 uint8_t selected_sheet = 0;
-
-bool ignore_click = false;
-bool wait_for_unclick;
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
@@ -762,33 +761,21 @@ void lcd_status_screen()                          // NOT static due to using ins
 			lcd_commands();
 	}
 
-	bool current_click = LCD_CLICKED;
+    // If the knob is pressed...
+    static bool wait_for_unclick; // = false
 
-	if (ignore_click)
-	{
-		if (wait_for_unclick)
-		{
-			if (!current_click)
-				ignore_click = wait_for_unclick = false;
-			else
-				current_click = false;
-		}
-		else if (current_click)
-		{
-			lcd_quick_feedback();
-			wait_for_unclick = true;
-			current_click = false;
-		}
-	}
-
-	if (current_click
-		&& ( menu_block_mask == MENU_BLOCK_NONE ) // or a serious error blocks entering the menu
-	)
-	{
-		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
-		menu_submenu(lcd_main_menu);
-		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-	}
+    if (LCD_CLICKED && !wait_for_unclick) {
+        wait_for_unclick = true;                 //  - Set debounce flag to ignore continuous clicks
+        wait_for_user = false;                   //  - Any click clears wait for user
+        lcd_quick_feedback();                    //  - Always make a click sound
+        if (menu_block_mask == MENU_BLOCK_NONE ) // or a serious error blocks entering the menu
+        {
+            menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
+            menu_submenu(lcd_main_menu);
+            lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+        }
+    }
+    else wait_for_unclick = false;
 }
 
 void lcd_print_stop_finish();
@@ -7288,12 +7275,6 @@ void ultralcd_init()
 
   // Initialise status line
   strncpy_P(lcd_status_message, MSG_WELCOME, LCD_WIDTH);
-}
-
-void lcd_ignore_click(bool b)
-{
-  ignore_click = b;
-  wait_for_unclick = false;
 }
 
 static bool lcd_message_check(uint8_t priority)
