@@ -289,8 +289,17 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
     }
 }
 
-void TryLoadUnloadProgressbar(uint8_t column, uint8_t row, bool sensorState) {
-    lcd_putc_at(column, row, sensorState ? '_' : LCD_STR_SOLID_BLOCK[0]); // Place character
+void TryLoadUnloadProgressbarInit() {
+    // Clear the status line
+    lcd_set_cursor(0, 3);
+    lcd_space(LCD_WIDTH);
+
+    // Reset cursor position
+    lcd_set_cursor(0, 3);
+}
+
+void TryLoadUnloadProgressbar(bool sensorState) {
+    lcd_putc(sensorState ? '_' : LCD_STR_SOLID_BLOCK[0]); // Place character
     lcd_reset_status_message_timeout();
 }
 
