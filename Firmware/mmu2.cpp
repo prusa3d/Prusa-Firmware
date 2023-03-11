@@ -249,6 +249,25 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     TryLoadUnloadProgressbarInit();
 
+    /* The position is basically a triangle wave
+    // current position is not zero, so it is an offset
+    //              y(x)
+    //              ▲
+    //              │
+    //              │        ^◄────────── delta_mm - current_position
+    //              │       / \
+    //              │      /   \
+    //              │     /     \
+    //  machine     │    /       \
+    // position (mm)│   /         \
+    //              │  /           \
+    //              │ /             \
+    //              │/               \◄───────current_position
+    //              └───────────────────► x
+    //              0                19
+    //                   pixel #
+    */
+
     MoveE(delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
     MoveE(-delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
 
