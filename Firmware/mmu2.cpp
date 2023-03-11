@@ -246,8 +246,8 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     const float delta_mm = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
     const float length_step_mm = 2 * (delta_mm) / (LCD_WIDTH + 1);
-    // reset current position to whatever the planner thinks it is
     float last_position = planner_get_machine_position_E_mm();
+
     MoveE(delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
     MoveE(-delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
 
@@ -258,10 +258,10 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
 
         if ((fabs(planner_get_machine_position_E_mm() - last_position)) > length_step_mm) {
+            last_position = planner_get_machine_position_E_mm(); // Reset
             if (fsensor_pixel > 19) fsensor_pixel = 19;
             TryLoadUnloadProgressbar(fsensor_pixel++, 3, fsensorStateLCD);
             fsensorStateLCD = 0;      // Clear temporary bit
-            last_position = planner_get_machine_position_E_mm(); // Reset
         }
         safe_delay_keep_alive(0);
     }
