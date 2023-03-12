@@ -255,7 +255,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     // available to get length per pixel.
     // Finally subtract the step length by the precision set above to allow some
     // error introduced by CPU execution delays
-    const float length_step_mm = ( (2 * delta_mm) / LCD_WIDTH) - float_precision;
+    const float mm_per_pixel = ( (2 * delta_mm) / LCD_WIDTH) - float_precision;
     float last_position = stepper_get_machine_position_E_mm();
 
     TryLoadUnloadProgressbarInit();
@@ -286,7 +286,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
         // Fetch the position once, to ensure last_position will be correct
         float current_mm = stepper_get_machine_position_E_mm();
-        if (fabs(current_mm - last_position) > length_step_mm) {
+        if (fabs(current_mm - last_position) > mm_per_pixel) {
             last_position = current_mm;
             if (pixel > (LCD_WIDTH - 1)) pixel = LCD_WIDTH - 1;
             TryLoadUnloadProgressbar(pixel++, fsensorStateLCD);
