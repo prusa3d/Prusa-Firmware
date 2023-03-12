@@ -5337,9 +5337,8 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
-    if ( babystep_allowed() ) {
+    if ( babystep_allowed() )
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
-    }
 
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
