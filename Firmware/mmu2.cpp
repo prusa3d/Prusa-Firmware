@@ -248,7 +248,8 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     // The total length is twice delta_mm. Divide that length by number of pixels
     // available to get length per pixel.
-    const float mm_per_pixel = (2 * (delta_mm)) / LCD_WIDTH;
+    // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
+    const float pixel_per_mm =  0.5f * float(LCD_WIDTH) / (delta_mm);
 
     TryLoadUnloadProgressbarInit();
 
@@ -287,7 +288,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
             fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
 
             // Always round up, you can only have 'whole' pixels. (floor is also an option)
-            dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) / mm_per_pixel);
+            dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) * pixel_per_mm);
             if (dpixel1 - dpixel0) {
                 dpixel0 = dpixel1;
                 if (lcd_cursor_col > (LCD_WIDTH - 1)) lcd_cursor_col = LCD_WIDTH - 1;
