@@ -370,7 +370,7 @@ bool check_fsensor();
 //! 2) Not allowed during Homing (printer busy)
 //! 3) Not allowed during Mesh Bed Leveling (printer busy)
 //! 4) Allowed if there are queued blocks OR there is a print job running
-bool BABYSTEP_ALLOWED();
+bool babystep_allowed();
 
 extern void calculate_extruder_multipliers();
 

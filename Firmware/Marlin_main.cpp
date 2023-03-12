@@ -545,7 +545,7 @@ bool check_fsensor() {
         && e_active();
 }
 
-bool __attribute__((noinline)) BABYSTEP_ALLOWED() {
+bool __attribute__((noinline)) babystep_allowed() {
     return (axis_known_position[Z_AXIS]
         && !homing_flag && !mesh_bed_leveling_flag
         && ( blocks_queued() || lcd_commands_type == LcdCommands::Layer1Cal || ( !isPrintPaused && (IS_SD_PRINTING || usb_timer.running()) ))
