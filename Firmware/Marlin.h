@@ -366,7 +366,7 @@ extern bool printer_active();
 bool check_fsensor();
 
 //! Condition where Babystepping is allowed:
-//! 1) Axis are trusted: Z-axis position must be known
+//! 1) Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
 //! 2) Not allowed during Homing (printer busy)
 //! 3) Not allowed during Mesh Bed Leveling (printer busy)
 //! 4) Allowed if there are queued blocks OR there is a print job running
