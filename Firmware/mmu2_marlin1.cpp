@@ -27,6 +27,10 @@ bool planner_any_moves() {
 }
 
 float planner_get_machine_position_E_mm(){
+    return current_position[E_AXIS];
+}
+
+float stepper_get_machine_position_E_mm(){
     return st_get_position_mm(E_AXIS);
 }
 

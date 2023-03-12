@@ -245,7 +245,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     const float delta_mm = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
     const float length_step_mm = 2 * (delta_mm) / (LCD_WIDTH + 1);
-    float last_position = planner_get_machine_position_E_mm();
+    float last_position = stepper_get_machine_position_E_mm();
 
     TryLoadUnloadProgressbarInit();
 
@@ -273,8 +273,8 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
         fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
 
-        if ((fabs(planner_get_machine_position_E_mm() - last_position)) > length_step_mm) {
-            last_position = planner_get_machine_position_E_mm(); // Reset
+        if ((fabs(stepper_get_machine_position_E_mm() - last_position)) > length_step_mm) {
+            last_position = stepper_get_machine_position_E_mm(); // Reset
             TryLoadUnloadProgressbar(fsensorStateLCD);
             fsensorStateLCD = 0;      // Clear temporary bit
         }

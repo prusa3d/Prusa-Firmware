@@ -29,6 +29,7 @@ float MoveRaiseZ(float delta);
 void planner_synchronize();
 bool planner_any_moves();
 float planner_get_machine_position_E_mm();
+float stepper_get_machine_position_E_mm();
 float planner_get_current_position_E();
 void planner_set_current_position_E(float e);
 void planner_line_to_current_position(float feedRate_mm_s);
