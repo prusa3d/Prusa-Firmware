@@ -240,33 +240,31 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     uint8_t fsensorState = 0;
     uint8_t fsensorStateLCD = 0;
-    uint8_t pixel = 0;
+    uint8_t lcd_cursor_col = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
 
     const float delta_mm = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
 
-    // Allow some error in each pixel step. It is better to render too many pixels
-    // rather than too few. Note that 0.25mm is not enough but 0.50mm seems to work
-    // 0.50mm gives 1 digit precision
-    static constexpr float float_precision = 0.50; // mm
-
     // The total length is twice delta_mm. Divide that length by number of pixels
     // available to get length per pixel.
-    // Finally subtract the step length by the precision set above to allow some
-    // error introduced by CPU execution delays
-    const float mm_per_pixel = ( (2 * delta_mm) / LCD_WIDTH) - float_precision;
-    float last_position = stepper_get_machine_position_E_mm();
+    const float mm_per_pixel = (2 * (delta_mm)) / LCD_WIDTH;
 
     TryLoadUnloadProgressbarInit();
 
     /* The position is a triangle wave
     // current position is not zero, it is an offset
+    //
+    // Keep in mind that the relationship between machine position
+    // and pixel index is not linear. The area around the amplitude
+    // needs to be taken care of carefully. The current implementation
+    // handles each move separately so there is no need to watch for the change
+    // in the slope's sign or check the last machine position.
     //              y(x)
     //              ▲
     //              │     ^◄────────── delta_mm + current_position
     //   machine    │    / \
-    //   position   │   /   \
+    //   position   │   /   \◄────────── stepper_position_mm + current_position
     //    (mm)      │  /     \
     //              │ /       \
     //              │/         \◄───────current_position
@@ -275,24 +273,29 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     //                 pixel #
     */
 
-    MoveE(delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
-    MoveE(-delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+    // Pixel index will go from 0 to 10, then back from 10 to 0
+    // The change in this number is used to indicate a new pixel
+    // should be drawn on the display
+    uint8_t dpixel1 = 0;
+    uint8_t dpixel0 = 0;
+    for (uint8_t move = 0; move < 2; move++) {
+        MoveE(move == 0 ? delta_mm : -delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+        while (planner_any_moves()) {
+            // Wait for move to finish and monitor the fsensor the entire time
+            // A single 0 reading will set the bit.
+            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
+            fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
 
-    while (planner_any_moves()) {
-        // Wait for move to finish and monitor the fsensor the entire time
-        // A single 0 reading will set the bit.
-        fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
-        fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
-
-        // Fetch the position once, to ensure last_position will be correct
-        float current_mm = stepper_get_machine_position_E_mm();
-        if (fabs(current_mm - last_position) > mm_per_pixel) {
-            last_position = current_mm;
-            if (pixel > (LCD_WIDTH - 1)) pixel = LCD_WIDTH - 1;
-            TryLoadUnloadProgressbar(pixel++, fsensorStateLCD);
-            fsensorStateLCD = 0;      // Clear temporary bit
+            // Always round up, you can only have 'whole' pixels. (floor is also an option)
+            dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) / mm_per_pixel);
+            if (dpixel1 - dpixel0) {
+                dpixel0 = dpixel1;
+                if (lcd_cursor_col > (LCD_WIDTH - 1)) lcd_cursor_col = LCD_WIDTH - 1;
+                TryLoadUnloadProgressbar(lcd_cursor_col++, fsensorStateLCD);
+                fsensorStateLCD = 0;      // Clear temporary bit
+            }
+            safe_delay_keep_alive(0);
         }
-        safe_delay_keep_alive(0);
     }
 
     if (fsensorState) {
