@@ -36,8 +36,9 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec);
 void TryLoadUnloadProgressbarInit();
 
 /// @brief Add one block to the progress bar
+/// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
 /// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
-void TryLoadUnloadProgressbar(bool sensorState);
+void TryLoadUnloadProgressbar(uint8_t col, bool sensorState);
 
 /// Remders the sensor status line. Also used by the "resume temperature" screen.
 void ReportErrorHookDynamicRender();

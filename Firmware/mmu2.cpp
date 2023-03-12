@@ -240,6 +240,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     uint8_t fsensorState = 0;
     uint8_t fsensorStateLCD = 0;
+    uint8_t pixel = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
 
@@ -275,7 +276,8 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
         if ((fabs(stepper_get_machine_position_E_mm() - last_position)) > length_step_mm) {
             last_position = stepper_get_machine_position_E_mm(); // Reset
-            TryLoadUnloadProgressbar(fsensorStateLCD);
+            if (pixel > (LCD_WIDTH - 1)) pixel = LCD_WIDTH - 1;
+            TryLoadUnloadProgressbar(pixel++, fsensorStateLCD);
             fsensorStateLCD = 0;      // Clear temporary bit
         }
         safe_delay_keep_alive(0);
