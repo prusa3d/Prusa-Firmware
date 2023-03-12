@@ -293,15 +293,12 @@ void TryLoadUnloadProgressbarInit() {
     // Clear the status line
     lcd_set_cursor(0, 3);
     lcd_space(LCD_WIDTH);
-
-    // Reset cursor position
-    lcd_set_cursor(0, 3);
 }
 
 void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
     // Set the cursor position each time in case some other
     // part of the firmware changes the cursor position
-    lcd_putc_at(col, 3, sensorState ? '_' : LCD_STR_SOLID_BLOCK[0]);
+    lcd_putc_at(col, 3, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
     lcd_reset_status_message_timeout();
 }
 
