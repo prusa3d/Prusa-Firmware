@@ -298,8 +298,10 @@ void TryLoadUnloadProgressbarInit() {
     lcd_set_cursor(0, 3);
 }
 
-void TryLoadUnloadProgressbar(bool sensorState) {
-    lcd_putc(sensorState ? '_' : LCD_STR_SOLID_BLOCK[0]); // Place character
+void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
+    // Set the cursor position each time in case some other
+    // part of the firmware changes the cursor position
+    lcd_putc_at(col, 3, sensorState ? '_' : LCD_STR_SOLID_BLOCK[0]);
     lcd_reset_status_message_timeout();
 }
 
