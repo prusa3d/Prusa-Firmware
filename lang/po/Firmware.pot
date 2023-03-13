@@ -953,8 +953,7 @@ msgstr ""
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
-"Internal runtime error. Try resetting the MMU or updating the firmware."
-" If the issue persists, contact support."
+"Internal runtime error. Try resetting the MMU or updating the firmware.
 msgstr ""
 
 #. MSG_FILAMENT_LOADED c=20 r=3

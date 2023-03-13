@@ -995,10 +995,8 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
-" If the issue persists, contact support."
 msgstr ""
-"Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret. Ha a "
-"problema fennall, fordulj a supporthoz."
+"Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3707

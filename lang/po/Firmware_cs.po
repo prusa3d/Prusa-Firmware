@@ -982,10 +982,8 @@ msgstr "Vlozte filament (nezavadejte) do extruderu a stisknete tlacitko"
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
-" If the issue persists, contact support."
 msgstr ""
-"Interní chyba. Zkuste resetovat MMU ci aktualizujte FW. Pokud pretrvava, "
-"kontakujte tech. podporu."
+"Interní chyba. Zkuste resetovat MMU ci aktualizujte FW."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3707
