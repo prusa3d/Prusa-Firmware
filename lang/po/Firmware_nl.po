@@ -918,7 +918,7 @@ msgstr "Startpositie"
 #: ../../Firmware/messages.cpp:183 ../../Firmware/ultralcd.cpp:1000
 msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
 msgstr ""
-"Hotend op 280C! Mondstuk vervangen en aangedraaid volgens specificaties?"
+"Hotend op 280C! Tuit vervangen en aangedraaid volgens specificaties?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1097
