@@ -56,7 +56,7 @@ extern void lcd_space(uint8_t n);
 extern void lcd_printNumber(unsigned long n, uint8_t base);
 
 extern void lcd_print(const char*);
-extern char lcd_print_pad(const char* s, uint8_t len);
+extern uint8_t lcd_print_pad(const char* s, uint8_t len);
 
 /// @brief print a string from PROGMEM with left-adjusted padding
 /// @param s string from PROGMEM.

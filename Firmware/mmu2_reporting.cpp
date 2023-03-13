@@ -283,16 +283,19 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
 }
 
 void TryLoadUnloadProgressbarInit() {
-    // Clear the status line
-    lcd_set_cursor(0, 3);
-    lcd_space(LCD_WIDTH);
+    lcd_clearstatus();
+}
+
+void TryLoadUnloadProgressbarDeinit() {
+    // Delay the next status message just so
+    // the user can see the results clearly
+    lcd_reset_status_message_timeout();
+    lcd_clearstatus();
 }
 
 void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
-    // Set the cursor position each time in case some other
-    // part of the firmware changes the cursor position
-    lcd_putc_at(col, 3, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
-    lcd_reset_status_message_timeout();
+    lcd_insert_char_into_status(col, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
+    if (!lcd_update_enabled) lcdui_print_status_line();
 }
 
 void IncrementLoadFails(){

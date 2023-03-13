@@ -305,6 +305,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     }
 
     Disable_E0();
+    TryLoadUnloadProgressbarDeinit();
 
     if (fsensorState) {
         IncrementLoadFails();

@@ -20,6 +20,9 @@ void ultralcd_init();
 #define LCD_STATUS_DELAYED_TIMEOUT 4000
 
 // Set the current status message (equivalent to LCD_STATUS_NONE)
+void lcdui_print_status_line(void);
+void lcd_clearstatus();
+void lcd_insert_char_into_status(uint8_t position, const char message);
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
 void lcd_setstatus_serial(const char* message);

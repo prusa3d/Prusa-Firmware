@@ -78,6 +78,7 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 /* LCD message status */
 static LongTimer lcd_status_message_timeout;
 static uint8_t lcd_status_message_level;
+static uint8_t lcd_status_message_idx = 0;
 static char lcd_status_message[LCD_WIDTH + 1];
 
 /* !Configuration settings */
@@ -542,7 +543,7 @@ void lcdui_print_status_line(void) {
     {
         // If printing from SD, show what we are printing
         const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
-        if( lcd_print_pad(&longFilenameOLD[scrollstuff], LCD_WIDTH) )
+        if( lcd_print_pad(&longFilenameOLD[scrollstuff], LCD_WIDTH) == 0)
         {
             scrollstuff++;
         } else {
@@ -556,13 +557,18 @@ void lcdui_print_status_line(void) {
             return; // Nothing to do, waiting for delay to expire
         }
 
+        lcd_set_cursor(lcd_status_message_idx, 3);
+
         switch (custom_message_type) {
         case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
         case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
         case CustomMsg::FilamentLoading: // If loading filament, print status
         case CustomMsg::MMUProgress: // MMU Progress Codes
-            lcd_print_pad(lcd_status_message, LCD_WIDTH);
+        {
+            const uint8_t padding = lcd_print_pad(&lcd_status_message[lcd_status_message_idx], LCD_WIDTH - lcd_status_message_idx);
+            lcd_status_message_idx = LCD_WIDTH - padding;
+        }
         break;
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
             if (custom_message_state > 10) {
@@ -684,6 +690,12 @@ void lcdui_print_status_screen(void)
 
 }
 
+static void lcdui_refresh(uint8_t clear = true)
+{
+    clear ? lcd_refresh() : lcd_refresh_noclear();
+    lcd_status_message_idx = 0; // Re-draw message from beginning
+}
+
 // Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
 void lcd_status_screen()                          // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
@@ -727,13 +739,15 @@ void lcd_status_screen()                          // NOT static due to using ins
 		ReInitLCD++;
 		if (ReInitLCD == 30)
 		{
-			lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 			ReInitLCD = 0 ;
+            lcdui_refresh();
 		}
 		else
 		{
 			if ((ReInitLCD % 10) == 0)
-				lcd_refresh_noclear(); //to maybe revive the LCD if static electricity killed it.
+            {
+                lcdui_refresh(false); //to maybe revive the LCD if static electricity killed it.
+            }
 		}
 
 		lcdui_print_status_screen();
@@ -988,7 +1002,7 @@ void lcd_commands()
 
 void lcd_return_to_status()
 {
-	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+	lcdui_refresh(false); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, true);
 	menu_depth = 0;
     eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
@@ -5759,7 +5773,7 @@ void lcd_sdcard_menu()
 				if (_md->isDir)
 					lcd_print(LCD_STR_FOLDER[0]);
 
-				if( lcd_print_pad(&_md->scrollPointer[_md->offset], len) )
+				if( lcd_print_pad(&_md->scrollPointer[_md->offset], len) == 0)
 				{
 					_md->lcd_scrollTimer.start();
 					_md->offset++;
@@ -7039,6 +7053,7 @@ static void lcd_updatestatus(const char *message, bool progmem = false)
         strncpy(lcd_status_message, message, LCD_WIDTH);
 
     lcd_status_message[LCD_WIDTH] = 0;
+    lcd_status_message_idx = 0; // Print message from beginning
 
     SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
 
@@ -7050,6 +7065,19 @@ void lcd_setstatus(const char* message)
 {
     if (lcd_message_check(LCD_STATUS_NONE))
         lcd_updatestatus(message);
+}
+
+void lcd_insert_char_into_status(uint8_t position, const char message)
+{
+    if (position > LCD_WIDTH - 1) return;
+    lcd_status_message[position] = message;
+    lcd_draw_update = 1; // force redraw
+}
+
+void lcd_clearstatus()
+{
+    memset(lcd_status_message, 0, sizeof(lcd_status_message));
+    lcd_status_message_idx = 0;
 }
 
 void lcd_setstatuspgm(const char* message)
@@ -7243,7 +7271,7 @@ void menu_lcd_lcdupdate_func(void)
 			lcd_return_to_status();
 			lcd_draw_update = 2;
 		}
-		if (lcd_draw_update == 2) lcd_clear();
+		if (lcd_draw_update == 2) lcdui_refresh();
 		if (lcd_draw_update) lcd_draw_update--;
 		lcd_next_update_millis = _millis() + LCD_UPDATE_INTERVAL;
 	}
