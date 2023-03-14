@@ -509,7 +509,7 @@
 
 #define MMU_REQUIRED_FW_BUILDNR 132
 #define MMU_FORCE_STEALTH_MODE
-#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
 
 // This is experimental feature requested by our test department.

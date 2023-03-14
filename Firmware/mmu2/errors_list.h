@@ -242,30 +242,30 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_PULLEY_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is overheated. Cool down the MMU board and reset MMU.");
 //static const char MSG_DESC_SELECTOR_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is overheated. Cool down the MMU board and reset MMU.");
 //static const char MSG_DESC_IDLER_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is overheated. Cool down the MMU board and reset MMU.");
-//static const char MSG_DESC_PULLEY_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is not responding. Try resetting the MMU. If the issue persists contact support.");
-//static const char MSG_DESC_SELECTOR_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is not responding. Try resetting the MMU. If the issue persists contact support.");
-//static const char MSG_DESC_IDLER_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is not responding. Try resetting the MMU. If the issue persists contact support.");
+//static const char MSG_DESC_PULLEY_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is not responding. Try resetting the MMU.");
+//static const char MSG_DESC_SELECTOR_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is not responding. Try resetting the MMU.");
+//static const char MSG_DESC_IDLER_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is not responding. Try resetting the MMU.");
 //static const char MSG_DESC_PULLEY_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_SELECTOR_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_PULLEY_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Pulley TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_SELECTOR_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Selector TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_IDLER_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Idler TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
-//static const char MSG_DESC_PULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
-//static const char MSG_DESC_SELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
-//static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
+//static const char MSG_DESC_PULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors.");
+//static const char MSG_DESC_SELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors.");
+//static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors.");
 //static const char MSG_DESC_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1 = ISTR("MMU MCU detected a 5V undervoltage. There might be an issue with the electronics. Check the wiring and connectors"); ////MSG_DESC_MCU_UNDERVOLTAGE_VCC c=20 r=8
-static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
-static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU not responding. Check the wiring and connectors."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
+static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU not responding correctly. Check the wiring and connectors."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 static const char MSG_DESC_INVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code for tool index out of range (T0-T4)."); ////MSG_DESC_INVALID_TOOL c=20 r=8
 static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal error, please reset the MMU."); ////MSG_DESC_QUEUE_FULL c=20 r=8
-static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU or updating the firmware."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detected unexpectedly. Ensure no filament is loaded. Check the sensors and wiring."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
-static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU unit."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
+static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
 
 // Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
-static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.9."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU firmware version incompatible with the printer's FW. Update to version 2.1.9."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 static constexpr uint8_t szFWUN = sizeof(MSG_DESC_FW_UPDATE_NEEDED);
 // at least check the individual version characters in MSG_DESC_FW_UPDATE_NEEDED
 static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 7] == ('0' + mmuVersionMajor));
@@ -332,7 +332,7 @@ static const char MSG_BTN_RESTART_MMU[] PROGMEM_I1 = ISTR("RstMMU"); ////MSG_BTN
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
-static const char MSG_BTN_MORE[] PROGMEM_I1 = ISTR("\x06"); ////MSG_BTN_MORE c=8 //@todo convert to PROGMEM_N1
+static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {

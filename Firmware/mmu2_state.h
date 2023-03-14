@@ -10,7 +10,7 @@ namespace MMU2 {
 /// - Connecting
 /// - Stopped
 ///
-/// When the printer's FW starts, the MMU2 mode is either Stopped or NotResponding (based on user's preference).
+/// When the printer's FW starts, the MMU mode is either Stopped or NotResponding (based on user's preference).
 /// When the MMU successfully establishes communication, the state changes to Active.
 enum class xState : uint_fast8_t {
     Active,     ///< MMU has been detected, connected, communicates and is ready to be worked with.

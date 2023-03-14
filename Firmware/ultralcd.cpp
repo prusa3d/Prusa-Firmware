@@ -1548,14 +1548,14 @@ void TestPullupCrash() {
 //! If MMU is connected
 //! 
 //! 	@code{.unparsed}
-//! 	| MMU2 connected     |	c=18
+//! 	| MMU connected     |	c=18
 //! 	|  FW: 1.0.6-7064523 |
 //! 	@endcode
 //! 
 //! If MMU is not connected
 //! 
 //! 	@code{.unparsed}
-//! 	| MMU2       N/A     |	c=18
+//! 	| MMU        N/A     |	c=18
 //! 	@endcode
 //! 
 //! If Flash Air is connected
@@ -1660,7 +1660,7 @@ static void lcd_support_menu()
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (MMU2::mmu2.Enabled())
 	{
-		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////MSG_MMU_CONNECTED c=18
+		MENU_ITEM_BACK_P(_i("MMU connected"));  ////MSG_MMU_CONNECTED c=18
 		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
@@ -1673,7 +1673,7 @@ static void lcd_support_menu()
 		}
 	}
 	else
-		MENU_ITEM_BACK_P(PSTR("MMU2       N/A"));
+		MENU_ITEM_BACK_P(PSTR("MMU        N/A"));
 
 
   // Show the FlashAir IP address, if the card is available.
@@ -2875,7 +2875,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             }
         }
         // Let the user confirm, that the Z carriage is at the top end stoppers.
-        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
         if (result == LCD_BUTTON_TIMEOUT)
             goto canceled;
         else if (result == LCD_LEFT_BUTTON_CHOICE)
@@ -4017,7 +4017,7 @@ void lcd_wizard(WizState state)
 			}
 			else
 			{
-				lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////MSG_ADDITIONAL_SHEETS c=20 r=9
+				lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////MSG_ADDITIONAL_SHEETS c=20 r=8
 				state = S::Restore;
 			}
 			break;
@@ -6111,7 +6111,7 @@ static void lcd_detect_IRsensor(){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////MSG_FS_VERIFIED c=20 r=3
         fsensor.init();
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=5
+        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=4
     }
 }
 #endif //IR_SENSOR_ANALOG
