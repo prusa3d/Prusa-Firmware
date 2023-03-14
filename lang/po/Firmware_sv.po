@@ -953,7 +953,7 @@ msgstr "KONTROLLERA FINDA"
 msgid "INVALID TOOL"
 msgstr "OGILTIGT VERKTYG"
 
-#. MSG_ADDITIONAL_SHEETS c=20 r=9
+#. MSG_ADDITIONAL_SHEETS c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4015
 msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
@@ -991,12 +991,11 @@ msgstr ""
 "Infoga filamentet (ladda inte in det) i extrudern och tryck sedan på "
 "knappen."
 
-#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
-msgstr ""
-"Internt körtidsfel. Prova återställa MMU eller uppdatera firmware."
+msgstr "Internt körtidsfel. Prova återställa MMU eller uppdatera firmware."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3707
@@ -1155,23 +1154,15 @@ msgstr "MMU felar"
 msgid "MMU load fails"
 msgstr "MMU-laddn felar"
 
-#. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+#. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
-msgid ""
-"MMU not responding correctly. Check the wiring and connectors. If the "
-"issue persists, contact support."
-msgstr ""
-"MMU svarar inte korrekt. Kontrollera kablarna och kontakterna.Om "
-"problemet kvarstår, kontakta supporten."
+msgid "MMU not responding correctly. Check the wiring and connectors."
+msgstr "MMU svarar inte korrekt. Kontrollera kablarna och kontakterna."
 
-#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
-msgid ""
-"MMU not responding. Check the wiring and connectors. If the issue "
-"persists, contact support."
-msgstr ""
-"MMU svarar inte. Kontrollera kablarna och kontakterna.Om problemet "
-"kvarstår, kontakta supporten."
+msgid "MMU not responding. Check the wiring and connectors."
+msgstr "MMU svarar inte. Kontrollera kablarna och kontakterna."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1658
@@ -1501,14 +1492,14 @@ msgstr "Pausa utskrift"
 msgid "Performing cut"
 msgstr "Utför skärning"
 
-#. MSG_PAPER c=20 r=10
+#. MSG_PAPER c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3283 ../../Firmware/messages.cpp:72
 msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
 "points. If the nozzle catches the paper, power off the printer immediately."
 msgstr ""
 "Placera ett pappersark under munstycket under kalibreringen av de första 4 "
-"punkterna. Stäng av skrivaren omedelbart om munstycket rör vid pappret.."
+"punkterna. Om munstycket fångar papperet, stäng av omedelbart."
 
 #. MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4047
@@ -1561,12 +1552,12 @@ msgstr ""
 msgid "Please load filament first."
 msgstr "Vänligen ladda filament först."
 
-#. MSG_CHECK_IDLER c=20 r=5
+#. MSG_CHECK_IDLER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3536
 msgid "Please open idler and remove filament manually."
 msgstr "Öppna idler och ta bort filamentet manuellt."
 
-#. MSG_PLACE_STEEL_SHEET c=20 r=5
+#. MSG_PLACE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2796 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:3942
 msgid "Please place steel sheet on heatbed."
@@ -1719,7 +1710,7 @@ msgstr ""
 msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Munstycksdiametern skiljer sig från G-codeen. Fortsätta?"
 
-#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:142 ../../Firmware/util.cpp:311
 msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
@@ -1761,12 +1752,10 @@ msgstr "Baksida [µm]"
 msgid "Recovering print"
 msgstr "Återställer utskrift"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=5
+#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3434
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-"Ta bort det gamla filamentet och tryck på knappen för att börja ladda nytt "
-"filament."
+msgstr "Ta bort det gamla fil. och tryck på knappen för att börja ladda nytt."
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5279
@@ -2187,7 +2176,7 @@ msgstr ""
 "Skrivaren börjar skriva ut en sicksacklinje. Vrid vredet tills du nar "
 "optimal höjd. Kontrollera med bilderna i handboken (Kalibreringskapitlet)."
 
-#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
+#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/messages.cpp:43
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
@@ -2268,7 +2257,7 @@ msgstr "Laddar ur till FINDA"
 msgid "Unloading to pulley"
 msgstr "Ladd ur t. remskiva"
 
-#. MSG_FIL_FAILED c=20 r=5
+#. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6109
 msgid "Verification failed, remove the filament and try again."
 msgstr "Verifieringen felade, ta bort filamentet, försök igen."
@@ -2544,14 +2533,14 @@ msgstr ""
 "Väljaren kan inte röra sig på grund av att FINDA detekterar en filament. Se "
 "till att inget glödtråd är i väljaren och att FINDA fungerar korrekt."
 
-#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"MMU firmwareversion är inkompatibel med skrivarens FW. Uppdatering "
-"till version 2.1.9."
+"MMU firmwareversion är inkompatibel med skrivarens FW. Uppdatering till "
+"version 2.1.9."
 
 #~ msgid "⏬"
 #~ msgstr "⏬"
@@ -2563,11 +2552,11 @@ msgstr ""
 #~ msgstr "Välj extruder:"
 
 #~ msgid ""
-#~ "The MMU reports its FW version incompatible with the printer's "
-#~ "firmware. Make sure the MMU firmware is up to date."
+#~ "The MMU reports its FW version incompatible with the printer's firmware. "
+#~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
-#~ "MMU rapporterar att FW-versionen är inkompatibelmed din skrivare. "
-#~ "Säkerställ att MMU-firmwaren är aktuell."
+#~ "MMU rapporterar att FW-versionen är inkompatibelmed din skrivare. Säkerställ"
+#~ " att MMU-firmwaren är aktuell."
 
 #~ msgid ""
 #~ "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector"

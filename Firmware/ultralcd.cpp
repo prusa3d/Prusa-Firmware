@@ -4017,7 +4017,7 @@ void lcd_wizard(WizState state)
 			}
 			else
 			{
-				lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////MSG_ADDITIONAL_SHEETS c=20 r=9
+				lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////MSG_ADDITIONAL_SHEETS c=20 r=8
 				state = S::Restore;
 			}
 			break;
@@ -6111,7 +6111,7 @@ static void lcd_detect_IRsensor(){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////MSG_FS_VERIFIED c=20 r=3
         fsensor.init();
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=5
+        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=4
     }
 }
 #endif //IR_SENSOR_ANALOG

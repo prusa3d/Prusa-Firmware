@@ -951,7 +951,7 @@ msgstr "INSPIZIERE FINDA"
 msgid "INVALID TOOL"
 msgstr "UNGÜLTIGER FIL.PLATZ"
 
-#. MSG_ADDITIONAL_SHEETS c=20 r=9
+#. MSG_ADDITIONAL_SHEETS c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4015
 msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
@@ -989,13 +989,12 @@ msgstr ""
 "Stecken Sie das Filament (nicht laden) in den Extruder und drücken Sie dann "
 "den Knopf."
 
-#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
 msgstr ""
-"Interner Laufzeitfehler. MMU zurücksetzen oder Firmware "
-"aktualisieren."
+"Interner Laufzeitfehler. MMU zurücksetzen oder Firmware aktualisieren."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3707
@@ -1154,24 +1153,18 @@ msgstr "MMU Fehler"
 msgid "MMU load fails"
 msgstr "MMU Ladefehler"
 
-#. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+#. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
-msgid ""
-"MMU not responding correctly. Check the wiring and connectors. If the "
-"issue persists, contact support."
+msgid "MMU not responding correctly. Check the wiring and connectors."
 msgstr ""
 "MMU antwortet nicht korrekt. Überprüfen Sie die Verkabelung und die "
-"Anschlüsse. Wenn das Problem weiterhin besteht, wenden Sie sich an den "
-"Support."
+"Anschlüsse."
 
-#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
-msgid ""
-"MMU not responding. Check the wiring and connectors. If the issue "
-"persists, contact support."
+msgid "MMU not responding. Check the wiring and connectors."
 msgstr ""
-"MMU antwortet nicht. Überprüfen Sie die Verkabelung und die Anschlüsse. Wenn"
-" das Problem weiterhin besteht, wenden Sie sich an den Support."
+"MMU antwortet nicht. Überprüfen Sie die Verkabelung und die Anschlüsse."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1658
@@ -1500,7 +1493,7 @@ msgstr "Druck pausieren"
 msgid "Performing cut"
 msgstr "Führe Schnitt aus"
 
-#. MSG_PAPER c=20 r=10
+#. MSG_PAPER c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3283 ../../Firmware/messages.cpp:72
 msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
@@ -1561,12 +1554,12 @@ msgstr ""
 msgid "Please load filament first."
 msgstr "Laden Sie zuerst das Filament."
 
-#. MSG_CHECK_IDLER c=20 r=5
+#. MSG_CHECK_IDLER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3536
 msgid "Please open idler and remove filament manually."
 msgstr "Spannrolle öffnen und Filament von Hand entfernen"
 
-#. MSG_PLACE_STEEL_SHEET c=20 r=5
+#. MSG_PLACE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2796 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:3942
 msgid "Please place steel sheet on heatbed."
@@ -1719,7 +1712,7 @@ msgstr ""
 msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Düsendurchmesser weicht vom G-Code ab. Fortfahren?"
 
-#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:142 ../../Firmware/util.cpp:311
 msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
@@ -1761,12 +1754,10 @@ msgstr "Hinten [µm]"
 msgid "Recovering print"
 msgstr "Druck wiederherst"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=5
+#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3434
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-"Entfernen Sie das alte Filament und drücken Sie den Knopf, um das neue zu "
-"laden."
+msgstr "Entferne das alte Fil. und drücke den Knopf, um das neue zu laden."
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5279
@@ -2186,7 +2177,7 @@ msgstr ""
 "Knopf, bis Sie die optimale Höhe erreicht haben. Überprüfen Sie die Bilder "
 "im Handbuch."
 
-#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
+#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/messages.cpp:43
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
@@ -2267,7 +2258,7 @@ msgstr "Entlade zur FINDA"
 msgid "Unloading to pulley"
 msgstr "Entlade zur Riemens."
 
-#. MSG_FIL_FAILED c=20 r=5
+#. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6109
 msgid "Verification failed, remove the filament and try again."
 msgstr ""
@@ -2542,8 +2533,7 @@ msgstr "Materialwechsel"
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU."
-msgstr ""
-"Entfernen Sie das ausgeworfene Filament von der Vorderseite der MMU."
+msgstr "Entfernen Sie das ausgeworfene Filament von der Vorderseite der MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2559,14 +2549,14 @@ msgstr ""
 "Selektor kann sich nicht bewegen, da FINDA Fil. erkennt wird. Stelle sicher,"
 " dass sich kein Fil. im Selektor befindet und FINDA ricchtig funktioniert."
 
-#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Die Firmware-Version der MMU ist mit der FW des Druckers nicht "
-"kompatibel. Update auf Version 2.1.9."
+"Die Firmware-Version der MMU ist mit der FW des Druckers nicht kompatibel. "
+"Update auf Version 2.1.9."
 
 #~ msgid "⏬"
 #~ msgstr "⏬"
@@ -2581,8 +2571,8 @@ msgstr ""
 #~ msgstr "Wähle extruder:"
 
 #~ msgid ""
-#~ "The MMU reports its FW version incompatible with the printer's "
-#~ "firmware. Make sure the MMU firmware is up to date."
+#~ "The MMU reports its FW version incompatible with the printer's firmware. "
+#~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "MMU meldet Inkompatibilität FW. Stell sicher, dass MMU-FW aktuell ist."
 

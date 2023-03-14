@@ -3431,7 +3431,7 @@ static void mmu_M600_wait_and_beep() {
     // Beep and wait for user to remove old filament and prepare new filament for load
     KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
+    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=4
 
     while (!lcd_clicked()) {
         manage_heater();
@@ -3533,7 +3533,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 current_position[X_AXIS] -= 100;
                 plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
                 st_synchronize();
-                lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=5
+                lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=4
             }
             M600_load_filament();
         }

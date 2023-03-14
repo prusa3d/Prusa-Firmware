@@ -951,7 +951,7 @@ msgstr "PREGLED FINDA"
 msgid "INVALID TOOL"
 msgstr "NEVALJAN ALAT"
 
-#. MSG_ADDITIONAL_SHEETS c=20 r=9
+#. MSG_ADDITIONAL_SHEETS c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4015
 msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
@@ -988,13 +988,13 @@ msgid ""
 msgstr ""
 "Umetnite filament (nemojte ga puniti) u ekstruder i zatim pritisnite gumb."
 
-#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
 msgstr ""
-"Interna pogreska vremena izvodjenja. Pokušajte resetirati MMU ili "
-"azurirati firmware."
+"Interna pogreska vremena izvodjenja. Pokušajte resetirati MMU ili azurirati "
+"firmware."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3707
@@ -1153,23 +1153,15 @@ msgstr "MMU ne uspijeva"
 msgid "MMU load fails"
 msgstr "Neusp. MMU punj"
 
-#. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+#. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
-msgid ""
-"MMU not responding correctly. Check the wiring and connectors. If the "
-"issue persists, contact support."
-msgstr ""
-"MMU ne reagira ispravno. Provjerite ozicenje i konektore. Ako se "
-"problem nastavi, obratite se podrsci."
+msgid "MMU not responding correctly. Check the wiring and connectors."
+msgstr "MMU ne reagira ispravno. Provjerite ozicenje i konektore."
 
-#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
-msgid ""
-"MMU not responding. Check the wiring and connectors. If the issue "
-"persists, contact support."
-msgstr ""
-"MMU ne reagira. Provjerite ozicenje i konektore. Ako se problem "
-"nastavi, obratite se podrsci."
+msgid "MMU not responding. Check the wiring and connectors."
+msgstr "MMU ne reagira. Provjerite ozicenje i konektore."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1658
@@ -1499,7 +1491,7 @@ msgstr "Pauzirajte print"
 msgid "Performing cut"
 msgstr "Izvodjenje reza"
 
-#. MSG_PAPER c=20 r=10
+#. MSG_PAPER c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3283 ../../Firmware/messages.cpp:72
 msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
@@ -1556,12 +1548,12 @@ msgstr ""
 msgid "Please load filament first."
 msgstr "Molimo prvo ubacite filament."
 
-#. MSG_CHECK_IDLER c=20 r=5
+#. MSG_CHECK_IDLER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3536
 msgid "Please open idler and remove filament manually."
 msgstr "Molimo otvorite klizac i rucno uklonite filament."
 
-#. MSG_PLACE_STEEL_SHEET c=20 r=5
+#. MSG_PLACE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2796 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:3942
 msgid "Please place steel sheet on heatbed."
@@ -1714,7 +1706,7 @@ msgstr ""
 msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Promjer mlaznice razlikuje se od G-koda. Nastavite?"
 
-#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:142 ../../Firmware/util.cpp:311
 msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
@@ -1756,12 +1748,10 @@ msgstr "Zad. str.[µm]"
 msgid "Recovering print"
 msgstr "Oporavak printa"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=5
+#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3434
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-"Uklonite stari filament i pritisnite gumb za pocetak stavljanja novog "
-"filamenta."
+msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5279
@@ -2188,7 +2178,7 @@ msgstr ""
 "Printe ce poceti printati cik-cak liniju. Okrecite gumb dok ne postignete "
 "optimalnu visinu. Provjerite slike u prirucniku (poglavlje Kalibracija)."
 
-#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
+#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/messages.cpp:43
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
@@ -2269,7 +2259,7 @@ msgstr "Praznjenje do FINDA"
 msgid "Unloading to pulley"
 msgstr "PRAZNJ DO REMENICE"
 
-#. MSG_FIL_FAILED c=20 r=5
+#. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6109
 msgid "Verification failed, remove the filament and try again."
 msgstr "Provjera nije uspjela, uklonite filament i pokusajte ponovno."
@@ -2548,14 +2538,14 @@ msgstr ""
 "Selektor se ne može pomaknuti jer FINDA otkriva nit. Uvjerite se da niti "
 "jedna nit nije u selektoru i da FINDA radi ispravno."
 
-#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Verzija firmware-a MMU nekompatibilna s FW-om pisača. Ažuriranje na"
-" verziju 2.1.9."
+"Verzija firmware-a MMU nekompatibilna s FW-om pisača. Ažuriranje na verziju "
+"2.1.9."
 
 #~ msgid "⏬"
 #~ msgstr "⏬"
@@ -2567,11 +2557,11 @@ msgstr ""
 #~ msgstr "Odaberite ekstruder:"
 
 #~ msgid ""
-#~ "The MMU reports its FW version incompatible with the printer's "
-#~ "firmware. Make sure the MMU firmware is up to date."
+#~ "The MMU reports its FW version incompatible with the printer's firmware. "
+#~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
-#~ "MMU prijavljuje svoju FW verziju nekompatibilnu s firmwerom "
-#~ "printera. Provjerite je li MMU firmware azuriran."
+#~ "MMU prijavljuje svoju FW verziju nekompatibilnu s firmwerom printera. "
+#~ "Provjerite je li MMU firmware azuriran."
 
 #~ msgid ""
 #~ "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector"

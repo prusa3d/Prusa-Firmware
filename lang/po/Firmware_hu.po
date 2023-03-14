@@ -953,7 +953,7 @@ msgstr "ELLENŐRIZZE A FINDA"
 msgid "INVALID TOOL"
 msgstr "HELYTELEN SZERSZAM"
 
-#. MSG_ADDITIONAL_SHEETS c=20 r=9
+#. MSG_ADDITIONAL_SHEETS c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4015
 msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
@@ -991,12 +991,11 @@ msgstr ""
 "Helyezd be a filamentet az extruderbe (ne toltsd be), majd nyomtd meg a "
 "gombot."
 
-#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
-msgstr ""
-"Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret."
+msgstr "Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3707
@@ -1155,23 +1154,16 @@ msgstr "MMU hibak"
 msgid "MMU load fails"
 msgstr "MMU bet. hibak"
 
-#. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+#. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
-msgid ""
-"MMU not responding correctly. Check the wiring and connectors. If the "
-"issue persists, contact support."
+msgid "MMU not responding correctly. Check the wiring and connectors."
 msgstr ""
-"Az MMU helytelenul valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a "
-"problema fennall, keresd a supportot."
+"Az MMU helytelenul valaszol. Nezd meg a kabelezest es a konnektorokat."
 
-#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
-msgid ""
-"MMU not responding. Check the wiring and connectors. If the issue "
-"persists, contact support."
-msgstr ""
-"Az MMU nem valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a problema"
-" fennall, keresd a supportot."
+msgid "MMU not responding. Check the wiring and connectors."
+msgstr "Az MMU nem valaszol. Nezd meg a kabelezest es a konnektorokat."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1658
@@ -1499,14 +1491,14 @@ msgstr "Nyomtatas szunet"
 msgid "Performing cut"
 msgstr "Filament vagas"
 
-#. MSG_PAPER c=20 r=10
+#. MSG_PAPER c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3283 ../../Firmware/messages.cpp:72
 msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
 "points. If the nozzle catches the paper, power off the printer immediately."
 msgstr ""
-"Az elso 4 pont kalibracioja alatt tegyel egy papirlapot a fuvoka ala. Ha a "
-"fuvoka hozzaer a papirlaphoz, azonnal kapcsold ki a nyomtatot."
+"Az elso 4 pont kalibracioja alatt tegyel egy papir- lapot a fuvoka ala. Ha a"
+" fuvoka hozzaer a papirlaphoz, azonnal kapcsold ki a nyomtatot."
 
 #. MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4047
@@ -1561,13 +1553,13 @@ msgstr ""
 msgid "Please load filament first."
 msgstr "Kerlek eloszor toltsd be a filamentet."
 
-#. MSG_CHECK_IDLER c=20 r=5
+#. MSG_CHECK_IDLER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3536
 msgid "Please open idler and remove filament manually."
 msgstr ""
 "Kerlek, nyisd ki a nyomogorgo ajtajat, es tavolitsd el a filamentet kezzel."
 
-#. MSG_PLACE_STEEL_SHEET c=20 r=5
+#. MSG_PLACE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2796 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:3942
 msgid "Please place steel sheet on heatbed."
@@ -1720,7 +1712,7 @@ msgstr ""
 msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "A fuvoka atmeroje elter a G-kodtol. Folytasasm?"
 
-#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:142 ../../Firmware/util.cpp:311
 msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
@@ -1760,12 +1752,10 @@ msgstr "Hatso old.[µm]"
 msgid "Recovering print"
 msgstr "Nyomt. visszaallit"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=5
+#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3434
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-"Vedd ki a regi filamentet, majd nyomd meg a gombot az uj filament "
-"betoltesehez."
+msgstr "Vedd ki a regi fil., majd nyomd meg a gombot az uj fil. betoltesehez."
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5279
@@ -2188,7 +2178,7 @@ msgstr ""
 "amig el nem ered az optimalis magassagot. Nezd meg a kepeket a kezikonyv "
 "Kalibracio fejezeteben."
 
-#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
+#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/messages.cpp:43
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
@@ -2269,7 +2259,7 @@ msgstr "Kiadas a FINDAhoz"
 msgid "Unloading to pulley"
 msgstr "Kiadas a gorgohoz"
 
-#. MSG_FIL_FAILED c=20 r=5
+#. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6109
 msgid "Verification failed, remove the filament and try again."
 msgstr "Ellenorzes sikertelen, vedd ki a filamentet es probald ujra."
@@ -2552,14 +2542,14 @@ msgstr ""
 "A választó nem tud mozogni, mert a FINDA fil. észlelt. Győződjön meg arról, "
 "hogy nincs fil. a választóban, és a FINDA megfelelően működik."
 
-#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. "
-"Frissítés a 2.1.9-es verzióra."
+"Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. Frissítés a "
+"2.1.9-es verzióra."
 
 #~ msgid "⏬"
 #~ msgstr "⏬"
@@ -2571,8 +2561,8 @@ msgstr ""
 #~ msgstr "Extruder valasztas:"
 
 #~ msgid ""
-#~ "The MMU reports its FW version incompatible with the printer's "
-#~ "firmware. Make sure the MMU firmware is up to date."
+#~ "The MMU reports its FW version incompatible with the printer's firmware. "
+#~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "Az MMU FW verzioja nem kompatibilis a nyomtatoeval. Kerlek frissitsd az MMU "
 #~ "firmwaret."

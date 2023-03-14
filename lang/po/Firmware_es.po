@@ -952,7 +952,7 @@ msgstr "INSPECCIONAR FINDA"
 msgid "INVALID TOOL"
 msgstr "HERR. INVALIDA"
 
-#. MSG_ADDITIONAL_SHEETS c=20 r=9
+#. MSG_ADDITIONAL_SHEETS c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4015
 msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
@@ -989,7 +989,7 @@ msgid ""
 msgstr ""
 "Inserta el filamento (no lo cargue) en el extrusor y luego presiona el dial."
 
-#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
@@ -1154,23 +1154,15 @@ msgstr "Fallos MMU"
 msgid "MMU load fails"
 msgstr "Carga MMU falla"
 
-#. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+#. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
-msgid ""
-"MMU not responding correctly. Check the wiring and connectors. If the "
-"issue persists, contact support."
-msgstr ""
-"La MMU no responde correcta-mente. Comprueba el cableado y los conectores. "
-"Si el problema persiste, contacta con el servicio técnico."
+msgid "MMU not responding correctly. Check the wiring and connectors."
+msgstr "MMU no responde correctamente. Revise los cables y conectores."
 
-#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
-msgid ""
-"MMU not responding. Check the wiring and connectors. If the issue "
-"persists, contact support."
-msgstr ""
-"La MMU no responde. Comprueba el cableado y los conectores. Si el problema "
-"persiste, ponte en contacto con el servicio tecnico."
+msgid "MMU not responding. Check the wiring and connectors."
+msgstr "La MMU no responde. Revise los cables y conectores."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1658
@@ -1502,15 +1494,14 @@ msgstr "Pausar impresion"
 msgid "Performing cut"
 msgstr "Realizando corte"
 
-#. MSG_PAPER c=20 r=10
+#. MSG_PAPER c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3283 ../../Firmware/messages.cpp:72
 msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
 "points. If the nozzle catches the paper, power off the printer immediately."
 msgstr ""
-"Colocar una hoja de papel sobre la superficie de impresion durante la "
-"calibracion de los primeros 4 puntos. Si la boquilla mueve el papel, apagar "
-"impresora inmediatamente."
+"Coloque una hoja de papel debajo de la boquilla durante la calibración de "
+"los primeros 4 puntos. Si la boquilla coge el papel, apague inmediatamente."
 
 #. MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4047
@@ -1562,12 +1553,12 @@ msgstr ""
 msgid "Please load filament first."
 msgstr "Carga primero el filamento."
 
-#. MSG_CHECK_IDLER c=20 r=5
+#. MSG_CHECK_IDLER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3536
 msgid "Please open idler and remove filament manually."
 msgstr "Abre el tensor y retira el filamento manualmente."
 
-#. MSG_PLACE_STEEL_SHEET c=20 r=5
+#. MSG_PLACE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2796 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:3942
 msgid "Please place steel sheet on heatbed."
@@ -1720,7 +1711,7 @@ msgstr ""
 msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Diametro nozzle impresora difiere de cod.G. Continuar?"
 
-#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+#. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:142 ../../Firmware/util.cpp:311
 msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
@@ -1762,12 +1753,11 @@ msgstr "Trasera [µm]"
 msgid "Recovering print"
 msgstr "Recuper. impresion"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=5
+#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3434
 msgid "Remove old filament and press the knob to start loading new filament."
 msgstr ""
-"Retira el filamento viejo y presione el dial para comenzar a cargar el nuevo"
-" filamento."
+"Retira el fil. viejo y presione el dial para comenzar a cargar el nuevo."
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5279
@@ -2194,7 +2184,7 @@ msgstr ""
 "que la linea alcance la altura optima. Mira las fotos del manual (Capitulo "
 "de calibracion)."
 
-#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
+#. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/messages.cpp:43
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
@@ -2275,7 +2265,7 @@ msgstr "Descarga hasta FINDA"
 msgid "Unloading to pulley"
 msgstr "Descarga hasta polea"
 
-#. MSG_FIL_FAILED c=20 r=5
+#. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6109
 msgid "Verification failed, remove the filament and try again."
 msgstr "La verificacion fallo, retira el filamento e intenta nuevamente."
@@ -2555,14 +2545,14 @@ msgstr ""
 "Asegúrese de que no haya fil. en el selector y que FINDA funcione "
 "correctamente."
 
-#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"La versión de firmware de la MMU es incompatible con el FW de la "
-"impresora. Actualizar a la versión 2.1.9."
+"La versión de firmware de la MMU es incompatible con el FW de la impresora. "
+"Actualizar a la versión 2.1.9."
 
 #~ msgid "⏬"
 #~ msgstr "⏬"
@@ -2574,8 +2564,8 @@ msgstr ""
 #~ msgstr "Elegir extrusor:"
 
 #~ msgid ""
-#~ "The MMU reports its FW version incompatible with the printer's "
-#~ "firmware. Make sure the MMU firmware is up to date."
+#~ "The MMU reports its FW version incompatible with the printer's firmware. "
+#~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "La MMU informa que su FW no es compatible con el de la impresora. Asegurate "
 #~ "de que el FW esta actualizado."
