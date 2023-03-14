@@ -580,7 +580,7 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA stängdes inte av när filamentet ladddades ur. Försök att ladda ur "
+"FINDA stängdes inte av när filamentet laddades ur. Försök att ladda ur "
 "manuellt. Se till att filamentet kan röra sig och att FINDA fungerar."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
@@ -726,8 +726,8 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
-"Filamentsensorn triggades inte av när filamentet ladddades ur.Se till att "
-"filamentet kan röra sig och att sensornfungerar."
+"Filamentsensorn triggades inte av när filamentet laddades ur.Se till att "
+"filamentet kan röra sig och att sensorn fungerar."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:227 ../../Firmware/mmu2/errors_list.h:278
@@ -735,7 +735,7 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
-"Filamentsensorn triggades inte av när filamentet ladddades in.Se till att "
+"Filamentsensorn triggades inte av när filamentet laddades in.Se till att "
 "filamentet kan röra sig och att sensorn fungerar."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
