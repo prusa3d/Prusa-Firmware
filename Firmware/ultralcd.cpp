@@ -557,8 +557,6 @@ void lcdui_print_status_line(void) {
             return; // Nothing to do, waiting for delay to expire
         }
 
-        lcd_set_cursor(lcd_status_message_idx, 3);
-
         switch (custom_message_type) {
         case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
@@ -566,6 +564,7 @@ void lcdui_print_status_line(void) {
         case CustomMsg::FilamentLoading: // If loading filament, print status
         case CustomMsg::MMUProgress: // MMU Progress Codes
         {
+            lcd_set_cursor(lcd_status_message_idx, 3);
             const uint8_t padding = lcd_print_pad(&lcd_status_message[lcd_status_message_idx], LCD_WIDTH - lcd_status_message_idx);
             lcd_status_message_idx = LCD_WIDTH - padding;
         }
