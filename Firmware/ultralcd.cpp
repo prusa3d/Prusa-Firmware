@@ -1001,7 +1001,7 @@ void lcd_commands()
 
 void lcd_return_to_status()
 {
-	lcdui_refresh(false); // to maybe revive the LCD if static electricity killed it.
+	lcdui_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, true);
 	menu_depth = 0;
     eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
