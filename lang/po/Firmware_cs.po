@@ -2530,8 +2530,11 @@ msgstr ""
 "Verze firmwaru MMU není kompatibilní s FW tiskárny. Aktualizujte na verzi "
 "2.1.9."
 
-#~ msgid "⏬"
-#~ msgstr "⏬"
+#. MSG_BTN_MORE c=8
+#: ../../Firmware/mmu2/errors_list.h:335
+#: ../../Firmware/mmu2_error_converter.cpp:175
+msgid "⏬"
+msgstr "⏬"
 
 #~ msgid "Eject filament"
 #~ msgstr "Vysunout fil."
