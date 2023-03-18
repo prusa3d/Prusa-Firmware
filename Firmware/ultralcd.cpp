@@ -7269,7 +7269,7 @@ static void menu_action_sdfile(const char* filename)
   char cmd[30];
   char* c;
   bool result = true;
-  sprintf_P(cmd, PSTR("M23 %s"), filename);
+  sprintf_P(cmd, MSG_M23, filename);
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
 
