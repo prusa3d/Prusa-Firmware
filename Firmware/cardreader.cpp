@@ -654,7 +654,7 @@ void CardReader::checkautostart(bool force)
       sprintf_P(cmd, PSTR("M23 %s"), autoname);
       enquecommand(cmd);
       // M24: Start/resume SD print
-      enquecommand_P(PSTR("M24"));
+      enquecommand_P(MSG_M24);
       found=true;
     }
   }

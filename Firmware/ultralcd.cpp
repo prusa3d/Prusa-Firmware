@@ -7304,7 +7304,7 @@ static void menu_action_sdfile(const char* filename)
   }
   if (result) {
 	  enquecommand(cmd);
-	  enquecommand_P(PSTR("M24"));
+	  enquecommand_P(MSG_M24);
   }
 
   lcd_return_to_status();

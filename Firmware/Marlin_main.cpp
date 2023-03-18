@@ -4182,7 +4182,7 @@ void process_commands()
         }
         else if (code_seen_P(PSTR("uvlo"))) { // PRUSA uvlo
             eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
-            enquecommand_P(PSTR("M24")); 
+            enquecommand_P(MSG_M24); 
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
