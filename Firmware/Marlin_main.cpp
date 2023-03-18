@@ -10789,7 +10789,7 @@ void recover_print(uint8_t automatic) {
         //Extrude some filament to stabilize the pressure
         enquecommand_P(PSTR("G1 E5 F120"));
         // Retract to be consistent with a short pause
-        sprintf_P(cmd, PSTR("G1 E%-0.3f F2700"), default_retraction);
+        sprintf_P(cmd, G1_E_F2700, default_retraction);
         enquecommand(cmd);
     }
 
@@ -10946,7 +10946,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     enquecommand(cmd);
 
   // Unretract.
-    sprintf_P(cmd, PSTR("G1 E%0.3f F2700"), default_retraction);
+    sprintf_P(cmd, G1_E_F2700, default_retraction);
     enquecommand(cmd);
   // Recover final E axis position and mode
     float pos_e = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
@@ -11157,7 +11157,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         // A snprintf would have been a safer call, but since it is not used
         // in the whole program, its implementation would bring more bytes to the total size
         // The behavior of dtostrf 8,3 should be roughly the same as %-0.3
-        sprintf_P(buf, PSTR("G1 E%-0.3f F2700"), e_move);
+        sprintf_P(buf, G1_E_F2700, e_move);
         enquecommand(buf, false);
     }
 
