@@ -236,12 +236,13 @@ extern const char MSG_LCD_STATUS_CHANGED[];
 extern const char MSG_UNKNOWN_CODE[];
 
 // Common G-gcodes
-extern const char MSG_M701_NO_LIFT[];
-extern const char MSG_M702_NO_LIFT[];
 extern const char MSG_M23[];
 extern const char MSG_M24[];
 extern const char MSG_M83[];
 extern const char MSG_M84[];
+extern const char MSG_M600[];
+extern const char MSG_M701_NO_LIFT[];
+extern const char MSG_M702_NO_LIFT[];
 
 #if defined(__cplusplus)
 }

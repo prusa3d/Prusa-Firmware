@@ -230,9 +230,10 @@ const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
 const char MSG_UNKNOWN_CODE[] PROGMEM_N1 = "Unknown %c code: %s\n";
 
 // Common G-gcodes
-const char MSG_M701_NO_LIFT[] PROGMEM_N1 = "M701 Z0";
-const char MSG_M702_NO_LIFT[] PROGMEM_N1 = "M702 Z0";
 const char MSG_M23[] PROGMEM_N1 = "M23 %s";
 const char MSG_M24[] PROGMEM_N1 = "M24";
 const char MSG_M83[] PROGMEM_N1 = "M83";
 const char MSG_M84[] PROGMEM_N1 = "M84";
+const char MSG_M600[] PROGMEM_N1 = "M600";
+const char MSG_M701_NO_LIFT[] PROGMEM_N1 = "M701 Z0";
+const char MSG_M702_NO_LIFT[] PROGMEM_N1 = "M702 Z0";

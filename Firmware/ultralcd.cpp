@@ -5490,7 +5490,7 @@ void stepper_timer_overflow() {
 
 static void lcd_colorprint_change() {
 	
-	enquecommand_P(PSTR("M600"));
+	enquecommand_P(MSG_M600);
 
 	custom_message_type = CustomMsg::FilamentLoading; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
