@@ -525,9 +525,12 @@ void servo_init()
   #endif
 }
 
+bool __attribute__((noinline)) printJobOngoing() {
+    return (IS_SD_PRINTING || usb_timer.running());
+}
+
 bool __attribute__((noinline)) printer_active() {
-    return IS_SD_PRINTING
-        || usb_timer.running()
+    return printJobOngoing()
         || isPrintPaused
         || (custom_message_type == CustomMsg::TempCal)
         || saved_printing
@@ -539,7 +542,7 @@ bool __attribute__((noinline)) printer_active() {
 
 // Currently only used in one place, allowed to be inlined
 bool check_fsensor() {
-    return (IS_SD_PRINTING || usb_timer.running())
+    return printJobOngoing()
         && mcode_in_progress != 600
         && !saved_printing
         && e_active();
@@ -548,7 +551,7 @@ bool check_fsensor() {
 bool __attribute__((noinline)) babystep_allowed() {
     return ( (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU)
         && !homing_flag && !mesh_bed_leveling_flag
-        && ( blocks_queued() || lcd_commands_type == LcdCommands::Layer1Cal || ( !isPrintPaused && (IS_SD_PRINTING || usb_timer.running()) ))
+        && ( blocks_queued() || lcd_commands_type == LcdCommands::Layer1Cal || ( !isPrintPaused && printJobOngoing() ))
     );
 }
 
@@ -9574,7 +9577,7 @@ void ThermalStop(bool allow_recovery)
         Stopped = true;
 
         // Either pause or stop the print
-        if(allow_recovery && (IS_SD_PRINTING || usb_timer.running())) {
+        if(allow_recovery && printJobOngoing()) {
             if (!isPrintPaused) {
                 lcd_setalertstatuspgm(_T(MSG_PAUSED_THERMAL_ERROR), LCD_STATUS_CRITICAL);
 

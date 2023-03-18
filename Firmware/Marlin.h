@@ -354,7 +354,11 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT 0xff
 
-extern bool printer_active();
+// Returns true if there is a print running. It does not matter if
+// the print is paused, that still counts as a "running" print.
+bool printJobOngoing();
+
+bool printer_active();
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
