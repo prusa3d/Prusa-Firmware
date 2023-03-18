@@ -1847,10 +1847,10 @@ switch(eFilamentAction)
                // FALLTHRU
           case FilamentAction::Load:
                loading_flag=true;
-               enquecommand_P(PSTR("M701"));      // load filament
+               enquecommand_P(MSG_M701_NO_LIFT);      // load filament
                break;
           case FilamentAction::UnLoad:
-               enquecommand_P(PSTR("M702"));      // unload filament
+               enquecommand_P(MSG_M702_NO_LIFT);      // unload filament
                break;
           case FilamentAction::MmuLoad:
           case FilamentAction::MmuLoadingTest:
@@ -1908,11 +1908,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 if ((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad))
                 {
                     loading_flag = true;
-                    enquecommand_P(PSTR("M701")); // load filament
+                    enquecommand_P(MSG_M701_NO_LIFT); // load filament
                     if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
                 }
                 if (eFilamentAction == FilamentAction::UnLoad)
-                enquecommand_P(PSTR("M702")); // unload filament
+                enquecommand_P(MSG_M702_NO_LIFT); // unload filament
             }
             break;
         case FilamentAction::MmuLoad:
@@ -3804,7 +3804,7 @@ static void lcd_wizard_load() {
         loading_flag = true;
     }
     gcode_M701(FILAMENTCHANGE_FIRSTFEED, 0);
-    //enquecommand_P(PSTR("M701"));
+    //enquecommand_P(MSG_M701_NO_LIFT); // is enqueuecommand_P safe here?
 }
 
 static void wizard_lay1cal_message(bool cold)
@@ -4593,7 +4593,7 @@ static void lcd_settings_menu()
 	if (!printer_active() || isPrintPaused)
     {
 	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
-	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
+	    MENU_ITEM_GCODE_P(_i("Disable steppers"), MSG_M84);////MSG_DISABLE_STEPPERS c=18
     }
 
 #ifdef FILAMENT_SENSOR
@@ -6363,7 +6363,7 @@ bool lcd_selftest()
 		_progress = lcd_selftest_screen(TestScreen::Failed, _progress, 3, true, 5000);
 	}
 	lcd_reset_alert_level();
-	enquecommand_P(PSTR("M84"));
+	enquecommand_P(MSG_M84);
 	lcd_update_enable(true);
 	
 	if (_result)

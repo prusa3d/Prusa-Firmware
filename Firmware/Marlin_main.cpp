@@ -2082,7 +2082,7 @@ bool check_commands() {
 	
 		while (buflen)
 		{
-		if ((code_seen_P(PSTR("M84"))) || (code_seen_P(PSTR("M 84")))) end_command_found = true;
+		if ((code_seen_P(MSG_M84)) || (code_seen_P(PSTR("M 84")))) end_command_found = true;
 		if (!cmdbuffer_front_already_processed)
 			 cmdqueue_pop_front();
 		cmdbuffer_front_already_processed = false;
@@ -10783,7 +10783,7 @@ void recover_print(uint8_t automatic) {
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
 
-	enquecommand_P(PSTR("M83")); //E axis relative mode
+	enquecommand_P(MSG_M83); //E axis relative mode
 
     // If not automatically recoreverd (long power loss)
     if(automatic == 0){
@@ -11150,7 +11150,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     {
         // First unretract (relative extrusion)
         if(!saved_extruder_relative_mode){
-            enquecommand(PSTR("M83"), true);
+            enquecommand_P(MSG_M83);
         }
         //retract 45mm/s
         // A single sprintf may not be faster, but is definitely 20B shorter

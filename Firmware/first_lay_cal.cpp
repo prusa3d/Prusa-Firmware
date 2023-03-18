@@ -62,7 +62,7 @@ bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
 {
     if (MMU2::mmu2.Enabled())
     {
-        enquecommand_P(PSTR("M83"));
+        enquecommand_P(MSG_M83);
         enquecommand_P(PSTR("G1 Y-3 F1000"));
         enquecommand_P(PSTR("G1 Z0.4 F1000"));
 
@@ -72,7 +72,7 @@ bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
             return false;
         } else if( currentTool != (uint8_t)MMU2::FILAMENT_UNKNOWN){
             // some other slot is loaded, perform an unload first
-            enquecommand_P(PSTR("M702"));
+            enquecommand_P(MSG_M702_NO_LIFT);
         }
         // perform a toolchange
         // sprintf_P(cmd_buffer, PSTR("T%d"), filament);
@@ -142,7 +142,6 @@ void lay1cal_before_meander()
 {
     static const char cmd_pre_meander_1[] PROGMEM = "G21"; //set units to millimeters TODO unsupported command
     static const char cmd_pre_meander_2[] PROGMEM = "G90"; //use absolute coordinates
-    static const char cmd_pre_meander_3[] PROGMEM = "M83"; //use relative distances for extrusion TODO: duplicate
     static const char cmd_pre_meander_4[] PROGMEM = "G1 E-1.5 F2100";
     static const char cmd_pre_meander_5[] PROGMEM = "G1 Z5 F7200";
     static const char cmd_pre_meander_6[] PROGMEM = "M204 S1000"; //set acceleration
@@ -153,7 +152,7 @@ void lay1cal_before_meander()
             zero_extrusion,
             cmd_pre_meander_1,
             cmd_pre_meander_2,
-            cmd_pre_meander_3,
+            MSG_M83, // use relative distances for extrusion
             cmd_pre_meander_4,
             cmd_pre_meander_5,
             cmd_pre_meander_6,
@@ -254,8 +253,6 @@ void lay1cal_finish(bool mmu_enabled)
     static const char cmd_cal_finish_3[] PROGMEM = "M140 S0"; // turn off heatbed
     static const char cmd_cal_finish_4[] PROGMEM = "G1 Z10 F1300"; //lift Z
     static const char cmd_cal_finish_5[] PROGMEM = "G1 X10 Y180 F4000"; //Go to parking position
-    static const char cmd_cal_finish_6[] PROGMEM = "M702"; //unload from nozzle
-    static const char cmd_cal_finish_7[] PROGMEM = "M84";// disable motors
 
     static const char * const cmd_cal_finish[] PROGMEM =
     {
@@ -272,6 +269,6 @@ void lay1cal_finish(bool mmu_enabled)
         enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_cal_finish[i])));
     }
 
-    if (mmu_enabled) enquecommand_P(cmd_cal_finish_6); //unload from nozzle
-    enquecommand_P(cmd_cal_finish_7);// disable motors
+    if (mmu_enabled) enquecommand_P(MSG_M702_NO_LIFT); //unload from nozzle
+    enquecommand_P(MSG_M84);// disable motors
 }
