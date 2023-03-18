@@ -1893,7 +1893,9 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
     lcd_timeoutToStatus.stop();
 
-    if (abs((int)current_temperature[0] - nTemp) > TEMP_HYSTERESIS)
+    // the current temperature is within +-TEMP_HYSTERESIS of the target
+    // then continue with the filament action if any is set
+    if (abs((int)current_temperature[0] - nTemp) < TEMP_HYSTERESIS)
     {
         switch (eFilamentAction)
         {
@@ -1956,7 +1958,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
         bFilamentWaitingFlag = false;
     }
-    else
+    else // still preheating, continue updating LCD UI
     {
         if (!bFilamentWaitingFlag || lcd_draw_update)
         {
