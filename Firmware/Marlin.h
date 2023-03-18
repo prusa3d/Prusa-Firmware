@@ -373,7 +373,9 @@ bool check_fsensor();
 //! 1) Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
 //! 2) Not allowed during Homing (printer busy)
 //! 3) Not allowed during Mesh Bed Leveling (printer busy)
-//! 4) Allowed if there are queued blocks OR there is a print job running
+//! 4) Allowed if:
+//!         - First Layer Calibration is running
+//!         - OR there are queued blocks, printJob is running and it's not paused, and Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
 bool babystep_allowed();
 
 extern void calculate_extruder_multipliers();

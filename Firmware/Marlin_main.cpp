@@ -549,9 +549,9 @@ bool check_fsensor() {
 }
 
 bool __attribute__((noinline)) babystep_allowed() {
-    return ( (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU)
-        && !homing_flag && !mesh_bed_leveling_flag
-        && ( blocks_queued() || lcd_commands_type == LcdCommands::Layer1Cal || ( !isPrintPaused && printJobOngoing() ))
+    return ( !homing_flag
+        && !mesh_bed_leveling_flag
+        && ( lcd_commands_type == LcdCommands::Layer1Cal || ( blocks_queued() && !isPrintPaused && printJobOngoing() && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU)))
     );
 }
 
