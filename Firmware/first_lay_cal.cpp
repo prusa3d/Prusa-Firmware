@@ -47,12 +47,16 @@ static const char zero_extrusion[] PROGMEM = "G92 E0";
 //! @brief Wait for preheat
 void lay1cal_wait_preheat()
 {
-    const char * const preheat_cmd[] =
+    static const char preheat_cmd_2[] PROGMEM = "M190";
+    static const char preheat_cmd_3[] PROGMEM = "M109";
+    static const char preheat_cmd_4[] PROGMEM = "G28";
+
+    static const char * const preheat_cmd[] PROGMEM =
     {
         MSG_M107,
-        PSTR("M190"),
-        PSTR("M109"),
-        PSTR("G28"),
+        preheat_cmd_2,
+        preheat_cmd_3,
+        preheat_cmd_4,
         zero_extrusion
     };
 
