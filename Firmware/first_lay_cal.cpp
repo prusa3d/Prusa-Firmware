@@ -140,7 +140,6 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
 //! @brief Setup for printing meander
 void lay1cal_before_meander()
 {
-    static const char cmd_pre_meander_1[] PROGMEM = "G21"; //set units to millimeters TODO unsupported command
     static const char cmd_pre_meander_2[] PROGMEM = "G90"; //use absolute coordinates
     static const char cmd_pre_meander_4[] PROGMEM = "G1 E-1.5 F2100";
     static const char cmd_pre_meander_5[] PROGMEM = "G1 Z5 F7200";
@@ -150,7 +149,6 @@ void lay1cal_before_meander()
     static const char * const cmd_pre_meander[] PROGMEM =
     {
             zero_extrusion,
-            cmd_pre_meander_1,
             cmd_pre_meander_2,
             MSG_M83, // use relative distances for extrusion
             cmd_pre_meander_4,
