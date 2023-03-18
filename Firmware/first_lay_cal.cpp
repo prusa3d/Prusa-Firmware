@@ -41,7 +41,7 @@ void lay1cal_wait_preheat()
 {
     const char * const preheat_cmd[] =
     {
-        PSTR("M107"),
+        MSG_M107,
         PSTR("M190"),
         PSTR("M109"),
         PSTR("G28"),
@@ -247,7 +247,6 @@ void lay1cal_square(uint8_t step, float layer_height, float extrusion_width)
 
 void lay1cal_finish(bool mmu_enabled)
 {
-    static const char cmd_cal_finish_0[] PROGMEM = "M107"; //turn off printer fan
     static const char cmd_cal_finish_1[] PROGMEM = "G1 E-0.075 F2100"; //retract
     static const char cmd_cal_finish_2[] PROGMEM = "M104 S0"; // turn off temperature
     static const char cmd_cal_finish_3[] PROGMEM = "M140 S0"; // turn off heatbed
@@ -256,7 +255,7 @@ void lay1cal_finish(bool mmu_enabled)
 
     static const char * const cmd_cal_finish[] PROGMEM =
     {
-            cmd_cal_finish_0,
+            MSG_M107, // turn off printer fan
             cmd_cal_finish_1,
             cmd_cal_finish_2,
             cmd_cal_finish_3,
