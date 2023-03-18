@@ -46,7 +46,7 @@ bool Timer<T>::expired(T msPeriod)
     if (!m_isRunning) return false;
     bool expired = false;
     const T now = _millis();
-    if (m_started <=  m_started + msPeriod)
+    if (msPeriod >= 0)
     {
         if ((now >= m_started + msPeriod) || (now < m_started))
         {
