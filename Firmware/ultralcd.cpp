@@ -916,7 +916,7 @@ void lcd_commands()
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
 				enquecommand(cmd1);
-				enquecommand_P(PSTR("M500"));
+				enquecommand_P(MSG_M500);
 			}
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
@@ -950,7 +950,7 @@ void lcd_commands()
 
         case 2:
             if (temp_model_autotune_result())
-                enquecommand_P(PSTR("M500"));
+                enquecommand_P(MSG_M500);
             lcd_commands_step = 1;
             break;
 
