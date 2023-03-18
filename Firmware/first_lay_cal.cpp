@@ -33,6 +33,14 @@ static constexpr float spacing(float layer_height, float extrusion_width, float 
     return extrusion_width - layer_height * (overlap_factor - M_PI/4);
 }
 
+// Common code extracted into one function to reduce code size
+static void lay1cal_common_enqueue_loop(const char * const * cmd_sequence) {
+    for (uint8_t i = 0; i < (sizeof(cmd_sequence)/sizeof(cmd_sequence[0])); ++i)
+    {
+        enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_sequence[i])));
+    }
+}
+
 static const char extrude_fmt[] PROGMEM = "G1 X%d Y%d E%-.5f";
 static const char zero_extrusion[] PROGMEM = "G92 E0";
 
@@ -48,10 +56,7 @@ void lay1cal_wait_preheat()
         zero_extrusion
     };
 
-    for (uint8_t i = 0; i < (sizeof(preheat_cmd)/sizeof(preheat_cmd[0])); ++i)
-    {
-        enquecommand_P(preheat_cmd[i]);
-    }
+    lay1cal_common_enqueue_loop(preheat_cmd);
 }
 
 //! @brief Load filament
@@ -148,10 +153,7 @@ void lay1cal_before_meander()
             cmd_pre_meander_7,
     };
 
-    for (uint8_t i = 0; i < (sizeof(cmd_pre_meander)/sizeof(cmd_pre_meander[0])); ++i)
-    {
-        enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_pre_meander[i])));
-    }
+    lay1cal_common_enqueue_loop(cmd_pre_meander);
 }
 
 //! @brief Print meander start
@@ -237,10 +239,7 @@ void lay1cal_finish(bool mmu_enabled)
             cmd_cal_finish_5
     };
 
-    for (uint8_t i = 0; i < (sizeof(cmd_cal_finish)/sizeof(cmd_cal_finish[0])); ++i)
-    {
-        enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_cal_finish[i])));
-    }
+    lay1cal_common_enqueue_loop(cmd_cal_finish);
 
     if (mmu_enabled) enquecommand_P(MSG_M702_NO_LIFT); //unload from nozzle
     enquecommand_P(MSG_M84);// disable motors
