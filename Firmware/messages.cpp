@@ -236,6 +236,7 @@ const char MSG_M24[] PROGMEM_N1 = "M24";
 const char MSG_M83[] PROGMEM_N1 = "M83";
 const char MSG_M84[] PROGMEM_N1 = "M84";
 const char MSG_M107[] PROGMEM_N1 = "M107";
+const char MSG_M220[] PROGMEM_N1 = "M220 S%d";
 const char MSG_M500[] PROGMEM_N1 = "M500";
 const char MSG_M600[] PROGMEM_N1 = "M600";
 const char MSG_M701_NO_LIFT[] PROGMEM_N1 = "M701 Z0";

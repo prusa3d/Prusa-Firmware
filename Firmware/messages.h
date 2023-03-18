@@ -242,6 +242,7 @@ extern const char MSG_M24[];
 extern const char MSG_M83[];
 extern const char MSG_M84[];
 extern const char MSG_M107[];
+extern const char MSG_M220[];
 extern const char MSG_M500[];
 extern const char MSG_M600[];
 extern const char MSG_M701_NO_LIFT[];

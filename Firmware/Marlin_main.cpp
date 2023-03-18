@@ -3584,7 +3584,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         // Recover feed rate
         feedmultiply = feedmultiplyBckp;
         char cmd[9];
-        sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
+        sprintf_P(cmd, MSG_M220, feedmultiplyBckp);
         enquecommand(cmd);
         
     }
@@ -10957,7 +10957,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
   // Set the feedrates saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
-	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
+	sprintf_P(cmd, MSG_M220, feedmultiply_rec);
 	enquecommand(cmd);
   // Set the fan speed saved at the power panic.
 	sprintf_P(cmd, PSTR("M106 S%u"), fan_speed_rec);
