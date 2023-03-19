@@ -2551,12 +2551,6 @@ msgstr ""
 "Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. Frissítés a "
 "2.1.9-es verzióra."
 
-#. MSG_BTN_MORE c=8
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
-msgstr "⏬"
-
 #~ msgid "Reset MMU"
 #~ msgstr "MMUreszet"
 

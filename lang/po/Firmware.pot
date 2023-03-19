@@ -2430,12 +2430,6 @@ msgstr ""
 msgid "unknown state"
 msgstr ""
 
-#. MSG_BTN_MORE c=8
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
-msgstr ""
-
 #. MSG_REFRESH c=18
 #: ../../Firmware/messages.cpp:82 ../../Firmware/ultralcd.cpp:5943
 #: ../../Firmware/ultralcd.cpp:5946

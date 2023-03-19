@@ -2558,12 +2558,6 @@ msgstr ""
 "Die Firmware-Version der MMU ist mit der FW des Druckers nicht kompatibel. "
 "Update auf Version 2.1.9."
 
-#. MSG_BTN_MORE c=8
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
-msgstr "⏬"
-
 #~ msgid "Eject filament"
 #~ msgstr "Filamentauswurf"
 
