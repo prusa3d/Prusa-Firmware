@@ -34,10 +34,10 @@ static constexpr float spacing(float layer_height, float extrusion_width, float 
 }
 
 // Common code extracted into one function to reduce code size
-static void lay1cal_common_enqueue_loop(const char * const * cmd_sequence) {
-    for (uint8_t i = 0; i < (sizeof(cmd_sequence)/sizeof(cmd_sequence[0])); ++i)
+static void lay1cal_common_enqueue_loop(const char * const * cmd_sequence, const uint8_t steps) {
+    for (uint8_t i = 0; i < steps; ++i)
     {
-        enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_sequence[i])));
+        enquecommand_P(static_cast<char*>(pgm_read_ptr(cmd_sequence + i)));
     }
 }
 
@@ -60,7 +60,7 @@ void lay1cal_wait_preheat()
         zero_extrusion
     };
 
-    lay1cal_common_enqueue_loop(preheat_cmd);
+    lay1cal_common_enqueue_loop(preheat_cmd, sizeof(preheat_cmd)/sizeof(preheat_cmd[0]));
 }
 
 //! @brief Load filament
@@ -157,7 +157,7 @@ void lay1cal_before_meander()
             cmd_pre_meander_7,
     };
 
-    lay1cal_common_enqueue_loop(cmd_pre_meander);
+    lay1cal_common_enqueue_loop(cmd_pre_meander, (sizeof(cmd_pre_meander)/sizeof(cmd_pre_meander[0])));
 }
 
 //! @brief Print meander start
@@ -243,7 +243,7 @@ void lay1cal_finish(bool mmu_enabled)
             cmd_cal_finish_5
     };
 
-    lay1cal_common_enqueue_loop(cmd_cal_finish);
+    lay1cal_common_enqueue_loop(cmd_cal_finish, (sizeof(cmd_cal_finish)/sizeof(cmd_cal_finish[0])));
 
     if (mmu_enabled) enquecommand_P(MSG_M702_NO_LIFT); //unload from nozzle
     enquecommand_P(MSG_M84);// disable motors
