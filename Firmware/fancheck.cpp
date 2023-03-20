@@ -1,6 +1,5 @@
 // fan control and check
 #include "fancheck.h"
-#include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
 #include "messages.h"
