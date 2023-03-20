@@ -562,7 +562,9 @@ void lcdui_print_status_line(void) {
             scrollstuff = 0;
         }
     } else { // Otherwise check for other special events
-        if (!lcd_status_message_timeout.expired_cont(LCD_STATUS_DELAYED_TIMEOUT))
+        if ( custom_message_type != CustomMsg::Status
+        && lcd_status_message_timeout.running()
+        && lcd_status_message_timeout.elapsed() < LCD_STATUS_DELAYED_TIMEOUT)
         {
             return; // Nothing to do, waiting for delay to expire
         }
