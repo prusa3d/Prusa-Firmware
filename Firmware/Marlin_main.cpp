@@ -2215,6 +2215,10 @@ static void check_Z_crash(void)
 }
 #endif //TMC2130
 
+float __attribute__((noinline)) get_feedrate_mm_s(const float feedrate_mm_min) {
+  return feedrate_mm_min / 60.f;
+}
+
 #ifdef TMC2130
 void homeaxis(uint8_t axis, uint8_t cnt, uint8_t* pstep)
 #else
@@ -2228,6 +2232,7 @@ void homeaxis(uint8_t axis, uint8_t cnt)
 	{
         int axis_home_dir = home_dir(axis);
         feedrate = homing_feedrate[axis];
+        float feedrate_mm_s = get_feedrate_mm_s(feedrate);
 
 #ifdef TMC2130
     	tmc2130_home_enter(X_AXIS_MASK << axis);
@@ -2242,7 +2247,7 @@ void homeaxis(uint8_t axis, uint8_t cnt)
 		set_destination_to_current();
 //        destination[axis] = 11.f;
         destination[axis] = -3.f * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
+        plan_buffer_line_destinationXYZE(feedrate_mm_s);
         st_synchronize();
         // Move away from the possible collision with opposite endstop with the collision detection disabled.
         endstops_hit_on_purpose();
@@ -2250,12 +2255,12 @@ void homeaxis(uint8_t axis, uint8_t cnt)
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = 1. * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
+        plan_buffer_line_destinationXYZE(feedrate_mm_s);
         st_synchronize();
         // Now continue to move up to the left end stop with the collision detection enabled.
         enable_endstops(true);
         destination[axis] = 1.1 * axis_home_dir * max_length(axis);
-        plan_buffer_line_destinationXYZE(feedrate/60);
+        plan_buffer_line_destinationXYZE(feedrate_mm_s);
         st_synchronize();
 		for (uint8_t i = 0; i < cnt; i++)
 		{
@@ -2265,7 +2270,7 @@ void homeaxis(uint8_t axis, uint8_t cnt)
 			current_position[axis] = 0;
 			plan_set_position_curposXYZE();
 			destination[axis] = -10.f * axis_home_dir;
-			plan_buffer_line_destinationXYZE(feedrate/60);
+			plan_buffer_line_destinationXYZE(feedrate_mm_s);
 			st_synchronize();
 			endstops_hit_on_purpose();
 			// Now move left up to the collision, this time with a repeatable velocity.
@@ -2275,8 +2280,9 @@ void homeaxis(uint8_t axis, uint8_t cnt)
 			feedrate = homing_feedrate[axis];
 #else //TMC2130
 			feedrate = homing_feedrate[axis] / 2;
+      feedrate_mm_s = get_feedrate_mm_s(feedrate);
 #endif //TMC2130
-			plan_buffer_line_destinationXYZE(feedrate/60);
+			plan_buffer_line_destinationXYZE(feedrate_mm_s);
 			st_synchronize();
 #ifdef TMC2130
 			uint16_t mscnt = tmc2130_rd_MSCNT(axis);
@@ -2313,7 +2319,7 @@ void homeaxis(uint8_t axis, uint8_t cnt)
         plan_set_position_curposXYZE();
         current_position[axis] += dist;
         destination[axis] = current_position[axis];
-        plan_buffer_line_destinationXYZE(0.5f*feedrate/60);
+        plan_buffer_line_destinationXYZE(0.5f*feedrate_mm_s);
         st_synchronize();
 
    		feedrate = 0.0;
@@ -2328,7 +2334,8 @@ void homeaxis(uint8_t axis, uint8_t cnt)
         plan_set_position_curposXYZE();
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
-        plan_buffer_line_destinationXYZE(feedrate/60);
+        float feedrate_mm_s = get_feedrate_mm_s(feedrate);
+        plan_buffer_line_destinationXYZE(feedrate_mm_s);
         st_synchronize();
 #ifdef TMC2130
         check_Z_crash();
@@ -2336,11 +2343,12 @@ void homeaxis(uint8_t axis, uint8_t cnt)
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
+        plan_buffer_line_destinationXYZE(feedrate_mm_s);
         st_synchronize();
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-        feedrate = homing_feedrate[axis]/2 ;
-        plan_buffer_line_destinationXYZE(feedrate/60);
+        feedrate = homing_feedrate[axis] / 2;
+        feedrate_mm_s = get_feedrate_mm_s(feedrate);
+        plan_buffer_line_destinationXYZE(feedrate_mm_s);
         st_synchronize();
 #ifdef TMC2130
         check_Z_crash();
@@ -6886,7 +6894,7 @@ Sigma_Exit:
       }
       if(code_seen('F'))
       {
-        cs.retract_feedrate = code_value()/60 ;
+        cs.retract_feedrate = get_feedrate_mm_s(code_value());
       }
       if(code_seen('Z'))
       {
@@ -6912,7 +6920,7 @@ Sigma_Exit:
       }
       if(code_seen('F'))
       {
-        cs.retract_recover_feedrate = code_value()/60 ;
+        cs.retract_recover_feedrate = get_feedrate_mm_s(code_value());
       }
     }break;
 

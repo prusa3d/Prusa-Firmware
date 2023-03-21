@@ -287,6 +287,11 @@ void prepare_move(uint16_t start_segment_idx = 0);
 void prepare_arc_move(bool isclockwise, uint16_t start_segment_idx = 0);
 uint16_t restore_interrupted_gcode();
 
+///@brief Helper function to reduce code size, cheaper to call function than to inline division
+///@param feedrate_mm_min feedrate with unit mm per minute
+///@returns feedrate with unit mm per second
+float __attribute__((noinline)) get_feedrate_mm_s(const float feedrate_mm_min);
+
 #ifdef TMC2130
 void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else

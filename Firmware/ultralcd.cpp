@@ -2418,7 +2418,7 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
 			lcd_encoder = 0;
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-			plan_buffer_line_curposXYZE(manual_feedrate[axis] / 60);
+			plan_buffer_line_curposXYZE(get_feedrate_mm_s(manual_feedrate[axis]));
 			lcd_draw_update = 1;
 		}
 	}
