@@ -1783,6 +1783,7 @@ bool shouldPreheatOnlyNozzle() {
         case FilamentAction::UnLoad:
         case FilamentAction::MmuLoad:
         case FilamentAction::MmuUnLoad:
+        case FilamentAction::MmuLoadingTest:
         case FilamentAction::MmuEject:
         case FilamentAction::MmuCut:
             return true;
