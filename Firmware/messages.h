@@ -237,7 +237,7 @@ extern const char MSG_UNKNOWN_CODE[];
 
 // Common G-gcodes
 extern const char G1_E_F2700[];
-extern const char G28W0[];
+extern const char G28W[];
 extern const char MSG_M23[];
 extern const char MSG_M24[];
 extern const char MSG_M83[];

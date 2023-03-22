@@ -2809,7 +2809,7 @@ static void gcode_G80()
         // Push the commands to the front of the message queue in the reverse order!
         // There shall be always enough space reserved for these commands.
         repeatcommand_front(); // repeat G80 with all its parameters
-        enquecommand_front_P(G28W0);
+        enquecommand_front_P(G28W);
         return;
     }
 
@@ -2842,7 +2842,7 @@ static void gcode_G80()
         temp_compensation_start();
         run = true;
         repeatcommand_front(); // repeat G80 with all its parameters
-        enquecommand_front_P(G28W0);
+        enquecommand_front_P(G28W);
         return;
     }
     run = false;
@@ -4736,7 +4736,7 @@ void process_commands()
             // Push the commands to the front of the message queue in the reverse order!
             // There shall be always enough space reserved for these commands.
             repeatcommand_front(); // repeat G76 with all its parameters
-            enquecommand_front_P(G28W0);
+            enquecommand_front_P(G28W);
             break;
         }
         lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
@@ -4881,7 +4881,7 @@ void process_commands()
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
 			repeatcommand_front(); // repeat G76 with all its parameters
-			enquecommand_front_P(G28W0);
+			enquecommand_front_P(G28W);
 			break;
 		}
 		puts_P(_N("PINDA probe calibration start"));
@@ -10101,7 +10101,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 		// There shall be always enough space reserved for these commands.
 		repeatcommand_front(); // repeat G80 with all its parameters
 		
-		enquecommand_front_P(G28W0);
+		enquecommand_front_P(G28W);
 		enquecommand_front_P((PSTR("G1 Z5")));
 		return;
 	}
