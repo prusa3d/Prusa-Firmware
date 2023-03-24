@@ -916,7 +916,7 @@ void lcd_commands()
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
 				enquecommand(cmd1);
-				enquecommand_P(PSTR("M500"));
+				enquecommand_P(MSG_M500);
 			}
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
@@ -950,7 +950,7 @@ void lcd_commands()
 
         case 2:
             if (temp_model_autotune_result())
-                enquecommand_P(PSTR("M500"));
+                enquecommand_P(MSG_M500);
             lcd_commands_step = 1;
             break;
 
@@ -1847,10 +1847,10 @@ switch(eFilamentAction)
                // FALLTHRU
           case FilamentAction::Load:
                loading_flag=true;
-               enquecommand_P(PSTR("M701"));      // load filament
+               enquecommand_P(MSG_M701_NO_LIFT);      // load filament
                break;
           case FilamentAction::UnLoad:
-               enquecommand_P(PSTR("M702"));      // unload filament
+               enquecommand_P(MSG_M702_NO_LIFT);      // unload filament
                break;
           case FilamentAction::MmuLoad:
           case FilamentAction::MmuLoadingTest:
@@ -1910,11 +1910,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 if ((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad))
                 {
                     loading_flag = true;
-                    enquecommand_P(PSTR("M701")); // load filament
+                    enquecommand_P(MSG_M701_NO_LIFT); // load filament
                     if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
                 }
                 if (eFilamentAction == FilamentAction::UnLoad)
-                enquecommand_P(PSTR("M702")); // unload filament
+                enquecommand_P(MSG_M702_NO_LIFT); // unload filament
             }
             break;
         case FilamentAction::MmuLoad:
@@ -3806,7 +3806,7 @@ static void lcd_wizard_load() {
         loading_flag = true;
     }
     gcode_M701(FILAMENTCHANGE_FIRSTFEED, 0);
-    //enquecommand_P(PSTR("M701"));
+    //enquecommand_P(MSG_M701_NO_LIFT); // is enqueuecommand_P safe here?
 }
 
 static void wizard_lay1cal_message(bool cold)
@@ -4595,7 +4595,7 @@ static void lcd_settings_menu()
 	if (!printer_active() || isPrintPaused)
     {
 	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
-	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
+	    MENU_ITEM_GCODE_P(_i("Disable steppers"), MSG_M84);////MSG_DISABLE_STEPPERS c=18
     }
 
 #ifdef FILAMENT_SENSOR
@@ -5492,7 +5492,7 @@ void stepper_timer_overflow() {
 
 static void lcd_colorprint_change() {
 	
-	enquecommand_P(PSTR("M600"));
+	enquecommand_P(MSG_M600);
 
 	custom_message_type = CustomMsg::FilamentLoading; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
@@ -6365,7 +6365,7 @@ bool lcd_selftest()
 		_progress = lcd_selftest_screen(TestScreen::Failed, _progress, 3, true, 5000);
 	}
 	lcd_reset_alert_level();
-	enquecommand_P(PSTR("M84"));
+	enquecommand_P(MSG_M84);
 	lcd_update_enable(true);
 	
 	if (_result)
@@ -7271,7 +7271,7 @@ static void menu_action_sdfile(const char* filename)
   char cmd[30];
   char* c;
   bool result = true;
-  sprintf_P(cmd, PSTR("M23 %s"), filename);
+  sprintf_P(cmd, MSG_M23, filename);
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
 
@@ -7306,7 +7306,7 @@ static void menu_action_sdfile(const char* filename)
   }
   if (result) {
 	  enquecommand(cmd);
-	  enquecommand_P(PSTR("M24"));
+	  enquecommand_P(MSG_M24);
   }
 
   lcd_return_to_status();

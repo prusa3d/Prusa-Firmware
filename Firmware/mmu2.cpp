@@ -188,7 +188,7 @@ void MMU2::CheckFINDARunout() {
         if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN){ // Can't auto if F=?
             enquecommand_front_P(PSTR("M600 AUTO")); // save print and run M600 command
         } else {
-            enquecommand_front_P(PSTR("M600")); // save print and run M600 command
+            enquecommand_front_P(MSG_M600); // save print and run M600 command
         }
     }
 }

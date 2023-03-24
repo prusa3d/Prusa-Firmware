@@ -163,7 +163,7 @@ void Filament_sensor::filRunout() {
     restore_print_from_ram_and_continue(0);
     eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
     eeprom_increment_word((uint16_t *)EEPROM_FERROR_COUNT_TOT);
-    enquecommand_front_P((PSTR("M600")));
+    enquecommand_front_P(MSG_M600);
 }
 
 void Filament_sensor::triggerError() {
@@ -483,7 +483,7 @@ void PAT9125_sensor::filJam() {
     restore_print_from_ram_and_continue(0);
     eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
     eeprom_increment_word((uint16_t *)EEPROM_FERROR_COUNT_TOT);
-    enquecommand_front_P((PSTR("M600")));
+    enquecommand_front_P(MSG_M600);
 }
 
 bool PAT9125_sensor::updatePAT9125() {

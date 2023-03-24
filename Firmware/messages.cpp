@@ -228,3 +228,17 @@ const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20
 const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
 const char MSG_UNKNOWN_CODE[] PROGMEM_N1 = "Unknown %c code: %s\n";
+
+// Common G-gcodes
+const char G1_E_F2700[] PROGMEM_N1 = "G1 E%-0.3f F2700";
+const char G28W[] PROGMEM_N1 = "G28 W";
+const char MSG_M23[] PROGMEM_N1 = "M23 %s";
+const char MSG_M24[] PROGMEM_N1 = "M24";
+const char MSG_M83[] PROGMEM_N1 = "M83";
+const char MSG_M84[] PROGMEM_N1 = "M84";
+const char MSG_M107[] PROGMEM_N1 = "M107";
+const char MSG_M220[] PROGMEM_N1 = "M220 S%d";
+const char MSG_M500[] PROGMEM_N1 = "M500";
+const char MSG_M600[] PROGMEM_N1 = "M600";
+const char MSG_M701_NO_LIFT[] PROGMEM_N1 = "M701 Z0";
+const char MSG_M702_NO_LIFT[] PROGMEM_N1 = "M702 Z0";

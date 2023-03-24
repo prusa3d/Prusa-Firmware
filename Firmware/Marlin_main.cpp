@@ -255,7 +255,6 @@ uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
-const char G28W0[] PROGMEM = "G28 W0";
 
 // Define some coordinates outside the clamp limits (making them invalid past the parsing stage) so
 // that they can be used later for various logical checks
@@ -2082,7 +2081,7 @@ bool check_commands() {
 	
 		while (buflen)
 		{
-		if ((code_seen_P(PSTR("M84"))) || (code_seen_P(PSTR("M 84")))) end_command_found = true;
+		if ((code_seen_P(MSG_M84)) || (code_seen_P(PSTR("M 84")))) end_command_found = true;
 		if (!cmdbuffer_front_already_processed)
 			 cmdqueue_pop_front();
 		cmdbuffer_front_already_processed = false;
@@ -2810,7 +2809,7 @@ static void gcode_G80()
         // Push the commands to the front of the message queue in the reverse order!
         // There shall be always enough space reserved for these commands.
         repeatcommand_front(); // repeat G80 with all its parameters
-        enquecommand_front_P(G28W0);
+        enquecommand_front_P(G28W);
         return;
     }
 
@@ -2843,7 +2842,7 @@ static void gcode_G80()
         temp_compensation_start();
         run = true;
         repeatcommand_front(); // repeat G80 with all its parameters
-        enquecommand_front_P(G28W0);
+        enquecommand_front_P(G28W);
         return;
     }
     run = false;
@@ -3585,7 +3584,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         // Recover feed rate
         feedmultiply = feedmultiplyBckp;
         char cmd[9];
-        sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
+        sprintf_P(cmd, MSG_M220, feedmultiplyBckp);
         enquecommand(cmd);
         
     }
@@ -4182,7 +4181,7 @@ void process_commands()
         }
         else if (code_seen_P(PSTR("uvlo"))) { // PRUSA uvlo
             eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
-            enquecommand_P(PSTR("M24")); 
+            enquecommand_P(MSG_M24); 
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
@@ -4737,7 +4736,7 @@ void process_commands()
             // Push the commands to the front of the message queue in the reverse order!
             // There shall be always enough space reserved for these commands.
             repeatcommand_front(); // repeat G76 with all its parameters
-            enquecommand_front_P(G28W0);
+            enquecommand_front_P(G28W);
             break;
         }
         lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
@@ -4882,7 +4881,7 @@ void process_commands()
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
 			repeatcommand_front(); // repeat G76 with all its parameters
-			enquecommand_front_P(G28W0);
+			enquecommand_front_P(G28W);
 			break;
 		}
 		puts_P(_N("PINDA probe calibration start"));
@@ -10102,7 +10101,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 		// There shall be always enough space reserved for these commands.
 		repeatcommand_front(); // repeat G80 with all its parameters
 		
-		enquecommand_front_P(G28W0);
+		enquecommand_front_P(G28W);
 		enquecommand_front_P((PSTR("G1 Z5")));
 		return;
 	}
@@ -10783,14 +10782,14 @@ void recover_print(uint8_t automatic) {
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
 
-	enquecommand_P(PSTR("M83")); //E axis relative mode
+	enquecommand_P(MSG_M83); //E axis relative mode
 
     // If not automatically recoreverd (long power loss)
     if(automatic == 0){
         //Extrude some filament to stabilize the pressure
         enquecommand_P(PSTR("G1 E5 F120"));
         // Retract to be consistent with a short pause
-        sprintf_P(cmd, PSTR("G1 E%-0.3f F2700"), default_retraction);
+        sprintf_P(cmd, G1_E_F2700, default_retraction);
         enquecommand(cmd);
     }
 
@@ -10915,7 +10914,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 
 	MYSERIAL.print(filename);
 	strcat_P(filename, PSTR(".gco"));
-	sprintf_P(cmd, PSTR("M23 %s"), filename);
+	sprintf_P(cmd, MSG_M23, filename);
 	enquecommand(cmd);
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
@@ -10947,7 +10946,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     enquecommand(cmd);
 
   // Unretract.
-    sprintf_P(cmd, PSTR("G1 E%0.3f F2700"), default_retraction);
+    sprintf_P(cmd, G1_E_F2700, default_retraction);
     enquecommand(cmd);
   // Recover final E axis position and mode
     float pos_e = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
@@ -10958,7 +10957,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
   // Set the feedrates saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
-	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
+	sprintf_P(cmd, MSG_M220, feedmultiply_rec);
 	enquecommand(cmd);
   // Set the fan speed saved at the power panic.
 	sprintf_P(cmd, PSTR("M106 S%u"), fan_speed_rec);
@@ -11150,7 +11149,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     {
         // First unretract (relative extrusion)
         if(!saved_extruder_relative_mode){
-            enquecommand(PSTR("M83"), true);
+            enquecommand_P(MSG_M83);
         }
         //retract 45mm/s
         // A single sprintf may not be faster, but is definitely 20B shorter
@@ -11158,7 +11157,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         // A snprintf would have been a safer call, but since it is not used
         // in the whole program, its implementation would bring more bytes to the total size
         // The behavior of dtostrf 8,3 should be roughly the same as %-0.3
-        sprintf_P(buf, PSTR("G1 E%-0.3f F2700"), e_move);
+        sprintf_P(buf, G1_E_F2700, e_move);
         enquecommand(buf, false);
     }
 

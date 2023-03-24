@@ -235,6 +235,20 @@ extern const char MSG_POWERPANIC_DETECTED[];
 extern const char MSG_LCD_STATUS_CHANGED[];
 extern const char MSG_UNKNOWN_CODE[];
 
+// Common G-gcodes
+extern const char G1_E_F2700[];
+extern const char G28W[];
+extern const char MSG_M23[];
+extern const char MSG_M24[];
+extern const char MSG_M83[];
+extern const char MSG_M84[];
+extern const char MSG_M107[];
+extern const char MSG_M220[];
+extern const char MSG_M500[];
+extern const char MSG_M600[];
+extern const char MSG_M701_NO_LIFT[];
+extern const char MSG_M702_NO_LIFT[];
+
 #if defined(__cplusplus)
 }
 #endif //defined(__cplusplus)
