@@ -2128,7 +2128,7 @@ msgid ""
 "Thermal model cal. takes approx. 12 mins. See\n"
 "prusa.io/tm-cal"
 msgstr ""
-"Termikus modell kal. kb. 12 percet. Lásd\n"
+"Termikus modell kal. kb. 12 perc. Lásd\n"
 "prusa.io/tm-cal"
 
 #. MSG_TM_NOT_CAL c=20 r=4
@@ -2495,13 +2495,13 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Az izzószál váratlanul észlelve. Győződjön meg arról, hogy nincs izzószál "
+"Filament váratlanul észlelve. Győződjön meg arról, hogy nincs filament "
 "betöltve. Ellenőrizze az érzékelőket és a vezetékeket."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
 msgid "LOAD TO EXTR. FAILED"
-msgstr "SIKERÜLT BETÖLT EXTR"
+msgstr "BETÖLTÉS SIKERTELEN"
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
@@ -2510,12 +2510,12 @@ msgid ""
 "sensor calibration, if needed."
 msgstr ""
 "Az extruderbe való betöltés nem sikerült. Ellenőrizze az fil. hegyének "
-"alakját. Ha szükséges, finomítsa az érzékelő kalibrálását."
+"alakját. Ha szükséges, finomítsd az érzékelő kalibrálását."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
 msgid "MCU UNDERVOLTAGE VCC"
-msgstr "MCU ALFESZÜLTSÉ. VCC"
+msgstr "MCU VCC ALACSONY"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:1126
@@ -2526,7 +2526,7 @@ msgstr "Anyagcserék"
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU."
-msgstr "Távolítsa el a kilökött izzószálat az MMU elejéről."
+msgstr "Távolítsd el a kiadott filamentet az MMU-ból."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2539,8 +2539,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
-"A választó nem tud mozogni, mert a FINDA fil. észlelt. Győződjön meg arról, "
-"hogy nincs fil. a választóban, és a FINDA megfelelően működik."
+"A szelektor nem tud mozogni, mert a FINDA filamentet észlelt. Győződj meg arról,"
+"hogy nincs fil. a szelektorban, és a FINDA megfelelően működik."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2548,7 +2548,7 @@ msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. Frissítés a "
+"Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. Frissíts a "
 "2.1.9-es verzióra."
 
 #. MSG_BTN_MORE c=8
