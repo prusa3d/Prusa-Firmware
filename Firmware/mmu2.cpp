@@ -12,6 +12,12 @@
 #include "strlen_cx.h"
 #include "SpoolJoin.h"
 
+#ifdef TMC2130
+#include "tmc2130.h"
+#include "Prusa_Farm.h"
+#include "stepper.h"
+#endif //TMC2130
+
 #ifdef __AVR__
 // As of FW 3.12 we only support building the FW with only one extruder, all the multi-extruder infrastructure will be removed.
 // Saves at least 800B of code size
@@ -451,6 +457,7 @@ bool MMU2::unload() {
         return false;
 
     WaitForHotendTargetTempBeep();
+    bool previous_ecool_state = load_unload_ecool_toggle(false);
 
     {
         FSensorBlockRunout blockRunout;
@@ -472,6 +479,7 @@ bool MMU2::unload() {
         extruder = MMU2_NO_TOOL;
         tool_change_extruder = MMU2_NO_TOOL;
     }
+    (void)load_unload_ecool_toggle(previous_ecool_state);
     return true;
 }
 
@@ -900,10 +908,49 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
 
 void MMU2::execute_load_to_nozzle_sequence() {
     planner_synchronize();
+    bool previous_ecool_state = load_unload_ecool_toggle(false);
     // Compensate for configurable Extra Loading Distance
     planner_set_current_position_E(planner_get_current_position_E() - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION));
     execute_extruder_sequence(load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof(load_to_nozzle_sequence[0]));
+    (void)load_unload_ecool_toggle(previous_ecool_state);
 }
+
+bool MMU2::load_unload_ecool_toggle(bool enable){
+    // Check to see if E-cool mode is enabled and if so disable it during load sequence due to
+    // incompatibility with the MMU2 load sequence's many small moves.
+    // Fix for #3497.
+    if (enable == false) {
+        #ifdef TMC2130
+            if (farm_mode 
+            || (( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) 
+                && ( eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY) == 1 ))
+            ){
+                st_synchronize();
+                if (tmc2130_wait_standstill_xy(1000)) {}
+                cli();
+                tmc2130_init(TMCInitParams(false)); 
+                st_reset_timer();
+                sei();
+                // Return that E-cool had previously been enabled.
+                return true;
+            }
+            else { // Return that E-cool had previously been disabled.
+                return false;
+            }
+        }
+        else { // Re-enable e-cool after it had been disabled.
+            st_synchronize();
+            if (tmc2130_wait_standstill_xy(1000)) {}
+            cli();
+            tmc2130_init(TMCInitParams(true)); 
+            st_reset_timer();
+            sei();
+        #endif //TMC2130
+    }
+    // Return that E-cool had previously been disabled.
+    // Unused feedback currently.
+    return false;
+}    
 
 void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     // Due to a potential lossy error reporting layers linked to this hook
