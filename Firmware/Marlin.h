@@ -354,7 +354,11 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT 0xff
 
-extern bool printer_active();
+// Returns true if there is a print running. It does not matter if
+// the print is paused, that still counts as a "running" print.
+bool printJobOngoing();
+
+bool printer_active();
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
@@ -364,6 +368,15 @@ extern bool printer_active();
 //! and is reset to false when the fsensor returns into its filament runout finished handler
 //! I'd normally change this macro, but who knows what would happen in the MMU :)
 bool check_fsensor();
+
+//! Condition where Babystepping is allowed:
+//! 1) Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
+//! 2) Not allowed during Homing (printer busy)
+//! 3) Not allowed during Mesh Bed Leveling (printer busy)
+//! 4) Allowed if:
+//!         - First Layer Calibration is running
+//!         - OR there are queued blocks, printJob is running and it's not paused, and Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
+bool babystep_allowed();
 
 extern void calculate_extruder_multipliers();
 

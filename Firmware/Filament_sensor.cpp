@@ -4,7 +4,6 @@
 
 #include "Filament_sensor.h"
 #include "Timer.h"
-#include "cardreader.h"
 #include "eeprom.h"
 #include "menu.h"
 #include "planner.h"
@@ -113,8 +112,7 @@ void Filament_sensor::triggerFilamentInserted() {
         && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts while the MMU is in charge
         && !(
             moves_planned() != 0
-            || IS_SD_PRINTING
-            || usb_timer.running()
+            || printJobOngoing()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
             )
@@ -131,8 +129,7 @@ void Filament_sensor::triggerFilamentRemoved() {
         && !saved_printing
         && (
             moves_planned() != 0
-            || IS_SD_PRINTING
-            || usb_timer.running()
+            || printJobOngoing()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
         )

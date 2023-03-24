@@ -1,6 +1,5 @@
 // fan control and check
 #include "fancheck.h"
-#include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
 #include "messages.h"
@@ -85,7 +84,7 @@ void fanSpeedError(unsigned char _fan) {
     if (fan_check_error == EFCE_REPORTED) return;
     fan_check_error = EFCE_REPORTED;
 
-    if (IS_SD_PRINTING || usb_timer.running()) {
+    if (printJobOngoing()) {
         // A print is ongoing, pause the print normally
         if(!isPrintPaused) {
             if (usb_timer.running())

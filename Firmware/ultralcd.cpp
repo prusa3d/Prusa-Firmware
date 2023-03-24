@@ -833,8 +833,6 @@ void lcd_commands()
 		const float extrusion_width = (nozzle_dia + 20)/1000.0f;
 		const float layer_height = 0.2f;
 
-		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
-
         if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
             if (lcd_commands_step == 0)
@@ -879,7 +877,6 @@ void lcd_commands()
                 break;
             case 2:
                 lay1cal_finish(MMU2::mmu2.Enabled());
-                menu_leaving = 1; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
                 break;
             case 1:
                 lcd_setstatuspgm(MSG_WELCOME);
@@ -2596,13 +2593,6 @@ static void lcd_move_z() {
  */
 static void lcd_babystep_z()
 {
-    if (homing_flag || mesh_bed_leveling_flag)
-    {
-        // printer changed to a new state where live Z is forbidden
-        menu_back();
-        return;
-    }
-
 	typedef struct
 	{
 		int8_t status;
@@ -3508,7 +3498,7 @@ static void crash_mode_switch()
     {
         lcd_crash_detect_enable();
     }
-	if (IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
+	if (printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
 	else menu_goto(lcd_settings_menu, 9, true, true);
 }
 #endif //TMC2130
@@ -4641,7 +4631,7 @@ static void lcd_settings_menu()
     MENU_ITEM_TOGGLE_P(_T(MSG_RPI_PORT), (selectedSerialPort == 0) ? _T(MSG_OFF) : _T(MSG_ON), lcd_second_serial_set);
 #endif //HAS_SECOND_SERIAL
 
-	if (!isPrintPaused && !homing_flag && !mesh_bed_leveling_flag)
+	if ( babystep_allowed() )
 		MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
 
 #if (LANG_MODE != 0)
@@ -5350,9 +5340,8 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
-    if ( ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag) {
+    if ( babystep_allowed() )
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
-    }
 
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
@@ -5385,7 +5374,7 @@ static void lcd_main_menu()
             }
         }
     }
-    if((IS_SD_PRINTING || usb_timer.running() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
+    if((printJobOngoing() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
 #ifdef TEMP_MODEL
@@ -5413,7 +5402,7 @@ static void lcd_main_menu()
     }
 #endif //SDSUPPORT
 
-    if(!isPrintPaused && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+    if(!isPrintPaused && !printJobOngoing() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
         if (!farm_mode) {
             const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
             const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
@@ -5423,7 +5412,7 @@ static void lcd_main_menu()
         }
     }
 
-    if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
+    if ( ! ( printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
@@ -7470,13 +7459,11 @@ void menu_lcd_longpress_func(void)
 
     // explicitely listed menus which are allowed to rise the move-z or live-adj-z functions
     // The lists are not the same for both functions, so first decide which function is to be performed
-    if ( (moves_planned() || IS_SD_PRINTING || usb_timer.running() )){ // long press as live-adj-z
-        if (( current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU ) // only allow live-adj-z up to 2mm of print height
-        && ( menu_menu == lcd_status_screen // and in listed menus...
+    if (babystep_allowed()){ // long press as live-adj-z
+        if ( menu_menu == lcd_status_screen // and in listed menus...
           || menu_menu == lcd_main_menu
           || menu_menu == lcd_tune_menu
           || menu_menu == lcd_support_menu
-           )
         ){
             lcd_clear();
             menu_submenu(lcd_babystep_z);
@@ -7502,10 +7489,13 @@ void menu_lcd_longpress_func(void)
     }
 }
 
+// Note: When lcd_commands_type is not LcdCommands::Idle
+// we should ignore lcd_timeoutToStatus. Example use case is
+// when running first layer calibration.
 static inline bool z_menu_expired()
 {
     return (menu_menu == lcd_babystep_z
-         && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z));
+        && (!babystep_allowed() || (lcd_commands_type == LcdCommands::Idle && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z))));
 }
 static inline bool other_menu_expired()
 {
