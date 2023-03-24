@@ -14,7 +14,7 @@
 
 #ifdef TMC2130
 #include "tmc2130.h"
-#include "Prusa_Farm.h"
+#include "Prusa_farm.h"
 #include "stepper.h"
 #endif //TMC2130
 
