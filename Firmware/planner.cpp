@@ -1411,10 +1411,6 @@ void update_mode_profile()
 }
 #endif //TMC2130
 
-uint8_t number_of_blocks()
-{
-	return (block_buffer_head + BLOCK_BUFFER_SIZE - block_buffer_tail) & (BLOCK_BUFFER_SIZE - 1);
-}
 #ifdef PLANNER_DIAGNOSTICS
 uint8_t planner_queue_min()
 {
