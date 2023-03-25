@@ -583,7 +583,7 @@ void lcdui_print_status_line(void) {
                 lcd_space(LCD_WIDTH);
                 lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
                 lcd_puts_P(PSTR(" : "));
-                lcd_print(custom_message_state - 10);
+                lcd_print(uint8_t(custom_message_state - 10));
             } else {
                 if (custom_message_state == 3) {
                     lcd_setstatuspgm(MSG_WELCOME);
@@ -4796,7 +4796,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         for (uint_least8_t i = 0; i < ordinary_items; i++)
         {
             lcd_set_cursor(2 + item_len, i+1);
-            lcd_print(first + i + 1);
+            lcd_print(uint8_t(first + i + 1));
         }
 
         if (last_item&&last_visible) lcd_puts_at_P(1, 3, last_item);
