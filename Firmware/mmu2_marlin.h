@@ -26,6 +26,7 @@ void MoveE(float delta, float feedRate);
 
 float MoveRaiseZ(float delta);
 
+void planner_abort_queued_moves();
 void planner_synchronize();
 bool planner_any_moves();
 float planner_get_machine_position_E_mm();

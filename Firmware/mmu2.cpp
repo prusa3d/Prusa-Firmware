@@ -922,10 +922,12 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     switch (logic.Progress()) {
     case ProgressCode::UnloadingToFinda:
         unloadFilamentStarted = false;
+        planner_abort_queued_moves();  // Abort excess E-moves to be safe
         break;
     case ProgressCode::FeedingToFSensor:
         // FSENSOR error during load. Make sure E-motor stops moving.
         loadFilamentStarted = false;
+        planner_abort_queued_moves(); // Abort excess E-moves to be safe
         break;
     default:
         break;
@@ -1040,6 +1042,10 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
             case FilamentState::AT_FSENSOR:
                 // fsensor triggered, finish FeedingToExtruder state
                 loadFilamentStarted = false;
+
+                // Abort any excess E-move from the planner queue
+                planner_abort_queued_moves();
+
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                 // 2. Disengage the idler and push another 2mm.
@@ -1048,7 +1054,7 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
             case FilamentState::NOT_PRESENT:
                 // fsensor not triggered, continue moving extruder
                 if (!planner_any_moves()) { // Only plan a move if there is no move ongoing
-                    MoveE(2.0f, MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+                    MoveE(350.0f, MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 }
                 break;
             default:

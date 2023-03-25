@@ -18,6 +18,11 @@ float MoveRaiseZ(float delta) {
     return raise_z(delta);
 }
 
+void planner_abort_queued_moves() {
+    planner_abort_hard();
+    planner_aborted = false;
+}
+
 void planner_synchronize() {
     st_synchronize();
 }
