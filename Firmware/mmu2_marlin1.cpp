@@ -20,6 +20,12 @@ float MoveRaiseZ(float delta) {
 
 void planner_abort_queued_moves() {
     planner_abort_hard();
+
+    // Unblock the planner. This should be safe in the
+    // toolchange context. Currently we are mainly aborting
+    // excess E-moves after detecting filament during toolchange.
+    // If a MMU error is reported, the planner must be unblocked
+    // as well so the extruder can be parked safely.
     planner_aborted = false;
 }
 
