@@ -1054,6 +1054,11 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
             case FilamentState::NOT_PRESENT:
                 // fsensor not triggered, continue moving extruder
                 if (!planner_any_moves()) { // Only plan a move if there is no move ongoing
+                    // Plan a very long move, where 'very long' is hundreds
+                    // of millimeters. Keep in mind though the move can't be much longer
+                    // than 450mm because the firmware will ignore too long extrusions
+                    // for safety reasons. See PREVENT_LENGTHY_EXTRUDE.
+                    // Use 350mm to be safely away from the prevention threshold
                     MoveE(350.0f, MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 }
                 break;
