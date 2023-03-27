@@ -4217,52 +4217,26 @@ static void mmu_reset()
     MMU2::mmu2.Reset(MMU2::MMU2::ResetForm::Software);
 }
 
+static void SETTINGS_SILENT_MODE() {
+    if (!farm_mode) { //dont show in menu if we are in farm mode
 #ifdef TMC2130
-#define SETTINGS_SILENT_MODE \
-do\
-{\
-    if(!farm_mode)\
-    {\
-        if (SilentModeMenu == SILENT_MODE_NORMAL)\
-        {\
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);\
-        }\
-        else MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);\
-        if (SilentModeMenu == SILENT_MODE_NORMAL)\
-        {\
-            if (lcd_crash_detect_enabled()) MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);\
-            else MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_OFF), crash_mode_switch);\
-        }\
-        else MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);\
-    }\
-}\
-while (0)
-
+        if (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_NORMAL) {
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), lcd_crash_detect_enabled() ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
+        } else {
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
+        }
 #else //TMC2130
-#define SETTINGS_SILENT_MODE \
-do\
-{\
-    if(!farm_mode)\
-    {\
-        switch (SilentModeMenu)\
-        {\
-        case SILENT_MODE_POWER:\
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);\
-            break;\
-        case SILENT_MODE_SILENT:\
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set);\
-            break;\
-        case SILENT_MODE_AUTO:\
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set);\
-            break;\
-        default:\
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);\
-            break; /* (probably) not needed*/\
-        }\
-    }\
-}\
-while (0)
+		switch (eeprom_read_byte((uint8_t*)EEPROM_SILENT)) {
+		case SILENT_MODE_POWER: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break;
+		case SILENT_MODE_SILENT: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set); break;
+		case SILENT_MODE_AUTO: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set); break;
+		default: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break; // (probably) not needed
+		}
 #endif //TMC2130
+    }
+}
 
 #ifndef MMU_FORCE_STEALTH_MODE
 #define SETTINGS_MMU_MODE \
@@ -4610,9 +4584,8 @@ static void lcd_settings_menu()
         MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
     }
 
-	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
-
-	SETTINGS_SILENT_MODE;
+    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+    SETTINGS_SILENT_MODE();
 
     if(!farm_mode)
     {
@@ -5600,35 +5573,9 @@ static void lcd_tune_menu()
         SETTINGS_CUTTER;
     }
 
-	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
-
-
-#ifdef TMC2130
-    if(!farm_mode)
-    {
-        if (SilentModeMenu == SILENT_MODE_NORMAL) {
-              MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
-            if (lcd_crash_detect_enabled()) {
-                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);
-            } else {
-                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_OFF), crash_mode_switch);
-            }
-        } else {
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
-            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
-        }
-    }
-#else //TMC2130
-	if (!farm_mode) { //dont show in menu if we are in farm mode
-		switch (SilentModeMenu) {
-		case SILENT_MODE_POWER: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break;
-		case SILENT_MODE_SILENT: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set); break;
-		case SILENT_MODE_AUTO: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set); break;
-		default: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break; // (probably) not needed
-		}
-	}
-#endif //TMC2130
-	SETTINGS_MMU_MODE;
+    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+    SETTINGS_SILENT_MODE();
+    SETTINGS_MMU_MODE;
     SETTINGS_SOUND;
 #ifdef LCD_BL_PIN
     if (backlightSupport)
