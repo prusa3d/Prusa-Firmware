@@ -984,7 +984,7 @@ void lcd_commands()
                 lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
                 lcd_update_enabled = true;
                 lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
-                enquecommand_P(PSTR("G28 W"));
+                enquecommand_P(G28W);
                 enquecommand_P(PSTR("G1 X125 Z200 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
 #ifdef TEMP_MODEL
@@ -4712,7 +4712,7 @@ static void lcd_calibration_menu()
     {
          MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);
     }
-	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
+	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), G28W);
 #ifdef TMC2130
 	MENU_ITEM_FUNCTION_P(_i("Belt test"), lcd_belttest_v);////MSG_BELTTEST c=18
 #endif //TMC2130
