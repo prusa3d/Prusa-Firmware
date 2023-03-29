@@ -109,9 +109,9 @@ bool Filament_sensor::checkFilamentEvents() {
 void Filament_sensor::triggerFilamentInserted() {
     if (autoLoadEnabled
         && (eFilamentAction == FilamentAction::None)
-        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts while the MMU is in charge
         && !(
-            moves_planned() != 0
+            MMU2::mmu2.Enabled() // quick and dirty hack to prevent spurious runouts while the MMU is in charge
+            || moves_planned() != 0
             || printJobOngoing()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
@@ -124,12 +124,14 @@ void Filament_sensor::triggerFilamentInserted() {
 void Filament_sensor::triggerFilamentRemoved() {
 //    SERIAL_ECHOLNPGM("triggerFilamentRemoved");
     if (runoutEnabled
-        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts just before the toolchange
         && (eFilamentAction == FilamentAction::None)
-        && !saved_printing
         && (
             moves_planned() != 0
             || printJobOngoing()
+        )
+        && !(
+            saved_printing
+            || MMU2::mmu2.Enabled() // quick and dirty hack to prevent spurious runouts just before the toolchange
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
         )
