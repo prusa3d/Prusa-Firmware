@@ -596,6 +596,8 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_TEMP_MODEL_L (EEPROM_TEMP_MODEL_D-2) //uint16_t
 #define EEPROM_TEMP_MODEL_VER (EEPROM_TEMP_MODEL_L-1) //uint8_t
 
+#define EEPROM_KILL_MESSAGE (EEPROM_TEMP_MODEL_VER-2) //PGM_P
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
 #define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_VER
 // !!!!!

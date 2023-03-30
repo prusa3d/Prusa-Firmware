@@ -234,7 +234,7 @@ void FlushSerialRequestResend();
 void ClearToSend();
 void update_currents();
 
-void kill(const char *full_screen_message = NULL, unsigned char id = 0);
+void kill(const char *full_screen_message = NULL);
 void finishAndDisableSteppers();
 
 void UnconditionalStop();                   // Stop heaters, motion and clear current print status
