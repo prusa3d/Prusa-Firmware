@@ -361,6 +361,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0CA1 3233 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0ca1 C4
 | 0x0C9D 3229 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9d C4
 | 0x0C99 3225 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c99 C2
+| 0x0C98 3224 | uint8   | EEPROM_TEMP_MODEL_VER                 | 0-255        | ffh                   | Temp model Version                                | Temp model   | D3 Ax0c98 C1
+| 0x0C96 3222 | PGM_P   | EEPROM_KILL_MESSAGE                   | 0-65535      | ff ffh                | Kill message PGM pointer                          | kill()       | D3 Ax0c96 C2
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -599,7 +601,7 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_KILL_MESSAGE (EEPROM_TEMP_MODEL_VER-2) //PGM_P
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_VER
+#define EEPROM_LAST_ITEM EEPROM_KILL_MESSAGE
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
