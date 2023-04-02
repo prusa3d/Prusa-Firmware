@@ -633,7 +633,7 @@ void lcd_printNumber(unsigned long n, uint8_t base)
 
 uint8_t lcd_draw_update = 2;
 int32_t lcd_encoder = 0;
-uint8_t lcd_encoder_bits = 0;
+
 static int8_t lcd_encoder_diff = 0;
 
 uint8_t lcd_buttons = 0;
@@ -753,7 +753,8 @@ bool lcd_longpress_trigger = 0;
 void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
-	static uint8_t lcd_button_pressed = 0;
+    static uint8_t lcd_button_pressed = 0;
+    static uint8_t lcd_encoder_bits = 0;
     if (READ(BTN_ENC) == 0)
     { //button is pressed
         if (buttonBlanking.expired_cont(BUTTON_BLANKING_TIME)) {
@@ -785,45 +786,26 @@ void lcd_buttons_update(void)
         }
     }
 
-	//manage encoder rotation
-	uint8_t enc = 0;
-	if (READ(BTN_EN1) == 0) enc |= B01;
-	if (READ(BTN_EN2) == 0) enc |= B10;
-	if (enc != lcd_encoder_bits)
-	{
-		switch (enc)
-		{
-		case encrot0:
-			if (lcd_encoder_bits == encrot3)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot1)
-				lcd_encoder_diff--;
-			break;
-		case encrot1:
-			if (lcd_encoder_bits == encrot0)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot2)
-				lcd_encoder_diff--;
-			break;
-		case encrot2:
-			if (lcd_encoder_bits == encrot1)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot3)
-				lcd_encoder_diff--;
-			break;
-		case encrot3:
-			if (lcd_encoder_bits == encrot2)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot0)
-				lcd_encoder_diff--;
-			break;
-		}
+    //manage encoder rotation
+    #define ENCODER_SPIN(_E1, _E2) switch (lcd_encoder_bits) { case _E1: lcd_encoder_diff++; break; case _E2: lcd_encoder_diff--; }
+    uint8_t enc = 0;
+    if (READ(BTN_EN1) == 0) enc |= B01;
+    if (READ(BTN_EN2) == 0) enc |= B10;
+    if (enc != lcd_encoder_bits)
+    {
+        switch (enc)
+        {
+            case encrot0: ENCODER_SPIN(encrot3, encrot1); break;
+            case encrot1: ENCODER_SPIN(encrot0, encrot2); break;
+            case encrot2: ENCODER_SPIN(encrot1, encrot3); break;
+            case encrot3: ENCODER_SPIN(encrot2, encrot0); break;
+        }
 
-		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
-			lcd_backlight_wake_trigger = true; // flag event, knob rotated
-		}
-		lcd_encoder_bits = enc;
-	}
+        if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+            lcd_backlight_wake_trigger = true; // flag event, knob rotated
+        }
+        lcd_encoder_bits = enc;
+    }
 }
 
 
