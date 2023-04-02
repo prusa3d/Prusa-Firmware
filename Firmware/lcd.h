@@ -105,8 +105,6 @@ extern uint8_t lcd_encoder_bits;
 //the last checked lcd_buttons in a bit array.
 extern uint8_t lcd_buttons;
 
-extern uint8_t lcd_button_pressed;
-
 extern uint8_t lcd_update_enabled;
 
 extern LongTimer lcd_timeoutToStatus;
@@ -212,8 +210,7 @@ extern void lcd_set_custom_characters_nextpage(void);
 //! @brief Consume click and longpress event
 inline void lcd_consume_click()
 {
-    lcd_button_pressed = 0;
-    lcd_buttons &= 0xff^EN_C;
+    lcd_buttons = 0;
     lcd_longpress_trigger = 0;
 }
 

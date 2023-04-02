@@ -45,7 +45,7 @@ void menu_data_reset(void)
 	memset(&menu_data, 0, sizeof(menu_data));
 }
 
-void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
+void menu_goto(menu_func_t menu, const uint32_t encoder, bool reset_menu_state, const bool feedback)
 {
 	CRITICAL_SECTION_START;
 	if (menu_menu != menu)
@@ -53,11 +53,10 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 		menu_menu = menu;
 		lcd_encoder = encoder;
 		menu_top = 0; //reset menu view. Needed if menu_back() is called from deep inside a menu, such as Support
+		lcd_draw_update = 2; // Full LCD re-draw
 		CRITICAL_SECTION_END;
-		if (reset_menu_state)
-			menu_data_reset();
-
-		if (feedback) lcd_quick_feedback();
+		if (feedback) lcd_beeper_quick_feedback();
+		if (reset_menu_state) menu_data_reset();
 	}
 	else
 		CRITICAL_SECTION_END;
@@ -74,7 +73,7 @@ void menu_start(void)
     if (lcd_encoder < menu_top)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
-    menu_clicked = LCD_CLICKED;
+    menu_clicked = lcd_clicked(); // Consume click event
 }
 
 void menu_end(void)
@@ -96,7 +95,7 @@ void menu_end(void)
 void menu_back(uint8_t nLevel)
 {
      menu_depth = ((menu_depth > nLevel) ? (menu_depth - nLevel) : 0);
-     menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
+     menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true);
 }
 
 void menu_back(void)
@@ -109,7 +108,7 @@ void menu_back_no_reset(void)
 	if (menu_depth > 0)
 	{
 		menu_depth--;		
-		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, false);
+		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, false);
 	}
 }
 
@@ -119,29 +118,29 @@ void menu_back_if_clicked(void)
 		menu_back();
 }
 
-void menu_submenu(menu_func_t submenu)
+void menu_submenu(menu_func_t submenu, const bool feedback)
 {
 	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
-		menu_goto(submenu, 0, true, true);
+		menu_goto(submenu, 0, true, feedback);
 	}
 }
 
-void menu_submenu_no_reset(menu_func_t submenu)
+void menu_submenu_no_reset(menu_func_t submenu, const bool feedback)
 {
 	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
-		menu_goto(submenu, 0, true, false);
+		menu_goto(submenu, 0, false, feedback);
 	}
 }
 
 uint8_t menu_item_ret(void)
 {
-	lcd_quick_feedback();
+	lcd_draw_update = 2;
 	return 1;
 }
 
@@ -294,8 +293,6 @@ uint8_t __attribute__((noinline)) menu_item_function_E(const Sheet &sheet, menu_
         if (lcd_draw_update) menu_draw_item_select_sheet_E(' ', sheet);
         if (menu_clicked && (lcd_encoder == menu_item))
         {
-            menu_clicked = false;
-            lcd_consume_click();
             lcd_update_enabled = 0;
             if (func) func();
             lcd_update_enabled = 1;
@@ -332,8 +329,6 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 		if (lcd_draw_update) menu_draw_item_puts_P(' ', str);
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_clicked = false;
-			lcd_consume_click();
 			lcd_update_enabled = 0;
 			if (func) func();
 			lcd_update_enabled = 1;
@@ -360,8 +355,6 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
         if (lcd_draw_update) menu_draw_item_puts_P(' ', str, number);
         if (menu_clicked && (lcd_encoder == menu_item))
         {
-            menu_clicked = false;
-            lcd_consume_click();
             lcd_update_enabled = 0;
             if (func) func(fn_par);
             lcd_update_enabled = 1;
@@ -386,8 +379,6 @@ uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func
 			}
 			else // do the actual toggling
 			{
-				menu_clicked = false;
-				lcd_consume_click();
 				lcd_update_enabled = 0;
 				if (func) func();
 				lcd_update_enabled = 1;
@@ -499,7 +490,7 @@ static void _menu_edit_P(void)
 		lcd_set_cursor(0, 1);
 		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
 	}
-	if (LCD_CLICKED)
+	if (lcd_clicked())
 	{
 		*((T)(_md->editValue)) = lcd_encoder;
 		menu_back_no_reset();

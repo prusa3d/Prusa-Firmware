@@ -64,7 +64,7 @@ extern menu_func_t menu_menu;
 
 extern void menu_data_reset(void);
 
-extern void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state);
+extern void menu_goto(menu_func_t menu, const uint32_t encoder, bool reset_menu_state, const bool feedback=false);
 
 #define MENU_BEGIN() menu_start(); for(menu_row = 0; menu_row < LCD_HEIGHT; menu_row++, menu_line++) { menu_item = 0;
 void menu_start(void);
@@ -78,8 +78,8 @@ extern void menu_back(uint8_t nLevel);
 
 extern void menu_back_if_clicked(void);
 
-extern void menu_submenu(menu_func_t submenu);
-extern void menu_submenu_no_reset(menu_func_t submenu);
+extern void menu_submenu(menu_func_t submenu, const bool feedback=false);
+extern void menu_submenu_no_reset(menu_func_t submenu, const bool feedback=false);
 
 extern uint8_t menu_item_ret(void);
 
