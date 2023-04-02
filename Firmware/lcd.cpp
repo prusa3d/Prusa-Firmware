@@ -637,7 +637,6 @@ uint8_t lcd_encoder_bits = 0;
 static int8_t lcd_encoder_diff = 0;
 
 uint8_t lcd_buttons = 0;
-uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
 static bool lcd_backlight_wake_trigger; // Flag set by interrupt when the knob is pressed or rotated
 
@@ -689,7 +688,6 @@ Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 void lcd_quick_feedback(void)
 {
   lcd_draw_update = 2;
-  lcd_button_pressed = false;
   lcd_beeper_quick_feedback();
 }
 
@@ -707,6 +705,11 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 		} else {
 			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+		}
+
+		if (lcd_draw_update == 0) {
+			// Update LCD rendering at minimum
+			lcd_draw_update = 1;
 		}
 	}
 
@@ -750,16 +753,12 @@ bool lcd_longpress_trigger = 0;
 void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
-	uint8_t newbutton = 0;
-	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
-	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
-
+	static uint8_t lcd_button_pressed = 0;
     if (READ(BTN_ENC) == 0)
     { //button is pressed
-        if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+        if (buttonBlanking.expired_cont(BUTTON_BLANKING_TIME)) {
             buttonBlanking.start();
             safetyTimer.start();
-            lcd_backlight_wake_trigger = true; // flag event, knob pressed
             if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
             {
                 longPressTimer.start();
@@ -776,22 +775,20 @@ void lcd_buttons_update(void)
     { //button not pressed
         if (lcd_button_pressed)
         { //button was released
-            buttonBlanking.start();
-            if (lcd_long_press_active == 0)
+            lcd_button_pressed = 0; // Reset to prevent double triggering
+            if (!lcd_long_press_active)
             { //button released before long press gets activated
-                newbutton |= EN_C;
+                lcd_buttons |= EN_C; // This flag is reset when the event is consumed
             }
-            //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
-            //lcd_button_pressed is set back to false via lcd_quick_feedback function
+            lcd_backlight_wake_trigger = true; // flag event, knob pressed
+            lcd_long_press_active = 0;
         }
-        lcd_long_press_active = 0;
     }
 
-	lcd_buttons = newbutton;
 	//manage encoder rotation
 	uint8_t enc = 0;
-	if (lcd_buttons & EN_A) enc |= B01;
-	if (lcd_buttons & EN_B) enc |= B10;
+	if (READ(BTN_EN1) == 0) enc |= B01;
+	if (READ(BTN_EN2) == 0) enc |= B10;
 	if (enc != lcd_encoder_bits)
 	{
 		switch (enc)
@@ -825,8 +822,8 @@ void lcd_buttons_update(void)
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
 			lcd_backlight_wake_trigger = true; // flag event, knob rotated
 		}
+		lcd_encoder_bits = enc;
 	}
-	lcd_encoder_bits = enc;
 }
 
 
