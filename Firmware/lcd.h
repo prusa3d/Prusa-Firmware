@@ -100,8 +100,6 @@ extern uint8_t lcd_draw_update;
 
 extern int32_t lcd_encoder;
 
-extern uint8_t lcd_encoder_bits;
-
 //the last checked lcd_buttons in a bit array.
 extern uint8_t lcd_buttons;
 
