@@ -290,7 +290,6 @@ void TryLoadUnloadProgressbarDeinit() {
     // Delay the next status message just so
     // the user can see the results clearly
     lcd_reset_status_message_timeout();
-    lcd_clearstatus();
 }
 
 void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
