@@ -78,8 +78,6 @@ extern void menu_back(uint8_t nLevel);
 
 extern void menu_back_if_clicked(void);
 
-extern void menu_back_if_clicked_fb(void);
-
 extern void menu_submenu(menu_func_t submenu);
 extern void menu_submenu_no_reset(menu_func_t submenu);
 
