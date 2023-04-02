@@ -634,7 +634,7 @@ void lcd_printNumber(unsigned long n, uint8_t base)
 uint8_t lcd_draw_update = 2;
 int32_t lcd_encoder = 0;
 uint8_t lcd_encoder_bits = 0;
-int8_t lcd_encoder_diff = 0;
+static int8_t lcd_encoder_diff = 0;
 
 uint8_t lcd_buttons = 0;
 uint8_t lcd_button_pressed = 0;
@@ -702,7 +702,8 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		lcd_backlight_wake_trigger = false;
 		backlight_wake();
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
-			// TODO: update lcd_encoder here
+			lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+			lcd_encoder_diff = 0;
 			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 		} else {
 			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);

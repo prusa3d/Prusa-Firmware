@@ -99,15 +99,7 @@ void ReportErrorHookSensorLineRender(){
 static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     uint8_t ret = 0;
     bool two_choices = false;
-    static int8_t enc_dif = lcd_encoder_diff;
     static uint8_t reset_button_selection;
-
-    if (lcd_encoder_diff == 0)
-    {
-         // lcd_update_enable(true) was called outside ReportErrorHookMonitor
-         // It will set lcd_encoder_diff to 0, sync enc_dif
-        enc_dif = 0;
-    }
 
     // Read and determine what operations should be shown on the menu
     const uint8_t button_operation   = PrusaErrorButtons(ei);
@@ -132,20 +124,20 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     }
 
     // Check if knob was rotated
-    if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+    if (lcd_encoder) {
         if (two_choices == false) { // third_choice is not nullptr, safe to dereference
-            if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+            if (lcd_encoder > 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                 // Rotating knob counter clockwise
                 current_selection--;
-            } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
+            } else if (lcd_encoder < 0 && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
                 // Rotating knob clockwise
                 current_selection++;
             }
         } else {
-            if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+            if (lcd_encoder > 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                 // Rotating knob counter clockwise
                 current_selection = LCD_LEFT_BUTTON_CHOICE;
-            } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
+            } else if (lcd_encoder < 0 && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
                 // Rotating knob clockwise
                 current_selection = LCD_MIDDLE_BUTTON_CHOICE;
             }
@@ -180,7 +172,7 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
             lcd_putc_at(18, 3, current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         }
         // Consume rotation event
-        enc_dif = lcd_encoder_diff;
+        lcd_encoder = 0;
     }
 
     // Check if knob was clicked and consume the event

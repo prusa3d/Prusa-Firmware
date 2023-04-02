@@ -1273,8 +1273,6 @@ void setup()
   eeprom_init_default_byte((uint8_t*)EEPROM_SILENT, SILENT_MODE_OFF);
   eeprom_init_default_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard if uninitialized
 
-  lcd_encoder_diff=0;
-
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silentMode == 0xff) silentMode = 0;
