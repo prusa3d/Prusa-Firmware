@@ -20,7 +20,9 @@ void BeginReport(CommandInProgress /*cip*/, uint16_t ec) {
 
 void EndReport(CommandInProgress /*cip*/, uint16_t /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
-    lcd_setstatuspgm(MSG_WELCOME); // should be seen only when the printer is not printing a file
+    if (!printJobOngoing()) {
+        lcd_setstatuspgm(MSG_WELCOME);
+    }
     custom_message_type = CustomMsg::Status;
 }
 
