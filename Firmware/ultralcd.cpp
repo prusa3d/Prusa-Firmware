@@ -2214,7 +2214,6 @@ void lcd_loading_filament() {
 
 
 uint8_t lcd_alright() {
-    int8_t enc_dif = 0;
     uint8_t cursor_pos = 1;
 
     lcd_clear();
@@ -2224,20 +2223,18 @@ uint8_t lcd_alright() {
     lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR c=19
     lcd_putc_at(0, 1, '>');
 
-
-    enc_dif = lcd_encoder_diff;
     lcd_consume_click();
     while (1)
     {
         delay_keep_alive(0);
 
-        if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
+        if (lcd_encoder)
         {
 
-            if (enc_dif > lcd_encoder_diff ) {
+            if (lcd_encoder > 0 ) {
                 // Rotating knob counter clockwise
                 cursor_pos--;
-            } else if (enc_dif < lcd_encoder_diff) {
+            } else if (lcd_encoder < 0) {
                 // Rotating knob clockwise
                 cursor_pos++;
             }
@@ -2254,7 +2251,7 @@ uint8_t lcd_alright() {
             lcd_putc_at(0, cursor_pos, '>');
 
             // Consume rotation event and make feedback sound
-            enc_dif = lcd_encoder_diff;
+            lcd_encoder = 0;
             _delay(100);
         }
 
@@ -2828,15 +2825,12 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
         const bool    multi_screen        = msg_next != NULL;
         unsigned long previous_millis_msg = _millis();
         // Until the user finishes the z up movement.
-        lcd_encoder_diff = 0;
         lcd_encoder = 0;
         for (;;) {
             manage_heater();
             manage_inactivity(true);
-            if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+            if (lcd_encoder) {
                 _delay(50);
-                lcd_encoder += abs(lcd_encoder_diff / ENCODER_PULSES_PER_STEP);
-                lcd_encoder_diff = 0;
                 if (! planner_queue_full()) {
                     // Only move up, whatever direction the user rotates the encoder.
                     current_position[Z_AXIS] += fabs(lcd_encoder);
@@ -3097,7 +3091,6 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     }
     // Wait for user confirmation or a timeout.
     unsigned long previous_millis_cmd = _millis();
-    int8_t enc_dif = lcd_encoder_diff;
     lcd_consume_click();
     KEEPALIVE_STATE(PAUSED_FOR_USER);
     for (;;) {
@@ -3107,27 +3100,27 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
                 current_selection = LCD_BUTTON_TIMEOUT;
                 goto exit;
             }
-            if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+            if (lcd_encoder) {
                 if (msg_next == NULL) {
                     if (third_choice) { // third_choice is not nullptr, safe to dereference
-                        if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                        if (lcd_encoder > 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                             // Rotating knob counter clockwise
                             current_selection--;
-                        } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
+                        } else if (lcd_encoder < 0 && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
                             // Rotating knob clockwise
                             current_selection++;
                         }
                     } else {
-                        if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                        if (lcd_encoder > 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                             // Rotating knob counter clockwise
                             current_selection = LCD_LEFT_BUTTON_CHOICE;
-                        } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
+                        } else if (lcd_encoder < 0 && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
                             // Rotating knob clockwise
                             current_selection = LCD_MIDDLE_BUTTON_CHOICE;
                         }
                     }
                     lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
-                    enc_dif = lcd_encoder_diff;
+                    lcd_encoder = 0;
                 } else {
                     Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
                     break; // turning knob skips waiting loop
@@ -3474,7 +3467,6 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
   if (lcd_crash_detect_enabled() && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
-  lcd_encoder_diff=0;                             // reset 'encoder buffer'
 #endif //TMC2130
 }
 
@@ -4722,7 +4714,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
     const int8_t items_no = last_item?(MMU2::mmu2.Enabled()?6:5):(MMU2::mmu2.Enabled()?5:4);
     const uint8_t item_len = item?strlen_P(item):0;
 	int8_t first = 0;
-	int8_t enc_dif = lcd_encoder_diff;
 	int8_t cursor_pos = 1;
 	
 	lcd_clear();
@@ -4732,18 +4723,18 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 	{
 		delay_keep_alive(0);
 
-		if (abs((enc_dif - lcd_encoder_diff)) > 4)
+		if (lcd_encoder)
 		{
-            if (enc_dif > lcd_encoder_diff)
+            if (lcd_encoder > 0)
             {
                 cursor_pos--;
             }
 
-            if (enc_dif < lcd_encoder_diff)
+            if (lcd_encoder < 0)
             {
                 cursor_pos++;
             }
-            enc_dif = lcd_encoder_diff;
+            lcd_encoder = 0;
 		}
 
 		if (cursor_pos > 3)
@@ -4795,7 +4786,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 		if (lcd_clicked())
 		{
 		    KEEPALIVE_STATE(IN_HANDLER);
-			lcd_encoder_diff = 0;
 			return(cursor_pos + first - 1);
 		}
 	}
@@ -4803,7 +4793,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
 char reset_menu() {
 	static int8_t first = 0;
-	int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
 	const char *const item[] = {
@@ -4813,8 +4802,7 @@ char reset_menu() {
 		PSTR("Service prep"),
 		PSTR("All Data"),
 	};
-	
-	enc_dif = lcd_encoder_diff;
+
 	lcd_clear();
 	lcd_set_cursor(0, 0);
 	lcd_putc('>');
@@ -4827,41 +4815,37 @@ char reset_menu() {
 
 		delay_keep_alive(0);
 
-		if (abs((enc_dif - lcd_encoder_diff)) > 4) {
+		if (lcd_encoder) {
+            if (lcd_encoder > 0) {
+                cursor_pos--;
+            }
 
-			if ((abs(enc_dif - lcd_encoder_diff)) > 1) {
-				if (enc_dif > lcd_encoder_diff) {
-					cursor_pos--;
-				}
+            if (lcd_encoder < 0) {
+                cursor_pos++;
+            }
 
-				if (enc_dif < lcd_encoder_diff) {
-					cursor_pos++;
-				}
+            if (cursor_pos > 3) {
+                cursor_pos = 3;
+                Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+                if (first < (uint8_t)(sizeof(item) / sizeof(item[0])) - 4) {
+                    first++;
+                    lcd_clear();
+                }
+            }
 
-				if (cursor_pos > 3) {
-					cursor_pos = 3;
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-					if (first < (uint8_t)(sizeof(item) / sizeof(item[0])) - 4) {
-						first++;
-						lcd_clear();
-					}
-				}
-
-				if (cursor_pos < 0) {
-					cursor_pos = 0;
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-					if (first > 0) {
-						first--;
-						lcd_clear();
-					}
-				}
-				lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
-				lcd_set_cursor(0, cursor_pos);
-				lcd_putc('>');
-				enc_dif = lcd_encoder_diff;
-				_delay(100);
-			}
-
+            if (cursor_pos < 0) {
+                cursor_pos = 0;
+                Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+                if (first > 0) {
+                    first--;
+                    lcd_clear();
+                }
+            }
+            lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
+            lcd_set_cursor(0, cursor_pos);
+            lcd_putc('>');
+            lcd_encoder = 0;
+            _delay(100);
 		}
 
 		if (lcd_clicked()) {
@@ -6937,15 +6921,15 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	lcd_putc_at(0, 3, '>');
 	lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 
-	int8_t enc_dif = int(_default)*3;
+	lcd_encoder = _default;
 
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 	lcd_button_pressed = false;
 	do
 	{
-		if (abs((enc_dif - lcd_encoder_diff)) > 2) {
-			if (enc_dif > lcd_encoder_diff) {
+		if (lcd_encoder) {
+			if (lcd_encoder > 0) {
 				_result = !check_opposite;
 				lcd_putc_at(0, 2, '>');
 				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
@@ -6953,15 +6937,14 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
 
-			if (enc_dif < lcd_encoder_diff) {
+			if (lcd_encoder < 0) {
 				_result = check_opposite;
 				lcd_putc_at(0, 2, ' ');
 				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
 				lcd_putc_at(0, 3, '>');
 				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
-			enc_dif = 0;
-			lcd_encoder_diff = 0;
+            lcd_encoder = 0;
 		}
 
 
@@ -7267,7 +7250,6 @@ void ultralcd_init()
   _delay_ms(1); //wait for the pullups to raise the line
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
-  lcd_encoder_diff = 0;
 
   // Initialise status line
   strncpy_P(lcd_status_message, MSG_WELCOME, LCD_WIDTH);
@@ -7482,12 +7464,9 @@ void menu_lcd_lcdupdate_func(void)
 #endif//CARDINSERTED
 	if (lcd_next_update_millis < _millis())
 	{
-		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
+		if (lcd_encoder)
 		{
-			if (lcd_draw_update == 0)
-			lcd_draw_update = 1;
-			lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
-			lcd_encoder_diff = 0;
+			if (lcd_draw_update == 0) lcd_draw_update = 1;
 			lcd_timeoutToStatus.start();
 		}
 

@@ -102,9 +102,6 @@ extern int32_t lcd_encoder;
 
 extern uint8_t lcd_encoder_bits;
 
-// lcd_encoder_diff is updated from interrupt context and added to lcd_encoder every LCD update
-extern int8_t lcd_encoder_diff;
-
 //the last checked lcd_buttons in a bit array.
 extern uint8_t lcd_buttons;
 
