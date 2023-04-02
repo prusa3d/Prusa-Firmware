@@ -1147,7 +1147,7 @@ static void lcd_menu_fails_stats_mmu_print() {
         _T(MSG_LAST_PRINT_FAILURES),
         _T(MSG_MMU_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) ),
         _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) ));
-    menu_back_if_clicked_fb();
+    menu_back_if_clicked();
 }
 
 //! @brief Show Total Failures Statistics MMU
@@ -1173,7 +1173,7 @@ static void lcd_menu_fails_stats_mmu_total() {
         _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
         _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
         _T(MSG_MMU_POWER_FAILS), clamp999( MMU2::mmu2.TMCFailures() ));
-    menu_back_if_clicked_fb();
+    menu_back_if_clicked();
 }
 
 //! @brief Show Total Failures Statistics MMU
@@ -1202,8 +1202,7 @@ static void lcd_menu_toolchange_stats_mmu_total()
         lcd_print(eeprom_read_dword((uint32_t*)EEPROM_MMU_MATERIAL_CHANGES));
         _md->initialized = true;
     }
-
-    menu_back_if_clicked_fb();
+    menu_back_if_clicked();
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
@@ -1230,7 +1229,7 @@ static void lcd_menu_fails_stats_total()
         _T(MSG_CRASH),
             clamp999( eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) ), 
             clamp999( eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) ));
-    menu_back_if_clicked_fb();
+    menu_back_if_clicked();
 }
 
 //! @brief Show Last Print Failures Statistics
@@ -1257,7 +1256,7 @@ static void lcd_menu_fails_stats_print()
         _T(MSG_POWER_FAILURES), power,
         _T(MSG_FIL_RUNOUTS), filam,
         _T(MSG_CRASH), crashX, crashY);
-    menu_back_if_clicked_fb();
+    menu_back_if_clicked();
 }
 
 //! @brief Open fail statistics menu
@@ -1354,7 +1353,7 @@ static void lcd_menu_debug()
         " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);  ////c=14
 #endif //DEBUG_STACK_MONITOR
 
-	menu_back_if_clicked_fb();
+	menu_back_if_clicked();
 }
 #endif /* DEBUG_BUILD */
 
@@ -2359,7 +2358,7 @@ void lcd_menu_statistics()
 		    ),
             _i("Filament used"), _met,  ////MSG_FILAMENT_USED c=19
             _i("Print time"), _h, _m, _s);  ////MSG_PRINT_TIME c=19
-		menu_back_if_clicked_fb();
+		menu_back_if_clicked();
 	}
 	else
 	{
@@ -2381,7 +2380,7 @@ void lcd_menu_statistics()
             ),
             _i("Total filament"), _filament_m,  ////MSG_TOTAL_FILAMENT c=19
             _i("Total print time"), _days, _hours, _minutes);  ////MSG_TOTAL_PRINT_TIME c=19
-        menu_back_if_clicked_fb();
+        menu_back_if_clicked();
 	}
 }
 

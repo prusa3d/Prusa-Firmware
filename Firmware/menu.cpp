@@ -119,15 +119,6 @@ void menu_back_if_clicked(void)
 		menu_back();
 }
 
-void menu_back_if_clicked_fb(void)
-{
-	if (lcd_clicked())
-	{
-        lcd_quick_feedback();
-		menu_back();
-	}
-}
-
 void menu_submenu(menu_func_t submenu)
 {
 	if (menu_depth < MENU_DEPTH_MAX)
