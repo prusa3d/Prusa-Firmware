@@ -65,7 +65,6 @@ tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
 };
 
 bool tmc2130_sg_stop_on_crash = true;
-uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
 
 //used for triggering a periodic check (1s) of the overtemperature pre-warning flag at ~120C (+-20C)
