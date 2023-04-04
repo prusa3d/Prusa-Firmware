@@ -320,7 +320,7 @@ static void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_clear();
     lcd_puts_at_P(0, 1, pgmS);
     lcd_print(' ');
-    lcd_print(uint8_t(slot + 1));
+    lcd_print(slot + 1);
 }
 
 void FullScreenMsgCut(uint8_t slot){
