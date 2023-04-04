@@ -594,24 +594,17 @@ void crashdet_detected(uint8_t mask)
     crashDetTimer.start();
     crashDet_axes |= mask;
 
-	lcd_update_enable(true);
-	lcd_clear();
-	lcd_update(2);
-
-	if (mask & X_AXIS_MASK)
-	{
+	if (mask & X_AXIS_MASK) {
 		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
 		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
 	}
-	if (mask & Y_AXIS_MASK)
-	{
+	if (mask & Y_AXIS_MASK) {
 		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
 		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
 	}
 
-	lcd_update_enable(true);
-	lcd_update(2);
-
+    lcd_update_enable(true);
+    lcd_update(2);
     // prepare the status message with the _current_ axes status
     crashdet_fmt_error(msg, mask);
     lcd_setstatus(msg);
