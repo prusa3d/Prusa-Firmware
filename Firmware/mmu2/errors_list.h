@@ -332,7 +332,7 @@ static const char MSG_BTN_RESTART_MMU[] PROGMEM_I1 = ISTR("RstMMU"); ////MSG_BTN
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
-static const char MSG_BTN_MORE[] PROGMEM_I1 = ISTR("\x06"); ////MSG_BTN_MORE c=8
+static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {

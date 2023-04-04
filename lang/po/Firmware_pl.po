@@ -2548,12 +2548,6 @@ msgstr ""
 "Wersja oprogramowania układowego MMU jest niezgodna z oprogramowaniem "
 "sprzętowym drukarki. Zaktualizuj do wersji 2.1.9."
 
-#. MSG_BTN_MORE c=8
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
-msgstr "⏬"
-
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
 
