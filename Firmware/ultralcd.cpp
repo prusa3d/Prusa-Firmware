@@ -2825,7 +2825,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
                 _delay(50);
                 if (! planner_queue_full()) {
                     // Only move up, whatever direction the user rotates the encoder.
-                    current_position[Z_AXIS] += lcd_encoder;
+                    current_position[Z_AXIS] += abs(lcd_encoder);
                     lcd_encoder = 0;
                     plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
                 }

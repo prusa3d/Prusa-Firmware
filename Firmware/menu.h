@@ -65,7 +65,7 @@ extern menu_func_t menu_menu;
 
 extern void menu_data_reset(void);
 
-extern void menu_goto(menu_func_t menu, const int16_t encoder, const bool feedback, bool reset_menu_state);
+extern void menu_goto(menu_func_t menu, const int16_t encoder, bool reset_menu_state, const bool feedback=false);
 
 #define MENU_BEGIN() menu_start(); for(menu_row = 0; menu_row < LCD_HEIGHT; menu_row++, menu_line++) { menu_item = 0;
 void menu_start(void);
