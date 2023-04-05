@@ -10927,7 +10927,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     float pos_y = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
     if (pos_x != X_COORD_INVALID)
     {
-        enquecommandf_P(PSTR("G1 X%f Y%f F3000"), pos_x, pos_y);
+        enquecommandf_P(PSTR("G1 X%-.3f Y%-.3f F3000"), pos_x, pos_y);
     }
 
     // Enable MBL and switch to logical positioning
@@ -10935,19 +10935,20 @@ void restore_print_from_eeprom(bool mbl_was_active) {
         enquecommand_P(PSTR("PRUSA MBL V1"));
 
     // Move the Z axis down to the print, in logical coordinates.
-    enquecommandf_P(PSTR("G1 Z%f"), eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)));
+    enquecommandf_P(PSTR("G1 Z%-.3f"), eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)));
 
     // Restore acceleration settings
     float acceleration = eeprom_read_float((float*)(EEPROM_UVLO_ACCELL));
     float retract_acceleration = eeprom_read_float((float*)(EEPROM_UVLO_RETRACT_ACCELL));
     float travel_acceleration = eeprom_read_float((float*)(EEPROM_UVLO_TRAVEL_ACCELL));
-    enquecommandf_P(PSTR("M204 P%f R%f T%f"), acceleration, retract_acceleration, travel_acceleration);
+    // accelerations are usually ordinary numbers, no need to keep extensive amount of decimal places
+    enquecommandf_P(PSTR("M204 P%-.1f R%-.1f T%-.1f"), acceleration, retract_acceleration, travel_acceleration);
 
   // Unretract.
     enquecommandf_P(G1_E_F2700, default_retraction);
   // Recover final E axis position and mode
     float pos_e = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
-    enquecommandf_P(PSTR("G92 E%6.3f"), pos_e);
+    enquecommandf_P(PSTR("G92 E%-.3f"), pos_e);
     if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
         enquecommand_P(PSTR("M82")); //E axis abslute mode
   // Set the feedrates saved at the power panic.
@@ -11147,7 +11148,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     if(z_move)
     {
         // Then lift Z axis
-        enquecommandf_P(PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
+        enquecommandf_P(PSTR("G1 Z%-.3f F%-.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
     }
 
     // If this call is invoked from the main Arduino loop() function, let the caller know that the command
