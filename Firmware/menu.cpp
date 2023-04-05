@@ -64,7 +64,6 @@ void menu_goto(menu_func_t menu, const int16_t encoder, const bool feedback, boo
 
 void menu_start(void)
 {
-    if (lcd_encoder > INT8_MAX) lcd_encoder = 0;
     if (lcd_encoder < 0)
     {
         lcd_encoder = 0;
