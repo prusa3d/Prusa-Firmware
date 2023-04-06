@@ -94,6 +94,9 @@ extern const char _sPrinterMmuName[] PROGMEM;
 // This determines the communication speed of the printer
 #define BAUDRATE 115200
 
+// Enable g-code compression (see https://github.com/scottmudge/OctoPrint-MeatPack)
+#define ENABLE_MEATPACK
+
 // This enables the serial port associated to the Bluetooth interface
 //#define BTENABLED              // Enable BT interface on AT90USB devices
 
