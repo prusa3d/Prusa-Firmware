@@ -2219,10 +2219,10 @@ uint8_t lcd_alright() {
         if (lcd_encoder)
         {
 
-            if (lcd_encoder > 0 ) {
+            if (lcd_encoder < 0 ) {
                 // Rotating knob counter clockwise
                 cursor_pos--;
-            } else if (lcd_encoder < 0) {
+            } else if (lcd_encoder > 0) {
                 // Rotating knob clockwise
                 cursor_pos++;
             }
@@ -3095,18 +3095,18 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
             if (lcd_encoder) {
                 if (msg_next == NULL) {
                     if (third_choice) { // third_choice is not nullptr, safe to dereference
-                        if (lcd_encoder > 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                        if (lcd_encoder < 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                             // Rotating knob counter clockwise
                             current_selection--;
-                        } else if (lcd_encoder < 0 && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
+                        } else if (lcd_encoder > 0 && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
                             // Rotating knob clockwise
                             current_selection++;
                         }
                     } else {
-                        if (lcd_encoder > 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                        if (lcd_encoder < 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                             // Rotating knob counter clockwise
                             current_selection = LCD_LEFT_BUTTON_CHOICE;
-                        } else if (lcd_encoder < 0 && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
+                        } else if (lcd_encoder > 0 && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
                             // Rotating knob clockwise
                             current_selection = LCD_MIDDLE_BUTTON_CHOICE;
                         }
@@ -4717,12 +4717,12 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
 		if (lcd_encoder)
 		{
-            if (lcd_encoder > 0)
+            if (lcd_encoder < 0)
             {
                 cursor_pos--;
             }
 
-            if (lcd_encoder < 0)
+            if (lcd_encoder > 0)
             {
                 cursor_pos++;
             }
@@ -4808,11 +4808,11 @@ char reset_menu() {
 		delay_keep_alive(0);
 
 		if (lcd_encoder) {
-			if (lcd_encoder > 0) {
+			if (lcd_encoder < 0) {
 				cursor_pos--;
 			}
 
-			if (lcd_encoder < 0) {
+			if (lcd_encoder > 0) {
 				cursor_pos++;
 			}
 
@@ -6915,7 +6915,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	do
 	{
 		if (lcd_encoder) {
-			if (lcd_encoder > 0) {
+			if (lcd_encoder < 0) {
 				_result = !check_opposite;
 				lcd_putc_at(0, 2, '>');
 				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
@@ -6923,7 +6923,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
 
-			if (lcd_encoder < 0) {
+			if (lcd_encoder > 0) {
 				_result = check_opposite;
 				lcd_putc_at(0, 2, ' ');
 				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
