@@ -803,6 +803,7 @@ void lcd_splash()
 
 void factory_reset() 
 {
+	LcdUpdateDisabler lcdUpdateDisabler;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	if (!READ(BTN_ENC))
 	{
