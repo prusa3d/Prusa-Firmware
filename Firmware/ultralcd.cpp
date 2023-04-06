@@ -2214,7 +2214,8 @@ uint8_t lcd_alright() {
     lcd_consume_click();
     while (1)
     {
-        delay_keep_alive(0);
+        manage_heater();
+        manage_inactivity(true);
 
         if (lcd_encoder)
         {
@@ -4713,7 +4714,8 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1)
 	{
-		delay_keep_alive(0);
+		manage_heater();
+		manage_inactivity(true);
 
 		if (lcd_encoder)
 		{
@@ -4805,7 +4807,8 @@ char reset_menu() {
 			lcd_puts_at_P(1, i, item[first + i]);
 		}
 
-		delay_keep_alive(0);
+		manage_heater();
+		manage_inactivity(true);
 
 		if (lcd_encoder) {
 			if (lcd_encoder < 0) {
