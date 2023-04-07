@@ -117,7 +117,7 @@ void Filament_sensor::triggerFilamentInserted() {
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
             )
         ) {
-        lcd_AutoLoadFilament();
+        menu_submenu(lcd_AutoLoadFilament, true);
     }
 }
 
