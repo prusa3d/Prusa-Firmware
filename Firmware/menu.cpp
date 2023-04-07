@@ -165,7 +165,7 @@ static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const u
     const char eol = (toggle == NULL) ? LCD_STR_ARROW_RIGHT[0] : ' ';
     if (toggle == NULL) toggle = _T(MSG_NA);
     uint8_t len = 4 + (is_progmem ? strlen_P(toggle) : strlen(toggle));
-    lcd_putc((settings & 0x01) ? '>' : ' ');
+	lcd_putc_at(0, menu_row, (settings & 0x01) ? '>' : ' ');
     lcd_print_pad_P(str, LCD_WIDTH - len);
     lcd_putc('[');
     if (is_progmem)
