@@ -5872,7 +5872,8 @@ void lcd_sdcard_menu()
 		} break;
 		case _scrolling: //scrolling filename
 		{
-			const bool rewindFlag = lcd_clicked() || lcd_draw_update; //flag that says whether the menu should return to _standard state.
+            // LCD_CLICKED is used so that the click event is later consumed by the _standard state.
+			const bool rewindFlag = LCD_CLICKED || lcd_draw_update; //flag that says whether the menu should return to _standard state.
 			
 			if (_md->scrollPointer == NULL)
 			{
