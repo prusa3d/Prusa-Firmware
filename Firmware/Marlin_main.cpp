@@ -1355,6 +1355,9 @@ void setup()
     if (!xflash_success)
         xflash_err_msg();
 
+    // report kill() events
+    fw_kill_init();
+
 #ifdef FILAMENT_SENSOR
     fsensor.init();
 #endif //FILAMENT_SENSOR
@@ -1587,9 +1590,6 @@ void setup()
 
     // report crash failures
     fw_crash_init();
-
-    // report kill() events
-    fw_kill_init();
 
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
