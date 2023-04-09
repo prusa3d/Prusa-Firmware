@@ -7508,7 +7508,7 @@ Sigma_Exit:
     {
 		lang_reset();
         SERIAL_ECHO_START;
-        SERIAL_PROTOCOLPGM(("LANG SEL FORCED"));
+        SERIAL_PROTOCOLPGM("LANG SEL FORCED");
     }
     break;
     #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
