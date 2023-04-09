@@ -1037,11 +1037,13 @@ static void fw_crash_init()
     eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, 0xFF);
 }
 
+#define KILL_PENDING_FLAG 0x42
+
 static void fw_kill_init() {
-    PGM_P kill_msg = (PGM_P)eeprom_init_default_word((uint16_t*)EEPROM_KILL_MESSAGE, 0);
-    if (kill_msg) {
+    if (eeprom_read_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG) == KILL_PENDING_FLAG) {
+        PGM_P kill_msg = (PGM_P)eeprom_read_word((uint16_t*)EEPROM_KILL_MESSAGE);
         // clear pending message event
-        eeprom_write_word((uint16_t*)EEPROM_KILL_MESSAGE, 0);
+        eeprom_write_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG, EEPROM_EMPTY_VALUE);
 
         // display the kill message
         lcd_show_fullscreen_message_and_wait_P(kill_msg);
@@ -9501,6 +9503,7 @@ void kill(const char *full_screen_message) {
 
     // update eeprom with the correct kill message to be shown on startup
     eeprom_write_word((uint16_t*)EEPROM_KILL_MESSAGE, (uint16_t)full_screen_message);
+    eeprom_write_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG, KILL_PENDING_FLAG);
 
     softReset();
 }
