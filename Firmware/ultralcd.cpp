@@ -3297,20 +3297,15 @@ static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
 	uint8_t pinda_state = STATE_NA;
-	uint8_t finda_state = STATE_NA;
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (MMU2::mmu2.Enabled())
-	{
-		finda_state = MMU2::mmu2.FindaDetectsFilament();
-	}
 	lcd_puts_at_P(0, 0, MSG_PINDA);
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
 	
-	if (MMU2::mmu2.Enabled())
-	{
+	if (MMU2::mmu2.Enabled()) {
+		const uint8_t finda_state = MMU2::mmu2.FindaDetectsFilament();
 		lcd_puts_at_P(10, 0, _n("FINDA"));////MSG_FINDA c=5
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
