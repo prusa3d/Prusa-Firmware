@@ -357,7 +357,7 @@ bool tmc2130_wait_standstill_xy(int timeout)
 
 void tmc2130_check_overtemp()
 {
-	if (tmc2130_overtemp_timer.expired(1000) || !tmc2130_overtemp_timer.running())
+	if (tmc2130_overtemp_timer.expired_cont(1000))
 	{
 		for (uint_least8_t i = 0; i < 4; i++)
 		{
