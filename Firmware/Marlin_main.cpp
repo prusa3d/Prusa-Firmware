@@ -9144,7 +9144,6 @@ void update_currents() {
 #endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 
 void get_coordinates() {
-  bool seen[4]={false,false,false,false};
   for (uint8_t i = X_AXIS, mask = X_AXIS_MASK; i < NUM_AXIS; i++, mask <<= 1) {
     if(code_seen(axis_codes[i]))
     {
@@ -9162,7 +9161,6 @@ void get_coordinates() {
       }
       if (relative)
         destination[i] += current_position[i];
-      seen[i]=true;
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 	  if (i == Z_AXIS && SilentModeMenu == SILENT_MODE_AUTO) update_currents();
 #endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
@@ -9172,11 +9170,6 @@ void get_coordinates() {
   if(code_seen('F')) {
     next_feedrate = code_value();
     if(next_feedrate > 0.0) feedrate = next_feedrate;
-	if (!seen[0] && !seen[1] && !seen[2] && seen[3])
-	{
-//		float e_max_speed = 
-//		printf_P(PSTR("E MOVE speed %7.3f\n"), feedrate / 60)
-	}
   }
 }
 
