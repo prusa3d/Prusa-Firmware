@@ -268,11 +268,11 @@ void tmc2130_home_enter(uint8_t axes_mask)
 {
 	printf_P(PSTR("tmc2130_home_enter(axes_mask=0x%02x)\n"), axes_mask);
 #ifdef TMC2130_SG_HOMING
-	if (axes_mask & 0x03) //X or Y
+	if (axes_mask & (X_AXIS_MASK | Y_AXIS_MASK)) //X or Y
 		tmc2130_wait_standstill_xy(1000);
-	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++) //X Y and Z axes
+	for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 	{
-		if (const uint8_t mask = axes_mask & _BV(axis); mask)
+		if (axes_mask & mask)
 		{
 			tmc2130_sg_homing_axes_mask |= mask;
 			//Configuration to spreadCycle
@@ -294,9 +294,9 @@ void tmc2130_home_exit()
 		tmc2130_wait_standstill_xy(1000);
 	if (tmc2130_sg_homing_axes_mask)
 	{
-		for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++) //X Y and Z axes
+		for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 		{
-			if (tmc2130_sg_homing_axes_mask & _BV(axis))
+			if (tmc2130_sg_homing_axes_mask & mask)
 			{
 #ifndef TMC2130_STEALTH_Z
 				if ((tmc2130_mode == TMC2130_MODE_SILENT) && (axis != Z_AXIS))
