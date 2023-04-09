@@ -9145,10 +9145,10 @@ void update_currents() {
 
 void get_coordinates() {
   bool seen[4]={false,false,false,false};
-  for(int8_t i=0; i < NUM_AXIS; i++) {
+  for (uint8_t i = X_AXIS, mask = X_AXIS_MASK; i < NUM_AXIS; i++, mask <<= 1) {
     if(code_seen(axis_codes[i]))
     {
-      bool relative = axis_relative_modes & (1 << i);
+      bool relative = axis_relative_modes & mask;
       destination[i] = code_value();
       if (i == E_AXIS) {
         float emult = extruder_multiplier[active_extruder];
