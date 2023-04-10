@@ -287,8 +287,8 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* lon
 
 
 
-#define MENU_ITEM_SDDIR(str_fn, str_fnl) do { if (menu_item_sddir(str_fn, str_fnl)) return; } while (0)
-#define MENU_ITEM_SDFILE(str_fn, str_fnl) do { if (menu_item_sdfile(str_fn, str_fnl)) return; } while (0)
+#define MENU_ITEM_SDDIR(str_fn, str_fnl) do { menu_item_sddir(str_fn, str_fnl); } while (0)
+#define MENU_ITEM_SDFILE(str_fn, str_fnl) do { menu_item_sdfile(str_fn, str_fnl); } while (0)
 
 
 uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
@@ -5470,7 +5470,7 @@ static uint8_t lcd_advance_K()
     return 0;
 }
 
-#define MENU_ITEM_EDIT_advance_K() do { if (lcd_advance_K()) return; } while (0)
+#define MENU_ITEM_EDIT_advance_K() do { lcd_advance_K(); } while (0)
 #endif
 
 

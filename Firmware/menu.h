@@ -92,36 +92,36 @@ extern uint8_t menu_item_ret(void);
 #define MENU_ITEM_DUMMY() menu_item_dummy()
 extern void menu_item_dummy(void);
 
-#define MENU_ITEM_TEXT_P(str) do { if (menu_item_text_P(str)) return; } while (0)
+#define MENU_ITEM_TEXT_P(str) do { menu_item_text_P(str); } while (0)
 extern uint8_t menu_item_text_P(const char* str);
 
-#define MENU_ITEM_SUBMENU_P(str, submenu) do { if (menu_item_submenu_P(str, submenu)) return; } while (0)
+#define MENU_ITEM_SUBMENU_P(str, submenu) do { menu_item_submenu_P(str, submenu); } while (0)
 extern uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu);
 
-#define MENU_ITEM_SUBMENU_E(sheet, submenu) do { if (menu_item_submenu_E(sheet, submenu)) return; } while (0)
+#define MENU_ITEM_SUBMENU_E(sheet, submenu) do { menu_item_submenu_E(sheet, submenu); } while (0)
 extern uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu);
 
-#define MENU_ITEM_FUNCTION_E(sheet, submenu) do { if (menu_item_function_E(sheet, submenu)) return; } while (0)
+#define MENU_ITEM_FUNCTION_E(sheet, submenu) do { menu_item_function_E(sheet, submenu); } while (0)
 extern uint8_t menu_item_function_E(const Sheet &sheet, menu_func_t func);
 
-#define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
+#define MENU_ITEM_BACK_P(str) do { menu_item_back_P(str); } while (0)
 extern uint8_t menu_item_back_P(const char* str);
 
 // leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
 #define ON_MENU_LEAVE(func) do { if (menu_item_leave()){ func } } while (0)
 extern bool menu_item_leave();
 
-#define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
+#define MENU_ITEM_FUNCTION_P(str, func) do { menu_item_function_P(str, func); } while (0)
 extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
 
-#define MENU_ITEM_FUNCTION_NR_P(str, number, func, fn_par) do { if (menu_item_function_P(str, number, func, fn_par)) return; } while (0)
+#define MENU_ITEM_FUNCTION_NR_P(str, number, func, fn_par) do { menu_item_function_P(str, number, func, fn_par); } while (0)
 extern uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par);
 
-#define MENU_ITEM_TOGGLE_P(str, toggle, func) do { if (menu_item_toggle_P(str, toggle, func, 0x02)) return; } while (0)
-#define MENU_ITEM_TOGGLE(str, toggle, func) do { if (menu_item_toggle_P(str, toggle, func, 0x00)) return; } while (0)
+#define MENU_ITEM_TOGGLE_P(str, toggle, func) do { menu_item_toggle_P(str, toggle, func, 0x02); } while (0)
+#define MENU_ITEM_TOGGLE(str, toggle, func) do { menu_item_toggle_P(str, toggle, func, 0x00); } while (0)
 extern uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func, const uint8_t settings);
 
-#define MENU_ITEM_GCODE_P(str, str_gcode) do { if (menu_item_gcode_P(str, str_gcode)) return; } while (0)
+#define MENU_ITEM_GCODE_P(str, str_gcode) do { menu_item_gcode_P(str, str_gcode); } while (0)
 extern uint8_t menu_item_gcode_P(const char* str, const char* str_gcode);
 
 
@@ -142,7 +142,7 @@ struct SheetFormatBuffer
 extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
 
-#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
+#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { menu_item_edit_P(str, pval, minval, maxval); } while (0)
 //#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
 template <typename T>
 extern uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
