@@ -77,6 +77,11 @@ void menu_start(void)
 
 void menu_end(void)
 {
+	if (menu_row >= LCD_HEIGHT)
+	{
+		// Early abort if the menu was clicked. The current menu might have changed because of the click event
+		return;
+	}
 	if (lcd_encoder >= menu_item)
 	{
 		lcd_encoder = menu_item - 1;
@@ -141,6 +146,11 @@ uint8_t menu_item_ret(void)
 {
 	lcd_draw_update = 2;
 	menu_item++;
+	
+	//prevent the rest of the menu items from rendering or getting clicked
+	menu_row = LCD_HEIGHT; // early exit from the MENU_BEGIN() for loop at the end of the current cycle
+	menu_line = 0; // prevent subsequent menu items from rendering at all in the current MENU_BEGIN() for loop cycle
+	menu_clicked = 0; // prevent subsequent items from being able to be clicked in case the current menu or position was changed by the clicked menu item
 	return 1;
 }
 
