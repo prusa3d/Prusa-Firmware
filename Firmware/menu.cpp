@@ -140,6 +140,7 @@ void menu_submenu_no_reset(menu_func_t submenu, const bool feedback)
 uint8_t menu_item_ret(void)
 {
 	lcd_draw_update = 2;
+	menu_item++;
 	return 1;
 }
 
