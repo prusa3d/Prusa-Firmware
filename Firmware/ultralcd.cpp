@@ -291,7 +291,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* lon
 #define MENU_ITEM_SDFILE(str_fn, str_fnl) do { menu_item_sdfile(str_fn, str_fnl); } while (0)
 
 
-uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
+static void menu_item_sddir(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
@@ -304,14 +304,14 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = false;
 			menu_action_sddirectory(str_fn);
 			lcd_update_enabled = true;
-			return menu_item_ret();
+			menu_item_ret();
+			return;
 		}
 	}
 	menu_item++;
-	return 0;
 }
 
-static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
+static void menu_item_sdfile(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
@@ -324,11 +324,11 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = false;
 			menu_action_sdfile(str_fn);
 			lcd_update_enabled = true;
-			return menu_item_ret();
+			menu_item_ret();
+			return;
 		}
 	}
 	menu_item++;
-	return 0;
 }
 
 // Print temperature (nozzle/bed) (9 chars total)
@@ -5454,7 +5454,7 @@ static void lcd_advance_edit_K(void)
     }
 }
 
-static uint8_t lcd_advance_K()
+static void lcd_advance_K()
 {
     if (menu_item == menu_line)
     {
@@ -5467,11 +5467,11 @@ static uint8_t lcd_advance_K()
         {
             menu_submenu_no_reset(lcd_advance_edit_K);
             lcd_encoder = 100. * extruder_advance_K;
-            return menu_item_ret();
+            menu_item_ret();
+            return;
         }
     }
     menu_item++;
-    return 0;
 }
 
 #define MENU_ITEM_EDIT_advance_K() do { lcd_advance_K(); } while (0)
