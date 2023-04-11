@@ -439,7 +439,7 @@ void menu_draw_P(char chr, const char* str, T val)
 	} else { // 3 digits
 		lcd_set_cursor_column(LCD_WIDTH - 3);
 	}
-	lcd_print(val);
+	lcd_print(val, DEC);
 }
 
 template void menu_draw_P<int16_t>(char chr, const char* str, int16_t val);
