@@ -466,8 +466,8 @@ msgstr "Gotov"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
-msgstr "E-ispravan:"
+msgid "E-correct"
+msgstr "E-ispravan"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19
@@ -2342,8 +2342,8 @@ msgstr "Carobnjak"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
-msgstr "X-ispravan:"
+msgid "X-correct"
+msgstr "X-ispravan"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
@@ -2414,8 +2414,8 @@ msgstr "Y distanca od min"
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
-msgstr "Y-ispravan:"
+msgid "Y-correct"
+msgstr "Y-ispravan"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:2226
@@ -2431,8 +2431,8 @@ msgstr "Carobnjak uvijek mozete nastaviti iz Kalibracija -> Carobnjak."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
-msgstr "Z-ispravan:"
+msgid "Z-correct"
+msgstr "Z-ispravan"
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5688

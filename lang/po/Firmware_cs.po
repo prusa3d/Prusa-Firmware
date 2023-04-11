@@ -468,8 +468,8 @@ msgstr "Konec"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
-msgstr "Korekce E:"
+msgid "E-correct"
+msgstr "Korekce E"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19
@@ -2320,8 +2320,8 @@ msgstr "Pruvodce"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
-msgstr "Korekce X:"
+msgid "X-correct"
+msgstr "Korekce X"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
@@ -2391,8 +2391,8 @@ msgstr "Y vzdalenost od min"
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
-msgstr "Korekce Y:"
+msgid "Y-correct"
+msgstr "Korekce Y"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:2226
@@ -2408,8 +2408,8 @@ msgstr "Pruvodce muzete znovu spustit z menu Kalibrace -> Pruvodce."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
-msgstr "Korekce Z:"
+msgid "Z-correct"
+msgstr "Korekce Z"
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5688

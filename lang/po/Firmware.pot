@@ -445,7 +445,7 @@ msgstr ""
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
+msgid "E-correct"
 msgstr ""
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
@@ -2308,7 +2308,7 @@ msgstr ""
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
+msgid "X-correct"
 msgstr ""
 
 #. MSG_XFLASH c=18
@@ -2375,7 +2375,7 @@ msgstr ""
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
+msgid "Y-correct"
 msgstr ""
 
 #. MSG_YES c=4
@@ -2392,7 +2392,7 @@ msgstr ""
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
+msgid "Z-correct"
 msgstr ""
 
 #. MSG_Z_PROBE_NR c=14

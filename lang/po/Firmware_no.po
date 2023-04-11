@@ -469,8 +469,8 @@ msgstr "Ferdig"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
-msgstr "E-korreksjon:"
+msgid "E-correct"
+msgstr "E-korreksjon"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19
@@ -2327,8 +2327,8 @@ msgstr "Veileder"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
-msgstr "X-korreksjon:"
+msgid "X-correct"
+msgstr "X-korreksjon"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
@@ -2396,8 +2396,8 @@ msgstr "Y distanse fra min."
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
-msgstr "Y-korreksjon:"
+msgid "Y-correct"
+msgstr "Y-korreksjon"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:2226
@@ -2413,8 +2413,8 @@ msgstr "Du kan alltid starte Veilederen fra Kalibrering -> Veileder."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
-msgstr "Z-korreksjon:"
+msgid "Z-correct"
+msgstr "Z-korreksjon"
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5688
