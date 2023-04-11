@@ -481,6 +481,9 @@ static void _menu_edit_P(void)
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
+		_md->currentValue += lcd_encoder;
+		lcd_encoder = 0; // Consume knob rotation event
+
 		// Constrain the value in case it's outside the allowed limits
 		_md->currentValue = constrain(_md->currentValue, _md->minEditValue, _md->maxEditValue);
 		lcd_set_cursor(0, 1);
@@ -509,9 +512,9 @@ void menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val)
 			menu_submenu_no_reset(_menu_edit_P<T>);
 			_md->editLabel = str;
 			_md->editValue = pval;
+			_md->currentValue = *pval;
 			_md->minEditValue = min_val;
 			_md->maxEditValue = max_val;
-			lcd_encoder = *pval;
 			menu_item_ret();
 			return;
 		}
