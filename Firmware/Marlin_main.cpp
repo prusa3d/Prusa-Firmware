@@ -244,7 +244,7 @@ uint8_t newFanSpeed = 0;
 	  bool powersupply = true;
   #endif
 
-bool cancel_heatup = false;
+static bool cancel_heatup = false;
 
 int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
