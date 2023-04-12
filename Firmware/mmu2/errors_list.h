@@ -265,12 +265,13 @@ static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detecte
 static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
 
 // Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
-static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU firmware version incompatible with the printer's FW. Update to version 2.1.9."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
+static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU firmware version incompatible with the printer's FW. Update to version 2.1.10."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 static constexpr uint8_t szFWUN = sizeof(MSG_DESC_FW_UPDATE_NEEDED);
 // at least check the individual version characters in MSG_DESC_FW_UPDATE_NEEDED
-static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 7] == ('0' + mmuVersionMajor));
-static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 5] == ('0' + mmuVersionMinor));
-static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 3] == ('0' + mmuVersionPatch));
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 8] == ('0' + mmuVersionMajor));
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 6] == ('0' + mmuVersionMinor));
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 4] == ('0' + mmuVersionPatch / 10));
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 3] == ('0' + mmuVersionPatch % 10));
 
 static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FINDA_DIDNT_TRIGGER),

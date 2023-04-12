@@ -29,6 +29,7 @@ static const char MSG_PROGRESS_RETRACT_FINDA[] PROGMEM_I1    = ISTR("Retract fro
 static const char MSG_PROGRESS_HOMING[] PROGMEM_I1           = ISTR("Homing"); ////MSG_PROGRESS_HOMING c=20
 static const char MSG_PROGRESS_MOVING_SELECTOR[] PROGMEM_I1  = ISTR("Moving selector"); ////MSG_PROGRESS_MOVING_SELECTOR c=20
 static const char MSG_PROGRESS_FEED_FSENSOR[] PROGMEM_I1     = ISTR("Feeding to FSensor"); ////MSG_PROGRESS_FEED_FSENSOR c=20
+static const char MSG_PROGRESS_UNLOAD_FROM_FSENSOR[] PROGMEM_I1     = ISTR("Unload from FSensor"); ////MSG_PROGRESS_UNLOAD_FROM_FSENSOR c=20
 
 static const char * const progressTexts[] PROGMEM = {
     _R(MSG_PROGRESS_OK),
@@ -59,7 +60,8 @@ static const char * const progressTexts[] PROGMEM = {
     _R(MSG_PROGRESS_RETRACT_FINDA),
     _R(MSG_PROGRESS_HOMING),
     _R(MSG_PROGRESS_MOVING_SELECTOR),
-    _R(MSG_PROGRESS_FEED_FSENSOR)
+    _R(MSG_PROGRESS_FEED_FSENSOR),
+    _R(MSG_PROGRESS_UNLOAD_FROM_FSENSOR)
 };
 
 const char * ProgressCodeToText(uint16_t pc){
