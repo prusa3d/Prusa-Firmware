@@ -268,11 +268,10 @@ void tmc2130_home_enter(uint8_t axes_mask)
 {
 	printf_P(PSTR("tmc2130_home_enter(axes_mask=0x%02x)\n"), axes_mask);
 #ifdef TMC2130_SG_HOMING
-	if (axes_mask & 0x03) //X or Y
+	if (axes_mask & (X_AXIS_MASK | Y_AXIS_MASK)) //X or Y
 		tmc2130_wait_standstill_xy(1000);
-	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++) //X Y and Z axes
+	for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 	{
-		uint8_t mask = (X_AXIS_MASK << axis);
 		if (axes_mask & mask)
 		{
 			tmc2130_sg_homing_axes_mask |= mask;
@@ -281,8 +280,7 @@ void tmc2130_home_enter(uint8_t axes_mask)
 			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[axis]) << 16));
 			tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
 			tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r_home[axis]);
-			if (mask & (X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK))
-				tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
+			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
 		}
 	}
 #endif //TMC2130_SG_HOMING
@@ -296,10 +294,9 @@ void tmc2130_home_exit()
 		tmc2130_wait_standstill_xy(1000);
 	if (tmc2130_sg_homing_axes_mask)
 	{
-		for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++) //X Y and Z axes
+		for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 		{
-			uint8_t mask = (X_AXIS_MASK << axis);
-			if (tmc2130_sg_homing_axes_mask & mask & (X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK))
+			if (tmc2130_sg_homing_axes_mask & mask)
 			{
 #ifndef TMC2130_STEALTH_Z
 				if ((tmc2130_mode == TMC2130_MODE_SILENT) && (axis != Z_AXIS))
