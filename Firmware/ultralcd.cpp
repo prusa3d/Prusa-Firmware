@@ -2481,7 +2481,7 @@ static void lcd_menu_xyz_y_min()
 		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
 	}
     if (lcd_clicked())
-        menu_goto(lcd_menu_xyz_skew, 0, true, true);
+        menu_goto(lcd_menu_xyz_skew, 0, true);
 }
 
 //@brief Show measured axis skewness
@@ -2524,7 +2524,7 @@ static void lcd_menu_xyz_skew()
 		lcd_puts_P(_T(MSG_NA));
 	}
     if (lcd_clicked())
-        menu_goto(lcd_menu_xyz_offset, 0, true, true);
+        menu_goto(lcd_menu_xyz_offset, 0, true);
 }
 //! @brief Show measured bed offset from expected position
 //! 
