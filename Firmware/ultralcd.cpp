@@ -287,11 +287,11 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* lon
 
 
 
-#define MENU_ITEM_SDDIR(str_fn, str_fnl) do { if (menu_item_sddir(str_fn, str_fnl)) return; } while (0)
-#define MENU_ITEM_SDFILE(str_fn, str_fnl) do { if (menu_item_sdfile(str_fn, str_fnl)) return; } while (0)
+#define MENU_ITEM_SDDIR(str_fn, str_fnl) do { menu_item_sddir(str_fn, str_fnl); } while (0)
+#define MENU_ITEM_SDFILE(str_fn, str_fnl) do { menu_item_sdfile(str_fn, str_fnl); } while (0)
 
 
-uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
+static void menu_item_sddir(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
@@ -304,14 +304,14 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = false;
 			menu_action_sddirectory(str_fn);
 			lcd_update_enabled = true;
-			return menu_item_ret();
+			menu_item_ret();
+			return;
 		}
 	}
 	menu_item++;
-	return 0;
 }
 
-static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
+static void menu_item_sdfile(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
@@ -324,11 +324,11 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = false;
 			menu_action_sdfile(str_fn);
 			lcd_update_enabled = true;
-			return menu_item_ret();
+			menu_item_ret();
+			return;
 		}
 	}
 	menu_item++;
-	return 0;
 }
 
 // Print temperature (nozzle/bed) (9 chars total)
@@ -4211,6 +4211,10 @@ static void SETTINGS_SILENT_MODE() {
     }
 }
 
+void SETTINGS_FANS_CHECK() {
+    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+}
+
 #ifndef MMU_FORCE_STEALTH_MODE
 #define SETTINGS_MMU_MODE \
 do\
@@ -4557,7 +4561,7 @@ static void lcd_settings_menu()
         MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
     }
 
-    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+    SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
 
     if(!farm_mode)
@@ -5450,7 +5454,7 @@ static void lcd_advance_edit_K(void)
     }
 }
 
-static uint8_t lcd_advance_K()
+static void lcd_advance_K()
 {
     if (menu_item == menu_line)
     {
@@ -5463,14 +5467,14 @@ static uint8_t lcd_advance_K()
         {
             menu_submenu_no_reset(lcd_advance_edit_K);
             lcd_encoder = 100. * extruder_advance_K;
-            return menu_item_ret();
+            menu_item_ret();
+            return;
         }
     }
     menu_item++;
-    return 0;
 }
 
-#define MENU_ITEM_EDIT_advance_K() do { if (lcd_advance_K()) return; } while (0)
+#define MENU_ITEM_EDIT_advance_K() do { lcd_advance_K(); } while (0)
 #endif
 
 
@@ -5528,7 +5532,7 @@ static void lcd_tune_menu()
         SETTINGS_CUTTER;
     }
 
-    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+    SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
     SETTINGS_MMU_MODE;
     SETTINGS_SOUND;
