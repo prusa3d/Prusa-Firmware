@@ -357,13 +357,13 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 20h 32       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 40h 64       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 80h 128      | ^                     | Unknown                                           | ^            | ^
-| 0x0CA5 3237 | float   | EEPROM_TEMP_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca5 C4
-| 0x0CA1 3233 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0ca1 C4
-| 0x0C9D 3229 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9d C4
-| 0x0C99 3225 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c99 C2
-| 0x0C98 3224 | uint8   | EEPROM_TEMP_MODEL_VER                 | 0-255        | ffh                   | Temp model Version                                | Temp model   | D3 Ax0c98 C1
-| 0x0C96 3222 | PGM_P   | EEPROM_KILL_MESSAGE                   | 0-65535      | ff ffh                | Kill message PGM pointer                          | kill()       | D3 Ax0c96 C2
-| 0x0C95 3221 | uint8   | EEPROM_KILL_PENDING_FLAG              | 42h, ffh     | ffh                   | Kill pending flag (0x42 magic value)              | kill()       | D3 Ax0c95 C1
+| 0x0CA2 3234 | float   | EEPROM_TEMP_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca2 C4
+| 0x0C9E 3230 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0c9e C4
+| 0x0C9A 3226 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9a C4
+| 0x0C98 3224 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c98 C2
+| 0x0C97 3223 | uint8   | EEPROM_TEMP_MODEL_VER                 | 0-255        | ffh                   | Temp model Version                                | Temp model   | D3 Ax0c97 C1
+| 0x0C95 3221 | PGM_P   | EEPROM_KILL_MESSAGE                   | 0-65535      | ff ffh                | Kill message PGM pointer                          | kill()       | D3 Ax0c95 C2
+| 0x0C94 3220 | uint8   | EEPROM_KILL_PENDING_FLAG              | 42h, ffh     | ffh                   | Kill pending flag (0x42 magic value)              | kill()       | D3 Ax0c94 C1
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
