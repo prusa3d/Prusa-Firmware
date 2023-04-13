@@ -469,8 +469,8 @@ msgstr "Kesz"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
-msgstr "E-korrekcio:"
+msgid "E-correct"
+msgstr "E-korrekcio"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19
@@ -2343,8 +2343,8 @@ msgstr "Varazslo"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
-msgstr "X-korrekcio:"
+msgid "X-correct"
+msgstr "X-korrekcio"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
@@ -2418,8 +2418,8 @@ msgstr "Y-minimum tavolsag"
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
-msgstr "Y-korrekcio:"
+msgid "Y-correct"
+msgstr "Y-korrekcio"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:2226
@@ -2435,8 +2435,8 @@ msgstr "A Varazsolt barmikor elered a Kalibracio -> Varazslo menubol."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
-msgstr "Z-korrekcio:"
+msgid "Z-correct"
+msgstr "Z-korrekcio"
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5688

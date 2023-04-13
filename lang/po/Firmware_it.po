@@ -470,8 +470,8 @@ msgstr "Fatto"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
-msgstr "Correzione-E:"
+msgid "E-correct"
+msgstr "Correzione-E"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19
@@ -2346,8 +2346,8 @@ msgstr "Wizard"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
-msgstr "Correzione-X:"
+msgid "X-correct"
+msgstr "Correzione-X"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
@@ -2417,8 +2417,8 @@ msgstr "Distanza Y dal min"
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
-msgstr "Correzione-Y:"
+msgid "Y-correct"
+msgstr "Correzione-Y"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:2226
@@ -2436,8 +2436,8 @@ msgstr ""
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
-msgstr "Correzione-Z:"
+msgid "Z-correct"
+msgstr "Correzione-Z"
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5688

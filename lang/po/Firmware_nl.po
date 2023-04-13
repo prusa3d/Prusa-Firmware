@@ -471,8 +471,8 @@ msgstr "Klaar"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4081
-msgid "E-correct:"
-msgstr "E-correctie:"
+msgid "E-correct"
+msgstr "E-correctie"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19
@@ -2354,8 +2354,8 @@ msgstr "Wizard"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4077
-msgid "X-correct:"
-msgstr "X-correctie:"
+msgid "X-correct"
+msgstr "X-correctie"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
@@ -2423,8 +2423,8 @@ msgstr "Y afstand van min"
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4078
-msgid "Y-correct:"
-msgstr "Y-correctie:"
+msgid "Y-correct"
+msgstr "Y-correctie"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:2226
@@ -2440,8 +2440,8 @@ msgstr "U kunt de wizard altijd hervatten via Kalibratie -> Wizard."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
-msgid "Z-correct:"
-msgstr "Z-correctie:"
+msgid "Z-correct"
+msgstr "Z-correctie"
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5688
