@@ -3454,8 +3454,10 @@ static void lcd_silent_mode_set() {
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
   sei();
+#else
+    st_current_init();
 #endif //TMC2130
-  st_current_init();
+  
 #ifdef TMC2130
   if (lcd_crash_detect_enabled() && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
