@@ -66,7 +66,6 @@ int8_t ReInitLCD = 0;
 uint8_t scrollstuff = 0;
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
-uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
@@ -3416,10 +3415,8 @@ Sound_CycleState();
 }
 
 #ifndef MMU_FORCE_STEALTH_MODE
-static void lcd_silent_mode_mmu_set() {
-	if (SilentModeMenu_MMU == 1) SilentModeMenu_MMU = 0;
-	else SilentModeMenu_MMU = 1;
-	//saving to eeprom is done in mmu_loop() after mmu actually switches state and confirms with "ok"
+static void lcd_mmu_mode_toggle() {
+    eeprom_toggle((uint8_t*)EEPROM_MMU_STEALTH);
 }
 #endif //MMU_FORCE_STEALTH_MODE
 
@@ -4221,8 +4218,7 @@ do\
 {\
 	if (MMU2::mmu2.Enabled())\
 	{\
-		if (SilentModeMenu_MMU == 0) MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), _T(MSG_NORMAL), lcd_silent_mode_mmu_set);\
-		else MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), _T(MSG_STEALTH), lcd_silent_mode_mmu_set);\
+		MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) ? _T(MSG_STEALTH) : _T(MSG_NORMAL), lcd_mmu_mode_toggle);\
 	}\
 }\
 while (0) 
