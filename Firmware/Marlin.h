@@ -320,7 +320,6 @@ extern uint32_t total_filament_used; // mm/100 or 10um
 /// @param _total_print_time has unit minutes, for example 123 minutes
 void save_statistics(uint32_t _total_filament_used, uint32_t _total_print_time);
 
-extern bool fan_state[2];
 extern int fan_edge_counter[2];
 extern int fan_speed[2];
 

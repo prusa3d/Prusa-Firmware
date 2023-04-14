@@ -188,7 +188,7 @@ bool loading_flag = false;
 #define XY_NO_RESTORE_FLAG (mesh_bed_leveling_flag || homing_flag)
 
 
-bool fan_state[2];
+
 int fan_edge_counter[2];
 int fan_speed[2];
 
