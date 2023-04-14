@@ -690,11 +690,7 @@ void lcd_quick_feedback(void)
   lcd_beeper_quick_feedback();
 }
 
-void lcd_update(uint8_t lcdDrawUpdateOverride)
-{
-	if (lcd_draw_update < lcdDrawUpdateOverride)
-		lcd_draw_update = lcdDrawUpdateOverride;
-
+void lcd_knob_update() {
 	if (lcd_backlight_wake_trigger) {
 		lcd_backlight_wake_trigger = false;
 		backlight_wake();
@@ -711,8 +707,12 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 			lcd_draw_update = 1;
 		}
 	}
+}
 
-	backlight_update();
+void lcd_update(uint8_t lcdDrawUpdateOverride)
+{
+	if (lcd_draw_update < lcdDrawUpdateOverride)
+		lcd_draw_update = lcdDrawUpdateOverride;
 
 	if (!lcd_update_enabled) return;
 
