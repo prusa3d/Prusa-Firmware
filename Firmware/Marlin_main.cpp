@@ -1037,6 +1037,19 @@ static void fw_crash_init()
     eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, 0xFF);
 }
 
+#define KILL_PENDING_FLAG 0x42
+
+static void fw_kill_init() {
+    if (eeprom_read_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG) == KILL_PENDING_FLAG) {
+        // clear pending message event
+        eeprom_write_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG, EEPROM_EMPTY_VALUE);
+
+        // display the kill message
+        PGM_P kill_msg = (PGM_P)eeprom_read_word((uint16_t*)EEPROM_KILL_MESSAGE);
+        lcd_show_fullscreen_message_and_wait_P(kill_msg);
+    }
+}
+
 
 static void xflash_err_msg()
 {
@@ -1343,6 +1356,9 @@ void setup()
     // Show the xflash error message now that serial, lcd and encoder are available
     if (!xflash_success)
         xflash_err_msg();
+
+    // report kill() events
+    fw_kill_init();
 
 #ifdef FILAMENT_SENSOR
     fsensor.init();
@@ -5970,7 +5986,7 @@ Sigma_Exit:
     It is processed much earlier as to bypass the cmdqueue.
     */
     case 112: 
-      kill(MSG_M112_KILL, 3);
+      kill(MSG_M112_KILL);
       break;
 
     /*!
@@ -9378,7 +9394,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
   if(previous_millis_cmd.expired(max_inactive_time))
     if(max_inactive_time)
-      kill(_n("Inactivity Shutdown"), 4);
+      kill(PSTR("Inactivity Shutdown"));
   if(stepper_inactive_time)  {
     if(previous_millis_cmd.expired(stepper_inactive_time))
     {
@@ -9419,7 +9435,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
     // ----------------------------------------------------------------
     if ( killCount >= KILL_DELAY)
     {
-       kill(NULL, 5);
+       kill();
     }
   #endif
     
@@ -9465,49 +9481,31 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
   host_keepalive();
 }
 
-void kill(const char *full_screen_message, unsigned char id)
-{
-	printf_P(_N("KILL: %d\n"), id);
-	//return;
-  cli(); // Stop interrupts
-  disable_heater();
+void kill(const char *full_screen_message) {
+    cli(); // Stop interrupts
+    disable_heater();
 
-  disable_x();
-//  SERIAL_ECHOLNPGM("kill - disable Y");
-  disable_y();
-  poweroff_z();
-  disable_e0();
-  disable_e1();
-  disable_e2();
+    disable_x();
+    disable_y();
+    poweroff_z();
+    disable_e0();
+    disable_e1();
+    disable_e2();
 
-#if defined(PS_ON_PIN) && PS_ON_PIN > -1
-  pinMode(PS_ON_PIN,INPUT);
-#endif
-  SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED
-  if (full_screen_message != NULL) {
-      SERIAL_ERRORLNRPGM(full_screen_message);
-      lcd_display_message_fullscreen_P(full_screen_message);
-  } else {
-      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED
-  }
+    SERIAL_ERROR_START;
+    SERIAL_ERRORLNRPGM(PSTR("Printer halted. kill() called!"));
 
-  // FMC small patch to update the LCD before ending
-  sei();   // enable interrupts
-  for ( int i=5; i--; lcd_update(0))
-  {
-     _delay(200);	
-  }
-  cli();   // disable interrupts
-  suicide();
-  while(1)
-  {
-#ifdef WATCHDOG
-    wdt_reset();
-#endif //WATCHDOG
-	  /* Intentionally left empty */
-	
-  } // Wait for reset
+    if (full_screen_message != NULL) {
+        SERIAL_ERRORLNRPGM(full_screen_message);
+    } else {
+        full_screen_message = PSTR("KILLED.");
+    }
+
+    // update eeprom with the correct kill message to be shown on startup
+    eeprom_write_word((uint16_t*)EEPROM_KILL_MESSAGE, (uint16_t)full_screen_message);
+    eeprom_write_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG, KILL_PENDING_FLAG);
+
+    softReset();
 }
 
 void UnconditionalStop()

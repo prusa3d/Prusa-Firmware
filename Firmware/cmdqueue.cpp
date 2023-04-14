@@ -455,7 +455,7 @@ void get_command()
 
         // Handle KILL early, even when Stopped
         if(strcmp_P(cmd_start, PSTR("M112")) == 0)
-          kill(MSG_M112_KILL, 2);
+          kill(MSG_M112_KILL);
 
         // Bypass Stopped for some commands
         bool allow_when_stopped = false;

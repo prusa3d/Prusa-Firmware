@@ -598,7 +598,7 @@ static float analog2temp(int raw, uint8_t e) {
       SERIAL_ERROR_START;
       SERIAL_ERROR((int)e);
       SERIAL_ERRORLNPGM(" - Invalid extruder number !");
-      kill(NULL, 6);
+      kill();
       return 0.0;
   } 
   #ifdef HEATER_0_USES_MAX6675
