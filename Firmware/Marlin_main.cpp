@@ -11135,11 +11135,11 @@ void restore_extruder_temperature_from_ram() {
 //! @param e_move
 void restore_print_from_ram_and_continue(float e_move)
 {
-	if (!saved_printing) return;
-	
+    if (!saved_printing) return;
+
 #ifdef FANCHECK
-	// Do not allow resume printing if fans are still not ok
-	if ((fan_check_error != EFCE_OK) && (fan_check_error != EFCE_FIXED)) return;
+    // Do not allow resume printing if fans are still not ok
+    if (fan_check_error == EFCE_REPORTED) return;
     if (fan_check_error == EFCE_FIXED) fan_check_error = EFCE_OK; //reenable serial stream processing if printing from usb
 #endif
 

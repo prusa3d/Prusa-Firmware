@@ -5283,7 +5283,7 @@ static void lcd_main_menu()
         // only allow resuming if hardware errors (temperature or fan) are cleared
         if(!get_temp_error()
 #ifdef FANCHECK
-            && ((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+            && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
            ) {
             if (saved_printing) {
