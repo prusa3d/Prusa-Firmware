@@ -9464,6 +9464,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
   check_axes_activity();
   MMU2::mmu2.mmu_loop();
 
+  lcd_knob_update();
+  backlight_update();
+
   // handle longpress
   if(lcd_longpress_trigger)
   {
