@@ -672,14 +672,11 @@
 //#define SUPPORT_VERBOSITY
 
 #define MMU_CONFIG_FILE "mmu2/variants/config_MMU2.h"
-
 #define MMU_FILAMENT_COUNT 5
-
-#define MMU_REQUIRED_FW_BUILDNR 83
+//#define MMU_FORCE_STEALTH_MODE
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
-#define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 // MMU Error pause position
 #define MMU_ERR_X_PAUSE_POS 125
