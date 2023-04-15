@@ -15,9 +15,6 @@ GENERAL SETTINGS
 #define FILAMENT_SIZE "1_75mm_MK2"
 #define NOZZLE_TYPE "E3Dv6full"
 
-// Developer flag
-#define DEVELOPER
-
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
 
