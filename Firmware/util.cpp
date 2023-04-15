@@ -247,10 +247,14 @@ ClCheckVersion oCheckVersion;
 ClCheckGcode oCheckGcode;
 
 void fCheckModeInit() {
-    oCheckMode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODE, farm_mode ? (uint8_t) ClCheckMode::_Strict : (uint8_t)ClCheckMode::_Warn);
+    oCheckMode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODE, (uint8_t)ClCheckMode::_Warn);
 
-    // Note, farm mode leaves EEPROM_NOZZLE_DIAMETER setting uninitalised
-    oNozzleDiameter = (ClNozzleDiameter)eeprom_init_default_byte((uint8_t *)EEPROM_NOZZLE_DIAMETER, farm_mode ? (uint8_t)ClNozzleDiameter::_Diameter_Undef : (uint8_t)ClNozzleDiameter::_Diameter_400);
+    if (farm_mode) {
+        oCheckMode = ClCheckMode::_Strict;
+        eeprom_update_byte((uint8_t *)EEPROM_CHECK_MODE, (uint8_t)ClCheckMode::_Strict);
+    }
+
+    oNozzleDiameter = (ClNozzleDiameter)eeprom_init_default_byte((uint8_t *)EEPROM_NOZZLE_DIAMETER, (uint8_t)ClNozzleDiameter::_Diameter_400);
     eeprom_init_default_word((uint16_t *)EEPROM_NOZZLE_DIAMETER_uM, EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
 
     oCheckModel = (ClCheckModel)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODEL, (uint8_t)ClCheckModel::_Warn);
