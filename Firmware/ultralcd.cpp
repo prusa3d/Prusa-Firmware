@@ -5925,13 +5925,15 @@ void lcd_belttest()
 	// that clobbers ours, with more info than we could provide. So on fail we just fall through to take us back to status.
     if (lcd_selfcheck_axis_sg(X_AXIS)){
 		X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
-		lcd_set_cursor(10,1), lcd_printf_P(PSTR("%u"),X); // Show new X value next to old one.
-        lcd_puts_at_P(0,2,_T(MSG_CHECKING_Y));
-		lcd_set_cursor(0,3), lcd_printf_P(PSTR("Y: %u -> ..."),Y);
+		lcd_set_cursor(10, 1);
+		lcd_print(X); // Show new X value next to old one.
+		lcd_puts_at_P(0, 2, _T(MSG_CHECKING_Y));
+		lcd_set_cursor(0, 3), lcd_printf_P(PSTR("Y: %u -> ..."),Y);
 		if (lcd_selfcheck_axis_sg(Y_AXIS))
 		{
 			Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
-			lcd_set_cursor(10,3),lcd_printf_P(PSTR("%u"),Y);
+			lcd_set_cursor(10, 3);
+			lcd_print(Y);
 			lcd_putc_at(19, 3, LCD_STR_UPLEVEL[0]);
 			lcd_wait_for_click_delay(10);
 		}
