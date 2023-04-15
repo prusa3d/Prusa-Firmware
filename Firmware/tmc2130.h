@@ -73,7 +73,7 @@ struct TMCInitParams {
     inline explicit TMCInitParams(bool bSuppressFlag, bool enableECool):bSuppressFlag(bSuppressFlag), enableECool(enableECool) { }
     inline explicit TMCInitParams(bool enableECool)
         : bSuppressFlag(
-#ifdef PSU_delta
+#ifdef PSU_Delta
         1
 #else
         0
