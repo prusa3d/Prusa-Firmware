@@ -3575,7 +3575,7 @@ void lcd_first_layer_calibration_reset()
     static_assert(sizeof(menu_data)>= sizeof(MenuData),"_menu_data_t doesn't fit into menu_data");
     MenuData* menuData = (MenuData*)&(menu_data[0]);
 
-    if(lcd_clicked() || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
+    if(LCD_CLICKED || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
             (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST)) ||
             (0 == static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>
             (&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))))
@@ -3584,7 +3584,11 @@ void lcd_first_layer_calibration_reset()
         {
             eeprom_update_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
         }
-        menu_goto(lcd_v2_calibration, 0, true, true);
+
+        // If the knob was clicked, don't produce feedback
+        // It should only be done when the firmware changes the menu
+        // on its own (silently)
+        menu_goto(lcd_v2_calibration, 0, true, !lcd_clicked());
     }
 
     if (lcd_encoder > 0)
