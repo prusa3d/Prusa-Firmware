@@ -267,21 +267,17 @@ const char STR_SEPARATOR[] PROGMEM = "------------";
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     uint8_t len = LCD_WIDTH - 1;
-    lcd_set_cursor(0, row);
-    lcd_print((lcd_encoder == menu_item)?'>':' ');
+    lcd_putc_at(0, row, (lcd_encoder == menu_item)?'>':' ');
     lcd_print_pad(longFilename, len);
 }
 
 static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* longFilename)
 {
     uint8_t len = LCD_WIDTH - 2;
-    lcd_set_cursor(0, row);
-    lcd_print((lcd_encoder == menu_item)?'>':' ');
-    lcd_print(LCD_STR_FOLDER[0]);
+    lcd_putc_at(0, row, (lcd_encoder == menu_item)?'>':' ');
+    lcd_putc(LCD_STR_FOLDER[0]);
     lcd_print_pad(longFilename, len);
 }
-
-
 
 #define MENU_ITEM_SDDIR(str_fn, str_fnl) do { menu_item_sddir(str_fn, str_fnl); } while (0)
 #define MENU_ITEM_SDFILE(str_fn, str_fnl) do { menu_item_sdfile(str_fn, str_fnl); } while (0)
@@ -2935,9 +2931,8 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
     if (multi_screen) {
         // Display the "next screen" indicator character.
         lcd_set_custom_characters_nextpage();
-        lcd_set_cursor(19, 3);
         // Display the double down arrow.
-        lcd_print(LCD_STR_ARROW_2_DOWN[0]);
+        lcd_putc_at(19, 3, LCD_STR_ARROW_2_DOWN[0]);
     }
 
     return multi_screen ? msgend : NULL;
@@ -2969,9 +2964,8 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 	// Until confirmed by a button click.
 	for (;;) {
 		if (msg_next == NULL) {
-			lcd_set_cursor(19, 3);
 			// Display the confirm char.
-			lcd_print(LCD_STR_CONFIRM[0]);
+			lcd_putc_at(19, 3, LCD_STR_CONFIRM[0]);
 		}
         // Wait for 5 seconds before displaying the next text.
         for (uint8_t i = 0; i < 100; ++ i) {
@@ -4785,8 +4779,7 @@ char reset_menu() {
 	};
 
 	lcd_clear();
-	lcd_set_cursor(0, 0);
-	lcd_putc('>');
+	lcd_putc_at(0, 0, '>');
 	lcd_consume_click();
 	while (1) {
 
@@ -5139,8 +5132,7 @@ static void lcd_rename_sheet_menu()
     {
         lcd_putc(menuData->name[i]);
     }
-    lcd_set_cursor(menuData->selected, 1);
-    lcd_putc('^');
+    lcd_putc_at(menuData->selected, 1, '^');
     if (lcd_clicked())
     {
         if ((menuData->selected + 1u) < sizeof(Sheet::name))

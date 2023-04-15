@@ -622,8 +622,7 @@ void crashdet_detected(uint8_t mask)
         lcd_print(msg);
 
         // ask whether to resume printing
-        lcd_set_cursor(0, 1);
-        lcd_puts_P(_T(MSG_RESUME_PRINT));
+        lcd_puts_at_P(0, 1, _T(MSG_RESUME_PRINT));
         lcd_putc('?');
         uint8_t yesno = lcd_show_yes_no_and_wait(false);
 		if (yesno == LCD_LEFT_BUTTON_CHOICE)
