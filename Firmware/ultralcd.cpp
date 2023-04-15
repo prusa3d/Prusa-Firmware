@@ -6909,6 +6909,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 
 
 		manage_heater();
+		manage_inactivity(true);
 		_delay(100);
 
 	} while (!lcd_clicked());
