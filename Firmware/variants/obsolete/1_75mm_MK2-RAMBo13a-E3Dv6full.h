@@ -414,12 +414,7 @@ THERMISTORS SETTINGS
 #define M600_TIMEOUT 600  //seconds
 
 #define MMU_FILAMENT_COUNT 5
-
-#define MMU_REQUIRED_FW_BUILDNR 132
-
 //#define SUPPORT_VERBOSITY
-
-#define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 // Default Arc Interpolation Settings (Now configurable via M214)
 #define DEFAULT_N_ARC_CORRECTION       25 // Number of interpolated segments between corrections.
