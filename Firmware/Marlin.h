@@ -304,8 +304,6 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-extern uint8_t host_keepalive_interval;
-
 extern uint32_t starttime; // milliseconds
 extern uint32_t pause_time; // milliseconds
 extern uint32_t start_pause_print; // milliseconds
@@ -349,9 +347,6 @@ extern uint16_t print_time_to_change_normal;
 extern uint16_t print_time_to_change_silent;
 
 #define PRINT_TIME_REMAINING_INIT 0xffff
-
-extern uint16_t mcode_in_progress;
-extern uint16_t gcode_in_progress;
 
 extern LongTimer safetyTimer;
 

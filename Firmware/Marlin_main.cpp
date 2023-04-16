@@ -248,7 +248,7 @@ static bool cancel_heatup = false;
 
 int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
-uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
+static uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
@@ -258,9 +258,9 @@ const char echomagic[] PROGMEM = "echo:";
 #define X_COORD_INVALID (X_MIN_POS-1)
 
 #define SAVED_START_POSITION_UNSET X_COORD_INVALID
-float saved_start_position[NUM_AXIS] = {SAVED_START_POSITION_UNSET, 0, 0, 0};
+static float saved_start_position[NUM_AXIS] = {SAVED_START_POSITION_UNSET, 0, 0, 0};
 
-uint16_t saved_segment_idx = 0;
+static uint16_t saved_segment_idx = 0;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
@@ -292,16 +292,16 @@ static float next_feedrate;
 // Original feedrate saved during homing moves
 static float saved_feedrate;
 
-const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list for M42
+static const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list for M42
 
 //static float tt = 0;
 //static float bt = 0;
 
 //Inactivity shutdown variables
 static LongTimer previous_millis_cmd;
-unsigned long max_inactive_time = 0;
-static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
-static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
+static uint32_t max_inactive_time = 0;
+static uint32_t stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
+static uint32_t safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
 
 uint32_t starttime;
 uint32_t pause_time;
@@ -315,12 +315,12 @@ bool processing_tcode; // Helper variable to block certain functions while T-cod
   Servo servos[NUM_SERVOS];
 #endif
 
-bool target_direction;
+static bool target_direction;
 
 //Insert variables if CHDK is defined
 #ifdef CHDK
-unsigned long chdkHigh = 0;
-bool chdkActive = false;
+static uint32_t chdkHigh = 0;
+static bool chdkActive = false;
 #endif
 
 //! @name RAM save/restore printing
@@ -410,8 +410,8 @@ static void temp_compensation_apply();
 static uint8_t get_PRUSA_SN(char* SN);
 #endif //PRUSA_SN_SUPPORT
 
-uint16_t gcode_in_progress = 0;
-uint16_t mcode_in_progress = 0;
+static uint16_t gcode_in_progress = 0;
+static uint16_t mcode_in_progress = 0;
 
 void serial_echopair_P(const char *s_P, float v)
     { serialprintPGM(s_P); SERIAL_ECHO(v); }
