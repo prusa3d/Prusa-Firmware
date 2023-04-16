@@ -49,7 +49,6 @@ MMU2::MMU2()
     , mmu_print_saved(SavedState::None)
     , loadFilamentStarted(false)
     , unloadFilamentStarted(false)
-    , loadingToNozzle(false)
     , toolchange_counter(0)
     , tmcFailures(0) {
 }
@@ -534,22 +533,9 @@ bool MMU2::load_filament(uint8_t slot) {
     return true;
 }
 
-struct LoadingToNozzleRAII {
-    MMU2 &mmu2;
-    explicit inline LoadingToNozzleRAII(MMU2 &mmu2)
-        : mmu2(mmu2) {
-        mmu2.loadingToNozzle = true;
-    }
-    inline ~LoadingToNozzleRAII() {
-        mmu2.loadingToNozzle = false;
-    }
-};
-
 bool MMU2::load_filament_to_nozzle(uint8_t slot) {
     if (!WaitForMMUReady())
         return false;
-
-    LoadingToNozzleRAII ln(*this);
 
     WaitForHotendTargetTempBeep();
 
