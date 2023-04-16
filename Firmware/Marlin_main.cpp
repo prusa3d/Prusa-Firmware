@@ -1595,15 +1595,6 @@ void setup()
 
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
-/*
-	  if (!lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
-	  else {
-		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
-		  lcd_update_enable(true);
-		  lcd_update(2);
-		  lcd_setstatuspgm(MSG_WELCOME);
-	  }
-*/
       manage_heater(); // Update temperatures 
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
 		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
