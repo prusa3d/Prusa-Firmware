@@ -270,7 +270,6 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
 
 void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
     if (cip != CommandInProgress::NoCommand) {
-        custom_message_type = CustomMsg::MMUProgress;
         lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
     }
 }
