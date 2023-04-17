@@ -498,7 +498,7 @@ bool PAT9125_sensor::updatePAT9125() {
         }
     }
 
-    if (!pollingTimer.running() || pollingTimer.expired(pollingPeriod)) {
+    if (pollingTimer.expired_cont(pollingPeriod)) {
         pollingTimer.start();
         if (!pat9125_update()) {
             init(); // try to reinit.

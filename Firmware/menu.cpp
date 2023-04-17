@@ -159,8 +159,7 @@ static char menu_selection_mark(){
 
 static void menu_draw_item_puts_P(char type_char, const char* str)
 {
-    lcd_set_cursor(0, menu_row);
-    lcd_putc(menu_selection_mark());
+    lcd_putc_at(0, menu_row, menu_selection_mark());
     lcd_print_pad_P(str, LCD_WIDTH - 2);
     lcd_putc(type_char);
 }
@@ -218,10 +217,9 @@ void menu_format_sheet_select_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 
 static void menu_draw_item_select_sheet_E(char type_char, const Sheet &sheet)
 {
-    lcd_set_cursor(0, menu_row);
     SheetFormatBuffer buffer;
     menu_format_sheet_select_E(sheet, buffer);
-    lcd_putc(menu_selection_mark());
+    lcd_putc_at(0, menu_row, menu_selection_mark());
     lcd_print_pad(buffer.c, LCD_WIDTH - 2);
     lcd_putc(type_char);
 }
@@ -229,10 +227,9 @@ static void menu_draw_item_select_sheet_E(char type_char, const Sheet &sheet)
 
 static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
 {
-    lcd_set_cursor(0, menu_row);
     SheetFormatBuffer buffer;
     menu_format_sheet_E(sheet, buffer);
-    lcd_putc(menu_selection_mark());
+    lcd_putc_at(0, menu_row, menu_selection_mark());
     lcd_print_pad(buffer.c, LCD_WIDTH - 2);
     lcd_putc(type_char);
 }

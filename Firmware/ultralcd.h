@@ -125,7 +125,6 @@ enum class LcdCommands : uint_least8_t
 };
 
 extern LcdCommands lcd_commands_type;
-extern int8_t FSensorStateMenu;
 
 enum class CustomMsg : uint_least8_t
 {
@@ -164,7 +163,6 @@ void printf_IRSensorAnalogBoardChange();
 
 extern int8_t SilentModeMenu;
 
-extern bool cancel_heatup;
 extern bool isPrintPaused;
 
 extern uint8_t scrollstuff;

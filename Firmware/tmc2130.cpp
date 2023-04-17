@@ -23,32 +23,32 @@ uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 
 //running currents for homing
-uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
+static uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
 
 
 //pwm_ampl
-uint8_t tmc2130_pwm_ampl[4] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y, TMC2130_PWM_AMPL_Z, TMC2130_PWM_AMPL_E};
+static uint8_t tmc2130_pwm_ampl[4] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y, TMC2130_PWM_AMPL_Z, TMC2130_PWM_AMPL_E};
 //pwm_grad
-uint8_t tmc2130_pwm_grad[4] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y, TMC2130_PWM_GRAD_Z, TMC2130_PWM_GRAD_E};
+static uint8_t tmc2130_pwm_grad[4] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y, TMC2130_PWM_GRAD_Z, TMC2130_PWM_GRAD_E};
 //pwm_auto
-uint8_t tmc2130_pwm_auto[4] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y, TMC2130_PWM_AUTO_Z, TMC2130_PWM_AUTO_E};
+static uint8_t tmc2130_pwm_auto[4] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y, TMC2130_PWM_AUTO_Z, TMC2130_PWM_AUTO_E};
 //pwm_freq
-uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_PWM_FREQ_Z, TMC2130_PWM_FREQ_E};
+static uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_PWM_FREQ_Z, TMC2130_PWM_FREQ_E};
 
 uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //will be filed at begin of init
 
 
 uint8_t tmc2130_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
-uint8_t tmc2130_sg_thr_home[4] = TMC2130_SG_THRS_HOME;
+static uint8_t tmc2130_sg_thr_home[4] = TMC2130_SG_THRS_HOME;
 
 
 uint8_t tmc2130_sg_homing_axes_mask = 0x00;
 
 const char eMotorCurrentScalingEnabled[] PROGMEM = "E-motor current scaling enabled";
 
-uint8_t tmc2130_sg_measure = 0xff;
-uint32_t tmc2130_sg_measure_cnt = 0;
-uint32_t tmc2130_sg_measure_val = 0;
+static uint8_t tmc2130_sg_measure = 0xff;
+static uint32_t tmc2130_sg_measure_cnt = 0;
+static uint32_t tmc2130_sg_measure_val = 0;
 
 uint8_t tmc2130_home_enabled = 0;
 uint8_t tmc2130_home_origin[2] = {0, 0};
@@ -65,11 +65,10 @@ tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
 };
 
 bool tmc2130_sg_stop_on_crash = true;
-uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
 
 //used for triggering a periodic check (1s) of the overtemperature pre-warning flag at ~120C (+-20C)
-ShortTimer tmc2130_overtemp_timer;
+static ShortTimer tmc2130_overtemp_timer;
 
 #define DBG(args...)
 //printf_P(args)
@@ -358,7 +357,7 @@ bool tmc2130_wait_standstill_xy(int timeout)
 
 void tmc2130_check_overtemp()
 {
-	if (tmc2130_overtemp_timer.expired(1000) || !tmc2130_overtemp_timer.running())
+	if (tmc2130_overtemp_timer.expired_cont(1000))
 	{
 		for (uint_least8_t i = 0; i < 4; i++)
 		{

@@ -7,7 +7,6 @@
 #include "stepper.h"
 #include "ultralcd.h"
 #include <avr/pgmspace.h>
-#include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -80,8 +79,8 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
                 }
             }
         } else {
+            SERIAL_ECHO_START;
             if (selectedSlot.slot >= EXTRUDERS) {
-                SERIAL_ECHO_START;
                 SERIAL_ECHO('T');
                 SERIAL_ECHOLN(selectedSlot.slot + '0');
                 SERIAL_ECHOLNRPGM(_n("Invalid extruder")); ////MSG_INVALID_EXTRUDER
@@ -92,9 +91,7 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
 //                        feedrate = next_feedrate;
 //                    }
 //                }
-                SERIAL_ECHO_START;
-                SERIAL_ECHORPGM(_n("Active Extruder: ")); ////MSG_ACTIVE_EXTRUDER
-                SERIAL_ECHOLN(active_extruder + '0'); // this is not changed in our FW at all, can be optimized away
+                SERIAL_ECHORPGM(_n("Active Extruder: 0")); ////MSG_ACTIVE_EXTRUDER
             }
         }
     }

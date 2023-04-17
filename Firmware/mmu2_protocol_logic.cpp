@@ -705,9 +705,8 @@ void ProtocolLogic::FormatLastResponseMsgAndClearLRB(char *dst) {
     *dst++ = '<';
     for (uint8_t i = 0; i < lrb; ++i) {
         uint8_t b = lastReceivedBytes[i];
-        if (b < 32)
-            b = '.';
-        if (b > 127)
+        // Check for printable character, including space
+        if (b < 32 || b > 127)
             b = '.';
         *dst++ = b;
     }
@@ -721,9 +720,8 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
     static char lastMsg[rqs] = "";
     for (uint8_t i = 0; i < size; ++i) {
         uint8_t b = txbuff[i];
-        if (b < 32)
-            b = '.';
-        if (b > 127)
+        // Check for printable character, including space
+        if (b < 32 || b > 127)
             b = '.';
         tmp[i + 1] = b;
     }

@@ -2261,7 +2261,7 @@ static void check_min_temp_raw()
         if(target_temperature_isr[active_extruder]>minttemp[active_extruder]) {
             // ~ nozzle heating is on
             bCheckingOnHeater=bCheckingOnHeater||(current_temperature_isr[active_extruder]>(minttemp[active_extruder]+TEMP_HYSTERESIS)); // for eventually delay cutting
-            if(oTimer4minTempHeater.expired(HEATER_MINTEMP_DELAY)||(!oTimer4minTempHeater.running())||bCheckingOnHeater) {
+            if(oTimer4minTempHeater.expired_cont(HEATER_MINTEMP_DELAY) || bCheckingOnHeater) {
                 bCheckingOnHeater=true;   // not necessary
                 check_min_temp_heater0(); // delay is elapsed or temperature is/was over minTemp => periodical checking is active
             }
@@ -2275,7 +2275,7 @@ static void check_min_temp_raw()
         if(target_temperature_bed_isr>BED_MINTEMP) {
             // ~ bed heating is on
             bCheckingOnBed=bCheckingOnBed||(current_temperature_bed_isr>(BED_MINTEMP+TEMP_HYSTERESIS)); // for eventually delay cutting
-            if(oTimer4minTempBed.expired(BED_MINTEMP_DELAY)||(!oTimer4minTempBed.running())||bCheckingOnBed) {
+            if(oTimer4minTempBed.expired_cont(BED_MINTEMP_DELAY) || bCheckingOnBed) {
                 bCheckingOnBed=true;  // not necessary
                 check_min_temp_bed(); // delay is elapsed or temperature is/was over minTemp => periodical checking is active
             }

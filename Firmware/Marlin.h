@@ -304,8 +304,6 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-extern uint8_t host_keepalive_interval;
-
 extern uint32_t starttime; // milliseconds
 extern uint32_t pause_time; // milliseconds
 extern uint32_t start_pause_print; // milliseconds
@@ -319,9 +317,7 @@ extern uint32_t total_filament_used; // mm/100 or 10um
 /// @param _total_filament_used has unit mm/100 or 10um
 /// @param _total_print_time has unit minutes, for example 123 minutes
 void save_statistics(uint32_t _total_filament_used, uint32_t _total_print_time);
-extern uint8_t heating_status_counter;
 
-extern bool fan_state[2];
 extern int fan_edge_counter[2];
 extern int fan_speed[2];
 
@@ -351,9 +347,6 @@ extern uint16_t print_time_to_change_normal;
 extern uint16_t print_time_to_change_silent;
 
 #define PRINT_TIME_REMAINING_INIT 0xffff
-
-extern uint16_t mcode_in_progress;
-extern uint16_t gcode_in_progress;
 
 extern LongTimer safetyTimer;
 
@@ -424,7 +417,6 @@ void setup_fan_interrupt();
 
 extern bool recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom(bool mbl_was_active);
-extern void position_menu();
 
 extern void print_world_coordinates();
 extern void print_physical_coordinates();

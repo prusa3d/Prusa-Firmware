@@ -50,7 +50,6 @@
 
 #include "Prusa_farm.h"
 
-int clock_interval = 0;
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -66,8 +65,6 @@ int8_t ReInitLCD = 0;
 uint8_t scrollstuff = 0;
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
-
-int8_t FSensorStateMenu = 1;
 
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
@@ -270,21 +267,17 @@ const char STR_SEPARATOR[] PROGMEM = "------------";
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     uint8_t len = LCD_WIDTH - 1;
-    lcd_set_cursor(0, row);
-    lcd_print((lcd_encoder == menu_item)?'>':' ');
+    lcd_putc_at(0, row, (lcd_encoder == menu_item)?'>':' ');
     lcd_print_pad(longFilename, len);
 }
 
 static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* longFilename)
 {
     uint8_t len = LCD_WIDTH - 2;
-    lcd_set_cursor(0, row);
-    lcd_print((lcd_encoder == menu_item)?'>':' ');
-    lcd_print(LCD_STR_FOLDER[0]);
+    lcd_putc_at(0, row, (lcd_encoder == menu_item)?'>':' ');
+    lcd_putc(LCD_STR_FOLDER[0]);
     lcd_print_pad(longFilename, len);
 }
-
-
 
 #define MENU_ITEM_SDDIR(str_fn, str_fnl) do { menu_item_sddir(str_fn, str_fnl); } while (0)
 #define MENU_ITEM_SDFILE(str_fn, str_fnl) do { menu_item_sdfile(str_fn, str_fnl); } while (0)
@@ -453,6 +446,7 @@ void lcdui_print_cmd_diag(void)
 // Print time (8 chars total)
 void lcdui_print_time(void)
 {
+    static uint8_t clock_interval; // max value is 10: CLOCK_INTERVAL_TIME * 2
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
     if (printer_active()) {
@@ -516,6 +510,7 @@ void lcdui_print_time(void)
 
 //! @Brief Print status line on status screen
 void lcdui_print_status_line(void) {
+    static uint8_t heating_status_counter;
     if (heating_status != HeatingStatus::NO_HEATING) { // If heating flag, show progress of heating
         heating_status_counter++;
         if (heating_status_counter > 13) {
@@ -2748,10 +2743,9 @@ bool lcd_wait_for_pinda(float temp) {
 	while (current_temperature_pinda > temp){
 		lcd_display_message_fullscreen_P(_i("Waiting for PINDA probe cooling"));////MSG_WAITING_TEMP_PINDA c=20 r=3
 
-		lcd_set_cursor(0, 4);
-		lcd_print(LCD_STR_THERMOMETER[0]);
+		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)current_temperature_pinda, (int16_t) temp);
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 		if (pinda_timeout.expired(8 * 60 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
@@ -2766,10 +2760,9 @@ bool lcd_wait_for_pinda(float temp) {
 
 void lcd_wait_for_heater() {
 		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-		lcd_set_cursor(0, 4);
-		lcd_print(LCD_STR_THERMOMETER[0]);
+		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)degHotend(active_extruder), (int16_t) degTargetHotend(active_extruder));
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 }
 
 void lcd_wait_for_cool_down() {
@@ -2780,15 +2773,13 @@ void lcd_wait_for_cool_down() {
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=4
 
-		lcd_set_cursor(0, 4);
-		lcd_print(LCD_STR_THERMOMETER[0]);
+		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/0"), (int16_t)degHotend(0));
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 
-		lcd_set_cursor(9, 4);
-		lcd_print(LCD_STR_BEDTEMP[0]);
+		lcd_putc_at(9, 4, LCD_STR_BEDTEMP[0]);
 		lcd_printf_P(PSTR("%3d/0"), (int16_t)degBed());
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 	}
@@ -2940,9 +2931,8 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
     if (multi_screen) {
         // Display the "next screen" indicator character.
         lcd_set_custom_characters_nextpage();
-        lcd_set_cursor(19, 3);
         // Display the double down arrow.
-        lcd_print(LCD_STR_ARROW_2_DOWN[0]);
+        lcd_putc_at(19, 3, LCD_STR_ARROW_2_DOWN[0]);
     }
 
     return multi_screen ? msgend : NULL;
@@ -2974,9 +2964,8 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 	// Until confirmed by a button click.
 	for (;;) {
 		if (msg_next == NULL) {
-			lcd_set_cursor(19, 3);
 			// Display the confirm char.
-			lcd_print(LCD_STR_CONFIRM[0]);
+			lcd_putc_at(19, 3, LCD_STR_CONFIRM[0]);
 		}
         // Wait for 5 seconds before displaying the next text.
         for (uint8_t i = 0; i < 100; ++ i) {
@@ -3228,17 +3217,16 @@ void lcd_temp_cal_show_result(bool result) {
 	disable_e2();
 	setTargetBed(0); //set bed target temperature back to 0
 
-	if (result == true) {
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+	// Store boolean result
+	eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, result);
+	eeprom_update_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, result);
+
+	if (result) {
 		SERIAL_ECHOLNPGM("PINDA calibration done. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
-		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
-	}
-	else {
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+	} else {
 		SERIAL_ECHOLNPGM("PINDA calibration failed. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_i("PINDA calibration failed"));////MSG_PINDA_CAL_FAILED c=20 r=4
-		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
 	lcd_update_enable(true);
 	lcd_update(2);
@@ -3303,20 +3291,15 @@ static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
 	uint8_t pinda_state = STATE_NA;
-	uint8_t finda_state = STATE_NA;
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (MMU2::mmu2.Enabled())
-	{
-		finda_state = MMU2::mmu2.FindaDetectsFilament();
-	}
 	lcd_puts_at_P(0, 0, MSG_PINDA);
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
 	
-	if (MMU2::mmu2.Enabled())
-	{
+	if (MMU2::mmu2.Enabled()) {
+		const uint8_t finda_state = MMU2::mmu2.FindaDetectsFilament();
 		lcd_puts_at_P(10, 0, _n("FINDA"));////MSG_FINDA c=5
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
@@ -4796,8 +4779,7 @@ char reset_menu() {
 	};
 
 	lcd_clear();
-	lcd_set_cursor(0, 0);
-	lcd_putc('>');
+	lcd_putc_at(0, 0, '>');
 	lcd_consume_click();
 	while (1) {
 
@@ -5150,8 +5132,7 @@ static void lcd_rename_sheet_menu()
     {
         lcd_putc(menuData->name[i]);
     }
-    lcd_set_cursor(menuData->selected, 1);
-    lcd_putc('^');
+    lcd_putc_at(menuData->selected, 1, '^');
     if (lcd_clicked())
     {
         if ((menuData->selected + 1u) < sizeof(Sheet::name))
@@ -5294,7 +5275,7 @@ static void lcd_main_menu()
         // only allow resuming if hardware errors (temperature or fan) are cleared
         if(!get_temp_error()
 #ifdef FANCHECK
-            && ((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+            && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
            ) {
             if (saved_printing) {
@@ -5891,8 +5872,7 @@ void lcd_sdcard_menu()
 			if (_md->lcd_scrollTimer.expired(300) || rewindFlag)
 			{
 				uint8_t len = LCD_WIDTH - ((_md->isDir)? 2 : 1);
-				lcd_set_cursor(0, _md->row);
-				lcd_print('>');
+				lcd_putc_at(0, _md->row, '>');
 				if (_md->isDir)
 					lcd_print(LCD_STR_FOLDER[0]);
 
@@ -5929,7 +5909,7 @@ void lcd_belttest()
     
     uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
-	lcd_printf_P(_T(MSG_CHECKING_X));
+    lcd_puts_P(_T(MSG_CHECKING_X));
 	lcd_set_cursor(0,1), lcd_printf_P(PSTR("X: %u -> ..."),X);
     KEEPALIVE_STATE(IN_HANDLER);
     
@@ -5937,15 +5917,16 @@ void lcd_belttest()
 	// that clobbers ours, with more info than we could provide. So on fail we just fall through to take us back to status.
     if (lcd_selfcheck_axis_sg(X_AXIS)){
 		X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
-		lcd_set_cursor(10,1), lcd_printf_P(PSTR("%u"),X); // Show new X value next to old one.
-        lcd_puts_at_P(0,2,_T(MSG_CHECKING_Y));
-		lcd_set_cursor(0,3), lcd_printf_P(PSTR("Y: %u -> ..."),Y);
+		lcd_set_cursor(10, 1);
+		lcd_print(X); // Show new X value next to old one.
+		lcd_puts_at_P(0, 2, _T(MSG_CHECKING_Y));
+		lcd_set_cursor(0, 3), lcd_printf_P(PSTR("Y: %u -> ..."),Y);
 		if (lcd_selfcheck_axis_sg(Y_AXIS))
 		{
 			Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
-			lcd_set_cursor(10,3),lcd_printf_P(PSTR("%u"),Y);
-			lcd_set_cursor(19, 3);
-			lcd_print(LCD_STR_UPLEVEL[0]);
+			lcd_set_cursor(10, 3);
+			lcd_print(Y);
+			lcd_putc_at(19, 3, LCD_STR_UPLEVEL[0]);
 			lcd_wait_for_click_delay(10);
 		}
     }
