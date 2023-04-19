@@ -142,6 +142,7 @@ set(FW_SOURCES
     lcd.cpp
     Marlin_main.cpp
     MarlinSerial.cpp
+    meatpack.cpp
     menu.cpp
     mesh_bed_calibration.cpp
     mesh_bed_leveling.cpp
@@ -177,6 +178,7 @@ set(FW_SOURCES
     spi.c
     SpoolJoin.cpp
     stepper.cpp
+    strtod.c
     swi2c.c
     Tcodes.cpp
     temperature.cpp

@@ -4,6 +4,7 @@
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "Prusa_farm.h"
+#include "meatpack.h"
 
 // Reserve BUFSIZE lines of length MAX_CMD_SIZE plus CMDBUFFER_RESERVE_FRONT.
 char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
@@ -365,7 +366,20 @@ void get_command()
   // start of serial line processing loop
   while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
+#ifdef ENABLE_MEATPACK
+    // MeatPack Changes
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      const int rec = MYSERIAL.read();
+      if (rec < 0) continue;
+
+      mp_handle_rx_char((uint8_t)rec);
+      char c_res[2] = {0, 0};
+      const uint8_t char_count = mp_get_result_char(c_res);
+      // Note -- Paired bracket in preproc switch below
+      for (uint8_t i = 0; i < char_count; ++i) { char serial_char = c_res[i];
+#else
     char serial_char = MYSERIAL.read();
+#endif
 
     serialTimeoutTimer.start();
 
@@ -526,6 +540,9 @@ void get_command()
       if(serial_char == ';') comment_mode = true;
       if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
+    #ifdef ENABLE_MEATPACK
+     }
+    #endif
   } // end of serial line processing loop
 
     if (serial_count > 0 && serialTimeoutTimer.expired(farm_mode ? 800 : 2000)) {
