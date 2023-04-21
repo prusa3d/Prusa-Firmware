@@ -1142,20 +1142,6 @@ FORCE_INLINE static void soft_pwm_core()
   static unsigned char state_heater_0 = 0;
   static unsigned char state_timer_heater_0 = 0;
 #endif
-#if (EXTRUDERS > 1) || defined(HEATERS_PARALLEL)
-  static unsigned char soft_pwm_1;
-#ifdef SLOW_PWM_HEATERS
-  static unsigned char state_heater_1 = 0;
-  static unsigned char state_timer_heater_1 = 0;
-#endif
-#endif
-#if EXTRUDERS > 2
-  static unsigned char soft_pwm_2;
-#ifdef SLOW_PWM_HEATERS
-  static unsigned char state_heater_2 = 0;
-  static unsigned char state_timer_heater_2 = 0;
-#endif
-#endif
 #if HEATER_BED_PIN > -1
   // @@DR static unsigned char soft_pwm_b;
 #ifdef SLOW_PWM_HEATERS
