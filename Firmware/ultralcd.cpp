@@ -24,7 +24,6 @@
 #include "mesh_bed_leveling.h"
 #include "mesh_bed_calibration.h"
 
-//#include "Configuration.h"
 #include "cmdqueue.h"
 
 #include "Filament_sensor.h"
@@ -95,8 +94,6 @@ static_assert(sizeof(STR_SEPARATOR) == LCD_WIDTH + 1, "separator length must be 
 /** forward declarations **/
 
 static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg);
-// void copy_and_scalePID_i();
-// void copy_and_scalePID_d();
 
 /* Different menus */
 #if (LANG_MODE != 0)
@@ -104,7 +101,6 @@ static void lcd_language_menu();
 #endif
 static void lcd_main_menu();
 static void lcd_tune_menu();
-//static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_control_temperature_menu();
@@ -1593,13 +1589,6 @@ static void lcd_support_menu()
 #if (FW_DEV_VERSION != FW_VERSION_GOLD) && (FW_DEV_VERSION != FW_VERSION_RC)
   MENU_ITEM_BACK_P(PSTR(" repo " FW_REPOSITORY));
 #endif
-  // Ideally this block would be optimized out by the compiler.
-/*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
-  if (fw_string_len < 6) {
-      MENU_ITEM_BACK_P(PSTR(MSG_FW_VERSION " - " FW_version));
-  } else {
-      MENU_ITEM_BACK_P(PSTR("FW - " FW_version));
-  }*/
       
   MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
   MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
@@ -3392,10 +3381,7 @@ static void lcd_silent_mode_set() {
   // Wait until the planner queue is drained and the stepper routine achieves
   // an idle state.
   st_synchronize();
-  if (tmc2130_wait_standstill_xy(1000)) {}
-//	  MYSERIAL.print("standstill OK");
-//  else
-//	  MYSERIAL.print("standstill NG!");
+  tmc2130_wait_standstill_xy(1000);
 	cli();
 	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
@@ -4171,29 +4157,6 @@ while (0)
 #define SETTINGS_MMU_MODE
 #endif //MMU_FORCE_STEALTH_MODE
 
-/*
-#define SETTINGS_MBL_MODE \
-do\
-{\
-    switch(e_mbl_type)\
-    {\
-    case e_MBL_FAST:\
-        MENU_ITEM_FUNCTION_P(_n("Mode    [Fast]"),mbl_mode_set);\
-         break; \
-    case e_MBL_OPTIMAL:\
-	    MENU_ITEM_FUNCTION_P(_n("Mode [Optimal]"), mbl_mode_set); \
-	     break; \
-    case e_MBL_PREC:\
-	     MENU_ITEM_FUNCTION_P(_n("Mode [Precise]"), mbl_mode_set); \
-	     break; \
-    default:\
-	     MENU_ITEM_FUNCTION_P(_n("Mode [Optimal]"), mbl_mode_set); \
-	     break; \
-    }\
-}\
-while (0)
-*/
-
 #define SETTINGS_MMU_LOADING_TEST \
 do\
 {\
@@ -4384,12 +4347,12 @@ while (0)
 
 static void lcd_checking_menu(void)
 {
-MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
-SETTINGS_MODE;
-SETTINGS_MODEL;
-SETTINGS_VERSION;
-MENU_END();
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
+    SETTINGS_MODE;
+    SETTINGS_MODEL;
+    SETTINGS_VERSION;
+    MENU_END();
 }
 
 template <uint8_t number>
@@ -4955,18 +4918,6 @@ void unload_filament(float unloadLength)
 	eFilamentAction = FilamentAction::None;
 }
 
-#include "xflash.h"
-
-#ifdef LCD_TEST
-static void lcd_test_menu()
-{
-	XFLASH_SPI_ENTER();
-	xflash_enable_wr();
-	xflash_chip_erase();
-	xflash_disable_wr();
-}
-#endif //LCD_TEST
-
 /// @brief Set print fan speed
 /// @param speed ranges from 0 to 255
 static void lcd_selftest_setfan(const uint8_t speed) {
@@ -5324,9 +5275,6 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////MSG_MMU_FAIL_STATS c=18
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
-#ifdef LCD_TEST
-    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_XFLASH c=18
-#endif //LCD_TEST
 
     MENU_END();
 
@@ -5528,7 +5476,6 @@ static void lcd_mesh_bed_leveling_settings()
 	MENU_ITEM_TOGGLE(_T(MSG_Z_PROBE_NR), sToggle, mbl_probe_nr_toggle);
 	MENU_ITEM_TOGGLE_P(_T(MSG_MAGNETS_COMP), (points_nr == 7) ? (magnet_elimination ? _T(MSG_ON): _T(MSG_OFF)) : _T(MSG_NA), mbl_magnets_elimination_toggle);
 	MENU_END();
-	//SETTINGS_MBL_MODE;
 }
 
 #ifdef LCD_BL_PIN
