@@ -188,9 +188,9 @@ enum class TestError : uint_least8_t
 };
 
 static uint8_t  lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t _progress_scale, bool _clear, uint16_t _delay);
-static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char _indicator);
-static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
-	bool _default=false);
+static void lcd_selftest_screen_step(const uint8_t _row, const uint8_t _col, const uint8_t _state, const char *_name, const char _indicator);
+static bool lcd_selftest_manual_fan_check(const uint8_t _fan, const bool check_opposite,
+	const bool _default=false);
 
 #ifdef FANCHECK
 /** Enumerate for lcd_selftest_fan_auto function.
@@ -5009,16 +5009,22 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
+/// @brief Set print fan speed
+/// @param speed ranges from 0 to 255
+static void lcd_selftest_setfan(const uint8_t speed) {
+    fanSpeed = speed;
+#ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = speed;
+#endif
+    manage_heater();
+}
+
 static bool fan_error_selftest()
 {
 #ifdef FANCHECK
     if (!fans_check_enabled) return 0;
 
-    fanSpeed = 255;
-#ifdef FAN_SOFT_PWM
-	fanSpeedSoftPwm = 255;
-#endif //FAN_SOFT_PWM
-    manage_heater(); //enables print fan
+    lcd_selftest_setfan(255);
     setExtruderAutoFanState(3); //force enables the hotend fan
 #ifdef FAN_SOFT_PWM
     extruder_autofan_last_check = _millis();
@@ -5026,12 +5032,8 @@ static bool fan_error_selftest()
 #endif //FAN_SOFT_PWM
     _delay(1000); //delay_keep_alive would turn off hotend fan, because temerature is too low (maybe)
     manage_heater();
-    fanSpeed = 0;
-	setExtruderAutoFanState(1); //releases lock on the hotend fan
-#ifdef FAN_SOFT_PWM
-    fanSpeedSoftPwm = 0;
-#endif //FAN_SOFT_PWM
-    manage_heater();
+    setExtruderAutoFanState(1); //releases lock on the hotend fan
+    lcd_selftest_setfan(0);
 #ifdef TACH_0
     if (fan_speed[0] <= 20) { //hotend fan error
         LCD_ALERTMESSAGERPGM(MSG_FANCHECK_HOTEND);
@@ -6848,8 +6850,8 @@ static bool selftest_irsensor()
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 #endif //FILAMENT_SENSOR
 
-static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
-	bool _default)
+static bool lcd_selftest_manual_fan_check(const uint8_t _fan, const bool check_opposite,
+	const bool _default)
 {
 
 	bool _result = check_opposite;
@@ -6867,20 +6869,14 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	case 1:
 		// object cooling fan
 		lcd_puts_at_P(0, 1, check_opposite ? _T(MSG_SELFTEST_HOTEND_FAN) : _T(MSG_SELFTEST_PART_FAN));
-		SET_OUTPUT(FAN_PIN);
-#ifdef FAN_SOFT_PWM
-		fanSpeedSoftPwm = 255;
-#else //FAN_SOFT_PWM
-		analogWrite(FAN_PIN, 255);
-#endif //FAN_SOFT_PWM
-
+		lcd_selftest_setfan(255);
 		break;
 	}
 	_delay(500);
 
 	lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
 	lcd_putc_at(0, 3, '>');
-	lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
+	lcd_puts_P(_T(MSG_SELFTEST_FAN_NO));
 
 	lcd_encoder = _default;
 
@@ -6892,21 +6888,16 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 			if (lcd_encoder < 0) {
 				_result = !check_opposite;
 				lcd_putc_at(0, 2, '>');
-				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
 				lcd_putc_at(0, 3, ' ');
-				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
 
 			if (lcd_encoder > 0) {
 				_result = check_opposite;
 				lcd_putc_at(0, 2, ' ');
-				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
 				lcd_putc_at(0, 3, '>');
-				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
 			lcd_encoder = 0;
 		}
-
 
 		manage_heater();
 		manage_inactivity(true);
@@ -6914,30 +6905,13 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 
 	} while (!lcd_clicked());
 	KEEPALIVE_STATE(IN_HANDLER);
-	setExtruderAutoFanState(0);
-	SET_OUTPUT(FAN_PIN);
-#ifdef FAN_SOFT_PWM
-	fanSpeedSoftPwm = 0;
-#else //FAN_SOFT_PWM
-	analogWrite(FAN_PIN, 0);
-#endif //FAN_SOFT_PWM
-	fanSpeed = 0;
-	manage_heater();
+	setExtruderAutoFanState(0); // Turn off hotend fan
+	lcd_selftest_setfan(0); // Turn off print fan
 
 	return _result;
 }
 
 #ifdef FANCHECK
-// Set print fan speed
-static void lcd_selftest_setfan(uint8_t speed) {
-    // set the fan speed
-    fanSpeed = speed;
-#ifdef FAN_SOFT_PWM
-    fanSpeedSoftPwm = speed;
-#endif
-    manage_heater();
-}
-
 // Wait for the specified number of seconds while displaying some single-character indicator on the
 // screen coordinate col/row, then perform fan measurement
 static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row) {
@@ -7068,21 +7042,19 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
-static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name_PROGMEM, const char _indicator)
+static void lcd_selftest_screen_step(const uint8_t _row, const uint8_t _col, const uint8_t _state, const char *_name_PROGMEM, const char _indicator)
 {
 	lcd_set_cursor(_col, _row);
-    uint8_t strlenNameP = strlen_P(_name_PROGMEM);
-
 	switch (_state)
 	{
 	case 1:
 		lcd_puts_P(_name_PROGMEM);
-		lcd_putc_at(_col + strlenNameP, _row, ':');
+		lcd_putc(':');
 		lcd_putc(_indicator);
 		break;
 	case 2:
 		lcd_puts_P(_name_PROGMEM);
-		lcd_putc_at(_col + strlenNameP, _row, ':');
+		lcd_putc(':');
 		lcd_puts_P(MSG_OK_CAPS);
 		break;
 	default:
