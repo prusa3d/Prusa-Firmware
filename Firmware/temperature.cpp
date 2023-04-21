@@ -728,13 +728,7 @@ void soft_pwm_init()
 
   #if defined(HEATER_0_PIN) && (HEATER_0_PIN > -1) 
     SET_OUTPUT(HEATER_0_PIN);
-  #endif  
-  #if defined(HEATER_1_PIN) && (HEATER_1_PIN > -1) 
-    SET_OUTPUT(HEATER_1_PIN);
-  #endif  
-  #if defined(HEATER_2_PIN) && (HEATER_2_PIN > -1) 
-    SET_OUTPUT(HEATER_2_PIN);
-  #endif  
+  #endif
   #if defined(HEATER_BED_PIN) && (HEATER_BED_PIN > -1) 
     SET_OUTPUT(HEATER_BED_PIN);
   #endif  
@@ -2026,12 +2020,6 @@ void disable_heater()
       // attribute, so disable each pin individually
 #if defined(HEATER_0_PIN) && HEATER_0_PIN > -1 && EXTRUDERS > 0
       WRITE(HEATER_0_PIN,LOW);
-#endif
-#if defined(HEATER_1_PIN) && HEATER_1_PIN > -1 && EXTRUDERS > 1
-      WRITE(HEATER_1_PIN,LOW);
-#endif
-#if defined(HEATER_2_PIN) && HEATER_2_PIN > -1 && EXTRUDERS > 2
-      WRITE(HEATER_2_PIN,LOW);
 #endif
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
       // TODO: this doesn't take immediate effect!

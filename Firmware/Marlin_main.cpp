@@ -4938,8 +4938,6 @@ void process_commands()
 			disable_y();
 			disable_z();
 			disable_e0();
-			disable_e1();
-			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
@@ -6209,8 +6207,6 @@ Sigma_Exit:
         disable_heater();
         st_synchronize();
         disable_e0();
-        disable_e1();
-        disable_e2();
         finishAndDisableSteppers();
         fanSpeed = 0;
         _delay(1000); // Wait a little before to switch off
@@ -6281,9 +6277,9 @@ Sigma_Exit:
       if (code_seen('X')) disable_x();
       if (code_seen('Y')) disable_y();
       if (code_seen('Z')) disable_z();
-#if ((E0_ENABLE_PIN != X_ENABLE_PIN) && (E1_ENABLE_PIN != Y_ENABLE_PIN)) // Only enable on boards that have seperate ENABLE_PINS
+#if (E0_ENABLE_PIN != X_ENABLE_PIN) // Only enable on boards that have seperate ENABLE_PINS
       if (code_seen('E')) disable_e0();
-          #endif
+#endif
         }
       }
       break;
@@ -9269,15 +9265,6 @@ void controllerFan()
     lastMotorCheck = _millis();
 
     if(!READ(X_ENABLE_PIN) || !READ(Y_ENABLE_PIN) || !READ(Z_ENABLE_PIN) || (soft_pwm_bed > 0)
-    #if EXTRUDERS > 2
-       || !READ(E2_ENABLE_PIN)
-    #endif
-    #if EXTRUDER > 1
-      #if defined(X2_ENABLE_PIN) && X2_ENABLE_PIN > -1
-       || !READ(X2_ENABLE_PIN)
-      #endif
-       || !READ(E1_ENABLE_PIN)
-    #endif
        || !READ(E0_ENABLE_PIN)) //If any of the drivers are enabled...
     {
       lastMotor = _millis(); //... set time to NOW so the fan will turn on
@@ -9310,9 +9297,6 @@ void controllerFan()
  */
 static void handleSafetyTimer()
 {
-#if (EXTRUDERS > 1)
-#error Implemented only for one extruder.
-#endif //(EXTRUDERS > 1)
     if (printer_active() || (!degTargetBed() && !degTargetHotend(0)) || (!safetytimer_inactive_time))
     {
         safetyTimer.stop();
