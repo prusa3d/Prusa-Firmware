@@ -181,21 +181,6 @@ void manage_inactivity(bool ignore_stepper_queue=false);
     #define disable_z() disable_force_z()
 #endif // PSU_Delta
 
-
-//#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
-//#ifdef Z_DUAL_STEPPER_DRIVERS
-//#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-//#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-//#else
-//#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-//#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-//#endif
-//#else
-//#define enable_z() ;
-//#define disable_z() ;
-//#endif
-
-
 #if defined(E0_ENABLE_PIN) && (E0_ENABLE_PIN > -1)
   #define enable_e0() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
   #define disable_e0() WRITE(E0_ENABLE_PIN,!E_ENABLE_ON)
@@ -203,23 +188,6 @@ void manage_inactivity(bool ignore_stepper_queue=false);
   #define enable_e0()  /* nothing */
   #define disable_e0() /* nothing */
 #endif
-
-#if (EXTRUDERS > 1) && defined(E1_ENABLE_PIN) && (E1_ENABLE_PIN > -1)
-  #define enable_e1() WRITE(E1_ENABLE_PIN, E_ENABLE_ON)
-  #define disable_e1() WRITE(E1_ENABLE_PIN,!E_ENABLE_ON)
-#else
-  #define enable_e1()  /* nothing */
-  #define disable_e1() /* nothing */
-#endif
-
-#if (EXTRUDERS > 2) && defined(E2_ENABLE_PIN) && (E2_ENABLE_PIN > -1)
-  #define enable_e2() WRITE(E2_ENABLE_PIN, E_ENABLE_ON)
-  #define disable_e2() WRITE(E2_ENABLE_PIN,!E_ENABLE_ON)
-#else
-  #define enable_e2()  /* nothing */
-  #define disable_e2() /* nothing */
-#endif
-
 
 enum AxisEnum {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, E_AXIS=3, X_HEAD=4, Y_HEAD=5};
 #define X_AXIS_MASK  1

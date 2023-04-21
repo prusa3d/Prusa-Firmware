@@ -3188,8 +3188,6 @@ void lcd_temp_cal_show_result(bool result) {
 	disable_y();
 	disable_z();
 	disable_e0();
-	disable_e1();
-	disable_e2();
 	setTargetBed(0); //set bed target temperature back to 0
 
 	// Store boolean result
@@ -4947,8 +4945,6 @@ void unload_filament(float unloadLength)
 
 	//disable extruder steppers so filament can be removed
 	disable_e0();
-	disable_e1();
-	disable_e2();
 	_delay(100);
 
 	Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
