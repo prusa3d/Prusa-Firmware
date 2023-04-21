@@ -101,8 +101,6 @@ EXTRUDER SETTINGS
 
 // Mintemps
 #define HEATER_0_MINTEMP 30
-#define HEATER_1_MINTEMP 5
-#define HEATER_2_MINTEMP 5
 #define HEATER_MINTEMP_DELAY 15000                // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if HEATER_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see HEATER_MINTEMP_DELAY definition)"
@@ -119,8 +117,6 @@ EXTRUDER SETTINGS
 #else
 #define HEATER_0_MAXTEMP 305
 #endif
-#define HEATER_1_MAXTEMP 305
-#define HEATER_2_MAXTEMP 305
 #define BED_MAXTEMP 150
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
@@ -366,8 +362,6 @@ THERMISTORS SETTINGS
 #else
 #define TEMP_SENSOR_0 5
 #endif
-#define TEMP_SENSOR_1 0
-#define TEMP_SENSOR_2 0
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
 #elif defined(E3D_PT100_BED_NO_AMP)
