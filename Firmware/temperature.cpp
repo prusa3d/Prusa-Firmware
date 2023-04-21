@@ -244,14 +244,6 @@ static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, fl
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
-// return "false", if all extruder-heaters are 'off' (ie. "true", if any heater is 'on')
-bool checkAllHotends(void)
-{
-    bool result=false;
-    for(int i=0;i<EXTRUDERS;i++) result=(result||(target_temperature[i]!=0));
-    return(result);
-}
-
 // WARNING: the following function has been marked noinline to avoid a GCC 4.9.2 LTO
 //          codegen bug causing a stack overwrite issue in process_commands()
 void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycles)
