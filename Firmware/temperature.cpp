@@ -1141,14 +1141,11 @@ FORCE_INLINE static void soft_pwm_core()
   static unsigned char slow_pwm_count = 0;
   static unsigned char state_heater_0 = 0;
   static unsigned char state_timer_heater_0 = 0;
-#endif
 #if HEATER_BED_PIN > -1
-  // @@DR static unsigned char soft_pwm_b;
-#ifdef SLOW_PWM_HEATERS
   static unsigned char state_heater_b = 0;
   static unsigned char state_timer_heater_b = 0;
-#endif
-#endif
+#endif // HEATER_BED_PIN > -1
+#endif // SLOW_PWM_HEATERS
 
 #ifndef SLOW_PWM_HEATERS
   /*
