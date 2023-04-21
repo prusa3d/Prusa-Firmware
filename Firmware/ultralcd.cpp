@@ -3425,8 +3425,7 @@ static void crash_mode_switch()
     {
         lcd_crash_detect_enable();
     }
-	if (printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
-	else menu_goto(lcd_settings_menu, 9, true, true);
+    menu_back();
 }
 #endif //TMC2130
 
