@@ -89,7 +89,8 @@ static char lcd_status_message[LCD_WIDTH + 1];
 
 static uint8_t lay1cal_filament = 0;
 
-static const char separator[] PROGMEM = "--------------------";
+static const char STR_SEPARATOR[] PROGMEM = "--------------------";
+static_assert(sizeof(STR_SEPARATOR) == LCD_WIDTH + 1, "separator length must be updated to match screen width");
 
 /** forward declarations **/
 
@@ -257,8 +258,6 @@ uint8_t selected_sheet = 0;
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
-
-const char STR_SEPARATOR[] PROGMEM = "------------";
 
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
@@ -1496,40 +1495,40 @@ void TestPullupCrash() {
 //! |  3.7.2.-2363       |	c=16
 //! | prusa3d.com        |	MSG_PRUSA3D
 //! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
-//! | help.prusa3d.com  |	MSG_PRUSA3D_HELP
-//! | --------------     |	STR_SEPARATOR
+//! | help.prusa3d.com   |	MSG_PRUSA3D_HELP
+//! | ------------------ |	STR_SEPARATOR
 //! | 1_75mm_MK3         |	FILAMENT_SIZE
-//! | help.prusa3d.com  |	ELECTRONICS
-//! | help.prusa3d.com  |	NOZZLE_TYPE
-//! | --------------     |	STR_SEPARATOR
+//! | help.prusa3d.com   |	ELECTRONICS
+//! | help.prusa3d.com   |	NOZZLE_TYPE
+//! | ------------------ |	STR_SEPARATOR
 //! | Date:              |	c=17
 //! | MMM DD YYYY        |	__DATE__
-//! | --------------     |	STR_SEPARATOR
+//! | ------------------ |	STR_SEPARATOR
 //! @endcode
 //! 
 //! If MMU is connected
 //! 
-//! 	@code{.unparsed}
-//! 	| MMU connected     |	c=18
-//! 	|  FW: 1.0.6-7064523 |
-//! 	@endcode
+//! @code{.unparsed}
+//! | MMU connected     |	c=18
+//! |  FW: 1.0.6-7064523 |
+//! @endcode
 //! 
 //! If MMU is not connected
 //! 
-//! 	@code{.unparsed}
-//! 	| MMU        N/A     |	c=18
-//! 	@endcode
+//! @code{.unparsed}
+//! | MMU        N/A     |	c=18
+//! @endcode
 //! 
 //! If Flash Air is connected
 //! 
-//! 	@code{.unparsed}
-//! 	| --------------     |	STR_SEPARATOR
-//! 	| FlashAir IP Addr:  |	c=18
-//! 	|  192.168.1.100     |
-//! 	@endcode
+//! @code{.unparsed}
+//! | ------------------ |	STR_SEPARATOR
+//! | FlashAir IP Addr:  |	c=18
+//! |  192.168.1.100     |
+//! @endcode
 //! 
 //! @code{.unparsed}
-//! | --------------     |	STR_SEPARATOR
+//! | ------------------ |	STR_SEPARATOR
 //! | XYZ cal. details   |	MSG_XYZ_DETAILS c=18
 //! | Extruder info      |	MSG_INFO_EXTRUDER
 //! | XYZ cal. details   |	MSG_INFO_SENSORS
@@ -1537,8 +1536,8 @@ void TestPullupCrash() {
 //! 
 //! If TMC2130 defined
 //! 
-//! 	@code{.unparsed}
-//! 	| Belt status        |	MSG_BELT_STATUS
+//! @code{.unparsed}
+//! | Belt status        |	MSG_BELT_STATUS
 //! @endcode
 //! 
 //! @code{.unparsed}
@@ -1547,16 +1546,16 @@ void TestPullupCrash() {
 //! 
 //! If Voltage Bed and PWR Pin are defined
 //! 
-//! 	@code{.unparsed}
-//! 	| Voltages           |	MSG_MENU_VOLTAGES
-//! 	@endcode
+//! @code{.unparsed}
+//! | Voltages           |	MSG_MENU_VOLTAGES
+//! @endcode
 //! 
 //! 
 //! If DEBUG_BUILD is defined
 //! 
-//! 	@code{.unparsed}
-//! 	| Debug              |	c=18
-//! 	@endcode
+//! @code{.unparsed}
+//! | Debug              |	c=18
+//! @endcode
 //! ----------------------
 //! @endcode
 static void lcd_support_menu()
@@ -2421,7 +2420,7 @@ void lcd_move_e()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Y distance from min |	MSG_Y_DIST_FROM_MIN
-//! | --------------     |	STR_SEPARATOR
+//! |--------------------|	STR_SEPARATOR
 //! |Left:        00.00mm|	MSG_LEFT c=10, c=8
 //! |Right:       00.00mm|	MSG_RIGHT c=10, c=8
 //! ----------------------
@@ -2439,7 +2438,7 @@ static void lcd_menu_xyz_y_min()
 	  "%S:"
 	 ),
 	 _i("Y distance from min"),  ////MSG_Y_DIST_FROM_MIN c=20
-	 separator,
+	 STR_SEPARATOR,
 	 _i("Left"),  ////MSG_LEFT c=10
 	 _i("Right")  ////MSG_RIGHT c=10
 	);
@@ -2464,7 +2463,7 @@ float _deg(float rad)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14
-//! | --------------     |	STR_SEPARATOR
+//! |--------------------|	STR_SEPARATOR
 //! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14
 //! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14
 //! ----------------------
@@ -2482,7 +2481,7 @@ static void lcd_menu_xyz_skew()
 	  "%-14.14S:%3.2f\x01"
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
-	 separator,
+	 STR_SEPARATOR,
 	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14
 	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14
 	);
@@ -2500,7 +2499,7 @@ static void lcd_menu_xyz_skew()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
-//! | --------------     |	STR_SEPARATOR
+//! |--------------------|	STR_SEPARATOR
 //! |X            00.00mm|	c=10
 //! |Y            00.00mm|	c=10
 //! ----------------------
@@ -2509,7 +2508,7 @@ static void lcd_menu_xyz_skew()
 static void lcd_menu_xyz_offset()
 {
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
-    lcd_puts_at_P(0, 1, separator);
+    lcd_puts_at_P(0, 1, STR_SEPARATOR);
 
     for (uint8_t i = 0; i < 2; i++) {
         lcd_set_cursor(0, i + 2);
@@ -6952,7 +6951,7 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 	if (screen == TestScreen::Failed) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
 	if (screen == TestScreen::Home) lcd_puts_P(_i("Calibrating home"));////MSG_CALIBRATING_HOME c=20
 
-	lcd_puts_at_P(0, 1, separator);
+	lcd_puts_at_P(0, 1, STR_SEPARATOR);
 	if ((screen >= TestScreen::ExtruderFan) && (screen <= TestScreen::FansOk))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");
