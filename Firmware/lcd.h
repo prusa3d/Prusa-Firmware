@@ -123,6 +123,10 @@ extern void lcd_beeper_quick_feedback(void);
 //Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 extern void lcd_quick_feedback(void);
 
+/// @brief Check whether knob is rotated or clicked and update relevant
+///variables. Flags are set by lcd_buttons_update in ISR context.
+extern void lcd_knob_update();
+
 extern void lcd_update(uint8_t lcdDrawUpdateOverride);
 
 extern void lcd_update_enable(uint8_t enabled);
