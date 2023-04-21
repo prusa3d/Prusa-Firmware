@@ -797,48 +797,6 @@ void soft_pwm_init()
   }
 #endif //MAXTEMP
 
-#if (EXTRUDERS > 1) && defined(HEATER_1_MINTEMP)
-  minttemp[1] = HEATER_1_MINTEMP;
-  while(analog2temp(minttemp_raw[1], 1) < HEATER_1_MINTEMP) {
-#if HEATER_1_RAW_LO_TEMP < HEATER_1_RAW_HI_TEMP
-    minttemp_raw[1] += OVERSAMPLENR;
-#else
-    minttemp_raw[1] -= OVERSAMPLENR;
-#endif
-  }
-#endif // MINTEMP 1
-#if (EXTRUDERS > 1) && defined(HEATER_1_MAXTEMP)
-  maxttemp[1] = HEATER_1_MAXTEMP;
-  while(analog2temp(maxttemp_raw[1], 1) > HEATER_1_MAXTEMP) {
-#if HEATER_1_RAW_LO_TEMP < HEATER_1_RAW_HI_TEMP
-    maxttemp_raw[1] -= OVERSAMPLENR;
-#else
-    maxttemp_raw[1] += OVERSAMPLENR;
-#endif
-  }
-#endif //MAXTEMP 1
-
-#if (EXTRUDERS > 2) && defined(HEATER_2_MINTEMP)
-  minttemp[2] = HEATER_2_MINTEMP;
-  while(analog2temp(minttemp_raw[2], 2) < HEATER_2_MINTEMP) {
-#if HEATER_2_RAW_LO_TEMP < HEATER_2_RAW_HI_TEMP
-    minttemp_raw[2] += OVERSAMPLENR;
-#else
-    minttemp_raw[2] -= OVERSAMPLENR;
-#endif
-  }
-#endif //MINTEMP 2
-#if (EXTRUDERS > 2) && defined(HEATER_2_MAXTEMP)
-  maxttemp[2] = HEATER_2_MAXTEMP;
-  while(analog2temp(maxttemp_raw[2], 2) > HEATER_2_MAXTEMP) {
-#if HEATER_2_RAW_LO_TEMP < HEATER_2_RAW_HI_TEMP
-    maxttemp_raw[2] -= OVERSAMPLENR;
-#else
-    maxttemp_raw[2] += OVERSAMPLENR;
-#endif
-  }
-#endif //MAXTEMP 2
-
 #ifdef BED_MINTEMP
   while(analog2tempBed(bed_minttemp_raw) < BED_MINTEMP) {
 #if HEATER_BED_RAW_LO_TEMP < HEATER_BED_RAW_HI_TEMP
@@ -1228,14 +1186,6 @@ FORCE_INLINE static void soft_pwm_core()
       WRITE(HEATER_1_PIN,1);
 #endif
     } else WRITE(HEATER_0_PIN,0);
-#if EXTRUDERS > 1
-    soft_pwm_1 = soft_pwm[1];
-    if(soft_pwm_1 > 0) WRITE(HEATER_1_PIN,1); else WRITE(HEATER_1_PIN,0);
-#endif
-#if EXTRUDERS > 2
-    soft_pwm_2 = soft_pwm[2];
-    if(soft_pwm_2 > 0) WRITE(HEATER_2_PIN,1); else WRITE(HEATER_2_PIN,0);
-#endif
   }
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
   
@@ -1271,13 +1221,6 @@ FORCE_INLINE static void soft_pwm_core()
     WRITE(HEATER_1_PIN,0);
 #endif
   }
-
-#if EXTRUDERS > 1
-  if(soft_pwm_1 < pwm_count) WRITE(HEATER_1_PIN,0);
-#endif
-#if EXTRUDERS > 2
-  if(soft_pwm_2 < pwm_count) WRITE(HEATER_2_PIN,0);
-#endif
 
 #if 0 // @@DR  
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
@@ -1333,59 +1276,7 @@ FORCE_INLINE static void soft_pwm_core()
 #endif
       }
     }
-    
-#if EXTRUDERS > 1
-    // EXTRUDER 1
-    soft_pwm_1 = soft_pwm[1];
-    if (soft_pwm_1 > 0) {
-      // turn ON heather only if the minimum time is up 
-      if (state_timer_heater_1 == 0) { 
-	// if change state set timer 
-	if (state_heater_1 == 0) {
-	  state_timer_heater_1 = MIN_STATE_TIME;
-	}
-	state_heater_1 = 1;
-	WRITE(HEATER_1_PIN, 1);
-      }
-    } else {
-      // turn OFF heather only if the minimum time is up 
-      if (state_timer_heater_1 == 0) {
-	// if change state set timer 
-	if (state_heater_1 == 1) {
-	  state_timer_heater_1 = MIN_STATE_TIME;
-	}
-	state_heater_1 = 0;
-	WRITE(HEATER_1_PIN, 0);
-      }
-    }
-#endif
-    
-#if EXTRUDERS > 2
-    // EXTRUDER 2
-    soft_pwm_2 = soft_pwm[2];
-    if (soft_pwm_2 > 0) {
-      // turn ON heather only if the minimum time is up 
-      if (state_timer_heater_2 == 0) { 
-	// if change state set timer 
-	if (state_heater_2 == 0) {
-	  state_timer_heater_2 = MIN_STATE_TIME;
-	}
-	state_heater_2 = 1;
-	WRITE(HEATER_2_PIN, 1);
-      }
-    } else {
-      // turn OFF heather only if the minimum time is up 
-      if (state_timer_heater_2 == 0) {
-	// if change state set timer 
-	if (state_heater_2 == 1) {
-	  state_timer_heater_2 = MIN_STATE_TIME;
-	}
-	state_heater_2 = 0;
-	WRITE(HEATER_2_PIN, 0);
-      }
-    }
-#endif
-    
+
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
     // BED
     soft_pwm_b = soft_pwm_bed;
@@ -1428,37 +1319,7 @@ FORCE_INLINE static void soft_pwm_core()
 #endif
     }
   }
-    
-#if EXTRUDERS > 1
-  // EXTRUDER 1 
-  if (soft_pwm_1 < slow_pwm_count) {
-    // turn OFF heather only if the minimum time is up 
-    if (state_timer_heater_1 == 0) { 
-      // if change state set timer 
-      if (state_heater_1 == 1) {
-	state_timer_heater_1 = MIN_STATE_TIME;
-      }
-      state_heater_1 = 0;
-      WRITE(HEATER_1_PIN, 0);
-    }
-  }
-#endif
-  
-#if EXTRUDERS > 2
-  // EXTRUDER 2
-  if (soft_pwm_2 < slow_pwm_count) {
-    // turn OFF heather only if the minimum time is up 
-    if (state_timer_heater_2 == 0) { 
-      // if change state set timer 
-      if (state_heater_2 == 1) {
-	state_timer_heater_2 = MIN_STATE_TIME;
-      }
-      state_heater_2 = 0;
-      WRITE(HEATER_2_PIN, 0);
-    }
-  }
-#endif
-  
+
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
   // BED
   if (soft_pwm_b < slow_pwm_count) {
@@ -1493,20 +1354,8 @@ FORCE_INLINE static void soft_pwm_core()
     // Extruder 0
     if (state_timer_heater_0 > 0) {
       state_timer_heater_0--;
-    } 
-  
-#if EXTRUDERS > 1
-    // Extruder 1
-    if (state_timer_heater_1 > 0) 
-      state_timer_heater_1--;
-#endif
-    
-#if EXTRUDERS > 2
-    // Extruder 2
-    if (state_timer_heater_2 > 0) 
-      state_timer_heater_2--;
-#endif
-    
+    }
+
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
     // Bed   
     if (state_timer_heater_b > 0) 
