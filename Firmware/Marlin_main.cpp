@@ -5221,18 +5221,13 @@ void process_commands()
     case 1: {
         const char *src = strchr_pointer + 2;
         codenum = 0;
-        bool hasP = false, hasS = false;
-        if (code_seen('P')) {
-            codenum = code_value_long(); // milliseconds to wait
-            hasP = codenum > 0;
-        }
-        if (code_seen('S')) {
-            codenum = code_value_long() * 1000; // seconds to wait
-            hasS = codenum > 0;
-        }
+        if (code_seen('P')) codenum = code_value_long(); // milliseconds to wait
+        if (code_seen('S')) codenum = code_value_long() * 1000; // seconds to wait
+        bool expiration_time_set = bool(codenum);
+
         while (*src == ' ') ++src;
         custom_message_type = CustomMsg::M0Wait;
-        if (!hasP && !hasS && *src != '\0') {
+        if (!expiration_time_set && *src != '\0') {
             lcd_setstatus(src);
         } else {
             // farmers want to abuse a bug from the previous firmware releases
@@ -5247,7 +5242,7 @@ void process_commands()
         st_synchronize();
         menu_set_block(MENU_BLOCK_STATUS_SCREEN_M0);
         previous_millis_cmd.start();
-        if (codenum > 0 ) {
+        if (expiration_time_set) {
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             while(_millis() < codenum && !lcd_clicked()) {
