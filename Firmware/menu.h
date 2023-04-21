@@ -38,6 +38,7 @@ enum ESeriousErrors {
 #ifdef TEMP_MODEL
 	MENU_BLOCK_TEMP_MODEL_AUTOTUNE = 0x02,
 #endif
+    MENU_BLOCK_STATUS_SCREEN_M0    = 0x04,
 }; // and possibly others in the future.
 
 //! this is a flag for disabling entering the main menu and longpress. If this is set to anything !=
@@ -49,7 +50,8 @@ extern uint8_t menu_block_mask;
 //! a c++ class would have been better
 #define menu_set_block(x) menu_block_mask |= x;
 #define menu_unset_block(x) menu_block_mask &= ~x;
-#define menu_is_blocked(x) (menu_block_mask & x) != 0
+#define menu_is_blocked(x) (menu_block_mask & x)
+#define menu_is_any_block() (menu_block_mask != MENU_BLOCK_NONE)
 
 extern uint8_t menu_line;
 extern uint8_t menu_item;

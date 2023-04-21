@@ -5244,8 +5244,8 @@ void process_commands()
                 custom_message_type = CustomMsg::Status; // let the lcd display the name of the printed G-code file in farm mode
             }
         }
-        lcd_ignore_click();				//call lcd_ignore_click also for else ???
         st_synchronize();
+        menu_set_block(MENU_BLOCK_STATUS_SCREEN_M0);
         previous_millis_cmd.start();
         if (codenum > 0 ) {
             codenum += _millis();  // keep track of when we started waiting
@@ -5254,10 +5254,10 @@ void process_commands()
                 delay_keep_alive(0);
             }
             KEEPALIVE_STATE(IN_HANDLER);
-            lcd_ignore_click(false);
         } else {
             marlin_wait_for_click();
         }
+        menu_unset_block(MENU_BLOCK_STATUS_SCREEN_M0);
         if (IS_SD_PRINTING)
             custom_message_type = CustomMsg::Status;
         else
