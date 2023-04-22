@@ -944,17 +944,6 @@ static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, fl
 			__preheat_counter[_heater_id]++;
 			if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
 			{
-				/*SERIAL_ECHOPGM("Heater:");
-				MYSERIAL.print(_heater_id);
-				SERIAL_ECHOPGM(" T:");
-				MYSERIAL.print(_current_temperature);
-				SERIAL_ECHOPGM(" Tstart:");
-				MYSERIAL.print(__preheat_start[_heater_id]);
-				SERIAL_ECHOPGM(" delta:");
-				MYSERIAL.print(_current_temperature-__preheat_start[_heater_id]);*/
-				
-//-//				if (_current_temperature - __preheat_start[_heater_id] < 2) {
-//-//				if (_current_temperature - __preheat_start[_heater_id] < ((_isbed && (_current_temperature>105.0))?0.6:2.0)) {
                     __delta=2.0;
                     if(_isbed)
                          {
@@ -964,11 +953,7 @@ static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, fl
                          }
 				if (_current_temperature - __preheat_start[_heater_id] < __delta) {
 					__preheat_errors[_heater_id]++;
-					/*SERIAL_ECHOPGM(" Preheat errors:");
-					MYSERIAL.println(__preheat_errors[_heater_id]);*/
-				}
-				else {
-					//SERIAL_ECHOLNPGM("");
+				} else {
 					__preheat_errors[_heater_id] = 0;
 				}
 
@@ -980,12 +965,8 @@ static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, fl
 			}
 		}
 
-//-//		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
 		if ((_current_temperature > (_target_temperature - __hysteresis))  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
 		{
-			/*SERIAL_ECHOPGM("Heater:");
-			MYSERIAL.print(_heater_id);
-			MYSERIAL.println(" ->tempRunaway");*/
 			temp_runaway_status[_heater_id] = TempRunaway_ACTIVE;
 			temp_runaway_check_active = false;
 			temp_runaway_error_counter[_heater_id] = 0;
