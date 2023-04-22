@@ -8628,13 +8628,13 @@ Sigma_Exit:
   // end if(code_seen('M')) (end of M codes)
   /*!
   -----------------------------------------------------------------------------------------
-  # T Codes
-  T<extruder nr.> - select extruder in case of multi extruder printer. select filament in case of MMU_V2.
-  #### For MMU_V2:
-  T<n> Gcode to extrude at least 38.10 mm at feedrate 19.02 mm/s must follow immediately to load to extruder wheels.
-  @n T? Gcode to extrude shouldn't have to follow, load to extruder wheels is done automatically
-  @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
-  @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
+  T<extruder nr.> - select extruder in case of multi extruder printer. Selects filament position 1-5 (T0-T4) in case of MMU.
+
+  For MMU2/S / MMU3:
+    T<extruder nr.> - Selects the filament position. A Gcode to load a filament to the nozzle must follow.
+    Tx - Printer asks user to select a filament position. Then loads the filament from the MMU unit into the extruder wheels only. G-code to heat up the nozzle follows.
+    Tc - Loads the filament tip from the extruder wheels into the nozzle.
+    T? - acts the same as Tx followed by Tc
   */
   else if(*CMDBUFFER_CURRENT_STRING == 'T') {
         strchr_pointer = CMDBUFFER_CURRENT_STRING;
