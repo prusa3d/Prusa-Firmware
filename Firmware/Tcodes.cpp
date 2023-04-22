@@ -20,18 +20,7 @@ inline void TCodeInvalid() {
     SERIAL_ECHOLNPGM("Invalid T code."); 
 }
 
-struct SChooseFromMenu {
-    uint8_t slot:7;
-    uint8_t loadToNozzle:1;
-    inline constexpr SChooseFromMenu(uint8_t slot, bool loadToNozzle):slot(slot), loadToNozzle(loadToNozzle){}
-    inline constexpr SChooseFromMenu():slot(0), loadToNozzle(false) { }
-};
-
-SChooseFromMenu TCodeChooseFromMenu() {
-    return SChooseFromMenu( choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT)), MMU2::mmu2.Enabled() );
-}
-
-void TCodes(char *const strchr_pointer, uint8_t codeValue) {
+void TCodes(char *const strchr_pointer, const uint8_t codeValue) {
     uint8_t index = 1;
     for ( /*nothing*/ ; strchr_pointer[index] == ' ' || strchr_pointer[index] == '\t'; index++)
         ;
@@ -40,7 +29,7 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
 
     if (IsInvalidTCode(strchr_pointer, index)){
         TCodeInvalid();
-    } else if (strchr_pointer[index] == 'x'){
+    } else if (strchr_pointer[index] == 'x' || strchr_pointer[index] == '?'){
         // load to extruder gears; if mmu is not present do nothing
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT)));
@@ -50,39 +39,25 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], MMU2::mmu2.get_current_tool());
         }
-    } else {
-        SChooseFromMenu selectedSlot;
-        if (strchr_pointer[index] == '?') {
-            selectedSlot = TCodeChooseFromMenu();
-        /*} else if (MMU2::mmu2.Enabled() && SpoolJoin::spooljoin.isSpoolJoinEnabled()) {
-            // TODO: What if the next slot has no filament?
-            selectedSlot.slot = SpoolJoin::spooljoin.nextSlot();*/
-        } else {
-            selectedSlot.slot = codeValue;
-        }
+    } else { // Process T0 ... T4
         st_synchronize();
-
         if (MMU2::mmu2.Enabled()) {
-            if (selectedSlot.slot == MMU2::mmu2.get_current_tool()){ 
+            if (codeValue == MMU2::mmu2.get_current_tool()){ 
                 // don't execute the same T-code twice in a row
                 puts_P(duplicate_Tcode_ignored);
             } else {
 #if defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
                 if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED)) {
-                    MMU2::mmu2.cut_filament(selectedSlot.slot);
+                    MMU2::mmu2.cut_filament(codeValue);
                 }
 #endif // defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
-                if (selectedSlot.loadToNozzle){ // for single material usage with mmu
-                    MMU2::mmu2.load_filament_to_nozzle(selectedSlot.slot);
-                } else {
-                    MMU2::mmu2.tool_change(selectedSlot.slot);
-                }
+                MMU2::mmu2.tool_change(codeValue);
             }
         } else {
             SERIAL_ECHO_START;
-            if (selectedSlot.slot >= EXTRUDERS) {
+            if (codeValue >= EXTRUDERS) {
                 SERIAL_ECHO('T');
-                SERIAL_ECHOLN(selectedSlot.slot + '0');
+                SERIAL_ECHOLN(codeValue + '0');
                 SERIAL_ECHOLNRPGM(_n("Invalid extruder")); ////MSG_INVALID_EXTRUDER
             } else {
 // @@TODO               if (code_seen('F')) {
