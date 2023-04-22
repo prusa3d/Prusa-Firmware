@@ -3639,10 +3639,7 @@ void lcd_v2_calibration() {
 			lcd_consume_click();
 			for (uint_least8_t i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
-				if (LCD_CLICKED) {
-					// Click event is consumed below when
-					// rendering the preheat menu. We use this
-					// to check whether a audio feedback should be shown
+				if (lcd_clicked()) {
 					break;
 				}
 			}
@@ -3654,12 +3651,7 @@ void lcd_v2_calibration() {
 #endif //FILAMENT_SENSOR
 
 	eFilamentAction = FilamentAction::Lay1Cal;
-
-	// Produce feedback if the LCD knob was not clicked
-	// Note for non-MMU setups there is a 2 second timeout in case
-	// the user does not click the knob, in such a case we want feedback
-	// since the firmware is changing the menu silently.
-	menu_goto(lcd_generic_preheat_menu, 0, true, !lcd_clicked());
+	menu_goto(lcd_generic_preheat_menu, 0, true);
 }
 
 void lcd_wizard() {
