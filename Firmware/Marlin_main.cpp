@@ -43,7 +43,6 @@
  *
  */
 
-//-//
 #include "Configuration.h"
 #include "Marlin.h"
 #include "config.h"

@@ -3366,10 +3366,8 @@ static void lcd_crash_mode_info2()
 }
 #endif //TMC2130
 
-//-//
-static void lcd_sound_state_set(void)
-{
-Sound_CycleState();
+static void lcd_sound_state_set(void) {
+    Sound_CycleState();
 }
 
 #ifndef MMU_FORCE_STEALTH_MODE
@@ -4237,7 +4235,6 @@ do\
 }\
 while (0)
 
-//-//
 static void lcd_check_mode_set(void)
 {
 switch(oCheckMode)

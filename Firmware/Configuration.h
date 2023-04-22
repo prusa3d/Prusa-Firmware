@@ -6,7 +6,6 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-//-//
 #include <avr/pgmspace.h>
 extern const uint16_t _nPrinterType;
 extern const char _sPrinterName[] PROGMEM;
