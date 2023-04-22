@@ -98,7 +98,6 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 // void copy_and_scalePID_d();
 
 /* Different menus */
-//static void lcd_status_screen();                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 #if (LANG_MODE != 0)
 static void lcd_language_menu();
 #endif
@@ -255,9 +254,6 @@ bool lcd_oldcardstatus;
 #endif
 
 uint8_t selected_sheet = 0;
-
-bool ignore_click = false;
-bool wait_for_unclick;
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
@@ -757,29 +753,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 			lcd_commands();
 	}
 
-	bool current_click = lcd_clicked();
-
-	if (ignore_click)
-	{
-		if (wait_for_unclick)
-		{
-			if (!current_click)
-				ignore_click = wait_for_unclick = false;
-			else
-				current_click = false;
-		}
-		else if (current_click)
-		{
-			lcd_draw_update = 2;
-			wait_for_unclick = true;
-			current_click = false;
-		}
-	}
-
-	if (current_click
-		&& ( menu_block_mask == MENU_BLOCK_NONE ) // or a serious error blocks entering the menu
-	)
-	{
+    if (!menu_is_any_block() && lcd_clicked()) {
 		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
 		menu_submenu(lcd_main_menu);
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
@@ -7188,12 +7162,6 @@ void ultralcd_init()
   strncpy_P(lcd_status_message, MSG_WELCOME, LCD_WIDTH);
 }
 
-void lcd_ignore_click(bool b)
-{
-  ignore_click = b;
-  wait_for_unclick = false;
-}
-
 static bool lcd_message_check(uint8_t priority)
 {
     // regular priority check
@@ -7290,7 +7258,7 @@ void menu_lcd_longpress_func(void)
     // Wake up the LCD backlight and,
     // start LCD inactivity timer
     lcd_timeoutToStatus.start();
-    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE || Stopped)
+    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_is_any_block() || Stopped)
     {
         // disable longpress during re-entry, while homing, calibration or if a serious error
         lcd_draw_update = 2;

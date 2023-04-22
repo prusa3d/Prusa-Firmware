@@ -168,7 +168,6 @@ extern bool isPrintPaused;
 extern uint8_t scrollstuff;
 
 
-void lcd_ignore_click(bool b=true);
 void lcd_commands();
 
 
