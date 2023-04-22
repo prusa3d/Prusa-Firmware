@@ -4,7 +4,6 @@
 #include "language.h"
 #include "messages.h"
 #include "mmu2.h"
-#include "stepper.h"
 #include "ultralcd.h"
 #include <avr/pgmspace.h>
 #include <stdint.h>
@@ -40,7 +39,6 @@ void TCodes(char *const strchr_pointer, const uint8_t codeValue) {
             MMU2::mmu2.tool_change(strchr_pointer[index], MMU2::mmu2.get_current_tool());
         }
     } else { // Process T0 ... T4
-        st_synchronize();
         if (MMU2::mmu2.Enabled()) {
             if (codeValue == MMU2::mmu2.get_current_tool()){ 
                 // don't execute the same T-code twice in a row
