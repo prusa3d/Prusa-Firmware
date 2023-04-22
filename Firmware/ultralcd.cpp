@@ -3403,15 +3403,8 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
 static void crash_mode_switch()
 {
-    if (lcd_crash_detect_enabled())
-    {
-        lcd_crash_detect_disable();
-    }
-    else
-    {
-        lcd_crash_detect_enable();
-    }
-    menu_back();
+    if (lcd_crash_detect_enabled()) lcd_crash_detect_disable();
+    else lcd_crash_detect_enable();
 }
 #endif //TMC2130
 
