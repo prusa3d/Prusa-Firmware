@@ -54,8 +54,6 @@
 #define INVERT_Y_DIR 0    // for Mendel set to 1, for Orca set to 0
 #define INVERT_Z_DIR 1     // for Mendel set to 0, for Orca set to 1
 #define INVERT_E0_DIR 0   // for direct drive extruder v9 set to 1, for geared extruder set to 0
-#define INVERT_E1_DIR 0    // for direct drive extruder v9 set to 1, for geared extruder set to 0
-#define INVERT_E2_DIR 0   // for direct drive extruder v9 set to 1, for geared extruder set to 0
 
 // Home position
 #define MANUAL_X_HOME_POS 0
