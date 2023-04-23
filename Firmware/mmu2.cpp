@@ -401,8 +401,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
 
     case 'x': {
         thermal_setExtrudeMintemp(0); // Allow cold extrusion since Tx only loads to the gears not nozzle
-        planner_synchronize();
-        ToolChangeCommon(slot); // the only difference was manage_response(false, false), but probably good enough
+        tool_change(slot);
         thermal_setExtrudeMintemp(EXTRUDE_MINTEMP);
     } break;
 
