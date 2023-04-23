@@ -168,14 +168,6 @@ private:
 //! @retval 1 button was clicked
 #define LCD_CLICKED (lcd_click_trigger)
 
-// Setup Rotary Encoder Bit Values (for two pin encoders to indicate movement)
-// These values are independent of which pins are used for EN_A and EN_B indications
-// The rotary encoder part is also independent to the chipset used for the LCD
-#define encrot0 0
-#define encrot1 2
-#define encrot2 3
-#define encrot3 1
-
 ////////////////////////////////////
 
 //Custom characters defined in the first 8 characters of the LCD
