@@ -5390,20 +5390,20 @@ static void lcd_tune_menu()
 	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 
 	MENU_BEGIN();
-	MENU_ITEM_BACK_P(_T(MSG_MAIN)); //1
-	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);//2////MSG_SPEED c=15
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);////MSG_SPEED c=15
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
+	MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
 	MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 10);
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);//5
-	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW c=15
+	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
+	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);////MSG_FLOW c=15
 #ifdef LA_LIVE_K
-	MENU_ITEM_EDIT_advance_K();//7
+	MENU_ITEM_EDIT_advance_K();
 #endif
 #ifdef FILAMENTCHANGEENABLE
     if (!farm_mode)
-        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
+        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);
 #endif
 
 #ifdef FILAMENT_SENSOR
