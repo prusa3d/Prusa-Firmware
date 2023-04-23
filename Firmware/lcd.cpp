@@ -635,7 +635,7 @@ uint8_t lcd_draw_update = 2;
 int16_t lcd_encoder = 0;
 static int8_t lcd_encoder_diff = 0;
 
-uint8_t lcd_buttons = 0;
+uint8_t lcd_click_trigger = 0;
 uint8_t lcd_update_enabled = 1;
 static bool lcd_backlight_wake_trigger; // Flag set by interrupt when the knob is pressed or rotated
 
@@ -776,7 +776,7 @@ void lcd_buttons_update(void)
             lcd_button_pressed = 0; // Reset to prevent double triggering
             if (!lcd_long_press_active)
             { //button released before long press gets activated
-                lcd_buttons |= EN_C; // This flag is reset when the event is consumed
+                lcd_click_trigger = 1; // This flag is reset when the event is consumed
             }
             lcd_backlight_wake_trigger = true; // flag event, knob pressed
             lcd_long_press_active = 0;

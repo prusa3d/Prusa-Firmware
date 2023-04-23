@@ -100,8 +100,7 @@ extern uint8_t lcd_draw_update;
 
 extern int16_t lcd_encoder;
 
-//the last checked lcd_buttons in a bit array.
-extern uint8_t lcd_buttons;
+extern uint8_t lcd_click_trigger;
 
 extern uint8_t lcd_update_enabled;
 
@@ -156,20 +155,7 @@ private:
     bool m_updateEnabled;
 };
 
-
 ////////////////////////////////////
-// Setup button and encode mappings for each panel (into 'lcd_buttons' variable
-//
-// This is just to map common functions (across different panels) onto the same 
-// macro name. The mapping is independent of whether the button is directly connected or 
-// via a shift/i2c register.
-
-#define BLEN_B 1
-#define BLEN_A 0
-#define EN_B (1<<BLEN_B) // The two encoder pins are connected through BTN_EN1 and BTN_EN2
-#define EN_A (1<<BLEN_A)
-#define BLEN_C 2 
-#define EN_C (1<<BLEN_C) 
 
 //! @brief Was button clicked?
 //!
@@ -180,9 +166,8 @@ private:
 //!
 //! @retval 0 button was not clicked
 //! @retval 1 button was clicked
-#define LCD_CLICKED (lcd_buttons&EN_C)
+#define LCD_CLICKED (lcd_click_trigger)
 
-////////////////////////
 // Setup Rotary Encoder Bit Values (for two pin encoders to indicate movement)
 // These values are independent of which pins are used for EN_A and EN_B indications
 // The rotary encoder part is also independent to the chipset used for the LCD
@@ -191,6 +176,7 @@ private:
 #define encrot2 3
 #define encrot3 1
 
+////////////////////////////////////
 
 //Custom characters defined in the first 8 characters of the LCD
 #define LCD_STR_BEDTEMP      "\x00"
@@ -212,7 +198,7 @@ extern void lcd_set_custom_characters_nextpage(void);
 //! @brief Consume click and longpress event
 inline void lcd_consume_click()
 {
-    lcd_buttons = 0;
+    lcd_click_trigger = 0;
     lcd_longpress_trigger = 0;
 }
 
