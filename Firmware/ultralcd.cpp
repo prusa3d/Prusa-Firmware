@@ -4129,6 +4129,16 @@ static void SETTINGS_SILENT_MODE()
     }
 }
 
+static void menuitems_temperature_common() {
+#if TEMP_SENSOR_0 != 0
+    MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
+#endif
+#if TEMP_SENSOR_BED != 0
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 5);
+#endif
+    MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
+}
+
 void SETTINGS_FANS_CHECK() {
     MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
 }
@@ -5363,10 +5373,8 @@ static void lcd_tune_menu()
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);////MSG_SPEED c=15
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
-	MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 10);
+	menuitems_temperature_common();
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
 	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);////MSG_FLOW c=15
 #ifdef LA_LIVE_K
 	MENU_ITEM_EDIT_advance_K();
@@ -5476,13 +5484,8 @@ static void lcd_control_temperature_menu()
 {
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-#if TEMP_SENSOR_0 != 0
-  MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
-#endif
-#if TEMP_SENSOR_BED != 0
-  MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 3);
-#endif
-  MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
+
+  menuitems_temperature_common();
 
   MENU_END();
 }
