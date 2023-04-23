@@ -3377,15 +3377,18 @@ static void lcd_silent_mode_set() {
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
-  lcd_display_message_fullscreen_P(_i("Mode change in progress..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-  // Wait until the planner queue is drained and the stepper routine achieves
-  // an idle state.
-  st_synchronize();
+  if (blocks_queued())
+  {
+      lcd_display_message_fullscreen_P(_i("Mode change in progress..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
+      // Wait until the planner queue is drained and the stepper routine achieves
+      // an idle state.
+      st_synchronize();
+  }
   tmc2130_wait_standstill_xy(1000);
-	cli();
-	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
-	update_mode_profile();
-	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+  cli();
+  tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+  update_mode_profile();
+  tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
