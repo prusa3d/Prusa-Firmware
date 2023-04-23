@@ -3573,7 +3573,7 @@ void lcd_first_layer_calibration_reset()
     static_assert(sizeof(menu_data)>= sizeof(MenuData),"_menu_data_t doesn't fit into menu_data");
     MenuData* menuData = (MenuData*)&(menu_data[0]);
 
-    if(lcd_clicked() || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
+    if(LCD_CLICKED || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
             (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST)) ||
             (0 == static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>
             (&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))))
@@ -3582,7 +3582,11 @@ void lcd_first_layer_calibration_reset()
         {
             eeprom_update_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
         }
-        menu_goto(lcd_v2_calibration, 0, true, true);
+
+        // If the knob was clicked, don't produce feedback
+        // It should only be done when the firmware changes the menu
+        // on its own (silently)
+        menu_goto(lcd_v2_calibration, 0, true, !lcd_clicked());
     }
 
     if (lcd_encoder > 0)
@@ -3605,41 +3609,30 @@ void lcd_first_layer_calibration_reset()
 
 }
 
-void lcd_v2_calibration()
-{
-	if (MMU2::mmu2.Enabled())
-	{
-	    const uint8_t filament = choose_menu_P(
-            _T(MSG_SELECT_FILAMENT),
-            _T(MSG_FILAMENT),(_T(MSG_CANCEL)+1)); //Hack to reuse MSG but strip 1st char off
-	    if (filament < 5)
-	    {
-	        lay1cal_filament = filament;
-	    }
-	    else
-	    {
-	        menu_back();
-	        return;
-	    }
+void lcd_v2_calibration() {
+	if (MMU2::mmu2.Enabled()) {
+		const uint8_t filament = choose_menu_P(
+			_T(MSG_SELECT_FILAMENT),
+			_T(MSG_FILAMENT),(_T(MSG_CANCEL)+1)); //Hack to reuse MSG but strip 1st char off
+		if (filament < MMU_FILAMENT_COUNT) {
+			lay1cal_filament = filament;
+		} else {
+			menu_back();
+			return;
+		}
 	}
 #ifdef FILAMENT_SENSOR
 	else if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 	{
-	    bool loaded = false;
-	    if (fsensor.isReady())
-	    {
-	        loaded = fsensor.getFilamentPresent();
-	    }
-	    else
-	    {
-	        loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
-	        lcd_update_enabled = true;
+		bool loaded = false;
+		if (fsensor.isReady()) {
+			loaded = fsensor.getFilamentPresent();
+		} else {
+			loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
+			lcd_update_enabled = true;
+		}
 
-	    }
-
-
-		if (!loaded)
-		{
+		if (!loaded) {
 			lcd_display_message_fullscreen_P(_i("Please load filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
 			lcd_consume_click();
 			for (uint_least8_t i = 0; i < 20; i++) { //wait max. 2s
@@ -3656,7 +3649,7 @@ void lcd_v2_calibration()
 #endif //FILAMENT_SENSOR
 
 	eFilamentAction = FilamentAction::Lay1Cal;
-	menu_goto(lcd_generic_preheat_menu, 0, true, true);
+	menu_goto(lcd_generic_preheat_menu, 0, true);
 }
 
 void lcd_wizard() {
