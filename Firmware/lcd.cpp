@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <avr/pgmspace.h>
+#include <util/atomic.h>
 #include <util/delay.h>
 #include "Timer.h"
 
@@ -684,15 +685,15 @@ void lcd_knob_update() {
 	if (lcd_backlight_wake_trigger) {
 		lcd_backlight_wake_trigger = false;
 		backlight_wake();
-		int8_t enc_diff = lcd_encoder_diff;
-		if (abs(enc_diff) >= ENCODER_PULSES_PER_STEP) {
-			lcd_encoder += enc_diff / ENCODER_PULSES_PER_STEP;
-			enc_diff %= ENCODER_PULSES_PER_STEP;
-			lcd_encoder_diff = enc_diff;
-			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-		} else {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+		bool did_rotate = false;
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+				lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+				lcd_encoder_diff %= ENCODER_PULSES_PER_STEP;
+				did_rotate = true;
+			}
 		}
+		Sound_MakeSound(did_rotate ? e_SOUND_TYPE_EncoderMove : e_SOUND_TYPE_ButtonEcho);
 
 		if (lcd_draw_update == 0) {
 			// Update LCD rendering at minimum
