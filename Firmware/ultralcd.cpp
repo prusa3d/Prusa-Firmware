@@ -3415,18 +3415,15 @@ static void crash_mode_switch()
 #endif //TMC2130
 
 #if (LANG_MODE != 0)
-
-void menu_setlang(unsigned char lang)
+static void menu_setlang(uint8_t lang)
 {
 	if (!lang_select(lang))
 	{
 		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, LCD_LEFT_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
-		lcd_clear();
 		menu_goto(lcd_language_menu, 0, true, true);
 		lcd_timeoutToStatus.stop(); //infinite timeout
-		lcd_draw_update = 2;
 	}
 }
 
@@ -3437,7 +3434,7 @@ static void lcd_community_language_menu()
 	MENU_BEGIN();
 	uint8_t cnt = lang_get_count();
 	MENU_ITEM_BACK_P(_T(MSG_SELECT_LANGUAGE)); //Back to previous Menu
-	for (int i = 8; i < cnt; i++) //all community languages
+	for (uint8_t i = 8; i < cnt; i++) //all community languages
 		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
 		{
 			menu_setlang(i);
@@ -3447,8 +3444,6 @@ static void lcd_community_language_menu()
 }
 #endif //XFLASH
 #endif //COMMUNITY_LANGUAGE_SUPPORT && W52X20CL
-
-
 
 static void lcd_language_menu()
 {
@@ -3470,9 +3465,9 @@ static void lcd_language_menu()
 		}
 	}
 	else
-		for (int i = 2; i < 8; i++) //skip seconday language - solved in lang_select (MK3) 'i < 8'  for 7 official languages
+		for (uint8_t i = 2; i < 8; i++) //skip seconday language - solved in lang_select (MK3) 'i < 8'  for 7 official languages
 #else //XFLASH
-		for (int i = 1; i < cnt; i++) //all seconday languages (MK2/25)
+		for (uint8_t i = 1; i < cnt; i++) //all seconday languages (MK2/25)
 #endif //XFLASH
 			if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
 			{
@@ -3489,7 +3484,6 @@ static void lcd_language_menu()
 	MENU_END();
 }
 #endif //(LANG_MODE != 0)
-
 
 void lcd_mesh_bedleveling()
 {
@@ -3570,15 +3564,9 @@ void lcd_first_layer_calibration_reset()
         menu_goto(lcd_v2_calibration, 0, true, !lcd_clicked());
     }
 
-    if (lcd_encoder > 0)
-    {
-        menuData->reset = true;
-        lcd_encoder = 1;
-    }
-    else if (lcd_encoder < 1)
-    {
-        menuData->reset = false;
-        lcd_encoder = 0;
+    if (lcd_encoder) {
+        menuData->reset = lcd_encoder > 0;
+        lcd_encoder = 0; // Reset
     }
 
     char sheet_name[sizeof(Sheet::name)];
@@ -3653,10 +3641,8 @@ void lcd_wizard() {
 void lcd_language()
 {
 	lcd_update_enable(true);
-	lcd_clear();
 	menu_goto(lcd_language_menu, 0, true, true);
 	lcd_timeoutToStatus.stop(); //infinite timeout
-	lcd_draw_update = 2;
 	while ((menu_menu != lcd_status_screen) && (!lang_is_selected()))
 	{
 		delay_keep_alive(50);
