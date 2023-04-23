@@ -5515,13 +5515,6 @@ static void lcd_control_temperature_menu()
   MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 3);
 #endif
   MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
-#if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
-//MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
-  MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
-  MENU_ITEM_EDIT(float3, _n(" \xdf Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);
-  MENU_ITEM_EDIT(float3, _n(" \xdf Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);
-  MENU_ITEM_EDIT(float32, _n(" \xdf Fact"), &autotemp_factor, 0.0, 1.0);
-#endif
 
   MENU_END();
 }
