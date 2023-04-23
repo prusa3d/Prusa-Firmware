@@ -692,6 +692,11 @@ void lcd_knob_update() {
 				lcd_encoder_diff %= ENCODER_PULSES_PER_STEP;
 				did_rotate = true;
 			}
+			else {
+				// Get lcd_encoder_diff in sync with the encoder hard steps.
+				// We assume that a click happens only when the knob is rotated into a stable position
+				lcd_encoder_diff = 0;
+			}
 		}
 		Sound_MakeSound(did_rotate ? e_SOUND_TYPE_EncoderMove : e_SOUND_TYPE_ButtonEcho);
 
