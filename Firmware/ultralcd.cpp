@@ -4054,27 +4054,17 @@ static void lcd_fsensor_settings_menu() {
 
 #endif //FILAMENT_SENSOR
 
-static void settingsSpoolJoin()
+static void menuitems_MMU_settings_common()
 {
     MENU_ITEM_TOGGLE_P(MSG_SPOOL_JOIN, SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
-}
-
-#define SETTINGS_SPOOLJOIN \
-do\
-{\
-    settingsSpoolJoin();\
-}\
-while(0)\
 
 #ifdef MMU_HAS_CUTTER
-static void settingsCutter()
-{
-    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED))
     {
         MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ON), lcd_cutter_enabled);
     }
 #ifdef MMU_ALWAYS_CUT
-    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED))
     {
         MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ALWAYS), lcd_cutter_enabled);
     }
@@ -4083,17 +4073,12 @@ static void settingsCutter()
     {
         MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_OFF), lcd_cutter_enabled);
     }
-}
+#endif // MMU_HAS_CUTTER
 
-#define SETTINGS_CUTTER \
-do\
-{\
-    settingsCutter();\
-}\
-while(0)
-#else
-#define SETTINGS_CUTTER
-#endif //MMU_HAS_CUTTER
+#ifndef MMU_FORCE_STEALTH_MODE
+    MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), eeprom_read_byte((uint8_t *)EEPROM_MMU_STEALTH) ? _T(MSG_STEALTH) : _T(MSG_NORMAL), lcd_mmu_mode_toggle);
+#endif // MMU_FORCE_STEALTH_MODE
+}
 
 static void mmu_enable_switch()
 {
@@ -4109,56 +4094,44 @@ static void mmu_enable_switch()
     }
 }
 
-static void mmu_reset()
+static void SETTINGS_SILENT_MODE()
 {
-    MMU2::mmu2.Reset(MMU2::MMU2::ResetForm::Software);
-}
-
-static void SETTINGS_SILENT_MODE() {
-    if (!farm_mode) { //dont show in menu if we are in farm mode
+    if (!farm_mode)
+    { // dont show in menu if we are in farm mode
 #ifdef TMC2130
-        if (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_NORMAL) {
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
-            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), lcd_crash_detect_enabled() ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
-        } else {
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
-            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
+        if (eeprom_read_byte((uint8_t *)EEPROM_SILENT) == SILENT_MODE_NORMAL)
+        {
+                MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), lcd_crash_detect_enabled() ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
         }
-#else //TMC2130
-		switch (eeprom_read_byte((uint8_t*)EEPROM_SILENT)) {
-		case SILENT_MODE_POWER: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break;
-		case SILENT_MODE_SILENT: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set); break;
-		case SILENT_MODE_AUTO: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set); break;
-		default: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break; // (probably) not needed
-		}
-#endif //TMC2130
+        else
+        {
+                MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
+                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
+        }
+#else  // TMC2130
+        switch (eeprom_read_byte((uint8_t *)EEPROM_SILENT))
+        {
+        case SILENT_MODE_POWER:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);
+            break;
+        case SILENT_MODE_SILENT:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set);
+            break;
+        case SILENT_MODE_AUTO:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set);
+            break;
+        default:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);
+            break; // (probably) not needed
+        }
+#endif // TMC2130
     }
 }
 
 void SETTINGS_FANS_CHECK() {
     MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
 }
-
-#ifndef MMU_FORCE_STEALTH_MODE
-#define SETTINGS_MMU_MODE \
-do\
-{\
-	if (MMU2::mmu2.Enabled())\
-	{\
-		MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) ? _T(MSG_STEALTH) : _T(MSG_NORMAL), lcd_mmu_mode_toggle);\
-	}\
-}\
-while (0) 
-#else //MMU_FORCE_STEALTH_MODE
-#define SETTINGS_MMU_MODE
-#endif //MMU_FORCE_STEALTH_MODE
-
-#define SETTINGS_MMU_LOADING_TEST \
-do\
-{\
-    MENU_ITEM_SUBMENU_P(_T(MSG_LOADING_TEST), mmu_loading_test_menu); \
-}\
-while (0)
 
 #define SETTINGS_SOUND \
 do\
@@ -4446,18 +4419,15 @@ static void lcd_settings_menu()
 #endif //FILAMENT_SENSOR
 
     MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
+    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
+    { // Communication with MMU not required to reset MMU
+        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), []() { MMU2::mmu2.Reset(MMU2::MMU2::ResetForm::Software); });
+    }
 
     if (MMU2::mmu2.Enabled())
     { // Only show menus when communicating with MMU
-        SETTINGS_SPOOLJOIN;
-        SETTINGS_CUTTER;
-        SETTINGS_MMU_MODE;
-        SETTINGS_MMU_LOADING_TEST;
-    }
-
-    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
-    { // Communication with MMU not required to reset MMU
-        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
+        menuitems_MMU_settings_common();
+        MENU_ITEM_SUBMENU_P(_T(MSG_LOADING_TEST), mmu_loading_test_menu);
     }
 
     SETTINGS_FANS_CHECK();
@@ -5412,13 +5382,11 @@ static void lcd_tune_menu()
 
     if (MMU2::mmu2.Enabled())
     {
-        SETTINGS_SPOOLJOIN;
-        SETTINGS_CUTTER;
+        menuitems_MMU_settings_common();
     }
 
     SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
-    SETTINGS_MMU_MODE;
     SETTINGS_SOUND;
 #ifdef LCD_BL_PIN
     if (backlightSupport)
