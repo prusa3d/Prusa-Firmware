@@ -52,8 +52,6 @@
 #define INVERT_Y_DIR 0    // for Mendel set to 1, for Orca set to 0
 #define INVERT_Z_DIR 1     // for Mendel set to 0, for Orca set to 1
 #define INVERT_E0_DIR 0   // for direct drive extruder v9 set to 1, for geared extruder set to 0
-#define INVERT_E1_DIR 0    // for direct drive extruder v9 set to 1, for geared extruder set to 0
-#define INVERT_E2_DIR 0   // for direct drive extruder v9 set to 1, for geared extruder set to 0
 
 // Home position
 #define MANUAL_X_HOME_POS 0
@@ -300,8 +298,6 @@
 
 // Mintemps
 #define HEATER_0_MINTEMP 10
-#define HEATER_1_MINTEMP 5
-#define HEATER_2_MINTEMP 5
 #define HEATER_MINTEMP_DELAY 15000                // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if HEATER_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see HEATER_MINTEMP_DELAY definition)"
@@ -322,8 +318,6 @@
 #else
 #define HEATER_0_MAXTEMP 305
 #endif
-#define HEATER_1_MAXTEMP 305
-#define HEATER_2_MAXTEMP 305
 #define BED_MAXTEMP 125
 #define AMBIENT_MAXTEMP 100
 
@@ -347,8 +341,6 @@
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
-#define EXTRUDER_1_AUTO_FAN_PIN   -1
-#define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
@@ -588,8 +580,6 @@
 #else
 #define TEMP_SENSOR_0 5
 #endif
-#define TEMP_SENSOR_1 0
-#define TEMP_SENSOR_2 0
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
 #elif defined(E3D_PT100_BED_NO_AMP)
