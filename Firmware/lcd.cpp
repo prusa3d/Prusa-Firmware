@@ -948,6 +948,7 @@ const uint8_t lcd_chardata_confirm[8] PROGMEM = {
 	0b10110,
 	0b11100,
 	0b01000,
+	0b00000,
 	0b00000};
 
 void lcd_set_custom_characters_nextpage(void)
