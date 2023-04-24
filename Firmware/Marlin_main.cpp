@@ -8399,13 +8399,13 @@ Sigma_Exit:
     - `P` - n index of MMU slot (zero based, so 0-4 like T0 and T4)
     - `T` - Alias of `P`. Used for compatibility with Marlin
     - `L` - Extrude distance for insertion (positive value)(manual reload)
-    - `Z` - Move the Z axis by this distance. Default value MIN_Z_FOR_LOAD
+    - `Z` - Move the Z axis by this distance. Default value is 0 to maintain backwards compatibility with older gcodes.
     */
     case 701:
     {
         uint8_t mmuSlotIndex = 0xffU;
         float fastLoadLength = FILAMENTCHANGE_FIRSTFEED; // Only used without MMU
-        float z_target = MIN_Z_FOR_LOAD;
+        float z_target = 0;
         if( MMU2::mmu2.Enabled() )
         {
             if( code_seen('P') || code_seen('T') ) {
@@ -8437,11 +8437,11 @@ Sigma_Exit:
     
     #### Parameters
     - `U` - Retract distance for removal (manual reload). Default value is 0.
-    - `Z` - Move the Z axis by this distance. Default value MIN_Z_FOR_UNLOAD.
+    - `Z` - Move the Z axis by this distance. Default value is 0 to maintain backwards compatibility with older gcodes.
     */
     case 702:
     {
-        float z_target = MIN_Z_FOR_UNLOAD;
+        float z_target = 0;
         float unloadLength = FILAMENTCHANGE_FINALRETRACT;
         if (code_seen('U')) unloadLength = code_value();
 
