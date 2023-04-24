@@ -10,7 +10,6 @@
 
 #include "Configuration.h"
 #include "pins.h"
-#include <binary.h>
 #include <Arduino.h>
 #include "Marlin.h"
 #include "fastio.h"
