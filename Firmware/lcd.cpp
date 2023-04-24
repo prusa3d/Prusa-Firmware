@@ -634,7 +634,7 @@ uint8_t lcd_draw_update = 2;
 int16_t lcd_encoder = 0;
 static int8_t lcd_encoder_diff = 0;
 
-uint8_t lcd_buttons = 0;
+uint8_t lcd_click_trigger = 0;
 uint8_t lcd_update_enabled = 1;
 static bool lcd_backlight_wake_trigger; // Flag set by interrupt when the knob is pressed or rotated
 
@@ -750,7 +750,6 @@ void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
     static uint8_t lcd_button_pressed = 0;
-    static uint8_t lcd_encoder_bits = 0;
     if (READ(BTN_ENC) == 0)
     { //button is pressed
         if (buttonBlanking.expired_cont(BUTTON_BLANKING_TIME)) {
@@ -775,7 +774,7 @@ void lcd_buttons_update(void)
             lcd_button_pressed = 0; // Reset to prevent double triggering
             if (!lcd_long_press_active)
             { //button released before long press gets activated
-                lcd_buttons |= EN_C; // This flag is reset when the event is consumed
+                lcd_click_trigger = 1; // This flag is reset when the event is consumed
             }
             lcd_backlight_wake_trigger = true; // flag event, knob pressed
             lcd_long_press_active = 0;
@@ -783,24 +782,27 @@ void lcd_buttons_update(void)
     }
 
     //manage encoder rotation
-    #define ENCODER_SPIN(_E1, _E2) switch (lcd_encoder_bits) { case _E1: lcd_encoder_diff++; break; case _E2: lcd_encoder_diff--; }
-    uint8_t enc = 0;
-    if (READ(BTN_EN1) == 0) enc |= B01;
-    if (READ(BTN_EN2) == 0) enc |= B10;
-    if (enc != lcd_encoder_bits)
+	static const int8_t encrot_table[] PROGMEM = {
+		0, -1, 1, 2,
+		1, 0, 2, -1,
+		-1, -2, 0, 1,
+		-2, 1, -1, 0,
+	};
+
+	static uint8_t enc_bits_old = 0;
+	uint8_t enc_bits = 0;
+    if (!READ(BTN_EN1)) enc_bits |= _BV(0);
+    if (!READ(BTN_EN2)) enc_bits |= _BV(1);
+    
+	if (enc_bits != enc_bits_old)
     {
-        switch (enc)
-        {
-            case encrot0: ENCODER_SPIN(encrot3, encrot1); break;
-            case encrot1: ENCODER_SPIN(encrot0, encrot2); break;
-            case encrot2: ENCODER_SPIN(encrot1, encrot3); break;
-            case encrot3: ENCODER_SPIN(encrot2, encrot0); break;
-        }
+		int8_t newDiff = pgm_read_byte(&encrot_table[(enc_bits_old << 2) | enc_bits]);
+		lcd_encoder_diff += newDiff;
 
         if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
             lcd_backlight_wake_trigger = true; // flag event, knob rotated
         }
-        lcd_encoder_bits = enc;
+        enc_bits_old = enc_bits;
     }
 }
 
