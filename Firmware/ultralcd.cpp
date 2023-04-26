@@ -902,15 +902,11 @@ void lcd_commands()
         switch (lcd_commands_step)
         {
         case 0:
-            lcd_commands_step = 6;
+            lcd_commands_step = 5;
             [[fallthrough]];
 
-        case 6:
-            enquecommand_P(G28W);
-            lcd_commands_step = 5;
-            break;
-
         case 5:
+            enquecommand_P(G28W);
             enquecommand_P(PSTR("G1 X125 Y105 Z1 F8000"));
             lcd_commands_step = 4;
             break;
