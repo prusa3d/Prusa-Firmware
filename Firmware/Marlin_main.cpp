@@ -903,7 +903,7 @@ void update_sec_lang_from_external_flash()
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
 		{
-			lcd_puts_at_P(1,3,PSTR("Language update."));
+			lcd_puts_at_P(1,0,PSTR("Language update"));
 			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
 			_delay(100);
 			boot_reserved = (boot_reserved & 0xF8) | ((state + 1) & 0x07);
