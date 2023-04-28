@@ -7805,9 +7805,7 @@ Sigma_Exit:
 		cancel_heatup = false;
 
 		bool is_pinda_cooling = false;
-		if ((degTargetBed() == 0) && (degTargetHotend(0) == 0)) {
-		    is_pinda_cooling = true;
-		}
+		if (!(CHECK_ALL_HEATERS)) is_pinda_cooling = true;
 
 		while ( ((!is_pinda_cooling) && (!cancel_heatup) && (current_temperature_pinda < set_target_pinda)) || (is_pinda_cooling && (current_temperature_pinda > set_target_pinda)) ) {
 			if ((_millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
@@ -9257,11 +9255,11 @@ void controllerFan()
  */
 static void handleSafetyTimer()
 {
-    if (printer_active() || (!degTargetBed() && !degTargetHotend(0)) || (!safetytimer_inactive_time))
+    if (printer_active() || !(CHECK_ALL_HEATERS) || !safetytimer_inactive_time)
     {
         safetyTimer.stop();
     }
-    else if ((degTargetBed() || degTargetHotend(0)) && (!safetyTimer.running()))
+    else if ((CHECK_ALL_HEATERS) && !safetyTimer.running())
     {
         safetyTimer.start();
     }
