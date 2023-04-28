@@ -3102,8 +3102,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
     // Only Z calibration?
 	if (!onlyZ)
 	{
-		setTargetBed(0);
-		setTargetHotend(0);
+		disable_heater();
 		eeprom_adjust_bed_reset(); //reset bed level correction
 	}
 
@@ -9291,8 +9290,7 @@ static void handleSafetyTimer()
     }
     else if (safetyTimer.expired(farm_mode?FARM_DEFAULT_SAFETYTIMER_TIME_ms:safetytimer_inactive_time))
     {
-        setTargetBed(0);
-        setTargetHotend(0);
+        disable_heater();
         lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
     }
 }
