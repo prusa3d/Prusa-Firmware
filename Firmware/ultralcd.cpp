@@ -57,7 +57,6 @@ static void lcd_backlight_menu();
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
 static bool bFilamentPreheatState; // True if target temperature is above min_temp
-static bool bFilamentWaitingFlag; // True if the preheat menu is waiting for the user
 static bool bFilamentSkipPreheat; // True if waiting for preheat is not required (e.g. MMU Cut and Eject)
 
 int8_t ReInitLCD = 0;
@@ -1760,75 +1759,39 @@ void lcd_print_target_temps_first_line(){
     }
 }
 
-static void mFilamentPrompt()
+static void waitFilamentLoop()
 {
-uint8_t nLevel;
+    for(;;) {
+        manage_heater();
+        manage_inactivity(true);
 
-lcd_print_target_temps_first_line();
-lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
-lcd_set_cursor(0,2);
-switch(eFilamentAction)
-     {
-     case FilamentAction::Load:
-     case FilamentAction::AutoLoad:
-     case FilamentAction::MmuLoad:
-     case FilamentAction::MmuLoadingTest:
-          lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
-          break;
-     case FilamentAction::UnLoad:
-     case FilamentAction::MmuUnLoad:
-          lcd_puts_P(_i("to unload filament"));   ////MSG_TO_UNLOAD_FIL c=20
-          break;
-     case FilamentAction::MmuEject:
-     case FilamentAction::MmuCut:
-     case FilamentAction::None:
-     case FilamentAction::Preheat:
-     case FilamentAction::Lay1Cal:
-          break;
-     }
-    if(lcd_clicked()
+        lcd_print_target_temps_first_line();
+        lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
+        lcd_set_cursor(0,2);
+        if (eFilamentAction == FilamentAction::Load || eFilamentAction == FilamentAction::AutoLoad)
+        {
+            lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
+        } else {
+            lcd_puts_P(_i("to unload filament"));   ////MSG_TO_UNLOAD_FIL c=20
+        }
+        if(lcd_clicked()
 #ifdef FILAMENT_SENSOR
 /// @todo leptun - add this as a specific retest item
-        || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
+            || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
 #endif //FILAMENT_SENSOR
-    ) {
-     nLevel=2;
-     if(!bFilamentPreheatState) {
-        nLevel++;
-     }
-     menu_back(nLevel);
-     switch(eFilamentAction)
-          {
-          case FilamentAction::AutoLoad:
-               eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
-               // FALLTHRU
-          case FilamentAction::Load:
-               loading_flag=true;
-               enquecommand_P(MSG_M701);      // load filament
-               break;
-          case FilamentAction::UnLoad:
-               enquecommand_P(MSG_M702);      // unload filament
-               break;
-          case FilamentAction::MmuLoad:
-          case FilamentAction::MmuLoadingTest:
-          case FilamentAction::MmuUnLoad:
-          case FilamentAction::MmuEject:
-          case FilamentAction::MmuCut:
-          case FilamentAction::None:
-          case FilamentAction::Preheat:
-          case FilamentAction::Lay1Cal:
-               break;
-          }
-     }
+        ) {
+            return; // exit loop
+        }
+    }
 }
 
-void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
+static void mFilamentItem(uint16_t nTemp, uint16_t nTempBed, bool bFilamentPreheatState=false)
 {
-    uint8_t nLevel;
+    static bool bFilamentWaitingFlag = false;
+    uint8_t nLevel = bFilamentPreheatState ? 1 : 2;
 
     setTargetHotend((float)nTemp);
     if (!shouldPreheatOnlyNozzle()) setTargetBed((float)nTempBed);
-
     {
         const FilamentAction action = eFilamentAction;
         if (action == FilamentAction::Preheat || action == FilamentAction::Lay1Cal)
@@ -1859,44 +1822,40 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         case FilamentAction::Load:
         case FilamentAction::AutoLoad:
         case FilamentAction::UnLoad:
-            if (bFilamentWaitingFlag) menu_submenu(mFilamentPrompt, true);
-            else
-            {
-                nLevel = bFilamentPreheatState ? 1 : 2;
-                menu_back(nLevel);
-                if ((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad))
-                {
-                    loading_flag = true;
-                    enquecommand_P(MSG_M701); // load filament
-                    if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
-                }
-                if (eFilamentAction == FilamentAction::UnLoad)
-                enquecommand_P(MSG_M702); // unload filament
+            if (bFilamentWaitingFlag) {
+                waitFilamentLoop();
+                if(!bFilamentPreheatState) nLevel++;
+                Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+                bFilamentWaitingFlag = false;
             }
+            menu_back(nLevel);
+            if ((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad))
+            {
+                loading_flag = true;
+                enquecommand_P(MSG_M701); // load filament
+                if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
+            }
+            if (eFilamentAction == FilamentAction::UnLoad)
+            enquecommand_P(MSG_M702); // unload filament
             break;
         case FilamentAction::MmuLoad:
-            nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             menu_submenu(mmu_load_to_nozzle_menu, true);
             break;
         case FilamentAction::MmuLoadingTest:
-            nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             menu_submenu(mmu_loading_test_menu, true);
             break;
         case FilamentAction::MmuUnLoad:
-            nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             MMU2::mmu2.unload();
             break;
         case FilamentAction::MmuEject:
-            nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             menu_submenu(mmu_fil_eject_menu, true);
             break;
         case FilamentAction::MmuCut:
 #ifdef MMU_HAS_CUTTER
-            nLevel=bFilamentPreheatState?1:2;
             menu_back(nLevel);
             menu_submenu(mmu_cut_filament_menu, true);
 #endif //MMU_HAS_CUTTER
@@ -1907,8 +1866,6 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             // handled earlier
             break;
         }
-        if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
-        bFilamentWaitingFlag = false;
     }
     else // still preheating, continue updating LCD UI
     {
@@ -1969,9 +1926,8 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             {
                 setTargetHotend(0);
                 if (!isPrintPaused) setTargetBed(0);
-                menu_back();
             }
-            menu_back();
+            menu_back(nLevel);
             if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
         }
     }
@@ -1979,72 +1935,60 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
 static void mFilamentItem_farm()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(FARM_PREHEAT_HOTEND_TEMP, FARM_PREHEAT_HPB_TEMP);
 }
 static void mFilamentItem_farm_nozzle()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(FARM_PREHEAT_HOTEND_TEMP, 0);
 }
 
 static void mFilamentItem_PLA()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(PLA_PREHEAT_HOTEND_TEMP, PLA_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PET()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(PET_PREHEAT_HOTEND_TEMP, PET_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_ASA()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(ASA_PREHEAT_HOTEND_TEMP, ASA_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PC()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(PC_PREHEAT_HOTEND_TEMP, PC_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_ABS()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(ABS_PREHEAT_HOTEND_TEMP, ABS_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PA()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(PA_PREHEAT_HOTEND_TEMP, PA_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_HIPS()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(HIPS_PREHEAT_HOTEND_TEMP, HIPS_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PP()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(PP_PREHEAT_HOTEND_TEMP, PP_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_FLEX()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP, FLEX_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PVB()
 {
-    bFilamentPreheatState = false;
     mFilamentItem(PVB_PREHEAT_HOTEND_TEMP, PVB_PREHEAT_HPB_TEMP);
 }
 
@@ -2246,7 +2190,7 @@ static void preheat_or_continue(FilamentAction action) {
 
     if (bFilamentSkipPreheat || target_temperature[0] >= extrude_min_temp) {
         bFilamentPreheatState = true;
-        mFilamentItem(target_temperature[0], target_temperature_bed);
+        mFilamentItem(target_temperature[0], target_temperature_bed, true);
         bFilamentSkipPreheat = false; // Reset flag
     } else {
         lcd_generic_preheat_menu();
