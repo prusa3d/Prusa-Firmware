@@ -8417,6 +8417,7 @@ Sigma_Exit:
 
         // Z lift. For safety only allow positive values
         if (code_seen('Z')) z_target = fabs(code_value());
+        else raise_z_above(MIN_Z_FOR_LOAD); // backwards compatibility for 3.12 and older FW
 
         // Raise the Z axis
         float delta = raise_z(z_target);
@@ -8447,6 +8448,7 @@ Sigma_Exit:
 
         // For safety only allow positive values
         if (code_seen('Z')) z_target = fabs(code_value());
+        else raise_z_above(MIN_Z_FOR_UNLOAD); // backwards compatibility for 3.12 and older FW
 
         // Raise the Z axis
         float delta = raise_z(z_target);

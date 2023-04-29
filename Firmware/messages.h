@@ -246,8 +246,8 @@ extern const char MSG_M107[];
 extern const char MSG_M220[];
 extern const char MSG_M500[];
 extern const char MSG_M600[];
-extern const char MSG_M701_NO_LIFT[];
-extern const char MSG_M702_NO_LIFT[];
+extern const char MSG_M701[];
+extern const char MSG_M702[];
 
 #if defined(__cplusplus)
 }

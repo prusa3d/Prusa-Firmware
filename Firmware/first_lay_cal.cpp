@@ -81,7 +81,7 @@ bool lay1cal_load_filament(uint8_t filament)
             return false;
         } else if( currentTool != (uint8_t)MMU2::FILAMENT_UNKNOWN){
             // some other slot is loaded, perform an unload first
-            enquecommand_P(MSG_M702_NO_LIFT);
+            enquecommand_P(MSG_M702);
         }
         // perform a toolchange
         enquecommandf_P(PSTR("T%d"), filament);
@@ -245,6 +245,6 @@ void lay1cal_finish(bool mmu_enabled)
 
     lay1cal_common_enqueue_loop(cmd_cal_finish, (sizeof(cmd_cal_finish)/sizeof(cmd_cal_finish[0])));
 
-    if (mmu_enabled) enquecommand_P(MSG_M702_NO_LIFT); //unload from nozzle
+    if (mmu_enabled) enquecommand_P(MSG_M702); //unload from nozzle
     enquecommand_P(MSG_M84);// disable motors
 }
