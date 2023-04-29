@@ -22,6 +22,10 @@ void ultralcd_init();
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcdui_print_status_line(void);
 void lcd_clearstatus();
+
+/// @brief Copy the contents of lcd_status_message
+/// @param buf destination buffer
+void lcd_getstatus(char buf[LCD_WIDTH]);
 void lcd_insert_char_into_status(uint8_t position, const char message);
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);

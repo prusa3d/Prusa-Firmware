@@ -7079,6 +7079,10 @@ void lcd_clearstatus()
     lcd_status_message_idx = 0;
 }
 
+void lcd_getstatus(char buf[LCD_WIDTH]) {
+    strncpy(buf, lcd_status_message, LCD_WIDTH);
+}
+
 void lcd_setstatuspgm(const char* message)
 {
     if (lcd_message_check(LCD_STATUS_NONE))

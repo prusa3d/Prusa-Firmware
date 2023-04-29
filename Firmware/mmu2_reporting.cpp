@@ -1,4 +1,5 @@
 #include "mmu2.h"
+#include "mmu2_log.h"
 #include "mmu2_reporting.h"
 #include "mmu2_error_converter.h"
 #include "mmu2/error_codes.h"
@@ -290,6 +291,17 @@ void TryLoadUnloadProgressbarDeinit() {
     // Delay the next status message just so
     // the user can see the results clearly
     lcd_reset_status_message_timeout();
+}
+
+void TryLoadUnloadProgressbarEcho() {
+    char buf[LCD_WIDTH];
+    lcd_getstatus(buf);
+    for (uint8_t i = 0; i < sizeof(buf); i++) {
+        // 0xFF is -1 when converting from unsigned to signed char
+        // If the number is negative, that means filament is present
+        buf[i] = (buf[i] < 0) ? '1' : '0';
+    }
+    MMU2_ECHO_MSGLN(buf);
 }
 
 void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {

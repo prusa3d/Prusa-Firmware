@@ -41,6 +41,9 @@ void TryLoadUnloadProgressbarInit();
 /// @brief Clear the status line and setup the LCD cursor
 void TryLoadUnloadProgressbarDeinit();
 
+/// @brief Report the results to serial
+void TryLoadUnloadProgressbarEcho();
+
 /// @brief Add one block to the progress bar
 /// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
 /// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
