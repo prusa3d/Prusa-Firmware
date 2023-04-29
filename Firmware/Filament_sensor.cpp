@@ -450,8 +450,7 @@ void PAT9125_sensor::triggerFilamentJam() {
         && !saved_printing
         && (
             moves_planned() != 0
-            || IS_SD_PRINTING
-            || usb_timer.running()
+            || printJobOngoing()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
         )
