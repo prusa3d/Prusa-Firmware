@@ -5414,10 +5414,7 @@ void process_commands()
     */
     case 32:
     {
-      if(card.sdprinting) {
-        st_synchronize();
-
-      }
+      if(card.sdprinting) st_synchronize();
 
       const char* namestartpos = (strchr(strchr_pointer + 4,'!'));   //find ! to indicate filename string start.
       if(namestartpos==NULL)
@@ -5427,7 +5424,7 @@ void process_commands()
       else
         namestartpos++; //to skip the '!'
 
-      bool call_procedure=(code_seen('P'));
+      bool call_procedure = code_seen('P');
 
       if(strchr_pointer>namestartpos)
         call_procedure=false;  //false alert, 'P' found within filename
@@ -5435,9 +5432,10 @@ void process_commands()
       if( card.cardOK )
       {
         card.openFileReadFilteredGcode(namestartpos,!call_procedure);
-        if(code_seen('S'))
-          if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
-            card.setIndex(code_value_long());
+        if(code_seen('S') && strchr_pointer < namestartpos) {
+          //only if "S" is occuring _before_ the filename
+          card.setIndex(code_value_long());
+        }
         card.startFileprint();
         if(!call_procedure)
         {
@@ -5502,8 +5500,7 @@ void process_commands()
       {
         uint8_t pin_status = code_value_uint8();
         int8_t pin_number = LED_PIN;
-        if (code_seen('P'))
-          pin_number = code_value_uint8();
+        if (code_seen('P')) pin_number = code_value_uint8();
         for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(sensitive_pins[0])); i++)
         {
           if ((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number)
@@ -5946,10 +5943,7 @@ Sigma_Exit:
     */
     case 104: // M104
     {
-          if (code_seen('S'))
-          {
-              setTargetHotend(code_value());
-          }
+          if (code_seen('S')) setTargetHotend(code_value());
           break;
     }
 
@@ -6023,15 +6017,10 @@ Sigma_Exit:
      */
     case 155:
     {
-        if (code_seen('S')){
-            autoReportFeatures.SetPeriod( code_value_uint8() );
-        }
-        if (code_seen('C')){
-            autoReportFeatures.SetMask(code_value_uint8());
-        } else{
-            autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used.
-        }
-   }
+        if (code_seen('S')) autoReportFeatures.SetPeriod( code_value_uint8() );
+        if (code_seen('C')) autoReportFeatures.SetMask(code_value_uint8());
+        else autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used.
+    }
     break;
 #endif //AUTO_REPORT
 
@@ -6060,11 +6049,7 @@ Sigma_Exit:
 #ifdef AUTOTEMP
         autotemp_enabled=false;
       #endif
-      if (code_seen('S')) {
-          setTargetHotend(code_value());
-            } else if (code_seen('R')) {
-                setTargetHotend(code_value());
-      }
+      if (code_seen('S') || code_seen('R')) setTargetHotend(code_value());
       #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
         if (code_seen('B')) autotemp_max=code_value();
@@ -6111,19 +6096,13 @@ Sigma_Exit:
     {
         bool CooldownNoWait = false;
         LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
-		heating_status = HeatingStatus::BED_HEATING;
+        heating_status = HeatingStatus::BED_HEATING;
         prusa_statistics(1);
-        if (code_seen('S')) 
-		{
+        if (code_seen('S'))  {
           setTargetBed(code_value());
           CooldownNoWait = true;
-        } 
-		else if (code_seen('R')) 
-		{
-          setTargetBed(code_value());
-        }
+        } else if (code_seen('R')) setTargetBed(code_value());
         codenum = _millis();
-        
         cancel_heatup = false;
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
@@ -6161,12 +6140,8 @@ Sigma_Exit:
       - `S` - Specifies the duty cycle of the print fan. Allowed values are 0-255. If it's omitted, a value of 255 is used.
       */
       case 106: // M106 Sxxx Fan On S<speed> 0 .. 255
-        if (code_seen('S')){
-           fanSpeed = code_value_uint8();
-        }
-        else {
-          fanSpeed = 255;
-        }
+        if (code_seen('S')) fanSpeed = code_value_uint8();
+        else fanSpeed = UINT8_MAX;
         break;
 
       /*!
@@ -6260,9 +6235,7 @@ Sigma_Exit:
     */
     case 18: //compatibility
     case 84: // M84
-      if(code_seen('S')){
-        stepper_inactive_time = code_value() * 1000;
-      }
+      if(code_seen('S')) stepper_inactive_time = code_value() * 1000;
       else
       {
         bool all_axis = !((code_seen(axis_codes[X_AXIS])) || (code_seen(axis_codes[Y_AXIS])) || (code_seen(axis_codes[Z_AXIS]))|| (code_seen(axis_codes[E_AXIS])));
@@ -6295,9 +6268,7 @@ Sigma_Exit:
     - `S` - specifies the time in seconds. If a value of 0 is specified, the timer is disabled.
     */
     case 85: // M85
-      if(code_seen('S')) {
-        max_inactive_time = code_value() * 1000;
-      }
+      if(code_seen('S')) max_inactive_time = code_value() * 1000;
       break;
 #ifdef SAFETYTIMER
 
@@ -6384,10 +6355,7 @@ Sigma_Exit:
 	- `S` - Seconds. Default is 2 seconds between "busy" messages
     */
 	case 113:
-		if (code_seen('S')) {
-			host_keepalive_interval = code_value_uint8();
-//			NOMORE(host_keepalive_interval, 60);
-		}
+		if (code_seen('S')) host_keepalive_interval = code_value_uint8();
 		else {
 			SERIAL_ECHO_START;
 			SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
@@ -6756,16 +6724,12 @@ Sigma_Exit:
           // (there is a separate acceleration settings in Slicer for perimeter, first layer etc).
           cs.acceleration = cs.travel_acceleration = code_value();
           // Interpret the T value as retract acceleration in the old Marlin format.
-          if(code_seen('T'))
-            cs.retract_acceleration = code_value();
+          if(code_seen('T')) cs.retract_acceleration = code_value();
         } else {
           // New acceleration format, compatible with the upstream Marlin.
-          if(code_seen('P'))
-            cs.acceleration = code_value();
-          if(code_seen('R'))
-            cs.retract_acceleration = code_value();
-          if(code_seen('T'))
-            cs.travel_acceleration = code_value();
+          if(code_seen('P')) cs.acceleration = code_value();
+          if(code_seen('R')) cs.retract_acceleration = code_value();
+          if(code_seen('T')) cs.travel_acceleration = code_value();
         }
       }
       break;
@@ -6838,18 +6802,9 @@ Sigma_Exit:
     */
     case 207: //M207 - set retract length S[positive mm] F[feedrate mm/min] Z[additional zlift/hop]
     {
-      if(code_seen('S'))
-      {
-        cs.retract_length = code_value() ;
-      }
-      if(code_seen('F'))
-      {
-        cs.retract_feedrate = get_feedrate_mm_s(code_value());
-      }
-      if(code_seen('Z'))
-      {
-        cs.retract_zlift = code_value() ;
-      }
+      if(code_seen('S')) cs.retract_length = code_value();
+      if(code_seen('F')) cs.retract_feedrate = get_feedrate_mm_s(code_value());
+      if(code_seen('Z')) cs.retract_zlift = code_value();
     }break;
 
     /*!
@@ -6864,14 +6819,8 @@ Sigma_Exit:
     */
     case 208: // M208 - set retract recover length S[positive mm surplus to the M207 S*] F[feedrate mm/min]
     {
-      if(code_seen('S'))
-      {
-        cs.retract_recover_length = code_value() ;
-      }
-      if(code_seen('F'))
-      {
-        cs.retract_recover_feedrate = get_feedrate_mm_s(code_value());
-      }
+      if(code_seen('S')) cs.retract_recover_length = code_value();
+      if(code_seen('F')) cs.retract_recover_feedrate = get_feedrate_mm_s(code_value());
     }break;
 
     /*!
@@ -7149,8 +7098,7 @@ Sigma_Exit:
     {
       uint16_t beepP = code_seen('P') ? code_value() : 1000;
       uint16_t beepS;
-      if (!code_seen('S'))
-          beepS = 0;
+      if (!code_seen('S')) beepS = 0;
       else {
           beepS = code_value();
           if (!beepS) {
@@ -7306,9 +7254,10 @@ Sigma_Exit:
       float temp = 150.0;
       int e = 0;
       int c = 5;
-      if (code_seen('E')) e = code_value_short();
-        if (e < 0)
-          temp = 70;
+      if (code_seen('E')) {
+        e = code_value_short();
+        if (e < 0) temp = 70;
+      }
       if (code_seen('S')) temp = code_value();
       if (code_seen('C')) c = code_value_short();
       PID_autotune(temp, e, c);
@@ -7793,12 +7742,8 @@ Sigma_Exit:
 	{
 		int set_target_pinda = 0;
 
-		if (code_seen('S')) {
-			set_target_pinda = code_value_short();
-		}
-		else {
-			break;
-		}
+		if (code_seen('S')) set_target_pinda = code_value_short();
+		else break;
 
 		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
 
