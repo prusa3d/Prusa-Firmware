@@ -1759,6 +1759,7 @@ void lcd_print_target_temps_first_line(){
     }
 }
 
+/// @brief Wait for user to click the knob. Display the current temperature while waiting.
 static void waitFilamentLoop()
 {
     for(;;) {
@@ -1766,8 +1767,8 @@ static void waitFilamentLoop()
         manage_inactivity(true);
 
         lcd_print_target_temps_first_line();
-        lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
-        lcd_set_cursor(0,2);
+        lcd_puts_at_P(0, 1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
+        lcd_set_cursor(0, 2);
         if (eFilamentAction == FilamentAction::Load || eFilamentAction == FilamentAction::AutoLoad)
         {
             lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
@@ -1780,18 +1781,22 @@ static void waitFilamentLoop()
             || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
 #endif //FILAMENT_SENSOR
         ) {
-            return; // exit loop
+            return; // return to mFilamentItem() submenu
         }
     }
 }
 
-static void mFilamentItem(uint16_t nTemp, uint16_t nTempBed, bool bFilamentPreheatState=false)
+/// @brief Process a filament menu item
+/// @param preheatTargetHotend hotend target temperature
+/// @param preheatTargetBed bed target temperature
+static void mFilamentItem(uint16_t preheatTargetHotend, uint16_t preheatTargetBed)
 {
     static bool bFilamentWaitingFlag = false;
+    const bool bFilamentPreheatState = preheatTargetHotend >= (uint16_t)extrude_min_temp;
     uint8_t nLevel = bFilamentPreheatState ? 1 : 2;
 
-    setTargetHotend((float)nTemp);
-    if (!shouldPreheatOnlyNozzle()) setTargetBed((float)nTempBed);
+    setTargetHotend((float)preheatTargetHotend);
+    if (!shouldPreheatOnlyNozzle()) setTargetBed((float)preheatTargetBed);
     {
         const FilamentAction action = eFilamentAction;
         if (action == FilamentAction::Preheat || action == FilamentAction::Lay1Cal)
@@ -1815,7 +1820,7 @@ static void mFilamentItem(uint16_t nTemp, uint16_t nTempBed, bool bFilamentPrehe
 
     // the current temperature is within +-TEMP_HYSTERESIS of the target
     // then continue with the filament action if any is set
-    if (bFilamentSkipPreheat || abs((int)current_temperature[0] - nTemp) < TEMP_HYSTERESIS)
+    if (bFilamentSkipPreheat || abs((int)current_temperature[0] - preheatTargetHotend) < TEMP_HYSTERESIS)
     {
         switch (eFilamentAction)
         {
@@ -1824,7 +1829,7 @@ static void mFilamentItem(uint16_t nTemp, uint16_t nTempBed, bool bFilamentPrehe
         case FilamentAction::UnLoad:
             if (bFilamentWaitingFlag) {
                 waitFilamentLoop();
-                if(!bFilamentPreheatState) nLevel++;
+                if(!bFilamentPreheatState) nLevel++; // TODO: verify
                 Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
                 bFilamentWaitingFlag = false;
             }
@@ -2190,7 +2195,7 @@ static void preheat_or_continue(FilamentAction action) {
 
     if (bFilamentSkipPreheat || target_temperature[0] >= extrude_min_temp) {
         bFilamentPreheatState = true;
-        mFilamentItem(target_temperature[0], target_temperature_bed, true);
+        mFilamentItem(target_temperature[0], target_temperature_bed);
         bFilamentSkipPreheat = false; // Reset flag
     } else {
         lcd_generic_preheat_menu();
