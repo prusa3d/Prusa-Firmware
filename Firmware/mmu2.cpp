@@ -283,8 +283,9 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         MoveE(move == 0 ? delta_mm : -delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
         while (planner_any_moves()) {
             // Wait for move to finish and monitor the fsensor the entire time
-            // A single 0 reading will set the bit.
-            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
+            // A single 0 reading will set the bit, and so will also a jam event.
+            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT) | fsensor.getEvent(Filament_sensor::Events::jam);
+            fsensor.clearEvent(Filament_sensor::Events::jam);
             fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
 
             // Always round up, you can only have 'whole' pixels. (floor is also an option)
@@ -299,7 +300,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         }
     }
 
-    if (fsensorState || fsensor.getEvent(Filament_sensor::Events::jam))
+    if (fsensorState)
     {
         IncrementLoadFails();
         return false;
