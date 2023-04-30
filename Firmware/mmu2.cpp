@@ -300,8 +300,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         }
     }
 
-    if (fsensorState)
-    {
+    if (fsensorState) {
         IncrementLoadFails();
         return false;
     } else {
