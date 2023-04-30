@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include "Filament_sensor.h"
 
 namespace MMU2 {
 

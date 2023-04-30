@@ -2,6 +2,7 @@
 #include "mmu2_config.h"
 #include "mmu2_error_converter.h"
 #include "mmu2_fsensor.h"
+#include "Filament_sensor.h" //to be removed
 #include "mmu2_log.h"
 #include "mmu2_marlin.h"
 #include "mmu2_marlin_macros.h"
