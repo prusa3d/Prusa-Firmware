@@ -240,7 +240,6 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     uint8_t fsensorState = 0;
     uint8_t fsensorStateLCD = 0;
     uint8_t lcd_cursor_col = 0;
-    fsensor.clearEvent(Filament_sensor::Events::runout);
     fsensor.clearEvent(Filament_sensor::Events::jam);
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
@@ -300,7 +299,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         }
     }
 
-    if (fsensor.getEvent(Filament_sensor::Events::runout) || fsensor.getEvent(Filament_sensor::Events::jam))
+    if (fsensorState || fsensor.getEvent(Filament_sensor::Events::jam))
     {
         IncrementLoadFails();
         return false;
