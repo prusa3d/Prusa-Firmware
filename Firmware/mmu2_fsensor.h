@@ -15,4 +15,10 @@ enum class FilamentState : uint_fast8_t {
 
 FilamentState WhereIsFilament();
 
+/// @brief Clear any pending filament jam event.
+void ClearFilamentJamEvent();
+
+/// @brief Checks if there is any filament jam event pending.
+bool IsFilamentJammed();
+
 } // namespace MMU2

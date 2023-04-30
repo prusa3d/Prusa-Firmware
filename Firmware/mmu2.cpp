@@ -240,7 +240,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     uint8_t fsensorState = 0;
     uint8_t fsensorStateLCD = 0;
     uint8_t lcd_cursor_col = 0;
-    fsensor.clearEvent(Filament_sensor::Events::jam);
+    ClearFilamentJamEvent();
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
 
@@ -284,9 +284,9 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         while (planner_any_moves()) {
             // Wait for move to finish and monitor the fsensor the entire time
             // A single 0 reading will set the bit, and so will also a jam event.
-            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT) | fsensor.getEvent(Filament_sensor::Events::jam);
-            fsensor.clearEvent(Filament_sensor::Events::jam);
+            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT) | IsFilamentJammed();
             fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
+            ClearFilamentJamEvent();
 
             // Always round up, you can only have 'whole' pixels. (floor is also an option)
             dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) * pixel_per_mm);
