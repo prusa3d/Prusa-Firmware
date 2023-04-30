@@ -76,7 +76,7 @@ void Filament_sensor::settings_init_common() {
 }
 
 void Filament_sensor::checkFilamentEvents() {
-    if ((state != State::ready) || (eventBlankingTimer.running() && !eventBlankingTimer.expired(100)))
+    if ((state != State::ready) || !eventBlankingTimer.expired_cont(100))
         return;
 
     bool newFilamentPresent = fsensor.getFilamentPresent();
