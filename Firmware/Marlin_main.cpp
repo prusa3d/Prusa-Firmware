@@ -2916,33 +2916,28 @@ static void gcode_G80()
         float x_pos = BED_X(ix, MESH_NUM_X_POINTS);
         float y_pos = BED_Y(iy, MESH_NUM_X_POINTS);
 
-        if ((nMeasPoints == 3) && !isOn3x3Mesh) {
-          mesh_point++;
-          continue; //skip
-        }
-
-        if ((nMeasPoints == 7) && !isOn3x3Mesh && (x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y)) {
-          mesh_point++;
-          custom_message_state--;
-          continue; //skip
-        }
-
-        /*if (!mbl_point_measurement_valid(ix, iy, nMeasPoints, true)) {
-          printf_P(PSTR("Skipping point [%d;%d] \n"), ix, iy);
-          custom_message_state--;
-          mesh_point++;
-          continue; //skip
-          }*/
-        
+        // Reconstruct the mesh saved in eeprom
         float z0 = 0.f;
         if (has_z && isOn3x3Mesh && (mesh_point > 0)) {
             uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
             z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
+            mbl.set_z(ix, iy, z0);
 #ifdef SUPPORT_VERBOSITY
             if (verbosity_level >= 1) {
                 printf_P(PSTR("Bed leveling, point: %d, calibration Z stored in eeprom: %d, calibration z: %f \n"), mesh_point, z_offset_u, z0);
             }
 #endif // SUPPORT_VERBOSITY
+        }
+
+        if ((nMeasPoints == 3) && !isOn3x3Mesh) {
+          mesh_point++;
+          continue; //skip
+        }
+
+        if ((nMeasPoints == 7) && (x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (mesh_point > 0) && (!isOn3x3Mesh || has_z)) {
+          mesh_point++;
+          custom_message_state--;
+          continue; //skip
         }
 
         // Move Z up to MESH_HOME_Z_SEARCH.
