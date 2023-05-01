@@ -10,13 +10,17 @@ mesh_bed_leveling::mesh_bed_leveling() { reset(); }
 
 void mesh_bed_leveling::reset() {
     active = 0;
-    memset(z_values, 0, sizeof(float) * MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS);
+    for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; ++row) {
+        for (uint8_t col = 0; col < MESH_NUM_X_POINTS; ++col) {
+            mbl.z_values[row][col] = NAN;
+        }
+    }
 }
 
 static inline bool vec_undef(const float v[2])
 {
     const uint32_t *vx = (const uint32_t*)v;
-    return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
+    return vx[0] == 0xFFFFFFFF || vx[1] == 0xFFFFFFFF;
 }
 
 #if MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1
@@ -33,13 +37,10 @@ void mesh_bed_leveling::upsample_3x3()
         static const float x0 = MESH_MIN_X;
         static const float x1 = 0.5f * float(MESH_MIN_X + MESH_MAX_X);
         static const float x2 = MESH_MAX_X;
-        for (int j = 0; j < 3; ++ j) {
-            // 1) Copy the source points to their new destination.
-            z_values[j][idx2] = z_values[j][2];
-            z_values[j][idx1] = z_values[j][1];
-            // 2) Interpolate the remaining values by Largrangian polynomials.
-            for (int i = idx0 + 1; i < idx2; ++ i) {
-                if (i == idx1)
+        for (int j = 0; j < MESH_NUM_Y_POINTS; ++ j) {
+            // Interpolate the remaining values by Largrangian polynomials.
+            for (int i = 0; i < MESH_NUM_X_POINTS; ++ i) {
+                if (!isnan(z_values[j][i]))
                     continue;
                 float x = get_x(i);
                 #ifdef MBL_BILINEAR
@@ -61,12 +62,9 @@ void mesh_bed_leveling::upsample_3x3()
         static const float y1 = 0.5f * float(MESH_MIN_Y + MESH_MAX_Y);
         static const float y2 = MESH_MAX_Y;
         for (int i = 0; i < MESH_NUM_X_POINTS; ++ i) {
-            // 1) Copy the intermediate points to their new destination.
-            z_values[idx2][i] = z_values[2][i];
-            z_values[idx1][i] = z_values[1][i];
-            // 2) Interpolate the remaining values by Largrangian polynomials.
+            // Interpolate the remaining values by Largrangian polynomials.
             for (int j = 1; j + 1 < MESH_NUM_Y_POINTS; ++ j) {
-                if (j == idx1)
+                if (!isnan(z_values[j][i]))
                     continue;
                 float y = get_y(j);
                 #ifdef MBL_BILINEAR

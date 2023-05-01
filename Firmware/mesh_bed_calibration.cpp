@@ -2951,8 +2951,7 @@ bool sample_mesh_and_store_reference()
             }
     }
 
-    mbl.upsample_3x3();
-    mbl.active = true;
+    mbl.reset();
 
     go_home_with_z_lift();
 

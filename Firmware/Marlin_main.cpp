@@ -2841,6 +2841,11 @@ static void gcode_G80()
     }
     bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 
+    float area_min_x = code_seen('X') ? code_value() - MESH_X_DIST - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
+    float area_min_y = code_seen('Y') ? code_value() - MESH_Y_DIST - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
+    float area_max_x = code_seen('W') ? area_min_x + code_value() + 2 * MESH_X_DIST : INFINITY;
+    float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * MESH_Y_DIST : INFINITY;
+
 #ifndef PINDA_THERMISTOR
     if (run == false && eeprom_read_byte((uint8_t *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == true && target_temperature_bed >= 50)
     {
@@ -2902,30 +2907,36 @@ static void gcode_G80()
     }
 #endif // SUPPORT_VERBOSITY
     int l_feedmultiply = setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
-    while (mesh_point != nMeasPoints * nMeasPoints) {
+    while (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
         // Get coords of a measuring point.
-        uint8_t ix = mesh_point % nMeasPoints; // from 0 to MESH_NUM_X_POINTS - 1
-        uint8_t iy = mesh_point / nMeasPoints;
+        uint8_t ix = mesh_point % MESH_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
+        uint8_t iy = mesh_point / MESH_NUM_X_POINTS;
+        if (iy & 1) ix = (MESH_NUM_X_POINTS - 1) - ix; // Zig zag
+        bool isOn3x3Mesh = ((ix % 3 == 0) && (iy % 3 == 0));
+        float x_pos = BED_X(ix, MESH_NUM_X_POINTS);
+        float y_pos = BED_Y(iy, MESH_NUM_X_POINTS);
+
+        if ((nMeasPoints == 3) && !isOn3x3Mesh) {
+          mesh_point++;
+          continue; //skip
+        }
+
+        if ((nMeasPoints == 7) && !isOn3x3Mesh && (x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y)) {
+          mesh_point++;
+          custom_message_state--;
+          continue; //skip
+        }
+
         /*if (!mbl_point_measurement_valid(ix, iy, nMeasPoints, true)) {
           printf_P(PSTR("Skipping point [%d;%d] \n"), ix, iy);
           custom_message_state--;
           mesh_point++;
           continue; //skip
           }*/
-        if (iy & 1) ix = (nMeasPoints - 1) - ix; // Zig zag
-        if (nMeasPoints == 7) //if we have 7x7 mesh, compare with Z-calibration for points which are in 3x3 mesh
-        {
-            has_z = ((ix % 3 == 0) && (iy % 3 == 0)) && is_bed_z_jitter_data_valid();
-        }
+        
         float z0 = 0.f;
-        if (has_z && (mesh_point > 0)) {
-            uint16_t z_offset_u = 0;
-            if (nMeasPoints == 7) {
-                z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
-            }
-            else {
-                z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
-            }
+        if (has_z && isOn3x3Mesh && (mesh_point > 0)) {
+            uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
             z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
 #ifdef SUPPORT_VERBOSITY
             if (verbosity_level >= 1) {
@@ -2942,8 +2953,8 @@ static void gcode_G80()
         st_synchronize();
 
         // Move to XY position of the sensor point.
-        current_position[X_AXIS] = BED_X(ix, nMeasPoints);
-        current_position[Y_AXIS] = BED_Y(iy, nMeasPoints);
+        current_position[X_AXIS] = x_pos;
+        current_position[Y_AXIS] = y_pos;
 
         //printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
@@ -3034,7 +3045,7 @@ static void gcode_G80()
 #endif // SUPPORT_VERBOSITY
     plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
     st_synchronize();
-    if (mesh_point != nMeasPoints * nMeasPoints) {
+    if (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
         Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
         bool bState;
         do   {                             // repeat until Z-leveling o.k.
@@ -3112,19 +3123,17 @@ static void gcode_G80()
         if (correction[i] == 0)
             continue;
     }
-    for (uint8_t row = 0; row < nMeasPoints; ++row) {
-        for (uint8_t col = 0; col < nMeasPoints; ++col) {
+    for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; ++row) {
+        for (uint8_t col = 0; col < MESH_NUM_X_POINTS; ++col) {
             mbl.z_values[row][col] +=0.001f * (
-              + correction[0] * (nMeasPoints - 1 - col)
+              + correction[0] * (MESH_NUM_X_POINTS - 1 - col)
               + correction[1] * col
-              + correction[2] * (nMeasPoints - 1 - row)
+              + correction[2] * (MESH_NUM_Y_POINTS - 1 - row)
               + correction[3] * row) / (float)(nMeasPoints - 1);
         }
     }
     //		SERIAL_ECHOLNPGM("Bed leveling correction finished");
-    if (nMeasPoints == 3) {
-        mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
-    }
+    mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
     /*
       SERIAL_PROTOCOLPGM("Num X,Y: ");
       SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
@@ -3134,11 +3143,10 @@ static void gcode_G80()
       SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
       SERIAL_PROTOCOLLNPGM("\nMeasured points:");
       for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
-      for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
-      SERIAL_PROTOCOLPGM("  ");
-      SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
-      }
-      SERIAL_PROTOCOLPGM("\n");
+        for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+          printf_P(PSTR("  %.5f"), mbl.z_values[y][x]);
+        }
+        SERIAL_PROTOCOLPGM("\n");
       }
     */
     if (nMeasPoints == 7 && magnet_elimination) {
@@ -3153,11 +3161,10 @@ static void gcode_G80()
       SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
       SERIAL_PROTOCOLLNPGM("\nMeasured points:");
       for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
-      for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
-      SERIAL_PROTOCOLPGM("  ");
-      SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
-      }
-      SERIAL_PROTOCOLPGM("\n");
+        for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+          printf_P(PSTR("  %.5f"), mbl.z_values[y][x]);
+        }
+        SERIAL_PROTOCOLPGM("\n");
       }
     */
     //		SERIAL_ECHOLNPGM("Upsample finished");
