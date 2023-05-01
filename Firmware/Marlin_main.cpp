@@ -4957,7 +4957,7 @@ void process_commands()
     Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
     #### Usage
 	  
-          G80 [ N | R | V | L | R | F | B ]
+          G80 [ N | R | V | L | R | F | B | X | Y | W | H ]
       
 	#### Parameters
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
@@ -4970,16 +4970,13 @@ void process_commands()
       - `R` - Right Bed Level correct value in um.
       - `F` - Front Bed Level correct value in um.
       - `B` - Back Bed Level correct value in um.
+
+      The following parameters are used to define the area used by the print:
+      - `X` - area lower left point X coordinate
+      - `Y` - area lower left point Y coordinate
+      - `W` - area width (on X axis)
+      - `H` - area height (on Y axis)
     */
-  
-	/*
-    * Probes a grid and produces a mesh to compensate for variable bed height
-	* The S0 report the points as below
-	*  +----> X-axis
-	*  |
-	*  |
-	*  v Y-axis
-	*/
 
 	case 80: {
         gcode_G80();
