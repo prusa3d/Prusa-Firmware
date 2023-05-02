@@ -3717,7 +3717,9 @@ static void lcd_wizard_load() {
         lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
         loading_flag = true;
     }
-    enquecommand_P(MSG_M701);
+
+    // When MMU is disabled P parameter is ignored
+    enquecommand_P(PSTR("M701 P0"));
 }
 
 static void wizard_lay1cal_message(bool cold)
