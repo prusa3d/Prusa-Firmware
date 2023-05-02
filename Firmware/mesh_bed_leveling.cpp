@@ -105,7 +105,6 @@ int mesh_bed_leveling::select_y_index(float y) {
 #if MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1
 // Works for an odd number of MESH_NUM_X_POINTS and MESH_NUM_Y_POINTS
 
-// #define MBL_BILINEAR
 void mesh_bed_leveling::upsample_3x3()
 {
     int idx0 = 0;
@@ -122,16 +121,10 @@ void mesh_bed_leveling::upsample_3x3()
                 if (!isnan(z_values[j][i]))
                     continue;
                 float x = get_x(i);
-                #ifdef MBL_BILINEAR
-                z_values[j][i] = (x < x1) ?
-                    ((z_values[j][idx0] * (x - x0) + z_values[j][idx1] * (x1 - x)) / (x1 - x0)) :
-                    ((z_values[j][idx1] * (x - x1) + z_values[j][idx2] * (x2 - x)) / (x2 - x1));
-                #else
                 z_values[j][i] = 
                     z_values[j][idx0] * (x - x1) * (x - x2) / ((x0 - x1) * (x0 - x2)) +
                     z_values[j][idx1] * (x - x0) * (x - x2) / ((x1 - x0) * (x1 - x2)) +
                     z_values[j][idx2] * (x - x0) * (x - x1) / ((x2 - x0) * (x2 - x1));
-                #endif
             }
         }
     }
@@ -146,16 +139,10 @@ void mesh_bed_leveling::upsample_3x3()
                 if (!isnan(z_values[j][i]))
                     continue;
                 float y = get_y(j);
-                #ifdef MBL_BILINEAR
-                z_values[j][i] = (y < y1) ? 
-                    ((z_values[idx0][i] * (y - y0) + z_values[idx1][i] * (y1 - y)) / (y1 - y0)) :
-                    ((z_values[idx1][i] * (y - y1) + z_values[idx2][i] * (y2 - y)) / (y2 - y1));
-                #else
                 z_values[j][i] = 
                     z_values[idx0][i] * (y - y1) * (y - y2) / ((y0 - y1) * (y0 - y2)) +
                     z_values[idx1][i] * (y - y0) * (y - y2) / ((y1 - y0) * (y1 - y2)) +
                     z_values[idx2][i] * (y - y0) * (y - y1) / ((y2 - y0) * (y2 - y1));
-                #endif
             }
         }
     }
