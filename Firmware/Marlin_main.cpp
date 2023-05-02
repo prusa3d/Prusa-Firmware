@@ -3575,8 +3575,10 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
     
     prusa_statistics(22);
 
-    if (MMU2::mmu2.Enabled() && mmuSlotIndex < MMU_FILAMENT_COUNT) {
-        MMU2::mmu2.load_filament_to_nozzle(mmuSlotIndex);
+    if (MMU2::mmu2.Enabled()) {
+        if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
+          MMU2::mmu2.load_filament_to_nozzle(mmuSlotIndex);
+        } // else do nothing
     } else {
         custom_message_type = CustomMsg::FilamentLoading;
         lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
