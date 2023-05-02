@@ -13,106 +13,21 @@ public:
     uint8_t active;
     float z_values[MESH_NUM_Y_POINTS][MESH_NUM_X_POINTS];
     
-    mesh_bed_leveling();
+    mesh_bed_leveling() { reset(); }
     
     void reset();
+
+    static float get_x(int i) { return float(MESH_MIN_X) + float(MESH_X_DIST) * float(i); }
+    static float get_y(int i) { return float(MESH_MIN_Y) + float(MESH_Y_DIST) * float(i); }
+    float get_z(float x, float y);
+    void set_z(uint8_t ix, uint8_t iy, float z) { z_values[iy][ix] = z; }
+    
+    int select_x_index(float x);
+    int select_y_index(float y);
     
 #if MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1
     void upsample_3x3();
 #endif
-    
-    static float get_x(int i) { return float(MESH_MIN_X) + float(MESH_X_DIST) * float(i); }
-    static float get_y(int i) { return float(MESH_MIN_Y) + float(MESH_Y_DIST) * float(i); }
-    
-    void set_z(uint8_t ix, uint8_t iy, float z) { z_values[iy][ix] = z; }
-    
-    int select_x_index(float x) {
-        int i = 1;
-        while (x > get_x(i) && i < MESH_NUM_X_POINTS - 1) i++;
-        return i - 1;
-    }
-    
-    int select_y_index(float y) {
-        int i = 1;
-        while (y > get_y(i) && i < MESH_NUM_Y_POINTS - 1) i++;
-        return i - 1;
-    }
-    
-    float get_z(float x, float y) {
-        int   i, j;
-        float s, t;
-        
-#if MESH_NUM_X_POINTS==3 && MESH_NUM_Y_POINTS==3
-#define MESH_MID_X (0.5f*(MESH_MIN_X+MESH_MAX_X))
-#define MESH_MID_Y (0.5f*(MESH_MIN_Y+MESH_MAX_Y))
-        if (x < MESH_MID_X) {
-            i = 0;
-            s = (x - MESH_MIN_X) / MESH_X_DIST;
-            if (s > 1.f)
-                s = 1.f;
-        } else {
-            i = 1;
-            s = (x - MESH_MID_X) / MESH_X_DIST;
-            if (s < 0)
-                s = 0;
-        }
-        if (y < MESH_MID_Y) {
-            j = 0;
-            t = (y - MESH_MIN_Y) / MESH_Y_DIST;
-            if (t > 1.f)
-                t = 1.f;
-        } else {
-            j = 1;
-            t = (y - MESH_MID_Y) / MESH_Y_DIST;
-            if (t < 0)
-                t = 0;
-        }
-#else
-        i = int(floor((x - MESH_MIN_X) / MESH_X_DIST));
-        if (i < 0) {
-            i = 0;
-            s = (x - MESH_MIN_X) / MESH_X_DIST;
-            if (s > 1.f)
-                s = 1.f;
-        }
-        else if (i > MESH_NUM_X_POINTS - 2) {
-            i = MESH_NUM_X_POINTS - 2;
-            s = (x - get_x(i)) / MESH_X_DIST;
-            if (s < 0)
-                s = 0;
-        } else {
-            s = (x - get_x(i)) / MESH_X_DIST;
-            if (s < 0)
-                s = 0;
-            else if (s > 1.f)
-                s = 1.f;
-        }
-        j = int(floor((y - MESH_MIN_Y) / MESH_Y_DIST));
-        if (j < 0) {
-            j = 0;
-            t = (y - MESH_MIN_Y) / MESH_Y_DIST;
-            if (t > 1.f)
-                t = 1.f;
-        } else if (j > MESH_NUM_Y_POINTS - 2) {
-            j = MESH_NUM_Y_POINTS - 2;
-            t = (y - get_y(j)) / MESH_Y_DIST;
-            if (t < 0)
-                t = 0;
-        } else {
-            t = (y - get_y(j)) / MESH_Y_DIST;
-            if (t < 0)
-                t = 0;
-            else if (t > 1.f)
-                t = 1.f;
-        }
-#endif /* MESH_NUM_X_POINTS==3 && MESH_NUM_Y_POINTS==3 */
-        
-        float si = 1.f-s;
-        float z0 = si * z_values[j  ][i] + s * z_values[j  ][i+1];
-        float z1 = si * z_values[j+1][i] + s * z_values[j+1][i+1];
-        return (1.f-t) * z0 + t * z1;
-    }
-    
 };
 
 extern mesh_bed_leveling mbl;
