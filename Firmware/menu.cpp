@@ -90,7 +90,6 @@ void menu_end(void)
 	if (((uint8_t)lcd_encoder) >= menu_top + LCD_HEIGHT)
 	{
 		menu_top = lcd_encoder - LCD_HEIGHT + 1;
-		lcd_draw_update = 1;
 		menu_line = menu_top - 1;
 		menu_row = -1;
 	}
