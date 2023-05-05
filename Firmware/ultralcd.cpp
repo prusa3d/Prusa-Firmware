@@ -24,7 +24,6 @@
 #include "mesh_bed_leveling.h"
 #include "mesh_bed_calibration.h"
 
-//#include "Configuration.h"
 #include "cmdqueue.h"
 
 #include "Filament_sensor.h"
@@ -89,13 +88,12 @@ static char lcd_status_message[LCD_WIDTH + 1];
 
 static uint8_t lay1cal_filament = 0;
 
-static const char separator[] PROGMEM = "--------------------";
+static const char STR_SEPARATOR[] PROGMEM = "--------------------";
+static_assert(sizeof(STR_SEPARATOR) == LCD_WIDTH + 1, "separator length must be updated to match screen width");
 
 /** forward declarations **/
 
 static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg);
-// void copy_and_scalePID_i();
-// void copy_and_scalePID_d();
 
 /* Different menus */
 #if (LANG_MODE != 0)
@@ -103,7 +101,6 @@ static void lcd_language_menu();
 #endif
 static void lcd_main_menu();
 static void lcd_tune_menu();
-//static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_control_temperature_menu();
@@ -257,8 +254,6 @@ uint8_t selected_sheet = 0;
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
-
-const char STR_SEPARATOR[] PROGMEM = "------------";
 
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
@@ -1508,40 +1503,40 @@ void TestPullupCrash() {
 //! |  3.7.2.-2363       |	c=16
 //! | prusa3d.com        |	MSG_PRUSA3D
 //! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
-//! | help.prusa3d.com  |	MSG_PRUSA3D_HELP
-//! | --------------     |	STR_SEPARATOR
+//! | help.prusa3d.com   |	MSG_PRUSA3D_HELP
+//! | ------------------ |	STR_SEPARATOR
 //! | 1_75mm_MK3         |	FILAMENT_SIZE
-//! | help.prusa3d.com  |	ELECTRONICS
-//! | help.prusa3d.com  |	NOZZLE_TYPE
-//! | --------------     |	STR_SEPARATOR
+//! | help.prusa3d.com   |	ELECTRONICS
+//! | help.prusa3d.com   |	NOZZLE_TYPE
+//! | ------------------ |	STR_SEPARATOR
 //! | Date:              |	c=17
 //! | MMM DD YYYY        |	__DATE__
-//! | --------------     |	STR_SEPARATOR
+//! | ------------------ |	STR_SEPARATOR
 //! @endcode
 //! 
 //! If MMU is connected
 //! 
-//! 	@code{.unparsed}
-//! 	| MMU connected     |	c=18
-//! 	|  FW: 1.0.6-7064523 |
-//! 	@endcode
+//! @code{.unparsed}
+//! | MMU connected     |	c=18
+//! |  FW: 1.0.6-7064523 |
+//! @endcode
 //! 
 //! If MMU is not connected
 //! 
-//! 	@code{.unparsed}
-//! 	| MMU        N/A     |	c=18
-//! 	@endcode
+//! @code{.unparsed}
+//! | MMU        N/A     |	c=18
+//! @endcode
 //! 
 //! If Flash Air is connected
 //! 
-//! 	@code{.unparsed}
-//! 	| --------------     |	STR_SEPARATOR
-//! 	| FlashAir IP Addr:  |	c=18
-//! 	|  192.168.1.100     |
-//! 	@endcode
+//! @code{.unparsed}
+//! | ------------------ |	STR_SEPARATOR
+//! | FlashAir IP Addr:  |	c=18
+//! |  192.168.1.100     |
+//! @endcode
 //! 
 //! @code{.unparsed}
-//! | --------------     |	STR_SEPARATOR
+//! | ------------------ |	STR_SEPARATOR
 //! | XYZ cal. details   |	MSG_XYZ_DETAILS c=18
 //! | Extruder info      |	MSG_INFO_EXTRUDER
 //! | XYZ cal. details   |	MSG_INFO_SENSORS
@@ -1549,8 +1544,8 @@ void TestPullupCrash() {
 //! 
 //! If TMC2130 defined
 //! 
-//! 	@code{.unparsed}
-//! 	| Belt status        |	MSG_BELT_STATUS
+//! @code{.unparsed}
+//! | Belt status        |	MSG_BELT_STATUS
 //! @endcode
 //! 
 //! @code{.unparsed}
@@ -1559,16 +1554,16 @@ void TestPullupCrash() {
 //! 
 //! If Voltage Bed and PWR Pin are defined
 //! 
-//! 	@code{.unparsed}
-//! 	| Voltages           |	MSG_MENU_VOLTAGES
-//! 	@endcode
+//! @code{.unparsed}
+//! | Voltages           |	MSG_MENU_VOLTAGES
+//! @endcode
 //! 
 //! 
 //! If DEBUG_BUILD is defined
 //! 
-//! 	@code{.unparsed}
-//! 	| Debug              |	c=18
-//! 	@endcode
+//! @code{.unparsed}
+//! | Debug              |	c=18
+//! @endcode
 //! ----------------------
 //! @endcode
 static void lcd_support_menu()
@@ -1606,13 +1601,6 @@ static void lcd_support_menu()
 #if (FW_DEV_VERSION != FW_VERSION_GOLD) && (FW_DEV_VERSION != FW_VERSION_RC)
   MENU_ITEM_BACK_P(PSTR(" repo " FW_REPOSITORY));
 #endif
-  // Ideally this block would be optimized out by the compiler.
-/*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
-  if (fw_string_len < 6) {
-      MENU_ITEM_BACK_P(PSTR(MSG_FW_VERSION " - " FW_version));
-  } else {
-      MENU_ITEM_BACK_P(PSTR("FW - " FW_version));
-  }*/
       
   MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
   MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
@@ -2433,7 +2421,7 @@ void lcd_move_e()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Y distance from min |	MSG_Y_DIST_FROM_MIN
-//! | --------------     |	STR_SEPARATOR
+//! |--------------------|	STR_SEPARATOR
 //! |Left:        00.00mm|	MSG_LEFT c=10, c=8
 //! |Right:       00.00mm|	MSG_RIGHT c=10, c=8
 //! ----------------------
@@ -2451,7 +2439,7 @@ static void lcd_menu_xyz_y_min()
 	  "%S:"
 	 ),
 	 _i("Y distance from min"),  ////MSG_Y_DIST_FROM_MIN c=20
-	 separator,
+	 STR_SEPARATOR,
 	 _i("Left"),  ////MSG_LEFT c=10
 	 _i("Right")  ////MSG_RIGHT c=10
 	);
@@ -2476,7 +2464,7 @@ float _deg(float rad)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14
-//! | --------------     |	STR_SEPARATOR
+//! |--------------------|	STR_SEPARATOR
 //! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14
 //! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14
 //! ----------------------
@@ -2494,7 +2482,7 @@ static void lcd_menu_xyz_skew()
 	  "%-14.14S:%3.2f\x01"
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
-	 separator,
+	 STR_SEPARATOR,
 	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14
 	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14
 	);
@@ -2512,7 +2500,7 @@ static void lcd_menu_xyz_skew()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
-//! | --------------     |	STR_SEPARATOR
+//! |--------------------|	STR_SEPARATOR
 //! |X            00.00mm|	c=10
 //! |Y            00.00mm|	c=10
 //! ----------------------
@@ -2521,7 +2509,7 @@ static void lcd_menu_xyz_skew()
 static void lcd_menu_xyz_offset()
 {
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
-    lcd_puts_at_P(0, 1, separator);
+    lcd_puts_at_P(0, 1, STR_SEPARATOR);
 
     for (uint8_t i = 0; i < 2; i++) {
         lcd_set_cursor(0, i + 2);
@@ -3401,18 +3389,18 @@ static void lcd_silent_mode_set() {
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
-  lcd_display_message_fullscreen_P(_i("Mode change in progress..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-  // Wait until the planner queue is drained and the stepper routine achieves
-  // an idle state.
-  st_synchronize();
-  if (tmc2130_wait_standstill_xy(1000)) {}
-//	  MYSERIAL.print("standstill OK");
-//  else
-//	  MYSERIAL.print("standstill NG!");
-	cli();
-	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
-	update_mode_profile();
-	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+  if (blocks_queued())
+  {
+      lcd_display_message_fullscreen_P(_i("Mode change in progress..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
+      // Wait until the planner queue is drained and the stepper routine achieves
+      // an idle state.
+      st_synchronize();
+  }
+  tmc2130_wait_standstill_xy(1000);
+  cli();
+  tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+  update_mode_profile();
+  tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
@@ -3430,16 +3418,8 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
 static void crash_mode_switch()
 {
-    if (lcd_crash_detect_enabled())
-    {
-        lcd_crash_detect_disable();
-    }
-    else
-    {
-        lcd_crash_detect_enable();
-    }
-	if (printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
-	else menu_goto(lcd_settings_menu, 9, true, true);
+    if (lcd_crash_detect_enabled()) lcd_crash_detect_disable();
+    else lcd_crash_detect_enable();
 }
 #endif //TMC2130
 
@@ -4086,27 +4066,17 @@ static void lcd_fsensor_settings_menu() {
 
 #endif //FILAMENT_SENSOR
 
-static void settingsSpoolJoin()
+static void menuitems_MMU_settings_common()
 {
     MENU_ITEM_TOGGLE_P(MSG_SPOOL_JOIN, SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
-}
-
-#define SETTINGS_SPOOLJOIN \
-do\
-{\
-    settingsSpoolJoin();\
-}\
-while(0)\
 
 #ifdef MMU_HAS_CUTTER
-static void settingsCutter()
-{
-    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED))
     {
         MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ON), lcd_cutter_enabled);
     }
 #ifdef MMU_ALWAYS_CUT
-    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED))
     {
         MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ALWAYS), lcd_cutter_enabled);
     }
@@ -4115,17 +4085,12 @@ static void settingsCutter()
     {
         MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_OFF), lcd_cutter_enabled);
     }
-}
+#endif // MMU_HAS_CUTTER
 
-#define SETTINGS_CUTTER \
-do\
-{\
-    settingsCutter();\
-}\
-while(0)
-#else
-#define SETTINGS_CUTTER
-#endif //MMU_HAS_CUTTER
+#ifndef MMU_FORCE_STEALTH_MODE
+    MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), eeprom_read_byte((uint8_t *)EEPROM_MMU_STEALTH) ? _T(MSG_STEALTH) : _T(MSG_NORMAL), lcd_mmu_mode_toggle);
+#endif // MMU_FORCE_STEALTH_MODE
+}
 
 static void mmu_enable_switch()
 {
@@ -4141,79 +4106,54 @@ static void mmu_enable_switch()
     }
 }
 
-static void mmu_reset()
+static void SETTINGS_SILENT_MODE()
 {
-    MMU2::mmu2.Reset(MMU2::MMU2::ResetForm::Software);
+    if (!farm_mode)
+    { // dont show in menu if we are in farm mode
+#ifdef TMC2130
+        if (eeprom_read_byte((uint8_t *)EEPROM_SILENT) == SILENT_MODE_NORMAL)
+        {
+                MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), lcd_crash_detect_enabled() ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
+        }
+        else
+        {
+                MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
+                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
+        }
+#else  // TMC2130
+        switch (eeprom_read_byte((uint8_t *)EEPROM_SILENT))
+        {
+        case SILENT_MODE_POWER:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);
+            break;
+        case SILENT_MODE_SILENT:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set);
+            break;
+        case SILENT_MODE_AUTO:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set);
+            break;
+        default:
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);
+            break; // (probably) not needed
+        }
+#endif // TMC2130
+    }
 }
 
-static void SETTINGS_SILENT_MODE() {
-    if (!farm_mode) { //dont show in menu if we are in farm mode
-#ifdef TMC2130
-        if (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_NORMAL) {
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
-            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), lcd_crash_detect_enabled() ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
-        } else {
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
-            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
-        }
-#else //TMC2130
-		switch (eeprom_read_byte((uint8_t*)EEPROM_SILENT)) {
-		case SILENT_MODE_POWER: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break;
-		case SILENT_MODE_SILENT: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set); break;
-		case SILENT_MODE_AUTO: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set); break;
-		default: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break; // (probably) not needed
-		}
-#endif //TMC2130
-    }
+static void menuitems_temperature_common() {
+#if TEMP_SENSOR_0 != 0
+    MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
+#endif
+#if TEMP_SENSOR_BED != 0
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 5);
+#endif
+    MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
 }
 
 void SETTINGS_FANS_CHECK() {
     MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
 }
-
-#ifndef MMU_FORCE_STEALTH_MODE
-#define SETTINGS_MMU_MODE \
-do\
-{\
-	if (MMU2::mmu2.Enabled())\
-	{\
-		MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) ? _T(MSG_STEALTH) : _T(MSG_NORMAL), lcd_mmu_mode_toggle);\
-	}\
-}\
-while (0) 
-#else //MMU_FORCE_STEALTH_MODE
-#define SETTINGS_MMU_MODE
-#endif //MMU_FORCE_STEALTH_MODE
-
-/*
-#define SETTINGS_MBL_MODE \
-do\
-{\
-    switch(e_mbl_type)\
-    {\
-    case e_MBL_FAST:\
-        MENU_ITEM_FUNCTION_P(_n("Mode    [Fast]"),mbl_mode_set);\
-         break; \
-    case e_MBL_OPTIMAL:\
-	    MENU_ITEM_FUNCTION_P(_n("Mode [Optimal]"), mbl_mode_set); \
-	     break; \
-    case e_MBL_PREC:\
-	     MENU_ITEM_FUNCTION_P(_n("Mode [Precise]"), mbl_mode_set); \
-	     break; \
-    default:\
-	     MENU_ITEM_FUNCTION_P(_n("Mode [Optimal]"), mbl_mode_set); \
-	     break; \
-    }\
-}\
-while (0)
-*/
-
-#define SETTINGS_MMU_LOADING_TEST \
-do\
-{\
-    MENU_ITEM_SUBMENU_P(_T(MSG_LOADING_TEST), mmu_loading_test_menu); \
-}\
-while (0)
 
 #define SETTINGS_SOUND \
 do\
@@ -4398,12 +4338,12 @@ while (0)
 
 static void lcd_checking_menu(void)
 {
-MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
-SETTINGS_MODE;
-SETTINGS_MODEL;
-SETTINGS_VERSION;
-MENU_END();
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
+    SETTINGS_MODE;
+    SETTINGS_MODEL;
+    SETTINGS_VERSION;
+    MENU_END();
 }
 
 template <uint8_t number>
@@ -4501,18 +4441,15 @@ static void lcd_settings_menu()
 #endif //FILAMENT_SENSOR
 
     MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
+    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
+    { // Communication with MMU not required to reset MMU
+        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), []() { MMU2::mmu2.Reset(MMU2::MMU2::ResetForm::Software); });
+    }
 
     if (MMU2::mmu2.Enabled())
     { // Only show menus when communicating with MMU
-        SETTINGS_SPOOLJOIN;
-        SETTINGS_CUTTER;
-        SETTINGS_MMU_MODE;
-        SETTINGS_MMU_LOADING_TEST;
-    }
-
-    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
-    { // Communication with MMU not required to reset MMU
-        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
+        menuitems_MMU_settings_common();
+        MENU_ITEM_SUBMENU_P(_T(MSG_LOADING_TEST), mmu_loading_test_menu);
     }
 
     SETTINGS_FANS_CHECK();
@@ -4969,18 +4906,6 @@ void unload_filament(float unloadLength)
 	eFilamentAction = FilamentAction::None;
 }
 
-#include "xflash.h"
-
-#ifdef LCD_TEST
-static void lcd_test_menu()
-{
-	XFLASH_SPI_ENTER();
-	xflash_enable_wr();
-	xflash_chip_erase();
-	xflash_disable_wr();
-}
-#endif //LCD_TEST
-
 /// @brief Set print fan speed
 /// @param speed ranges from 0 to 255
 static void lcd_selftest_setfan(const uint8_t speed) {
@@ -5338,9 +5263,6 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////MSG_MMU_FAIL_STATS c=18
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
-#ifdef LCD_TEST
-    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_XFLASH c=18
-#endif //LCD_TEST
 
     MENU_END();
 
@@ -5460,20 +5382,18 @@ static void lcd_tune_menu()
 	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 
 	MENU_BEGIN();
-	MENU_ITEM_BACK_P(_T(MSG_MAIN)); //1
-	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);//2////MSG_SPEED c=15
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);////MSG_SPEED c=15
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
-	MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 10);
+	menuitems_temperature_common();
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);//5
-	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW c=15
+	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);////MSG_FLOW c=15
 #ifdef LA_LIVE_K
-	MENU_ITEM_EDIT_advance_K();//7
+	MENU_ITEM_EDIT_advance_K();
 #endif
 #ifdef FILAMENTCHANGEENABLE
     if (!farm_mode)
-        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
+        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);
 #endif
 
 #ifdef FILAMENT_SENSOR
@@ -5482,13 +5402,11 @@ static void lcd_tune_menu()
 
     if (MMU2::mmu2.Enabled())
     {
-        SETTINGS_SPOOLJOIN;
-        SETTINGS_CUTTER;
+        menuitems_MMU_settings_common();
     }
 
     SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
-    SETTINGS_MMU_MODE;
     SETTINGS_SOUND;
 #ifdef LCD_BL_PIN
     if (backlightSupport)
@@ -5542,7 +5460,6 @@ static void lcd_mesh_bed_leveling_settings()
 	MENU_ITEM_TOGGLE(_T(MSG_Z_PROBE_NR), sToggle, mbl_probe_nr_toggle);
 	MENU_ITEM_TOGGLE_P(_T(MSG_MAGNETS_COMP), (points_nr == 7) ? (magnet_elimination ? _T(MSG_ON): _T(MSG_OFF)) : _T(MSG_NA), mbl_magnets_elimination_toggle);
 	MENU_END();
-	//SETTINGS_MBL_MODE;
 }
 
 #ifdef LCD_BL_PIN
@@ -5579,20 +5496,8 @@ static void lcd_control_temperature_menu()
 {
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-#if TEMP_SENSOR_0 != 0
-  MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
-#endif
-#if TEMP_SENSOR_BED != 0
-  MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 3);
-#endif
-  MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
-#if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
-//MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
-  MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
-  MENU_ITEM_EDIT(float3, _n(" \xdf Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);
-  MENU_ITEM_EDIT(float3, _n(" \xdf Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);
-  MENU_ITEM_EDIT(float32, _n(" \xdf Fact"), &autotemp_factor, 0.0, 1.0);
-#endif
+
+  menuitems_temperature_common();
 
   MENU_END();
 }
@@ -6964,7 +6869,7 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 	if (screen == TestScreen::Failed) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
 	if (screen == TestScreen::Home) lcd_puts_P(_i("Calibrating home"));////MSG_CALIBRATING_HOME c=20
 
-	lcd_puts_at_P(0, 1, separator);
+	lcd_puts_at_P(0, 1, STR_SEPARATOR);
 	if ((screen >= TestScreen::ExtruderFan) && (screen <= TestScreen::FansOk))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");

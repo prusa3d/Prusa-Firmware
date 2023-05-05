@@ -201,15 +201,7 @@ extern void babystep_reset();
 
 extern void count_xyz_details(float (&distanceMin)[2]);
 extern bool sample_z();
-/*
-typedef enum
-{
-	e_MBL_FAST, e_MBL_OPTIMAL, e_MBL_PREC
-} e_MBL_TYPE;
-*/
-//extern e_MBL_TYPE e_mbl_type;
-//extern void mbl_mode_set();
-//extern void mbl_mode_init();
+
 extern void mbl_settings_init();
 
 extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag);
