@@ -903,8 +903,19 @@ void lcd_commands()
         switch (lcd_commands_step)
         {
         case 0:
-            lcd_commands_step = 3;
+            lcd_commands_step = 5;
             [[fallthrough]];
+
+        case 5:
+            enquecommand_P(G28W);
+            enquecommand_P(PSTR("G1 X125 Y105 Z1 F8000"));
+            lcd_commands_step = 4;
+            break;
+
+        case 4:
+            st_synchronize();
+            lcd_commands_step = 3;
+            break;
 
         case 3:
             temp_model_set_warn_beep(false);
