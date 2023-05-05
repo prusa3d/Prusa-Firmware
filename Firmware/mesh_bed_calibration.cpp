@@ -685,11 +685,11 @@ bool is_bed_z_jitter_data_valid()
 // offsets of the Z heiths of the calibration points from the first point are saved as 16bit signed int, scaled to tenths of microns
 // if at least one 16bit integer has different value then -1 (0x0FFFF), data are considered valid and function returns true, otherwise it returns false
 {	
-	bool data_valid = false;
 	for (int8_t i = 0; i < 8; ++i) {
-		if (eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + i * 2)) != 0x0FFFF) data_valid = true;
+		if (eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + i * 2)) != 0x0FFFF)
+            return true;
 	}
-    return data_valid;
+    return false;
 }
 
 static void world2machine_update(const float vec_x[2], const float vec_y[2], const float cntr[2])
