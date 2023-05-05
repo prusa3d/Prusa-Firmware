@@ -149,4 +149,17 @@ void mesh_bed_leveling::upsample_3x3()
 }
 #endif // (MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1)
 
+void mesh_bed_leveling::print() {
+    SERIAL_PROTOCOLLNPGM("Num X,Y: " STRINGIFY(MESH_NUM_X_POINTS) "," STRINGIFY(MESH_NUM_Y_POINTS));
+    SERIAL_PROTOCOLLNPGM("Z search height: " STRINGIFY(MESH_HOME_Z_SEARCH));
+    SERIAL_PROTOCOLLNPGM("Measured points:");
+    for (uint8_t y = MESH_NUM_Y_POINTS; y-- > 0;) {
+        for (uint8_t x = 0; x < MESH_NUM_X_POINTS; x++) {
+            SERIAL_PROTOCOLPGM("  ");
+            SERIAL_PROTOCOL_F(z_values[y][x], 5);
+        }
+        SERIAL_PROTOCOLLN();
+    }
+}
+
 #endif  // MESH_BED_LEVELING

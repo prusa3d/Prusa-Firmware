@@ -28,6 +28,7 @@ public:
 #if MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1
     void upsample_3x3();
 #endif
+    void print();
 };
 
 extern mesh_bed_leveling mbl;

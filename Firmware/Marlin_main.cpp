@@ -4870,20 +4870,7 @@ void process_commands()
         */
         case 81:
             if (mbl.active) {
-                SERIAL_PROTOCOLPGM("Num X,Y: ");
-                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
-                SERIAL_PROTOCOL(',');
-                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
-                SERIAL_PROTOCOLPGM("\nZ search height: ");
-                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
-                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
-                for (uint8_t y = MESH_NUM_Y_POINTS; y-- > 0;) {
-                    for (uint8_t x = 0; x < MESH_NUM_X_POINTS; x++) {
-                        SERIAL_PROTOCOLPGM("  ");
-                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
-                    }
-                    SERIAL_PROTOCOLLN();
-                }
+                mbl.print();
             }
             else
                 SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
