@@ -3124,7 +3124,7 @@ static void gcode_G80()
               + correction[0] * (MESH_NUM_X_POINTS - 1 - col)
               + correction[1] * col
               + correction[2] * (MESH_NUM_Y_POINTS - 1 - row)
-              + correction[3] * row) / (float)(nMeasPoints - 1);
+              + correction[3] * row) / (float)(MESH_NUM_X_POINTS - 1);
         }
     }
     //		SERIAL_ECHOLNPGM("Bed leveling correction finished");
