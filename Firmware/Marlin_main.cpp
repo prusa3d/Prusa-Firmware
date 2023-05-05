@@ -157,8 +157,6 @@ uint8_t mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed
 float default_retraction = DEFAULT_RETRACTION;
 
 
-float homing_feedrate[] = HOMING_FEEDRATE;
-
 //Although this flag and many others like this could be represented with a struct/bitfield for each axis (more readable and efficient code), the implementation
 //would not be standard across all platforms. That being said, the code will continue to use bitmasks for independent axis.
 //Moreover, according to C/C++ standard, the ordering of bits is platform/compiler dependent and the compiler is allowed to align the bits arbitrarily,
@@ -2791,6 +2789,8 @@ static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
 // G80 - Automatic mesh bed leveling
 static void gcode_G80()
 {
+    constexpr float XY_AXIS_FEEDRATE = (homing_feedrate[X_AXIS] * 3) / 60;
+    constexpr float Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
     st_synchronize();
     if (planner_aborted)
         return;
@@ -2864,14 +2864,14 @@ static void gcode_G80()
     // Cycle through all points and probe them
     // First move up. During this first movement, the babystepping will be reverted.
     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+    plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
     // The move to the first calibration point.
     current_position[X_AXIS] = BED_X0;
     current_position[Y_AXIS] = BED_Y0;
 
     world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 
-    int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
+    
     plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
     // Wait until the move is finished.
     st_synchronize();
@@ -2883,7 +2883,6 @@ static void gcode_G80()
     }
 
     uint8_t mesh_point = 0; //index number of calibration point
-    int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
     bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
     int l_feedmultiply = setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
     while (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
@@ -2995,7 +2994,7 @@ static void gcode_G80()
             tmc2130_home_enter(Z_AXIS_MASK);
 #endif // TMC2130
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+            plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
             st_synchronize();
 #ifdef TMC2130
             tmc2130_home_exit();

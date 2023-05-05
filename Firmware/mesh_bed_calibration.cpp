@@ -2814,16 +2814,16 @@ void go_home_with_z_lift()
     // Go home.
     // First move up to a safe height.
     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
+    go_to_current(homing_feedrate[Z_AXIS] / 60);
     // Second move to XY [0, 0].
-    current_position[X_AXIS] = X_MIN_POS+0.2;
-    current_position[Y_AXIS] = Y_MIN_POS+0.2;
+    current_position[X_AXIS] = X_MIN_POS + 0.2;
+    current_position[Y_AXIS] = Y_MIN_POS + 0.2;
     // Clamp to the physical coordinates.
     world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-	go_to_current(homing_feedrate[X_AXIS]/20);
+    go_to_current((3 * homing_feedrate[X_AXIS]) / 60);
     // Third move up to a safe height.
     current_position[Z_AXIS] = Z_MIN_POS;
-    go_to_current(homing_feedrate[Z_AXIS]/60);    
+    go_to_current(homing_feedrate[Z_AXIS] / 60);
 }
 
 // Sample the 9 points of the bed and store them into the EEPROM as a reference.
@@ -3033,9 +3033,12 @@ bool scan_bed_induction_points(int8_t verbosity_level)
 // To replace loading of the babystep correction.
 static void shift_z(float delta)
 {
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], homing_feedrate[Z_AXIS]/40);
+    const float curpos_z = current_position[Z_AXIS];
+    current_position[Z_AXIS] -= delta;
+    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
     st_synchronize();
-    plan_set_z_position(current_position[Z_AXIS]);
+    current_position[Z_AXIS] = curpos_z;
+    plan_set_z_position(curpos_z);
 }
 
 // Number of baby steps applied
