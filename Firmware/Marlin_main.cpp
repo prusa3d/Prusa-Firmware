@@ -2832,8 +2832,6 @@ static void gcode_G80()
         nProbeRetry = 10;
     }
 
-    const uint8_t magnet_elimination = eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION);
-
     const float area_min_x = code_seen('X') ? code_value() - MESH_X_DIST - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
     const float area_min_y = code_seen('Y') ? code_value() - MESH_Y_DIST - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
     const float area_max_x = code_seen('W') ? area_min_x + code_value() + 2 * MESH_X_DIST : INFINITY;
@@ -3054,7 +3052,7 @@ static void gcode_G80()
 
     mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 
-    if (nMeasPoints == 7 && magnet_elimination) {
+    if (nMeasPoints == 7 && eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION)) {
         mbl_magnet_elimination();
     }
 
