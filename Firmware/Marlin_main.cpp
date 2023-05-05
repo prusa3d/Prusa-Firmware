@@ -2796,9 +2796,6 @@ static void gcode_G80()
         return;
 
     mesh_bed_leveling_flag = true;
-#ifndef PINDA_THERMISTOR
-    static bool run = false; // thermistor-less PINDA temperature compensation is running
-#endif // ndef PINDA_THERMISTOR
 
     // Firstly check if we know where we are
     if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
@@ -2810,28 +2807,17 @@ static void gcode_G80()
         return;
     }
 
-    uint8_t nMeasPoints = MESH_MEAS_NUM_X_POINTS;
-    if (code_seen('N')) {
-        nMeasPoints = code_value_uint8();
-        if (nMeasPoints != 7) {
-            nMeasPoints = 3;
-        }
-    }
-    else {
-        nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    uint8_t nMeasPoints = code_seen('N') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    if (nMeasPoints != 7) {
+        nMeasPoints = 3;
     }
 
-    uint8_t nProbeRetry = 3;
-    if (code_seen('R')) {
-        nProbeRetry = code_value_uint8();
-        if (nProbeRetry > 10) {
-            nProbeRetry = 10;
-        }
+    uint8_t nProbeRetry = code_seen('R') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+    if (nProbeRetry > 10) {
+        nProbeRetry = 10;
     }
-    else {
-        nProbeRetry = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-    }
-    bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+
+    const uint8_t magnet_elimination = eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION);
 
     float area_min_x = code_seen('X') ? code_value() - MESH_X_DIST - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
     float area_min_y = code_seen('Y') ? code_value() - MESH_Y_DIST - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
@@ -2839,6 +2825,7 @@ static void gcode_G80()
     float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * MESH_Y_DIST : INFINITY;
 
 #ifndef PINDA_THERMISTOR
+    static bool run = false; // thermistor-less PINDA temperature compensation is running
     if (run == false && eeprom_read_byte((uint8_t *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == true && target_temperature_bed >= 50)
     {
         temp_compensation_start();
