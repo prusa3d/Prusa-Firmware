@@ -689,34 +689,29 @@ void lcd_status_screen()                          // NOT static due to using ins
 {
 	static uint8_t lcd_status_update_delay = 0;
 #ifdef ULTIPANEL_FEEDMULTIPLY
-	// Dead zone at 100% feedrate
-	if ((feedmultiply < 100 && (feedmultiply + lcd_encoder) > 100) ||
-		(feedmultiply > 100 && (feedmultiply + lcd_encoder) < 100))
-	{
-		lcd_encoder = 0;
-		feedmultiply = 100;
-	}
-	if (feedmultiply == 100 && lcd_encoder > ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += lcd_encoder - ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply == 100 && lcd_encoder < -ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += lcd_encoder + ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply != 100)
-	{
-		feedmultiply += lcd_encoder;
-		lcd_encoder = 0;
-	}
-#endif //ULTIPANEL_FEEDMULTIPLY
+    if (lcd_encoder)
+    {
+        const int16_t initial_feedmultiply = feedmultiply;
+        // Dead zone at 100% feedrate
+        if ((feedmultiply < 100 && (feedmultiply + lcd_encoder) > 100) ||
+            (feedmultiply > 100 && (feedmultiply + lcd_encoder) < 100))
+        {
+            feedmultiply = 100;
+        }
+        else if (feedmultiply == 100 && lcd_encoder > ENCODER_FEEDRATE_DEADZONE) {
+            feedmultiply += lcd_encoder - ENCODER_FEEDRATE_DEADZONE;
+        }
+        else if (feedmultiply == 100 && lcd_encoder < -ENCODER_FEEDRATE_DEADZONE) {
+            feedmultiply += lcd_encoder + ENCODER_FEEDRATE_DEADZONE;
+        }
+        else if (feedmultiply != 100) feedmultiply += lcd_encoder;
 
-	if (feedmultiply < 10)
-		feedmultiply = 10;
-	else if (feedmultiply > 999)
-		feedmultiply = 999;
+        if (initial_feedmultiply != feedmultiply) {
+            feedmultiply = constrain(feedmultiply, 10, 999);
+            lcd_encoder = 0; // Consume rotation event
+        }
+    }
+#endif //ULTIPANEL_FEEDMULTIPLY
 
 	if (lcd_draw_update) {
 		// Update the status screen immediately
