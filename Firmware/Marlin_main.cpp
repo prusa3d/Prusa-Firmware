@@ -2839,6 +2839,7 @@ static void gcode_G80()
     const float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * MESH_Y_DIST : INFINITY;
 
     mbl.reset(); //reset mesh bed leveling
+    mbl.z_values[0][0] = min_pos[Z_AXIS];
 
     // Reset baby stepping to zero, if the babystepping has already been loaded before.
     babystep_undo();
@@ -2867,7 +2868,7 @@ static void gcode_G80()
             } else {
                 const float x_pos = BED_X(col, MESH_NUM_X_POINTS);
                 const float y_pos = BED_Y(row, MESH_NUM_Y_POINTS);
-                if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (row || col) && (!isOn3x3Mesh || has_z)) {
+                if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (!isOn3x3Mesh || has_z)) {
                     continue;
                 }
             }
@@ -2885,6 +2886,10 @@ static void gcode_G80()
     custom_message_state = meshPointsToProbe + 10;
     lcd_update(1);
 
+    // Lift Z to a safe position before probing the first point
+    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+    plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
+
     // Cycle through all points and probe them
     int l_feedmultiply = setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
     uint8_t mesh_point = 0; //index number of calibration point
@@ -2901,14 +2906,14 @@ static void gcode_G80()
             mesh_point++;
             mbl.set_z(ix, iy, NAN);
             continue; //skip
-        } else if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (mesh_point > 0) && (!isOn3x3Mesh || has_z)) {
+        } else if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (!isOn3x3Mesh || has_z)) {
             mesh_point++;
             continue; //skip
         }
 
         // Move Z up to the probe height of the current Z point.
         const float z0 = mbl.z_values[iy][ix];
-        const float init_z_bckp = (!has_z || (mesh_point == 0)) ? MESH_HOME_Z_SEARCH : z0 + 0.5;
+        const float init_z_bckp = !has_z ? MESH_HOME_Z_SEARCH : z0 + 0.35;
         if (init_z_bckp > current_position[Z_AXIS])
             current_position[Z_AXIS] = init_z_bckp;
         plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
@@ -2930,7 +2935,7 @@ static void gcode_G80()
         }
 
         // Go down until endstop is hit
-        if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
+        if (!find_bed_induction_sensor_point_z(has_z ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
             printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
             break;
         }
@@ -2939,7 +2944,7 @@ static void gcode_G80()
             plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
             st_synchronize();
 
-            if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
+            if (!find_bed_induction_sensor_point_z(has_z ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
                 printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
                 break;
             }
