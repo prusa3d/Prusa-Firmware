@@ -2791,6 +2791,7 @@ static void gcode_G80()
 {
     constexpr float XY_AXIS_FEEDRATE = (homing_feedrate[X_AXIS] * 3) / 60;
     constexpr float Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
+    constexpr float Z_CALIBRATION_THRESHOLD = 1.f;
     st_synchronize();
     if (planner_aborted)
         return;
@@ -2807,23 +2808,6 @@ static void gcode_G80()
         return;
     }
 
-    uint8_t nMeasPoints = code_seen('N') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
-    if (nMeasPoints != 7) {
-        nMeasPoints = 3;
-    }
-
-    uint8_t nProbeRetry = code_seen('R') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-    if (nProbeRetry > 10) {
-        nProbeRetry = 10;
-    }
-
-    const uint8_t magnet_elimination = eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION);
-
-    float area_min_x = code_seen('X') ? code_value() - MESH_X_DIST - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
-    float area_min_y = code_seen('Y') ? code_value() - MESH_Y_DIST - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
-    float area_max_x = code_seen('W') ? area_min_x + code_value() + 2 * MESH_X_DIST : INFINITY;
-    float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * MESH_Y_DIST : INFINITY;
-
 #ifndef PINDA_THERMISTOR
     static bool run = false; // thermistor-less PINDA temperature compensation is running
     if (run == false && eeprom_read_byte((uint8_t *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == true && target_temperature_bed >= 50)
@@ -2836,42 +2820,72 @@ static void gcode_G80()
     }
     run = false;
 #endif //PINDA_THERMISTOR
-    // Save custom message state, set a new custom message state to display: Calibrating point 9.
-    CustomMsg custom_message_type_old = custom_message_type;
-    uint8_t custom_message_state_old = custom_message_state;
-    custom_message_type = CustomMsg::MeshBedLeveling;
-    custom_message_state = (nMeasPoints * nMeasPoints) + 10;
-    lcd_update(1);
+
+    uint8_t nMeasPoints = code_seen('N') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    if (nMeasPoints != 7) {
+        nMeasPoints = 3;
+    }
+
+    uint8_t nProbeRetry = code_seen('R') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+    if (nProbeRetry > 10) {
+        nProbeRetry = 10;
+    }
+
+    const uint8_t magnet_elimination = eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION);
+
+    const float area_min_x = code_seen('X') ? code_value() - MESH_X_DIST - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
+    const float area_min_y = code_seen('Y') ? code_value() - MESH_Y_DIST - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
+    const float area_max_x = code_seen('W') ? area_min_x + code_value() + 2 * MESH_X_DIST : INFINITY;
+    const float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * MESH_Y_DIST : INFINITY;
 
     mbl.reset(); //reset mesh bed leveling
 
     // Reset baby stepping to zero, if the babystepping has already been loaded before.
     babystep_undo();
 
-    // Cycle through all points and probe them
-    // First move up. During this first movement, the babystepping will be reverted.
-    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
-    // The move to the first calibration point.
-    current_position[X_AXIS] = BED_X0;
-    current_position[Y_AXIS] = BED_Y0;
-
-    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-
-    
-    plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
-    // Wait until the move is finished.
-    st_synchronize();
-    if (planner_aborted)
-    {
-        custom_message_type = custom_message_type_old;
-        custom_message_state = custom_message_state_old;
-        return;
-    }
-
-    uint8_t mesh_point = 0; //index number of calibration point
+    // Initialize the default mesh from eeprom and calculate how many points are to be probed
     bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
+    uint8_t meshPointsToProbe = 0;
+    for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; row++) {
+        for (uint8_t col = 0; col < MESH_NUM_X_POINTS; col++) {
+            bool isOn3x3Mesh = ((row % 3 == 0) && (col % 3 == 0));
+            if (isOn3x3Mesh) {
+                if (has_z && (row || col)) {
+                    // Reconstruct the mesh saved in eeprom
+                    uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((col/3) + row - 1)));
+                    const float z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
+                    mbl.set_z(col, row, z0);
+                }
+            }
+
+            // check for points that are skipped
+            if (nMeasPoints == 3) {
+                if (!isOn3x3Mesh)
+                    continue;
+            } else {
+                const float x_pos = BED_X(col, MESH_NUM_X_POINTS);
+                const float y_pos = BED_Y(row, MESH_NUM_Y_POINTS);
+                if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (row || col) && (!isOn3x3Mesh || has_z)) {
+                    continue;
+                }
+            }
+
+            // increment the total point counter if the points are not skipped
+            meshPointsToProbe++;
+        }
+    }
+    mbl.upsample_3x3(); //upsample the default mesh
+
+    // Save custom message state, set a new custom message state to display: Calibrating point 9.
+    CustomMsg custom_message_type_old = custom_message_type;
+    uint8_t custom_message_state_old = custom_message_state;
+    custom_message_type = CustomMsg::MeshBedLeveling;
+    custom_message_state = meshPointsToProbe + 10;
+    lcd_update(1);
+
+    // Cycle through all points and probe them
     int l_feedmultiply = setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
+    uint8_t mesh_point = 0; //index number of calibration point
     while (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
         // Get coords of a measuring point.
         uint8_t ix = mesh_point % MESH_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
@@ -2879,31 +2893,22 @@ static void gcode_G80()
         if (iy & 1) ix = (MESH_NUM_X_POINTS - 1) - ix; // Zig zag
         bool isOn3x3Mesh = ((ix % 3 == 0) && (iy % 3 == 0));
         float x_pos = BED_X(ix, MESH_NUM_X_POINTS);
-        float y_pos = BED_Y(iy, MESH_NUM_X_POINTS);
-
-        // Reconstruct the mesh saved in eeprom
-        float z0 = 0.f;
-        if (has_z && isOn3x3Mesh && (mesh_point > 0)) {
-            uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
-            z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
-            mbl.set_z(ix, iy, z0);
-        }
+        float y_pos = BED_Y(iy, MESH_NUM_Y_POINTS);
 
         if ((nMeasPoints == 3) && !isOn3x3Mesh) {
-          mesh_point++;
-          continue; //skip
+            mesh_point++;
+            mbl.set_z(ix, iy, NAN);
+            continue; //skip
+        } else if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (mesh_point > 0) && (!isOn3x3Mesh || has_z)) {
+            mesh_point++;
+            continue; //skip
         }
 
-        if ((nMeasPoints == 7) && (x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (mesh_point > 0) && (!isOn3x3Mesh || has_z)) {
-          mesh_point++;
-          custom_message_state--;
-          continue; //skip
-        }
-
-        // Move Z up to MESH_HOME_Z_SEARCH.
-        if((ix == 0) && (iy == 0)) current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        else current_position[Z_AXIS] += 2.f / nMeasPoints; //use relative movement from Z coordinate where PINDa triggered on previous point. This makes calibration faster.
-        float init_z_bckp = current_position[Z_AXIS];
+        // Move Z up to the probe height of the current Z point.
+        const float z0 = mbl.z_values[iy][ix];
+        const float init_z_bckp = (!has_z || (mesh_point == 0)) ? MESH_HOME_Z_SEARCH : z0 + 0.5;
+        if (init_z_bckp > current_position[Z_AXIS])
+            current_position[Z_AXIS] = init_z_bckp;
         plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
         st_synchronize();
 
@@ -2923,12 +2928,11 @@ static void gcode_G80()
         }
 
         // Go down until endstop is hit
-        const float Z_CALIBRATION_THRESHOLD = 1.f;
         if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
             printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
             break;
         }
-        if (init_z_bckp - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
+        if (init_z_bckp - current_position[Z_AXIS] < 0.f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
             st_synchronize();
@@ -3029,8 +3033,8 @@ static void gcode_G80()
             correction[i] = 0;
         }
     }
-    for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; ++row) {
-        for (uint8_t col = 0; col < MESH_NUM_X_POINTS; ++col) {
+    for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; row++) {
+        for (uint8_t col = 0; col < MESH_NUM_X_POINTS; col++) {
             mbl.z_values[row][col] +=0.001f * (
               + correction[0] * (MESH_NUM_X_POINTS - 1 - col)
               + correction[1] * col

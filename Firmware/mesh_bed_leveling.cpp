@@ -8,11 +8,7 @@ mesh_bed_leveling mbl;
 
 void mesh_bed_leveling::reset() {
     active = 0;
-    for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; ++row) {
-        for (uint8_t col = 0; col < MESH_NUM_X_POINTS; ++col) {
-            mbl.z_values[row][col] = NAN;
-        }
-    }
+    memset(z_values, 0, sizeof(z_values));
 }
 
 float mesh_bed_leveling::get_z(float x, float y) {
