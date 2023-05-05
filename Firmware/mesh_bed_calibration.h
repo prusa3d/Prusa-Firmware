@@ -203,6 +203,5 @@ extern void count_xyz_details(float (&distanceMin)[2]);
 extern bool sample_z();
 
 extern void mbl_settings_init();
-
-extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag);
-extern void mbl_interpolation(uint8_t meas_points);
+extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy);
+extern void mbl_magnet_elimination();

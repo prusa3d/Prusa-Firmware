@@ -3058,7 +3058,7 @@ static void gcode_G80()
     mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 
     if (nMeasPoints == 7 && magnet_elimination) {
-        mbl_interpolation(nMeasPoints);
+        mbl_magnet_elimination();
     }
 
     mbl.active = 1; //activate mesh bed leveling

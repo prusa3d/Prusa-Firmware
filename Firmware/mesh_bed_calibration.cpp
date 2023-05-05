@@ -3116,15 +3116,14 @@ void mbl_settings_init() {
 
 //parameter ix: index of mesh bed leveling point in X-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 )  
 //parameter iy: index of mesh bed leveling point in Y-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 ) 
-//parameter meas_points: number of mesh bed leveling points in one axis; currently designed and tested for values 3 and 7
-//parameter zigzag: false if ix is considered 0 on left side of bed and ix rises with rising X coordinate; true if ix is considered 0 on the right side of heatbed for odd iy values (zig zag mesh bed leveling movements)  
 //function returns true if point is considered valid (typicaly in safe distance from magnet or another object which inflences PINDA measurements)
-bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag) {
+bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy) {
 	    //"human readable" heatbed plan
 		//magnet proximity influence Z coordinate measurements significantly (40 - 100 um)
 		//0 - measurement point is above magnet and Z coordinate can be influenced negatively
 		//1 - we should be in safe distance from magnets, measurement should be accurate
-		if ((ix >= meas_points) || (iy >= meas_points)) return false;
+		if ((ix >= MESH_NUM_X_POINTS) || (iy >= MESH_NUM_Y_POINTS))
+            return false;
 
 		uint8_t valid_points_mask[7] = {
 					//[X_MAX,Y_MAX]
@@ -3138,36 +3137,26 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bo
 			0b1111111,//0
 		//[0,0]
 		};
-		if (meas_points == 3) {
-			ix *= 3;
-			iy *= 3;
-		}
-		if (zigzag) {
-			if ((iy % 2) == 0)	return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
-			else return (valid_points_mask[6 - iy] & (1 << ix));
-		}
-		else {
-			return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
-		}
+        return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
 }
 
-void mbl_single_point_interpolation(uint8_t x, uint8_t y, uint8_t meas_points) {
+void mbl_single_point_interpolation(uint8_t x, uint8_t y) {
 	//printf_P(PSTR("x = %d; y = %d \n"), x, y);
 		uint8_t count = 0;
 		float z = 0;
-		if (mbl_point_measurement_valid(x, y + 1, meas_points, false)) { z += mbl.z_values[y + 1][x]; /*printf_P(PSTR("x; y+1: Z = %f \n"), mbl.z_values[y + 1][x]);*/ count++; }
-		if (mbl_point_measurement_valid(x, y - 1, meas_points, false)) { z += mbl.z_values[y - 1][x]; /*printf_P(PSTR("x; y-1: Z = %f \n"), mbl.z_values[y - 1][x]);*/ count++; }
-		if (mbl_point_measurement_valid(x + 1, y, meas_points, false)) { z += mbl.z_values[y][x + 1]; /*printf_P(PSTR("x+1; y: Z = %f \n"), mbl.z_values[y][x + 1]);*/ count++; }
-		if (mbl_point_measurement_valid(x - 1, y, meas_points, false)) { z += mbl.z_values[y][x - 1]; /*printf_P(PSTR("x-1; y: Z = %f \n"), mbl.z_values[y][x - 1]);*/ count++; }
+		if (mbl_point_measurement_valid(x, y + 1)) { z += mbl.z_values[y + 1][x]; /*printf_P(PSTR("x; y+1: Z = %f \n"), mbl.z_values[y + 1][x]);*/ count++; }
+		if (mbl_point_measurement_valid(x, y - 1)) { z += mbl.z_values[y - 1][x]; /*printf_P(PSTR("x; y-1: Z = %f \n"), mbl.z_values[y - 1][x]);*/ count++; }
+		if (mbl_point_measurement_valid(x + 1, y)) { z += mbl.z_values[y][x + 1]; /*printf_P(PSTR("x+1; y: Z = %f \n"), mbl.z_values[y][x + 1]);*/ count++; }
+		if (mbl_point_measurement_valid(x - 1, y)) { z += mbl.z_values[y][x - 1]; /*printf_P(PSTR("x-1; y: Z = %f \n"), mbl.z_values[y][x - 1]);*/ count++; }
 		if(count != 0) mbl.z_values[y][x] = z / count; //if we have at least one valid point in surrounding area use average value, otherwise use inaccurately measured Z-coordinate
 		//printf_P(PSTR("result: Z = %f \n\n"), mbl.z_values[y][x]);
 }
 
-void mbl_interpolation(uint8_t meas_points) {
-	for (uint8_t x = 0; x < meas_points; x++) {
-		for (uint8_t y = 0; y < meas_points; y++) {
-			if (!mbl_point_measurement_valid(x, y, meas_points, false)) {
-				mbl_single_point_interpolation(x, y, meas_points);
+void mbl_magnet_elimination() {
+    for (uint8_t y = 0; y < MESH_NUM_Y_POINTS; y++) {
+		for (uint8_t x = 0; x < MESH_NUM_X_POINTS; x++) {
+			if (!mbl_point_measurement_valid(x, y)) {
+				mbl_single_point_interpolation(x, y);
 			}
 		}
 	}
