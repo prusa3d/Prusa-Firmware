@@ -283,9 +283,6 @@ static float offset[3] = {0.0, 0.0, 0.0};
 // Current feedrate
 float feedrate = 1500.0;
 
-// Feedrate for the next move
-static float next_feedrate;
-
 // Original feedrate saved during homing moves
 static float saved_feedrate;
 
@@ -9132,8 +9129,8 @@ void get_coordinates() {
     else destination[i] = current_position[i]; //Are these else lines really needed?
   }
   if(code_seen('F')) {
-    next_feedrate = code_value();
-    if(next_feedrate > 0.0) feedrate = next_feedrate;
+    const float next_feedrate = code_value();
+    if(next_feedrate > 0.f) feedrate = next_feedrate;
   }
 }
 
