@@ -3015,6 +3015,7 @@ static void gcode_G80()
     if(eeprom_read_byte((uint8_t *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 #endif
     babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+    
     bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
     const constexpr uint8_t sides = 4;
     int8_t correction[sides];
@@ -3036,19 +3037,18 @@ static void gcode_G80()
               // Value is valid, save it
               correction[i] = (int8_t)temp;
             }
-        } else if (eeprom_bed_correction_valid) {
-            correction[i] = (int8_t)eeprom_read_byte((uint8_t*)pgm_read_ptr(&eep_addresses[i]));
         } else {
-            correction[i] = 0;
+            correction[i] = eeprom_bed_correction_valid ? (int8_t)eeprom_read_byte((uint8_t*)pgm_read_ptr(&eep_addresses[i])) : 0;
         }
     }
     for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; row++) {
         for (uint8_t col = 0; col < MESH_NUM_X_POINTS; col++) {
-            mbl.z_values[row][col] +=0.001f * (
+            constexpr float scaler = 0.001f / (MESH_NUM_X_POINTS - 1);
+            mbl.z_values[row][col] += scaler * (
               + correction[0] * (MESH_NUM_X_POINTS - 1 - col)
               + correction[1] * col
               + correction[2] * (MESH_NUM_Y_POINTS - 1 - row)
-              + correction[3] * row) / (float)(MESH_NUM_X_POINTS - 1);
+              + correction[3] * row);
         }
     }
 
