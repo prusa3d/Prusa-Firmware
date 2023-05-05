@@ -2856,6 +2856,8 @@ static void gcode_G80()
                     const float z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
                     mbl.set_z(col, row, z0);
                 }
+            } else {
+                mbl.set_z(col, row, NAN);
             }
 
             // check for points that are skipped
