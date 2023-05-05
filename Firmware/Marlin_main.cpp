@@ -2915,10 +2915,11 @@ static void gcode_G80()
         // Move Z up to the probe height of the current Z point.
         const float z0 = mbl.z_values[iy][ix];
         const float init_z_bckp = !has_z ? MESH_HOME_Z_SEARCH : z0 + MESH_HOME_Z_SEARCH_FAST;
-        if (init_z_bckp > current_position[Z_AXIS])
+        if (init_z_bckp > current_position[Z_AXIS]) {
             current_position[Z_AXIS] = init_z_bckp;
-        plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
-        st_synchronize();
+            plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
+            st_synchronize();
+        }
 
         // Move to XY position of the sensor point.
         current_position[X_AXIS] = x_pos;
