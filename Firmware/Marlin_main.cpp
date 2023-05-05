@@ -3524,12 +3524,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                     MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
                 }
                 mmu_M600_wait_and_beep();
-                if (saved_printing) {
-                    lcd_clear();
-                    lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-//@@TODO                mmu_command(MmuCmd::R0);
-//                manage_response(false, false);
-                }
             }
             mmu_M600_load_filament(automatic, HotendTempBckp);
         }
