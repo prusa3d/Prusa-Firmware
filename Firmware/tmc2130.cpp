@@ -116,7 +116,7 @@ uint16_t tmc2130_rd_TSTEP(uint8_t axis);
 uint16_t tmc2130_rd_MSCNT(uint8_t axis);
 uint32_t tmc2130_rd_MSCURACT(uint8_t axis);
 
-void tmc2130_wr_CHOPCONF(uint8_t axis, uint8_t toff = 3, uint8_t hstrt = 4, uint8_t hend = 1, uint8_t fd3 = 0, uint8_t disfdcc = 0, uint8_t rndtf = 0, uint8_t chm = 0, uint8_t tbl = 2, uint8_t vsense = 0, uint8_t vhighfs = 0, uint8_t vhighchm = 0, uint8_t sync = 0, uint8_t mres = 0b0100, uint8_t intpol = 1, uint8_t dedge = 0, uint8_t diss2g = 0);
+void tmc2130_wr_CHOPCONF(uint8_t axis, uint32_t conf);
 void tmc2130_wr_PWMCONF(uint8_t axis, uint8_t pwm_ampl, uint8_t pwm_grad, uint8_t pwm_freq, uint8_t pwm_auto, uint8_t pwm_symm, uint8_t freewheel);
 void tmc2130_wr_TPWMTHRS(uint8_t axis, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32);
@@ -378,54 +378,85 @@ void tmc2130_check_overtemp()
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	uint8_t intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
+	union ChopConfU {
+		struct __attribute__((packed)) S {
+			uint32_t toff : 4;
+			uint32_t hstrt : 3;
+			uint32_t hend : 4;
+			uint32_t fd : 1;
+			uint32_t disfdcc : 1;
+			uint32_t rndtf : 1;
+			uint32_t chm : 1;
+			uint32_t tbl : 2;
+			uint32_t vsense : 1;
+			uint32_t vhighfs : 1;
+			uint32_t vhighchm : 1;
+			uint32_t sync : 4;
+			uint32_t mres : 4;
+			uint32_t intpol : 1;
+			uint32_t dedge : 1;
+			uint32_t diss2g : 1;
+			uint32_t reserved : 1;
+		} s;
+		uint32_t dw;
+	} chopconf;
+	static_assert(sizeof(ChopConfU::S) == 4);
+	static_assert(sizeof(ChopConfU) == 4);
+
+	chopconf.dw = 0; // Zero initialise
+	
+	chopconf.s.intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
 #ifdef TMC2130_DEDGE_STEPPING
-	uint8_t dedge = 1;
+	chopconf.s.dedge = 1;
 #else
-	uint8_t dedge = 0;
+	chopconf.s.dedge = 0;
 #endif
-	uint8_t toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
-	uint8_t hstrt = tmc2130_chopper_config[axis].hstr; //initial 4, modified to 5
-	uint8_t hend = tmc2130_chopper_config[axis].hend; //original value = 1
-	uint8_t fd3 = 0;
-	uint8_t rndtf = 0; //random off time
-	uint8_t chm = 0; //spreadCycle
-	uint8_t tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
+	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
+	chopconf.s.hstrt = tmc2130_chopper_config[axis].hstr; // initial 4, modified to 5
+	chopconf.s.hend = tmc2130_chopper_config[axis].hend; // original value = 1
+	chopconf.s.fd = 0;
+	chopconf.s.disfdcc = 0;
+	chopconf.s.rndtf = 0; //random off time
+	chopconf.s.chm = 0; //spreadCycle
+	chopconf.s.tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
+	chopconf.s.vsense = 0;
+	chopconf.s.vhighfs = 0;
+	chopconf.s.vhighchm = 0;
+	chopconf.s.sync = 0;
+	chopconf.s.mres = mres;
 	if (axis == E_AXIS)
 	{
 #if defined(TMC2130_INTPOL_E) && (TMC2130_INTPOL_E == 0)
-        intpol = 0;
+		chopconf.s.intpol = 0;
 #endif
 #ifdef TMC2130_CNSTOFF_E
-		// fd = 0 (slow decay only)
-		hstrt = 0; //fd0..2
-		fd3 = 0; //fd3
-		hend = 0; //sine wave offset
-		chm = 1; // constant off time mod
+		chopconf.s.hstrt = 0; // fd0..2
+		chopconf.s.fd = 0; // fd3
+		chopconf.s.hend = 0; // sine wave offset
+		chopconf.s.chm = 0; // constant off time mod
 #endif //TMC2130_CNSTOFF_E
-//		toff = TMC2130_TOFF_E; // toff = 3-5
-//		rndtf = 1;
 	}
 #if defined(TMC2130_INTPOL_XY) && (TMC2130_INTPOL_XY == 0)
     else if (axis == X_AXIS || axis == Y_AXIS) {
-        intpol = 0;
+        chopconf.s.intpol = 0;
     }
 #endif
 #if defined(TMC2130_INTPOL_Z) && (TMC2130_INTPOL_Z == 0)
     else if (axis == Z_AXIS) {
-        intpol = 0;
+        chopconf.s.intpol = 0;
     }
 #endif
 //	DBG(_n("tmc2130_setup_chopper(axis=%d, mres=%d, curh=%d, curr=%d\n"), axis, mres, current_h, current_r);
 //	DBG(_n(" toff=%d, hstr=%d, hend=%d, tbl=%d\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
-		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, dedge, 0);
+		chopconf.s.vsense = 1;
+		tmc2130_wr_CHOPCONF(axis, chopconf.dw);
 		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
 	}
 	else
 	{
-		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 0, 0, 0, 0, mres, intpol, dedge, 0);
+		tmc2130_wr_CHOPCONF(axis, chopconf.dw);
 		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
 	}
 }
@@ -521,26 +552,9 @@ void tmc2130_wr_MSLUT(uint8_t axis, uint8_t i, uint32_t val)
 	//printf_P(PSTR("MSLUT[%d]=%08lx\n"), i, val);
 }
 
-void tmc2130_wr_CHOPCONF(uint8_t axis, uint8_t toff, uint8_t hstrt, uint8_t hend, uint8_t fd3, uint8_t disfdcc, uint8_t rndtf, uint8_t chm, uint8_t tbl, uint8_t vsense, uint8_t vhighfs, uint8_t vhighchm, uint8_t sync, uint8_t mres, uint8_t intpol, uint8_t dedge, uint8_t diss2g)
+void tmc2130_wr_CHOPCONF(uint8_t axis, uint32_t conf)
 {
-	uint32_t val = 0;
-	val |= (uint32_t)(toff & 15);
-	val |= (uint32_t)(hstrt & 7) << 4;
-	val |= (uint32_t)(hend & 15) << 7;
-	val |= (uint32_t)(fd3 & 1) << 11;
-	val |= (uint32_t)(disfdcc & 1) << 12;
-	val |= (uint32_t)(rndtf & 1) << 13;
-	val |= (uint32_t)(chm & 1) << 14;
-	val |= (uint32_t)(tbl & 3) << 15;
-	val |= (uint32_t)(vsense & 1) << 17;
-	val |= (uint32_t)(vhighfs & 1) << 18;
-	val |= (uint32_t)(vhighchm & 1) << 19;
-	val |= (uint32_t)(sync & 15) << 20;
-	val |= (uint32_t)(mres & 15) << 24;
-	val |= (uint32_t)(intpol & 1) << 28;
-	val |= (uint32_t)(dedge & 1) << 29;
-	val |= (uint32_t)(diss2g & 1) << 30;
-	tmc2130_wr(axis, TMC2130_REG_CHOPCONF, val);
+	tmc2130_wr(axis, TMC2130_REG_CHOPCONF, conf);
 }
 
 //void tmc2130_wr_PWMCONF(uint8_t axis, uint8_t PWMautoScale, uint8_t PWMfreq, uint8_t PWMgrad, uint8_t PWMampl)
