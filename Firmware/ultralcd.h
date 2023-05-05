@@ -113,7 +113,6 @@ extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType res
 enum class LcdCommands : uint_least8_t
 {
 	Idle,
-	LoadFilament,
 	StopPrint,
 	LongPause,
 	PidExtruder,
