@@ -2792,6 +2792,7 @@ static void gcode_G80()
     constexpr float XY_AXIS_FEEDRATE = (homing_feedrate[X_AXIS] * 3) / 60;
     constexpr float Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
     constexpr float Z_CALIBRATION_THRESHOLD = 1.f;
+    constexpr float MESH_HOME_Z_SEARCH_FAST = 0.35f;
     st_synchronize();
     if (planner_aborted)
         return;
@@ -2913,7 +2914,7 @@ static void gcode_G80()
 
         // Move Z up to the probe height of the current Z point.
         const float z0 = mbl.z_values[iy][ix];
-        const float init_z_bckp = !has_z ? MESH_HOME_Z_SEARCH : z0 + 0.35;
+        const float init_z_bckp = !has_z ? MESH_HOME_Z_SEARCH : z0 + MESH_HOME_Z_SEARCH_FAST;
         if (init_z_bckp > current_position[Z_AXIS])
             current_position[Z_AXIS] = init_z_bckp;
         plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
