@@ -1800,10 +1800,10 @@ switch(eFilamentAction)
                // FALLTHRU
           case FilamentAction::Load:
                loading_flag=true;
-               enquecommand_P(MSG_M701_NO_LIFT);      // load filament
+               enquecommand_P(MSG_M701);      // load filament
                break;
           case FilamentAction::UnLoad:
-               enquecommand_P(MSG_M702_NO_LIFT);      // unload filament
+               enquecommand_P(MSG_M702);      // unload filament
                break;
           case FilamentAction::MmuLoad:
           case FilamentAction::MmuLoadingTest:
@@ -1863,11 +1863,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 if ((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad))
                 {
                     loading_flag = true;
-                    enquecommand_P(MSG_M701_NO_LIFT); // load filament
+                    enquecommand_P(MSG_M701); // load filament
                     if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
                 }
                 if (eFilamentAction == FilamentAction::UnLoad)
-                enquecommand_P(MSG_M702_NO_LIFT); // unload filament
+                enquecommand_P(MSG_M702); // unload filament
             }
             break;
         case FilamentAction::MmuLoad:
@@ -3704,8 +3704,9 @@ static void lcd_wizard_load() {
         lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
         loading_flag = true;
     }
-    gcode_M701(FILAMENTCHANGE_FIRSTFEED, 0);
-    //enquecommand_P(MSG_M701_NO_LIFT); // is enqueuecommand_P safe here?
+
+    // When MMU is disabled P parameter is ignored
+    enquecommand_P(PSTR("M701 P0"));
 }
 
 static void wizard_lay1cal_message(bool cold)
