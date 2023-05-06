@@ -3411,20 +3411,6 @@ void gcode_M123()
 }
 #endif //FANCHECK and TACH_0 or TACH_1
 
-static void mmu_M600_wait_and_beep() {
-    // Beep and wait for user to remove old filament and prepare new filament for load
-    KEEPALIVE_STATE(PAUSED_FOR_USER);
-
-    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=4
-
-    while (!lcd_clicked()) {
-        manage_heater();
-        manage_inactivity(true);
-        sound_wait_for_user();
-    }
-    sound_wait_for_user_reset();
-}
-
 /**
  * @brief Handling of unload when using MMU with M600
  * A fullscreen message showing "Unloading Filament x"
@@ -3528,7 +3514,6 @@ static void gcode_M600(const bool automatic, const float x_position, const float
                     // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
                     MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
                 }
-                mmu_M600_wait_and_beep();
             }
             mmu_M600_load_filament(automatic, HotendTempBckp);
         }
@@ -11215,10 +11200,9 @@ void M600_check_state(float nozzle_temp)
                 // Unload filament
                 mmu_M600_unload_filament();
 
-                // Ask to remove any old filament and load new
-                mmu_M600_wait_and_beep();
-
-                // After user clicks knob, MMU will load the filament
+                // Load new filament
+                // If SpoolJoin is OFF: a menu appears asking the user to select filament slot to load
+                // If SpoolJoin is ON:  the next filament slot is automatically selected.
                 mmu_M600_load_filament(false, nozzle_temp);
             } else {
                 M600_load_filament_movements();
