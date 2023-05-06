@@ -3859,10 +3859,8 @@ void lcd_wizard(WizState state)
 				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
-				//unload current filament
-				unload_filament(FILAMENTCHANGE_FINALRETRACT);
-				//load filament
-				lcd_wizard_load();
+				unload_filament(0); // unload current filament
+				lcd_wizard_load(); // load filament
 				setTargetHotend(0); //we are finished, cooldown nozzle
 				state = S::Restore;
 			}
@@ -4856,28 +4854,31 @@ static void mmu_loading_test_menu() {
 /// @param unloadLength Retract distance for removal (manual reload)
 void unload_filament(float unloadLength)
 {
-	custom_message_type = CustomMsg::FilamentLoading;
-	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
+    custom_message_type = CustomMsg::FilamentLoading;
+    lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
     FSensorBlockRunout fsBlockRunout;
 
-    // Retract filament
-    current_position[E_AXIS] += -FILAMENT_UNLOAD_PURGE_RETRACT;
-    plan_buffer_line_curposXYZE(PAUSE_PARK_RETRACT_FEEDRATE);
+    current_position[E_AXIS] -= 45;
+    plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_FAST_RETRACT_FEEDRATE);
     st_synchronize();
 
-    // Wait for filament to cool
-    delay_keep_alive(FILAMENT_UNLOAD_PURGE_DELAY);
-
-    // Quickly purge
-    current_position[E_AXIS] += (FILAMENT_UNLOAD_PURGE_RETRACT + FILAMENT_UNLOAD_PURGE_LENGTH);
-    plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_PURGE_FEEDRATE);
+    current_position[E_AXIS] -= 15;
+    plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_SLOW_RETRACT_FEEDRATE);
     st_synchronize();
 
-    // Configurable length
-    current_position[E_AXIS] += unloadLength;
-    plan_buffer_line_curposXYZE(FILAMENT_CHANGE_UNLOAD_FEEDRATE);
+    current_position[E_AXIS] -= 20;
+    plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_SLOW_RETRACT_FEEDRATE);
     st_synchronize();
+
+    // Configurable length, by default it's 0.
+    // only plan the move if the length is set to a non-zero value
+    if (unloadLength)
+    {
+        current_position[E_AXIS] += unloadLength;
+        plan_buffer_line_curposXYZE(FILAMENT_CHANGE_UNLOAD_FEEDRATE);
+        st_synchronize();
+    }
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
 
@@ -4898,7 +4899,6 @@ void unload_filament(float unloadLength)
 
 	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
-
 	eFilamentAction = FilamentAction::None;
 }
 

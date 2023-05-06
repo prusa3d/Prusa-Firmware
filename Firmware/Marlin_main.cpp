@@ -3456,7 +3456,7 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     st_synchronize();
 }
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/) {
+static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float e_shift_late) {
     st_synchronize();
     float lastpos[4];
 
@@ -3492,7 +3492,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     } else {
         // Beep, manage nozzle heater and wait for user to start unload filament
         M600_wait_for_user(HotendTempBckp);
-        unload_filament(FILAMENTCHANGE_FINALRETRACT);
+        unload_filament(e_shift_late);
     }
     st_synchronize();          // finish moves
     {
@@ -7586,7 +7586,7 @@ Sigma_Exit:
     - `Y`    - Y position, default 0
     - `Z`    - relative lift Z, default MIN_Z_FOR_SWAP.
     - `E`    - initial retract, default -2
-    - `L`    - later retract distance for removal, default -80
+    - `L`    - later retract distance for removal, default 0
     - `AUTO` - Automatically (only with MMU)
     */
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
@@ -7612,17 +7612,7 @@ Sigma_Exit:
           #endif
         }
 
-		//currently don't work as we are using the same unload sequence as in M702, needs re-work 
-		if (code_seen('L'))
-		{
-			e_shift_late = code_value();
-		}
-		else
-		{
-		  #ifdef FILAMENTCHANGE_FINALRETRACT
-			e_shift_late = FILAMENTCHANGE_FINALRETRACT;
-		  #endif	
-		}
+        if (code_seen('L')) e_shift_late = code_value();
 
         // Z lift. For safety only allow positive values
         if (code_seen('Z')) z_shift = fabs(code_value());
@@ -8436,7 +8426,7 @@ Sigma_Exit:
     case 702:
     {
         float z_target = 0;
-        float unloadLength = FILAMENTCHANGE_FINALRETRACT;
+        float unloadLength = 0;
         if (code_seen('U')) unloadLength = code_value();
 
         // For safety only allow positive values
