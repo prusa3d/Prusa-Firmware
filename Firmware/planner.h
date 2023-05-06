@@ -99,12 +99,11 @@ typedef struct {
 
   // Settings for the trapezoid generator (runs inside an interrupt handler).
   // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
-  unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
-  unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
-  unsigned long final_rate;                          // The minimal rate at exit
-  unsigned long acceleration_st;                     // acceleration steps/sec^2
-  //FIXME does it have to be int? Probably uint8_t would be just fine. Need to change in other places as well
-  int fan_speed;
+  uint32_t nominal_rate;              // The nominal step rate for this block in step_events/sec 
+  uint32_t initial_rate;              // The jerk-adjusted step rate at start of block  
+  uint32_t final_rate;                // The minimal rate at exit
+  uint32_t acceleration_steps_per_s2; // acceleration steps/sec^2
+  uint8_t fan_speed; // Print fan speed, ranges from 0 to 255
   volatile char busy;
 
 
@@ -273,8 +272,6 @@ void reset_acceleration_rates();
 #endif
 
 void update_mode_profile();
-
-uint8_t number_of_blocks();
 
 // #define PLANNER_DIAGNOSTICS
 #ifdef PLANNER_DIAGNOSTICS

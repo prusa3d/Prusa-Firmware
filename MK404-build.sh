@@ -240,7 +240,7 @@ fi
 if [[ "$MK404_PRINTER" == "MK25" || "$MK404_PRINTER" == "MK25S" ]]; then
     MK404_PRINTER="${MK404_PRINTER}_mR13"
 else
-    if [ "$mk404_flag" == "2" ]; then # Check if MMU2 is selected only for MK3/S
+    if [ "$mk404_flag" == "2" ]; then # Check if MMU is selected only for MK3/S
         MK404_PRINTER="${MK404_PRINTER}MMU2"
     fi
 fi

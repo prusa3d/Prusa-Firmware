@@ -307,10 +307,6 @@ private:
     bool loadFilamentStarted;
     bool unloadFilamentStarted;
 
-    friend struct LoadingToNozzleRAII;
-    /// true in case we are doing the LoadToNozzle operation - that means the filament shall be loaded all the way down to the nozzle
-    /// unlike the mid-print ToolChange commands, which only load the first ~30mm and then the G-code takes over.
-    bool loadingToNozzle;
     uint16_t toolchange_counter;
     uint16_t tmcFailures;
 };

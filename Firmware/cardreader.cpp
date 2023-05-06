@@ -402,7 +402,7 @@ void CardReader::openFileReadFilteredGcode(const char* name, bool replace_curren
                 // SERIAL_ERROR_START;
                 // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
                 // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
-                kill(ofKill, 1);
+                kill(ofKill);
                 return;
             }
             
@@ -469,7 +469,7 @@ void CardReader::openFileWrite(const char* name)
             // SERIAL_ERROR_START;
             // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
             // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
-            kill(ofKill, 1);
+            kill(ofKill);
             return;
         }
         
@@ -649,12 +649,10 @@ void CardReader::checkautostart(bool force)
     if(p.name[9]!='~') //skip safety copies
     if(strncmp((char*)p.name,autoname,5)==0)
     {
-      char cmd[30];
       // M23: Select SD file
-      sprintf_P(cmd, PSTR("M23 %s"), autoname);
-      enquecommand(cmd);
+      enquecommandf_P(MSG_M23, autoname);
       // M24: Start/resume SD print
-      enquecommand_P(PSTR("M24"));
+      enquecommand_P(MSG_M24);
       found=true;
     }
   }

@@ -12,6 +12,7 @@
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00000180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [open collector])
+#define TMC2130_GCONF_DYNAMIC_SGSENS 0x00000184 // stealthChop/spreadCycle (dynamic) with stallguard (stall activates DIAG0 and DIAG1 [open collector])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
 
 
@@ -22,32 +23,32 @@ uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 
 //running currents for homing
-uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
+static uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
 
 
 //pwm_ampl
-uint8_t tmc2130_pwm_ampl[4] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y, TMC2130_PWM_AMPL_Z, TMC2130_PWM_AMPL_E};
+static uint8_t tmc2130_pwm_ampl[4] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y, TMC2130_PWM_AMPL_Z, TMC2130_PWM_AMPL_E};
 //pwm_grad
-uint8_t tmc2130_pwm_grad[4] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y, TMC2130_PWM_GRAD_Z, TMC2130_PWM_GRAD_E};
+static uint8_t tmc2130_pwm_grad[4] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y, TMC2130_PWM_GRAD_Z, TMC2130_PWM_GRAD_E};
 //pwm_auto
-uint8_t tmc2130_pwm_auto[4] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y, TMC2130_PWM_AUTO_Z, TMC2130_PWM_AUTO_E};
+static uint8_t tmc2130_pwm_auto[4] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y, TMC2130_PWM_AUTO_Z, TMC2130_PWM_AUTO_E};
 //pwm_freq
-uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_PWM_FREQ_Z, TMC2130_PWM_FREQ_E};
+static uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_PWM_FREQ_Z, TMC2130_PWM_FREQ_E};
 
 uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //will be filed at begin of init
 
 
 uint8_t tmc2130_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
-uint8_t tmc2130_sg_thr_home[4] = TMC2130_SG_THRS_HOME;
+static uint8_t tmc2130_sg_thr_home[4] = TMC2130_SG_THRS_HOME;
 
 
 uint8_t tmc2130_sg_homing_axes_mask = 0x00;
 
 const char eMotorCurrentScalingEnabled[] PROGMEM = "E-motor current scaling enabled";
 
-uint8_t tmc2130_sg_measure = 0xff;
-uint32_t tmc2130_sg_measure_cnt = 0;
-uint32_t tmc2130_sg_measure_val = 0;
+static uint8_t tmc2130_sg_measure = 0xff;
+static uint32_t tmc2130_sg_measure_cnt = 0;
+static uint32_t tmc2130_sg_measure_val = 0;
 
 uint8_t tmc2130_home_enabled = 0;
 uint8_t tmc2130_home_origin[2] = {0, 0};
@@ -64,11 +65,10 @@ tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
 };
 
 bool tmc2130_sg_stop_on_crash = true;
-uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
 
 //used for triggering a periodic check (1s) of the overtemperature pre-warning flag at ~120C (+-20C)
-ShortTimer tmc2130_overtemp_timer;
+static ShortTimer tmc2130_overtemp_timer;
 
 #define DBG(args...)
 //printf_P(args)
@@ -182,9 +182,9 @@ void tmc2130_init(TMCInitParams params)
 #else //TMC2130_STEALTH_Z
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
-		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
+		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_DYNAMIC_SGSENS);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
-		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
+		tmc2130_wr_TPWMTHRS(axis, (tmc2130_mode == TMC2130_MODE_SILENT)?0:0xFFFF0);
 #endif //TMC2130_STEALTH_Z
 	}
 	for (uint_least8_t axis = 3; axis < 4; axis++) // E axis
@@ -267,11 +267,10 @@ void tmc2130_home_enter(uint8_t axes_mask)
 {
 	printf_P(PSTR("tmc2130_home_enter(axes_mask=0x%02x)\n"), axes_mask);
 #ifdef TMC2130_SG_HOMING
-	if (axes_mask & 0x03) //X or Y
+	if (axes_mask & (X_AXIS_MASK | Y_AXIS_MASK)) //X or Y
 		tmc2130_wait_standstill_xy(1000);
-	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++) //X Y and Z axes
+	for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 	{
-		uint8_t mask = (X_AXIS_MASK << axis);
 		if (axes_mask & mask)
 		{
 			tmc2130_sg_homing_axes_mask |= mask;
@@ -280,8 +279,7 @@ void tmc2130_home_enter(uint8_t axes_mask)
 			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[axis]) << 16));
 			tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
 			tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r_home[axis]);
-			if (mask & (X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK))
-				tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
+			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
 		}
 	}
 #endif //TMC2130_SG_HOMING
@@ -295,10 +293,9 @@ void tmc2130_home_exit()
 		tmc2130_wait_standstill_xy(1000);
 	if (tmc2130_sg_homing_axes_mask)
 	{
-		for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++) //X Y and Z axes
+		for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 		{
-			uint8_t mask = (X_AXIS_MASK << axis);
-			if (tmc2130_sg_homing_axes_mask & mask & (X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK))
+			if (tmc2130_sg_homing_axes_mask & mask)
 			{
 #ifndef TMC2130_STEALTH_Z
 				if ((tmc2130_mode == TMC2130_MODE_SILENT) && (axis != Z_AXIS))
@@ -360,7 +357,7 @@ bool tmc2130_wait_standstill_xy(int timeout)
 
 void tmc2130_check_overtemp()
 {
-	if (tmc2130_overtemp_timer.expired(1000) || !tmc2130_overtemp_timer.running())
+	if (tmc2130_overtemp_timer.expired_cont(1000))
 	{
 		for (uint_least8_t i = 0; i < 4; i++)
 		{

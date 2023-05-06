@@ -97,8 +97,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | fah 250      | ^                     | needs XYZ calibration                             | ^            | ^
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown (legacy)                                  | ^            | ^
 | 0x0FF5 4085 | uint16  | EEPROM_BABYSTEP_Z0                    | ???          | ff ffh 65535          | Babystep for Z ???                                | ???          | D3 Ax0ff5 C2
-| 0x0FF1 4081 | unint32 | EEPROM_FILAMENTUSED                   | ???          | 00 00 00 00h 0 __S/P__| Filament used in meters                           | ???          | D3 Ax0ff1 C4
-| 0x0FED 4077 | unint32 | EEPROM_TOTALTIME                      | ???          | 00 00 00 00h 0 __S/P__| Total print time                                  | ???          | D3 Ax0fed C4
+| 0x0FF1 4081 | uint32  | EEPROM_FILAMENTUSED                   | ???          | 00 00 00 00h 0 __S/P__| Filament used in meters                           | ???          | D3 Ax0ff1 C4
+| 0x0FED 4077 | uint32  | EEPROM_TOTALTIME                      | ???          | 00 00 00 00h 0 __S/P__| Total print time in minutes                       | ???          | D3 Ax0fed C4
 | 0x0FE5 4069 | float   | EEPROM_BED_CALIBRATION_CENTER         | ???          | ff ff ff ffh          | ???                                               | ???          | D3 Ax0fe5 C8
 | 0x0FDD 4061 | float   | EEPROM_BED_CALIBRATION_VEC_X          | ???          | ff ff ff ffh          | ???                                               | ???          | D3 Ax0fdd C8
 | 0x0FD5 4053 | float   | EEPROM_BED_CALIBRATION_VEC_Y          | ???          | ff ff ff ffh          | ???                                               | ???          | D3 Ax0fd5 C8
@@ -357,10 +357,13 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 20h 32       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 40h 64       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 80h 128      | ^                     | Unknown                                           | ^            | ^
-| 0x0CA5 3237 | float   | EEPROM_TEMP_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca5 C4
-| 0x0CA1 3233 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0ca1 C4
-| 0x0C9D 3229 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9d C4
-| 0x0C99 3225 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c99 C2
+| 0x0CA2 3234 | float   | EEPROM_TEMP_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca2 C4
+| 0x0C9E 3230 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0c9e C4
+| 0x0C9A 3226 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9a C4
+| 0x0C98 3224 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c98 C2
+| 0x0C97 3223 | uint8   | EEPROM_TEMP_MODEL_VER                 | 0-255        | ffh                   | Temp model Version                                | Temp model   | D3 Ax0c97 C1
+| 0x0C95 3221 | PGM_P   | EEPROM_KILL_MESSAGE                   | 0-65535      | ff ffh                | Kill message PGM pointer                          | kill()       | D3 Ax0c95 C2
+| 0x0C94 3220 | uint8   | EEPROM_KILL_PENDING_FLAG              | 42h, ffh     | ffh                   | Kill pending flag (0x42 magic value)              | kill()       | D3 Ax0c94 C1
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -596,8 +599,11 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_TEMP_MODEL_L (EEPROM_TEMP_MODEL_D-2) //uint16_t
 #define EEPROM_TEMP_MODEL_VER (EEPROM_TEMP_MODEL_L-1) //uint8_t
 
+#define EEPROM_KILL_MESSAGE (EEPROM_TEMP_MODEL_VER-2) //PGM_P
+#define EEPROM_KILL_PENDING_FLAG (EEPROM_KILL_MESSAGE-1) //uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_VER
+#define EEPROM_LAST_ITEM EEPROM_KILL_PENDING_FLAG
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

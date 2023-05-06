@@ -30,8 +30,6 @@ void temp_mgr_init(); //initialize the temperature handler
 void manage_heater(); //it is critical that this is called periodically.
 bool get_temp_error(); //return true if any thermal error is set
 
-extern bool checkAllHotends(void);
-
 // low level conversion routines
 // do not use these routines and variables outside of temperature.cpp
 extern int target_temperature[EXTRUDERS];  
@@ -61,10 +59,6 @@ extern int current_voltage_raw_pwr;
 #ifdef VOLT_BED_PIN
 extern int current_voltage_raw_bed;
 #endif
-
-#ifdef IR_SENSOR_ANALOG
-extern uint16_t current_voltage_raw_IR;
-#endif //IR_SENSOR_ANALOG
 
 extern bool bedPWMDisabled;
 
@@ -160,7 +154,7 @@ FORCE_INLINE bool isCoolingBed() {
 #define isCoolingHotend0() isCoolingHotend(0)
 
 // return "false", if all heaters are 'off' (ie. "true", if any heater is 'on')
-#define CHECK_ALL_HEATERS (checkAllHotends()||(target_temperature_bed!=0))
+#define CHECK_ALL_HEATERS ((target_temperature[0] != 0) || (target_temperature_bed != 0))
 
 int getHeaterPower(int heater);
 void disable_heater(); // Disable all heaters *instantaneously*

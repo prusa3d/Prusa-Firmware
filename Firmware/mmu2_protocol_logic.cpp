@@ -20,7 +20,7 @@ namespace MMU2 {
 /// Changing the supportedMmuVersion numbers requires patching MSG_DESC_FW_UPDATE_NEEDED and all its related translations by hand.
 ///
 /// The message reads:
-///   "The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.6."
+///   "The MMU firmware version incompatible with the printer's FW. Update to version 2.1.6."
 ///
 /// Currently, this is not possible to perform automatically at compile time with the existing languages/translations infrastructure.
 /// To save space a "dumb" solution was chosen + a few static_assert checks in errors_list.h preventing the code from compiling when the string doesn't match.
@@ -705,9 +705,8 @@ void ProtocolLogic::FormatLastResponseMsgAndClearLRB(char *dst) {
     *dst++ = '<';
     for (uint8_t i = 0; i < lrb; ++i) {
         uint8_t b = lastReceivedBytes[i];
-        if (b < 32)
-            b = '.';
-        if (b > 127)
+        // Check for printable character, including space
+        if (b < 32 || b > 127)
             b = '.';
         *dst++ = b;
     }
@@ -721,9 +720,8 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
     static char lastMsg[rqs] = "";
     for (uint8_t i = 0; i < size; ++i) {
         uint8_t b = txbuff[i];
-        if (b < 32)
-            b = '.';
-        if (b > 127)
+        // Check for printable character, including space
+        if (b < 32 || b > 127)
             b = '.';
         tmp[i + 1] = b;
     }

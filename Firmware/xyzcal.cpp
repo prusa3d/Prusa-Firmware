@@ -415,22 +415,20 @@ void print_hysteresis(int16_t min_z, int16_t max_z, int16_t step){
 	}
 }
 
-void update_position_1_step(uint8_t axis, uint8_t dir){
-	if (axis & X_AXIS_MASK)
-		_X_ += dir & X_AXIS_MASK ? -1 : 1;
-	if (axis & Y_AXIS_MASK)
-		_Y_ += dir & Y_AXIS_MASK ? -1 : 1;
-	if (axis & Z_AXIS_MASK)
-		_Z_ += dir & Z_AXIS_MASK ? -1 : 1;
+static void update_position_1_step(const uint8_t axis, const uint8_t dir) {
+	for (uint8_t i = X_AXIS, mask = X_AXIS_MASK; i <= Z_AXIS; i++, mask <<= 1) {
+		if (axis & mask) {
+			count_position[i] += dir & mask ? -1L : 1L;
+		}
+	}
 }
 
-void set_axes_dir(uint8_t axes, uint8_t dir){
-	if (axes & X_AXIS_MASK)
-		sm4_set_dir(X_AXIS, dir & X_AXIS_MASK);
-	if (axes & Y_AXIS_MASK)
-		sm4_set_dir(Y_AXIS, dir & Y_AXIS_MASK);
-	if (axes & Z_AXIS_MASK)
-		sm4_set_dir(Z_AXIS, dir & Z_AXIS_MASK);
+static void __attribute__((noinline)) set_axes_dir(const uint8_t axis, const uint8_t dir) {
+	for (uint8_t i = X_AXIS, mask = X_AXIS_MASK; i <= Z_AXIS; i++, mask <<= 1) {
+		if (axis & mask) {
+			sm4_set_dir(i, dir & mask);
+		}
+	}
 }
 
 /// Accelerate up to max.speed (defined by @min_delay_us)

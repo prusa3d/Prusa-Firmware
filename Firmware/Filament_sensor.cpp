@@ -4,7 +4,6 @@
 
 #include "Filament_sensor.h"
 #include "Timer.h"
-#include "cardreader.h"
 #include "eeprom.h"
 #include "menu.h"
 #include "planner.h"
@@ -110,29 +109,29 @@ bool Filament_sensor::checkFilamentEvents() {
 void Filament_sensor::triggerFilamentInserted() {
     if (autoLoadEnabled
         && (eFilamentAction == FilamentAction::None)
-        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts while the MMU is in charge
         && !(
-            moves_planned() != 0
-            || IS_SD_PRINTING
-            || usb_timer.running()
+            MMU2::mmu2.Enabled() // quick and dirty hack to prevent spurious runouts while the MMU is in charge
+            || moves_planned() != 0
+            || printJobOngoing()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
             )
         ) {
-        filAutoLoad();
+        menu_submenu(lcd_AutoLoadFilament, true);
     }
 }
 
 void Filament_sensor::triggerFilamentRemoved() {
 //    SERIAL_ECHOLNPGM("triggerFilamentRemoved");
     if (runoutEnabled
-        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts just before the toolchange
         && (eFilamentAction == FilamentAction::None)
-        && !saved_printing
         && (
             moves_planned() != 0
-            || IS_SD_PRINTING
-            || usb_timer.running()
+            || printJobOngoing()
+        )
+        && !(
+            saved_printing
+            || MMU2::mmu2.Enabled() // quick and dirty hack to prevent spurious runouts just before the toolchange
             || (lcd_commands_type == LcdCommands::Layer1Cal)
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
         )
@@ -144,16 +143,6 @@ void Filament_sensor::triggerFilamentRemoved() {
     }
 }
 
-void Filament_sensor::filAutoLoad() {
-    eFilamentAction = FilamentAction::AutoLoad;
-    if (target_temperature[0] >= EXTRUDE_MINTEMP) {
-        bFilamentPreheatState = true;
-        menu_submenu(mFilamentItemForce);
-    } else {
-        menu_submenu(lcd_generic_preheat_menu);
-        lcd_timeoutToStatus.start();
-    }
-}
 
 void Filament_sensor::filRunout() {
 //    SERIAL_ECHOLNPGM("filRunout");
@@ -163,7 +152,7 @@ void Filament_sensor::filRunout() {
     restore_print_from_ram_and_continue(0);
     eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
     eeprom_increment_word((uint16_t *)EEPROM_FERROR_COUNT_TOT);
-    enquecommand_front_P((PSTR("M600")));
+    enquecommand_front_P(MSG_M600);
 }
 
 void Filament_sensor::triggerError() {
@@ -483,7 +472,7 @@ void PAT9125_sensor::filJam() {
     restore_print_from_ram_and_continue(0);
     eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
     eeprom_increment_word((uint16_t *)EEPROM_FERROR_COUNT_TOT);
-    enquecommand_front_P((PSTR("M600")));
+    enquecommand_front_P(MSG_M600);
 }
 
 bool PAT9125_sensor::updatePAT9125() {
@@ -509,7 +498,7 @@ bool PAT9125_sensor::updatePAT9125() {
         }
     }
 
-    if (!pollingTimer.running() || pollingTimer.expired(pollingPeriod)) {
+    if (pollingTimer.expired_cont(pollingPeriod)) {
         pollingTimer.start();
         if (!pat9125_update()) {
             init(); // try to reinit.

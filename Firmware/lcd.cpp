@@ -4,16 +4,15 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <avr/pgmspace.h>
+#include <util/atomic.h>
 #include <util/delay.h>
 #include "Timer.h"
 
 #include "Configuration.h"
 #include "pins.h"
-#include <binary.h>
 #include <Arduino.h>
 #include "Marlin.h"
 #include "fastio.h"
-//-//
 #include "sound.h"
 #include "backlight.h"
 
@@ -632,12 +631,10 @@ void lcd_printNumber(unsigned long n, uint8_t base)
 }
 
 uint8_t lcd_draw_update = 2;
-int32_t lcd_encoder = 0;
-uint8_t lcd_encoder_bits = 0;
-int8_t lcd_encoder_diff = 0;
+int16_t lcd_encoder = 0;
+static int8_t lcd_encoder_diff = 0;
 
-uint8_t lcd_buttons = 0;
-uint8_t lcd_button_pressed = 0;
+uint8_t lcd_click_trigger = 0;
 uint8_t lcd_update_enabled = 1;
 static bool lcd_backlight_wake_trigger; // Flag set by interrupt when the knob is pressed or rotated
 
@@ -673,37 +670,46 @@ uint8_t lcd_clicked(void)
     return clicked;
 }
 
-void lcd_beeper_quick_feedback(void)
-{
-//-//
-Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-/*
-	for(int8_t i = 0; i < 10; i++)
-	{
-		Sound_MakeCustom(100,0,false);
-		_delay_us(100);
-	}
-*/
+void lcd_beeper_quick_feedback(void) {
+	Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 }
 
 void lcd_quick_feedback(void)
 {
   lcd_draw_update = 2;
-  lcd_button_pressed = false;
   lcd_beeper_quick_feedback();
+}
+
+void lcd_knob_update() {
+	if (lcd_backlight_wake_trigger) {
+		lcd_backlight_wake_trigger = false;
+		backlight_wake();
+		bool did_rotate = false;
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+				lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+				lcd_encoder_diff %= ENCODER_PULSES_PER_STEP;
+				did_rotate = true;
+			}
+			else {
+				// Get lcd_encoder_diff in sync with the encoder hard steps.
+				// We assume that a click happens only when the knob is rotated into a stable position
+				lcd_encoder_diff = 0;
+			}
+		}
+		Sound_MakeSound(did_rotate ? e_SOUND_TYPE_EncoderMove : e_SOUND_TYPE_ButtonEcho);
+
+		if (lcd_draw_update == 0) {
+			// Update LCD rendering at minimum
+			lcd_draw_update = 1;
+		}
+	}
 }
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
 	if (lcd_draw_update < lcdDrawUpdateOverride)
 		lcd_draw_update = lcdDrawUpdateOverride;
-
-	if (lcd_backlight_wake_trigger) {
-		lcd_backlight_wake_trigger = false;
-		backlight_wake();
-	}
-
-	backlight_update();
 
 	if (!lcd_update_enabled) return;
 
@@ -743,16 +749,12 @@ bool lcd_longpress_trigger = 0;
 void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
-	uint8_t newbutton = 0;
-	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
-	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
-
+    static uint8_t lcd_button_pressed = 0;
     if (READ(BTN_ENC) == 0)
     { //button is pressed
-        if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+        if (buttonBlanking.expired_cont(BUTTON_BLANKING_TIME)) {
             buttonBlanking.start();
             safetyTimer.start();
-            lcd_backlight_wake_trigger = true; // flag event, knob pressed
             if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
             {
                 longPressTimer.start();
@@ -769,57 +771,39 @@ void lcd_buttons_update(void)
     { //button not pressed
         if (lcd_button_pressed)
         { //button was released
-            buttonBlanking.start();
-            if (lcd_long_press_active == 0)
+            lcd_button_pressed = 0; // Reset to prevent double triggering
+            if (!lcd_long_press_active)
             { //button released before long press gets activated
-                newbutton |= EN_C;
+                lcd_click_trigger = 1; // This flag is reset when the event is consumed
             }
-            //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
-            //lcd_button_pressed is set back to false via lcd_quick_feedback function
+            lcd_backlight_wake_trigger = true; // flag event, knob pressed
+            lcd_long_press_active = 0;
         }
-        lcd_long_press_active = 0;
     }
 
-	lcd_buttons = newbutton;
-	//manage encoder rotation
-	uint8_t enc = 0;
-	if (lcd_buttons & EN_A) enc |= B01;
-	if (lcd_buttons & EN_B) enc |= B10;
-	if (enc != lcd_encoder_bits)
-	{
-		switch (enc)
-		{
-		case encrot0:
-			if (lcd_encoder_bits == encrot3)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot1)
-				lcd_encoder_diff--;
-			break;
-		case encrot1:
-			if (lcd_encoder_bits == encrot0)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot2)
-				lcd_encoder_diff--;
-			break;
-		case encrot2:
-			if (lcd_encoder_bits == encrot1)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot3)
-				lcd_encoder_diff--;
-			break;
-		case encrot3:
-			if (lcd_encoder_bits == encrot2)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot0)
-				lcd_encoder_diff--;
-			break;
-		}
+    //manage encoder rotation
+	static const int8_t encrot_table[] PROGMEM = {
+		0, -1, 1, 2,
+		1, 0, 2, -1,
+		-1, -2, 0, 1,
+		-2, 1, -1, 0,
+	};
 
-		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
-			lcd_backlight_wake_trigger = true; // flag event, knob rotated
-		}
-	}
-	lcd_encoder_bits = enc;
+	static uint8_t enc_bits_old = 0;
+	uint8_t enc_bits = 0;
+    if (!READ(BTN_EN1)) enc_bits |= _BV(0);
+    if (!READ(BTN_EN2)) enc_bits |= _BV(1);
+    
+	if (enc_bits != enc_bits_old)
+    {
+		int8_t newDiff = pgm_read_byte(&encrot_table[(enc_bits_old << 2) | enc_bits]);
+		lcd_encoder_diff += newDiff;
+
+        if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+            lcd_backlight_wake_trigger = true; // flag event, knob rotated
+        }
+        enc_bits_old = enc_bits;
+    }
 }
 
 
@@ -827,114 +811,114 @@ void lcd_buttons_update(void)
 // Custom character data
 
 const uint8_t lcd_chardata_bedTemp[8] PROGMEM = {
-	B00000,
-	B11111,
-	B10101,
-	B10001,
-	B10101,
-	B11111,
-	B00000,
-	B00000}; //thanks Sonny Mounicou
+	0b00000,
+	0b11111,
+	0b10101,
+	0b10001,
+	0b10101,
+	0b11111,
+	0b00000,
+	0b00000}; //thanks Sonny Mounicou
 
 const uint8_t lcd_chardata_degree[8] PROGMEM = {
-	B01100,
-	B10010,
-	B10010,
-	B01100,
-	B00000,
-	B00000,
-	B00000,
-	B00000};
+	0b01100,
+	0b10010,
+	0b10010,
+	0b01100,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000};
 
 const uint8_t lcd_chardata_thermometer[8] PROGMEM = {
-	B00100,
-	B01010,
-	B01010,
-	B01010,
-	B01010,
-	B10001,
-	B10001,
-	B01110};
+	0b00100,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b10001,
+	0b10001,
+	0b01110};
 
 const uint8_t lcd_chardata_uplevel[8] PROGMEM = {
-	B00100,
-	B01110,
-	B11111,
-	B00100,
-	B11100,
-	B00000,
-	B00000,
-	B00000}; //thanks joris
+	0b00100,
+	0b01110,
+	0b11111,
+	0b00100,
+	0b11100,
+	0b00000,
+	0b00000,
+	0b00000}; //thanks joris
 
 const uint8_t lcd_chardata_refresh[8] PROGMEM = {
-	B00000,
-	B00110,
-	B11001,
-	B11000,
-	B00011,
-	B10011,
-	B01100,
-	B00000}; //thanks joris
+	0b00000,
+	0b00110,
+	0b11001,
+	0b11000,
+	0b00011,
+	0b10011,
+	0b01100,
+	0b00000}; //thanks joris
 
 const uint8_t lcd_chardata_folder[8] PROGMEM = {
-	B00000,
-	B11100,
-	B11111,
-	B10001,
-	B10001,
-	B11111,
-	B00000,
-	B00000}; //thanks joris
+	0b00000,
+	0b11100,
+	0b11111,
+	0b10001,
+	0b10001,
+	0b11111,
+	0b00000,
+	0b00000}; //thanks joris
 
 /*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	B11100,
-	B10000,
-	B11000,
-	B10111,
-	B00101,
-	B00110,
-	B00101,
-	B00000};*/ //thanks Sonny Mounicou
+	0b11100,
+	0b10000,
+	0b11000,
+	0b10111,
+	0b00101,
+	0b00110,
+	0b00101,
+	0b00000};*/ //thanks Sonny Mounicou
 
 /*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	B11100,
-	B10100,
-	B11000,
-	B10100,
-	B00000,
-	B00111,
-	B00010,
-	B00010};*/
+	0b11100,
+	0b10100,
+	0b11000,
+	0b10100,
+	0b00000,
+	0b00111,
+	0b00010,
+	0b00010};*/
 
 /*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	B01100,
-	B10011,
-	B00000,
-	B01100,
-	B10011,
-	B00000,
-	B01100,
-	B10011};*/
+	0b01100,
+	0b10011,
+	0b00000,
+	0b01100,
+	0b10011,
+	0b00000,
+	0b01100,
+	0b10011};*/
 
 const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	B00000,
-	B00100,
-	B10010,
-	B01001,
-	B10010,
-	B00100,
-	B00000,
-	B00000};
+	0b00000,
+	0b00100,
+	0b10010,
+	0b01001,
+	0b10010,
+	0b00100,
+	0b00000,
+	0b00000};
 
 const uint8_t lcd_chardata_clock[8] PROGMEM = {
-	B00000,
-	B01110,
-	B10011,
-	B10101,
-	B10001,
-	B01110,
-	B00000,
-	B00000}; //thanks Sonny Mounicou
+	0b00000,
+	0b01110,
+	0b10011,
+	0b10101,
+	0b10001,
+	0b01110,
+	0b00000,
+	0b00000}; //thanks Sonny Mounicou
 
 void lcd_set_custom_characters(void)
 {
@@ -949,23 +933,24 @@ void lcd_set_custom_characters(void)
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100,
-	B10001,
-	B01010,
-	B00100};
+	0b00000,
+	0b00000,
+	0b10001,
+	0b01010,
+	0b00100,
+	0b10001,
+	0b01010,
+	0b00100};
 
 const uint8_t lcd_chardata_confirm[8] PROGMEM = {
-	B00000,
-	B00001,
-	B00011,
-	B10110,
-	B11100,
-	B01000,
-	B00000};
+	0b00000,
+	0b00001,
+	0b00011,
+	0b10110,
+	0b11100,
+	0b01000,
+	0b00000,
+	0b00000};
 
 void lcd_set_custom_characters_nextpage(void)
 {

@@ -55,7 +55,6 @@ extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];
 extern const char MSG_HOMEYZ[];
 extern const char MSG_ITERATION[];
-extern const char MSG_SELECT_EXTRUDER[];
 extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
@@ -235,6 +234,20 @@ extern const char MSG_ADVANCE_K[];
 extern const char MSG_POWERPANIC_DETECTED[];
 extern const char MSG_LCD_STATUS_CHANGED[];
 extern const char MSG_UNKNOWN_CODE[];
+
+// Common G-gcodes
+extern const char G1_E_F2700[];
+extern const char G28W[];
+extern const char MSG_M23[];
+extern const char MSG_M24[];
+extern const char MSG_M83[];
+extern const char MSG_M84[];
+extern const char MSG_M107[];
+extern const char MSG_M220[];
+extern const char MSG_M500[];
+extern const char MSG_M600[];
+extern const char MSG_M701[];
+extern const char MSG_M702[];
 
 #if defined(__cplusplus)
 }

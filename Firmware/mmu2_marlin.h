@@ -1,8 +1,8 @@
 /// @file
-/// The sole purpose of this interface is to separate Marlin1/Marlin2 from the MMU2 top logic layer.
+/// The sole purpose of this interface is to separate Marlin1/Marlin2 from the MMU top logic layer.
 /// Why?
 /// - unify implementation among MK3 and Buddy FW
-/// - enable unit testing of MMU2 top layer
+/// - enable unit testing of MMU top layer
 #pragma once
 #include <stdint.h>
 
@@ -26,9 +26,11 @@ void MoveE(float delta, float feedRate);
 
 float MoveRaiseZ(float delta);
 
+void planner_abort_queued_moves();
 void planner_synchronize();
 bool planner_any_moves();
 float planner_get_machine_position_E_mm();
+float stepper_get_machine_position_E_mm();
 float planner_get_current_position_E();
 void planner_set_current_position_E(float e);
 void planner_line_to_current_position(float feedRate_mm_s);

@@ -3106,25 +3106,6 @@ void count_xyz_details(float (&distanceMin)[2]) {
 		distanceMin[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 	}
 }
-/*
-e_MBL_TYPE e_mbl_type = e_MBL_OPTIMAL;
-
-void mbl_mode_set() {
-	switch (e_mbl_type) {
-		case e_MBL_OPTIMAL: e_mbl_type = e_MBL_PREC; break;
-		case e_MBL_PREC: e_mbl_type = e_MBL_FAST; break;
-		case e_MBL_FAST: e_mbl_type = e_MBL_OPTIMAL; break;
-		default: e_mbl_type = e_MBL_OPTIMAL; break;
-	}
-	eeprom_update_byte((uint8_t*)EEPROM_MBL_TYPE,(uint8_t)e_mbl_type);
-}
-
-void mbl_mode_init() {
-	uint8_t mbl_type = eeprom_read_byte((uint8_t*)EEPROM_MBL_TYPE);
-	if (mbl_type == 0xFF) e_mbl_type = e_MBL_OPTIMAL;
-	else e_mbl_type = mbl_type;
-}
-*/
 
 void mbl_settings_init() {
 //3x3 mesh; 3 Z-probes on each point, magnet elimination on

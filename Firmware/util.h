@@ -21,8 +21,6 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string);
 bool eeprom_fw_version_older_than_p(const uint16_t (&req_ver)[4]);
 void update_current_firmware_version_to_eeprom();
 
-
-//-//
 #define EEPROM_NOZZLE_DIAMETER_uM_DEFAULT 400
 
 enum class ClPrintChecking:uint_least8_t

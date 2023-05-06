@@ -16,9 +16,6 @@
 #define FILAMENT_SIZE "1_75mm_MK25S"
 #define NOZZLE_TYPE "E3Dv6full"
 
-// Developer flag
-#define DEVELOPER
-
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK2.5S"
 
@@ -53,8 +50,6 @@
 #define INVERT_Y_DIR 0    // for Mendel set to 1, for Orca set to 0
 #define INVERT_Z_DIR 0    // for Mendel set to 0, for Orca set to 1
 #define INVERT_E0_DIR 1    // for direct drive extruder v9 set to 1, for geared extruder set to 0
-#define INVERT_E1_DIR 1    // for direct drive extruder v9 set to 1, for geared extruder set to 0
-#define INVERT_E2_DIR 1    // for direct drive extruder v9 set to 1, for geared extruder set to 0
 
 // Home position
 #define MANUAL_X_HOME_POS 0
@@ -166,8 +161,6 @@
 
 // Mintemps
 #define HEATER_0_MINTEMP 30
-#define HEATER_1_MINTEMP 5
-#define HEATER_2_MINTEMP 5
 #define HEATER_MINTEMP_DELAY 15000                // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if HEATER_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see HEATER_MINTEMP_DELAY definition)"
@@ -187,8 +180,6 @@
 #else
 #define HEATER_0_MAXTEMP 305
 #endif
-#define HEATER_1_MAXTEMP 305
-#define HEATER_2_MAXTEMP 305
 #define BED_MAXTEMP 125
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
@@ -211,27 +202,11 @@
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
-#define EXTRUDER_1_AUTO_FAN_PIN   -1
-#define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
 #define FANCHECK_AUTO_PRINT_FAN_THRS 70 //[RPS] - Used during selftest to identify swapped fans automatically
 #define FANCHECK_AUTO_FAIL_THRS 20 //[RPS] - Used during selftest to identify a faulty fan
-
-
-/*------------------------------------
- LOAD/UNLOAD FILAMENT SETTINGS
- *------------------------------------*/
-
-// Load filament commands
-#define LOAD_FILAMENT_0 "M83"
-#define LOAD_FILAMENT_1 "G1 E70 F400"
-#define LOAD_FILAMENT_2 "G1 E40 F100"
-
-// Unload filament commands
-#define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"
 
 /*------------------------------------
  CHANGE FILAMENT SETTINGS
@@ -454,8 +429,6 @@
 #else
 #define TEMP_SENSOR_0 5
 #endif
-#define TEMP_SENSOR_1 0
-#define TEMP_SENSOR_2 0
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
 #elif defined(E3D_PT100_BED_NO_AMP)
@@ -503,12 +476,9 @@
 //#define SUPPORT_VERBOSITY
 
 #define MMU_CONFIG_FILE "mmu2/variants/config_MMU2S.h"
-
 #define MMU_FILAMENT_COUNT 5
-
-#define MMU_REQUIRED_FW_BUILDNR 132
 #define MMU_FORCE_STEALTH_MODE
-#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
 
 // This is experimental feature requested by our test department.
@@ -518,7 +488,6 @@
 // defined.
 
 //#define MMU_ALWAYS_CUT
-#define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 // MMU Error pause position
 #define MMU_ERR_X_PAUSE_POS 125

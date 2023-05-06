@@ -32,6 +32,14 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec, uint8_t es);
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
 
+/// @brief Clear the status line and setup the LCD cursor
+void TryLoadUnloadProgressbarInit();
+
+/// @brief Add one block to the progress bar
+/// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
+/// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
+void TryLoadUnloadProgressbar(uint8_t col, bool sensorState);
+
 /// Remders the sensor status line. Also used by the "resume temperature" screen.
 void ReportErrorHookDynamicRender();
 

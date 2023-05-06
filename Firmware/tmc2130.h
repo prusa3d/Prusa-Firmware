@@ -16,10 +16,6 @@ extern uint8_t tmc2130_sg_thr[4];
 extern bool tmc2130_sg_stop_on_crash;
 extern uint8_t tmc2130_sg_crash; //crash mask
 
-extern uint8_t tmc2130_sg_measure;
-extern uint32_t tmc2130_sg_measure_cnt;
-extern uint32_t tmc2130_sg_measure_val;
-
 extern uint8_t tmc2130_sg_homing_axes_mask;
 
 extern const char eMotorCurrentScalingEnabled[];

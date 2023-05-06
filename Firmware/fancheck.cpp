@@ -1,6 +1,5 @@
 // fan control and check
 #include "fancheck.h"
-#include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
 #include "messages.h"
@@ -85,7 +84,7 @@ void fanSpeedError(unsigned char _fan) {
     if (fan_check_error == EFCE_REPORTED) return;
     fan_check_error = EFCE_REPORTED;
 
-    if (IS_SD_PRINTING || usb_timer.running()) {
+    if (printJobOngoing()) {
         // A print is ongoing, pause the print normally
         if(!isPrintPaused) {
             if (usb_timer.running())
@@ -221,6 +220,7 @@ void checkExtruderAutoFans()
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
 void readFanTach() {
+    static bool fan_state[2];
 #ifdef FAN_SOFT_PWM
     if (READ(TACH_0) != fan_state[0]) {
         if(fan_measuring) fan_edge_counter[0] ++;

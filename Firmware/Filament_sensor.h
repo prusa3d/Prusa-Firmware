@@ -69,9 +69,7 @@ protected:
     void triggerFilamentInserted();
     
     void triggerFilamentRemoved();
-    
-    static void filAutoLoad();
-    
+
     void filRunout();
     
     void triggerError();

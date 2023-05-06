@@ -49,7 +49,6 @@ MMU2::MMU2()
     , mmu_print_saved(SavedState::None)
     , loadFilamentStarted(false)
     , unloadFilamentStarted(false)
-    , loadingToNozzle(false)
     , toolchange_counter(0)
     , tmcFailures(0) {
 }
@@ -188,7 +187,7 @@ void MMU2::CheckFINDARunout() {
         if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN){ // Can't auto if F=?
             enquecommand_front_P(PSTR("M600 AUTO")); // save print and run M600 command
         } else {
-            enquecommand_front_P(PSTR("M600")); // save print and run M600 command
+            enquecommand_front_P(MSG_M600); // save print and run M600 command
         }
     }
 }
@@ -239,16 +238,64 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         return false;
 
     uint8_t fsensorState = 0;
+    uint8_t fsensorStateLCD = 0;
+    uint8_t lcd_cursor_col = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
-    MoveE(MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH + MMU2_VERIFY_LOAD_TO_NOZZLE_TWEAK - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION), MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
-    MoveE(-(MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH + MMU2_VERIFY_LOAD_TO_NOZZLE_TWEAK - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION)), MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
 
-    while (planner_any_moves()) {
-        // Wait for move to finish and monitor the fsensor the entire time
-        // A single 0 reading will set the bit.
-        fsensorState |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
-        safe_delay_keep_alive(0);
+    const float delta_mm = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
+
+    // The total length is twice delta_mm. Divide that length by number of pixels
+    // available to get length per pixel.
+    // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
+    const float pixel_per_mm =  0.5f * float(LCD_WIDTH) / (delta_mm);
+
+    TryLoadUnloadProgressbarInit();
+
+    /* The position is a triangle wave
+    // current position is not zero, it is an offset
+    //
+    // Keep in mind that the relationship between machine position
+    // and pixel index is not linear. The area around the amplitude
+    // needs to be taken care of carefully. The current implementation
+    // handles each move separately so there is no need to watch for the change
+    // in the slope's sign or check the last machine position.
+    //              y(x)
+    //              ▲
+    //              │     ^◄────────── delta_mm + current_position
+    //   machine    │    / \
+    //   position   │   /   \◄────────── stepper_position_mm + current_position
+    //    (mm)      │  /     \
+    //              │ /       \
+    //              │/         \◄───────current_position
+    //              └──────────────► x
+    //              0           19
+    //                 pixel #
+    */
+
+    // Pixel index will go from 0 to 10, then back from 10 to 0
+    // The change in this number is used to indicate a new pixel
+    // should be drawn on the display
+    uint8_t dpixel1 = 0;
+    uint8_t dpixel0 = 0;
+    for (uint8_t move = 0; move < 2; move++) {
+        MoveE(move == 0 ? delta_mm : -delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+        while (planner_any_moves()) {
+            // Wait for move to finish and monitor the fsensor the entire time
+            // A single 0 reading will set the bit.
+            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
+            fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
+
+            // Always round up, you can only have 'whole' pixels. (floor is also an option)
+            dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) * pixel_per_mm);
+            if (dpixel1 - dpixel0) {
+                dpixel0 = dpixel1;
+                if (lcd_cursor_col > (LCD_WIDTH - 1)) lcd_cursor_col = LCD_WIDTH - 1;
+                TryLoadUnloadProgressbar(lcd_cursor_col++, fsensorStateLCD);
+                fsensorStateLCD = 0;      // Clear temporary bit
+            }
+            safe_delay_keep_alive(0);
+        }
     }
 
     if (fsensorState) {
@@ -354,8 +401,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
 
     case 'x': {
         thermal_setExtrudeMintemp(0); // Allow cold extrusion since Tx only loads to the gears not nozzle
-        planner_synchronize();
-        ToolChangeCommon(slot); // the only difference was manage_response(false, false), but probably good enough
+        tool_change(slot);
         thermal_setExtrudeMintemp(EXTRUDE_MINTEMP);
     } break;
 
@@ -451,6 +497,7 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
     extruder = MMU2_NO_TOOL;
     tool_change_extruder = MMU2_NO_TOOL;
     MakeSound(SoundType::Confirm);
+    ScreenUpdateEnable();
     return true;
 }
 
@@ -485,22 +532,9 @@ bool MMU2::load_filament(uint8_t slot) {
     return true;
 }
 
-struct LoadingToNozzleRAII {
-    MMU2 &mmu2;
-    explicit inline LoadingToNozzleRAII(MMU2 &mmu2)
-        : mmu2(mmu2) {
-        mmu2.loadingToNozzle = true;
-    }
-    inline ~LoadingToNozzleRAII() {
-        mmu2.loadingToNozzle = false;
-    }
-};
-
 bool MMU2::load_filament_to_nozzle(uint8_t slot) {
     if (!WaitForMMUReady())
         return false;
-
-    LoadingToNozzleRAII ln(*this);
 
     WaitForHotendTargetTempBeep();
 
@@ -873,10 +907,12 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     switch (logic.Progress()) {
     case ProgressCode::UnloadingToFinda:
         unloadFilamentStarted = false;
+        planner_abort_queued_moves();  // Abort excess E-moves to be safe
         break;
     case ProgressCode::FeedingToFSensor:
         // FSENSOR error during load. Make sure E-motor stops moving.
         loadFilamentStarted = false;
+        planner_abort_queued_moves(); // Abort excess E-moves to be safe
         break;
     default:
         break;
@@ -991,6 +1027,10 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
             case FilamentState::AT_FSENSOR:
                 // fsensor triggered, finish FeedingToExtruder state
                 loadFilamentStarted = false;
+
+                // Abort any excess E-move from the planner queue
+                planner_abort_queued_moves();
+
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                 // 2. Disengage the idler and push another 2mm.
@@ -999,7 +1039,12 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
             case FilamentState::NOT_PRESENT:
                 // fsensor not triggered, continue moving extruder
                 if (!planner_any_moves()) { // Only plan a move if there is no move ongoing
-                    MoveE(2.0f, MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+                    // Plan a very long move, where 'very long' is hundreds
+                    // of millimeters. Keep in mind though the move can't be much longer
+                    // than 450mm because the firmware will ignore too long extrusions
+                    // for safety reasons. See PREVENT_LENGTHY_EXTRUDE.
+                    // Use 350mm to be safely away from the prevention threshold
+                    MoveE(350.0f, MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 }
                 break;
             default:

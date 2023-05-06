@@ -84,6 +84,8 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_SYSTEM_FW_RUNTIME_ERROR);
     case (uint16_t)ErrorCode::FINDA_VS_EEPROM_DISREPANCY:
         return FindErrorIndex(ERR_SYSTEM_UNLOAD_MANUALLY);
+    case (uint16_t)ErrorCode::MCU_UNDERVOLTAGE_VCC:
+        return FindErrorIndex(ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC);
     }
     
     // Electrical issues which can be detected somehow.
@@ -170,7 +172,7 @@ const char * PrusaErrorButtonTitle(uint8_t bi){
 }
 
 const char * PrusaErrorButtonMore(){
-    return _R(MSG_BTN_MORE);//@todo convert to PROGMEM_N1
+    return MSG_BTN_MORE;
 }
 
 struct ResetOnExit {
@@ -265,6 +267,7 @@ Buttons ButtonAvailable(uint16_t ec) {
 
     case ERR_SYSTEM_QUEUE_FULL:
     case ERR_SYSTEM_FW_RUNTIME_ERROR:
+    case ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC:
         switch (buttonSelectedOperation) {
         case ButtonOperations::RestartMMU: // "Restart MMU"
             return RestartMMU;

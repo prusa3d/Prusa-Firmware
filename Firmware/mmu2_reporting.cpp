@@ -20,7 +20,9 @@ void BeginReport(CommandInProgress /*cip*/, uint16_t ec) {
 
 void EndReport(CommandInProgress /*cip*/, uint16_t /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
-    lcd_setstatuspgm(MSG_WELCOME); // should be seen only when the printer is not printing a file
+    if (!printJobOngoing()) {
+        lcd_setstatuspgm(MSG_WELCOME);
+    }
     custom_message_type = CustomMsg::Status;
 }
 
@@ -77,8 +79,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     ReportErrorHookSensorLineRender();
 
     // Render the choices
-    //@todo convert MSG_BTN_MORE to PROGMEM_N1
-    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 18 : 9, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
+    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), two_choices ? PrusaErrorButtonMore() : _T(PrusaErrorButtonTitle(button_op_right)), two_choices ? 18 : 9, two_choices ? nullptr : PrusaErrorButtonMore());
 }
 
 void ReportErrorHookSensorLineRender(){
@@ -100,15 +101,7 @@ void ReportErrorHookSensorLineRender(){
 static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     uint8_t ret = 0;
     bool two_choices = false;
-    static int8_t enc_dif = lcd_encoder_diff;
     static uint8_t reset_button_selection;
-
-    if (lcd_encoder_diff == 0)
-    {
-         // lcd_update_enable(true) was called outside ReportErrorHookMonitor
-         // It will set lcd_encoder_diff to 0, sync enc_dif
-        enc_dif = 0;
-    }
 
     // Read and determine what operations should be shown on the menu
     const uint8_t button_operation   = PrusaErrorButtons(ei);
@@ -133,20 +126,20 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     }
 
     // Check if knob was rotated
-    if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+    if (lcd_encoder) {
         if (two_choices == false) { // third_choice is not nullptr, safe to dereference
-            if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+            if (lcd_encoder < 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                 // Rotating knob counter clockwise
                 current_selection--;
-            } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
+            } else if (lcd_encoder > 0 && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
                 // Rotating knob clockwise
                 current_selection++;
             }
         } else {
-            if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+            if (lcd_encoder < 0 && current_selection != LCD_LEFT_BUTTON_CHOICE) {
                 // Rotating knob counter clockwise
                 current_selection = LCD_LEFT_BUTTON_CHOICE;
-            } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
+            } else if (lcd_encoder > 0 && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
                 // Rotating knob clockwise
                 current_selection = LCD_MIDDLE_BUTTON_CHOICE;
             }
@@ -180,14 +173,12 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
             // More button for two button screen
             lcd_putc_at(18, 3, current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         }
-        // Consume rotation event and make feedback sound
-        enc_dif = lcd_encoder_diff;
-        Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+        // Consume rotation event
+        lcd_encoder = 0;
     }
 
     // Check if knob was clicked and consume the event
     if (lcd_clicked()) {
-        Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
         choice_selected = current_selection;
     } else {
         // continue monitoring
@@ -281,12 +272,20 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
     if (cip != CommandInProgress::NoCommand) {
         custom_message_type = CustomMsg::MMUProgress;
         lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
-    } else {
-        // If there is no command in progress we can display other
-        // useful information such as the name of the SD file 
-        // being printed
-        custom_message_type = CustomMsg::Status;
     }
+}
+
+void TryLoadUnloadProgressbarInit() {
+    // Clear the status line
+    lcd_set_cursor(0, 3);
+    lcd_space(LCD_WIDTH);
+}
+
+void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
+    // Set the cursor position each time in case some other
+    // part of the firmware changes the cursor position
+    lcd_putc_at(col, 3, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
+    lcd_reset_status_message_timeout();
 }
 
 void IncrementLoadFails(){

@@ -61,16 +61,29 @@ extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
 extern bool cmd_buffer_empty();
+
+/// @brief Variant of enquecommand which accepts a format string
+/// @param fmt a format string residing in PROGMEM
+void enquecommandf_P(const char *fmt, ...);
 extern void enquecommand(const char *cmd, bool from_progmem = false);
 extern void enquecommand_front(const char *cmd, bool from_progmem = false);
 extern void repeatcommand_front();
 extern void get_command();
 extern uint16_t cmdqueue_calc_sd_length();
 
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+    extern double strtod_noE(const char* nptr, char** endptr);
+#if defined(__cplusplus)
+}
+#endif
+
 // Return True if a character was found
 static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
 static inline bool    code_seen_P(const char *code_PROGMEM) { return (strchr_pointer = strstr_P(CMDBUFFER_CURRENT_STRING, code_PROGMEM)) != NULL; }
-static inline float   code_value()      { return strtod(strchr_pointer+1, NULL);}
+static inline float   code_value()      { return strtod_noE(strchr_pointer+1, NULL);}
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
