@@ -3030,7 +3030,7 @@ static void gcode_G80()
         }
         return 0;
     };
-    int8_t correction[4] = {
+    const int8_t correction[4] = {
         bedCorrectHelper('L', (uint8_t*)EEPROM_BED_CORRECTION_LEFT),
         bedCorrectHelper('R', (uint8_t*)EEPROM_BED_CORRECTION_RIGHT),
         bedCorrectHelper('F', (uint8_t*)EEPROM_BED_CORRECTION_FRONT),
