@@ -4863,11 +4863,7 @@ void unload_filament(float unloadLength)
     plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_FAST_RETRACT_FEEDRATE);
     st_synchronize();
 
-    current_position[E_AXIS] -= 15;
-    plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_SLOW_RETRACT_FEEDRATE);
-    st_synchronize();
-
-    current_position[E_AXIS] -= 20;
+    current_position[E_AXIS] -= 35;
     plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_SLOW_RETRACT_FEEDRATE);
     st_synchronize();
 
