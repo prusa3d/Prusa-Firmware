@@ -3016,7 +3016,7 @@ static void gcode_G80()
     
     // Apply the bed level correction to the mesh
     bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
-    auto bedCorrectHelper = [&] (char code, uint8_t *eep_address) -> int8_t {
+    auto bedCorrectHelper = [eeprom_bed_correction_valid] (char code, uint8_t *eep_address) -> int8_t {
         if (code_seen(code)) {
             // Verify value is within allowed range
             int16_t temp = code_value_short();
