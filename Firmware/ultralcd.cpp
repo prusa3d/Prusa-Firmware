@@ -212,9 +212,13 @@ static FanCheck lcd_selftest_fan_auto(uint8_t _fan);
 #if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 static bool lcd_selftest_fsensor();
 #elif FILAMENT_SENSOR_TYPE == FSENSOR_IR
+#if 0 // TODO: Needs to be rewritten for new MMU implementation
 static bool selftest_irsensor();
+#endif // 0
 #elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
+#if 0 // TODO: Needs to be rewritten for new MMU implementation
 static bool selftest_irsensor();
+#endif // 0
 static bool lcd_selftest_IRsensor(bool bStandalone=false);
 static void lcd_detect_IRsensor();
 #endif
@@ -6069,6 +6073,7 @@ bool lcd_selftest()
 #ifdef FILAMENT_SENSOR
     if (_result)
     {
+#if 0 // TODO: Needs to be rewritten for new MMU implementation
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
         if (MMU2::mmu2.Enabled())
         {        
@@ -6080,6 +6085,7 @@ bool lcd_selftest()
 			}
         } else
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+#endif // 0
         {
 #if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
@@ -6651,6 +6657,7 @@ static bool lcd_selftest_fsensor(void)
 }
 #endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 
+#if 0 // TODO: Needs to be rewritten for new MMU implementation
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 //! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
 //!
@@ -6715,6 +6722,7 @@ static bool selftest_irsensor()
     return true;
 }
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+#endif // 0
 #endif //FILAMENT_SENSOR
 
 static bool lcd_selftest_manual_fan_check(const uint8_t _fan, const bool check_opposite,
