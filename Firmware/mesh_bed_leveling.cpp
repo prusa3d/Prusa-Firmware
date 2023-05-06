@@ -19,38 +19,22 @@ float mesh_bed_leveling::get_z(float x, float y) {
     if (i < 0) {
         i = 0;
         s = (x - MESH_MIN_X) / MESH_X_DIST;
-        if (s > 1.f)
-            s = 1.f;
-    }
-    else if (i > MESH_NUM_X_POINTS - 2) {
-        i = MESH_NUM_X_POINTS - 2;
-        s = (x - get_x(i)) / MESH_X_DIST;
-        if (s < 0)
-            s = 0;
     } else {
+        if (i > MESH_NUM_X_POINTS - 2) {
+            i = MESH_NUM_X_POINTS - 2;
+        }
         s = (x - get_x(i)) / MESH_X_DIST;
-        if (s < 0)
-            s = 0;
-        else if (s > 1.f)
-            s = 1.f;
     }
+
     j = int(floor((y - MESH_MIN_Y) / MESH_Y_DIST));
     if (j < 0) {
         j = 0;
         t = (y - MESH_MIN_Y) / MESH_Y_DIST;
-        if (t > 1.f)
-            t = 1.f;
-    } else if (j > MESH_NUM_Y_POINTS - 2) {
-        j = MESH_NUM_Y_POINTS - 2;
-        t = (y - get_y(j)) / MESH_Y_DIST;
-        if (t < 0)
-            t = 0;
     } else {
+        if (j > MESH_NUM_Y_POINTS - 2) {
+            j = MESH_NUM_Y_POINTS - 2;
+        }
         t = (y - get_y(j)) / MESH_Y_DIST;
-        if (t < 0)
-            t = 0;
-        else if (t > 1.f)
-            t = 1.f;
     }
     
     float si = 1.f-s;
