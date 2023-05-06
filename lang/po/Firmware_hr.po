@@ -1748,11 +1748,6 @@ msgstr "Zad. str.[µm]"
 msgid "Recovering print"
 msgstr "Oporavak printa"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3434
-msgid "Remove old filament and press the knob to start loading new filament."
-msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
-
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5284
 msgid "Rename"
@@ -2651,3 +2646,6 @@ msgstr ""
 #~ msgstr ""
 #~ "XYZ kalibracija nije uspjela. Lijeva prednja tocka kalibracije nije "
 #~ "dostupna."
+
+#~ msgid "Remove old filament and press the knob to start loading new filament."
+#~ msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."

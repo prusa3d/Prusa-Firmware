@@ -1752,11 +1752,6 @@ msgstr "Baksida [µm]"
 msgid "Recovering print"
 msgstr "Återställer utskrift"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3434
-msgid "Remove old filament and press the knob to start loading new filament."
-msgstr "Ta bort det gamla fil. och tryck på knappen för att börja ladda nytt."
-
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5284
 msgid "Rename"
@@ -2639,3 +2634,6 @@ msgstr ""
 
 #~ msgid "XYZ calibration failed. Left front calibration point not reachable."
 #~ msgstr "XYZ-kalibrering felade. Främre vä kalibreringspunkt kan ej nås."
+
+#~ msgid "Remove old filament and press the knob to start loading new filament."
+#~ msgstr "Ta bort det gamla fil. och tryck på knappen för att börja ladda nytt."

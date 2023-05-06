@@ -1721,11 +1721,6 @@ msgstr ""
 msgid "Recovering print"
 msgstr ""
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3434
-msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU."

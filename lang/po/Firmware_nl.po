@@ -1756,12 +1756,6 @@ msgstr "Achterkant[µm]"
 msgid "Recovering print"
 msgstr "Print herstellen"
 
-#. MSG_REMOVE_OLD_FILAMENT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3434
-msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-"Verwijder de oude filament en druk op de knop om nieuwe filament te laden."
-
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5284
 msgid "Rename"
@@ -2650,3 +2644,7 @@ msgstr ""
 
 #~ msgid "XYZ calibration failed. Left front calibration point not reachable."
 #~ msgstr "XYZ-kalibratie mislukt. Kalibratiepunt linksvoor niet bereikbaar."
+
+#~ msgid "Remove old filament and press the knob to start loading new filament."
+#~ msgstr ""
+"Verwijder de oude filament en druk op de knop om nieuwe filament te laden."
