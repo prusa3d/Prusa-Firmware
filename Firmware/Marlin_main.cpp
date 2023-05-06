@@ -3014,31 +3014,28 @@ static void gcode_G80()
 #endif
     babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
     
+    // Apply the bed level correction to the mesh
     bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
-    const constexpr uint8_t sides = 4;
-    int8_t correction[sides];
-    for (uint8_t i = 0; i < sides; ++i) {
-        static const char codes[sides] PROGMEM = { 'L', 'R', 'F', 'B' };
-        static uint8_t *const eep_addresses[sides] PROGMEM = {
-          (uint8_t*)EEPROM_BED_CORRECTION_LEFT,
-          (uint8_t*)EEPROM_BED_CORRECTION_RIGHT,
-          (uint8_t*)EEPROM_BED_CORRECTION_FRONT,
-          (uint8_t*)EEPROM_BED_CORRECTION_REAR,
-        };
-        if (code_seen(pgm_read_byte(&codes[i]))) {
+    auto bedCorrectHelper = [&] (char code, uint8_t *eep_address) -> int8_t {
+        if (code_seen(code)) {
             // Verify value is within allowed range
-            int32_t temp = code_value_long();
-            if (labs(temp) > BED_ADJUSTMENT_UM_MAX) {
-                printf_P(PSTR("%SExcessive bed leveling correction: %li microns\n"), errormagic, temp);
-                correction[i] = 0;
+            int16_t temp = code_value_short();
+            if (abs(temp) > BED_ADJUSTMENT_UM_MAX) {
+                printf_P(PSTR("%SExcessive bed leveling correction: %i microns\n"), errormagic, temp);
             } else {
-              // Value is valid, save it
-              correction[i] = (int8_t)temp;
+                return (int8_t)temp; // Value is valid, use it
             }
-        } else {
-            correction[i] = eeprom_bed_correction_valid ? (int8_t)eeprom_read_byte((uint8_t*)pgm_read_ptr(&eep_addresses[i])) : 0;
+        } else if (eeprom_bed_correction_valid) {
+            return (int8_t)eeprom_read_byte(eep_address);
         }
-    }
+        return 0;
+    };
+    int8_t correction[4] = {
+        bedCorrectHelper('L', (uint8_t*)EEPROM_BED_CORRECTION_LEFT),
+        bedCorrectHelper('R', (uint8_t*)EEPROM_BED_CORRECTION_RIGHT),
+        bedCorrectHelper('F', (uint8_t*)EEPROM_BED_CORRECTION_FRONT),
+        bedCorrectHelper('B', (uint8_t*)EEPROM_BED_CORRECTION_REAR),
+    };
     for (uint8_t row = 0; row < MESH_NUM_Y_POINTS; row++) {
         for (uint8_t col = 0; col < MESH_NUM_X_POINTS; col++) {
             constexpr float scaler = 0.001f / (MESH_NUM_X_POINTS - 1);
