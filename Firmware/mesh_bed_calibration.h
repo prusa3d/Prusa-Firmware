@@ -21,9 +21,6 @@
 
 #endif //not HEATBED_V2
 
-#define BED_X(i, n) ((float)i * (BED_Xn - BED_X0) / (n - 1) + BED_X0)
-#define BED_Y(i, n)  ((float)i * (BED_Yn - BED_Y0) / (n - 1) + BED_Y0)
-
 // Exact positions of the print head above the bed reference points, in the world coordinates.
 // The world coordinates match the machine coordinates only in case, when the machine
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
@@ -145,6 +142,17 @@ inline bool world2machine_clamp(float &x, float &y)
         machine2world(tmpx, tmpy, x, y);
     return clamped;
 }
+
+/// @brief For a given column on the mesh calculate the bed X coordinate
+/// @param col column index on mesh
+/// @return Bed X coordinate
+float BED_X(const uint8_t col);
+
+/// @brief For a given row on the mesh calculate the bed Y coordinate
+/// @param row row index on mesh
+/// @return Bed Y coordinate
+float BED_Y(const uint8_t row);
+
 /**
  * @brief Bed skew and offest detection result
  *

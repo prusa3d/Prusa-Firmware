@@ -2865,8 +2865,8 @@ static void gcode_G80()
                 if (!isOn3x3Mesh)
                     continue;
             } else {
-                const float x_pos = BED_X(col, MESH_NUM_X_POINTS);
-                const float y_pos = BED_Y(row, MESH_NUM_Y_POINTS);
+                const float x_pos = BED_X(col);
+                const float y_pos = BED_Y(row);
                 if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (!isOn3x3Mesh || has_z)) {
                     continue;
                 }
@@ -2898,8 +2898,8 @@ static void gcode_G80()
         uint8_t iy = mesh_point / MESH_NUM_X_POINTS;
         if (iy & 1) ix = (MESH_NUM_X_POINTS - 1) - ix; // Zig zag
         bool isOn3x3Mesh = ((ix % 3 == 0) && (iy % 3 == 0));
-        float x_pos = BED_X(ix, MESH_NUM_X_POINTS);
-        float y_pos = BED_Y(iy, MESH_NUM_Y_POINTS);
+        float x_pos = BED_X(ix);
+        float y_pos = BED_Y(iy);
 
         if ((nMeasPoints == 3) && !isOn3x3Mesh) {
             mesh_point++;
