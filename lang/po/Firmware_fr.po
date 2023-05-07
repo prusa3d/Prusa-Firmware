@@ -306,12 +306,12 @@ msgstr "Verific. axe X"
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:6045
 #: ../../Firmware/ultralcd.cpp:7148
 msgid "Checking Y axis"
-msgstr "Verific. axe Y"
+msgstr "Verification axe Y"
 
 #. MSG_SELFTEST_CHECK_Z c=20
 #: ../../Firmware/ultralcd.cpp:7149
 msgid "Checking Z axis"
-msgstr "Verific. axe Z"
+msgstr "Verification axe Z"
 
 #. MSG_SELFTEST_CHECK_BED c=20
 #: ../../Firmware/messages.cpp:93 ../../Firmware/ultralcd.cpp:7150
@@ -321,7 +321,7 @@ msgstr "Verif. plateau"
 #. MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ../../Firmware/ultralcd.cpp:7146
 msgid "Checking endstops"
-msgstr "Verific. butees"
+msgstr "Verification butees"
 
 #. MSG_CHECKING_FILE c=17
 #: ../../Firmware/ultralcd.cpp:7244
@@ -347,7 +347,7 @@ msgstr "Verifications"
 #. MSG_TM_ACK_ERROR c=18
 #: ../../Firmware/messages.cpp:178 ../../Firmware/ultralcd.cpp:5390
 msgid "Clear TM error"
-msgstr "Effacer l'error TM"
+msgstr "Effacer l'erreur TM"
 
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2228
@@ -357,7 +357,7 @@ msgstr "Couleur incorrecte"
 #. MSG_COMMUNITY_MADE c=18
 #: ../../Firmware/messages.cpp:23 ../../Firmware/ultralcd.cpp:3581
 msgid "Community made"
-msgstr "Fait de community"
+msgstr "Fait de la communaute"
 
 #. MSG_CONTINUE_SHORT c=5
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4150
@@ -386,7 +386,7 @@ msgstr "Crash"
 #: ../../Firmware/ultralcd.cpp:5618 ../../Firmware/ultralcd.cpp:5620
 #: ../../Firmware/ultralcd.cpp:5624
 msgid "Crash det."
-msgstr "Detect.crash"
+msgstr "Detect. crash"
 
 #. MSG_CRASH_DETECTED c=20
 #: ../../Firmware/Marlin_main.cpp:568 ../../Firmware/messages.cpp:27
@@ -558,7 +558,7 @@ msgstr "F. autocharg."
 #: ../../Firmware/messages.cpp:46 ../../Firmware/ultralcd.cpp:4137
 #: ../../Firmware/ultralcd.cpp:4144
 msgid "F. jam detect"
-msgstr "Detect bour F"
+msgstr "Detect. bour F"
 
 #. MSG_FSENSOR_RUNOUT c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4134
@@ -619,7 +619,7 @@ msgstr "CAPTEUR F TROP TOT"
 #. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
 msgid "FSENSOR: FIL. STUCK"
-msgstr "CAPTEUR F: F. BLOQUE"
+msgstr "CAPTEUR F: FIL. BLOQUE"
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:218
@@ -777,7 +777,7 @@ msgstr "Cal. 1ere couche"
 #: ../../Firmware/ultralcd.cpp:3933
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
-"Je vais lancer le Auto-test pour verifier les problemes d'assemblage les "
+"Je vais lancer l'auto-test pour verifier les problemes d'assemblage les "
 "plus communs."
 
 #. MSG_FLOW c=15
@@ -843,7 +843,7 @@ msgstr ""
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:137 ../../Firmware/util.cpp:383
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code a ete prepare pour une FW version plus recente. Cont.?"
+msgstr "G-code a ete prepare pour un FW version plus recente. Cont.?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/util.cpp:384
@@ -890,7 +890,7 @@ msgid ""
 "ready to print."
 msgstr ""
 "Bonjour, je suis votre imprimante Original Prusa i3. Je vais vous guider au "
-"cours d'un bref processus de reglage, qui permettra de calibrer le Z-axis. "
+"cours d'un bref processus de reglage, qui permettra de calibrer l'axe Z. "
 "Apres cela, tout sera pret pour imprimer."
 
 #. MSG_WIZARD_WELCOME c=20 r=7
@@ -907,7 +907,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4264 ../../Firmware/ultralcd.cpp:5630
 #: ../../Firmware/ultralcd.cpp:5633
 msgid "High power"
-msgstr "Haut.puiss"
+msgstr "Haut. puiss."
 
 #. MSG_PROGRESS_HOMING c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:29
@@ -928,14 +928,14 @@ msgstr "Vent. hotend:"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3938
-msgid "I will run xyz calibration now. It will take up to 24 mins."
+msgid "I will run XYZ calibration now. It will take up to 24 mins."
 msgstr ""
 "Je vais maintenant lancer la calibration XYZ. Cela peut prendre jusqu'à 24 "
 "min."
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3949
-msgid "I will run z calibration now."
+msgid "I will run Z calibration now."
 msgstr "Je vais maintenant lancer la calibration Z."
 
 #. MSG_TITLE_IDLER_CANNOT_HOME c=20
@@ -1008,13 +1008,13 @@ msgstr ""
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3712
 #: ../../Firmware/ultralcd.cpp:3979
 msgid "Is filament loaded?"
-msgstr "Fil. est-il charge?"
+msgstr "Le fil. est-il charge?"
 
 #. MSG_STEEL_SHEET_CHECK c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3278 ../../Firmware/Marlin_main.cpp:4744
 #: ../../Firmware/messages.cpp:111 ../../Firmware/ultralcd.cpp:3945
 msgid "Is steel sheet on heatbed?"
-msgstr "Est la plaque sur le plateau?"
+msgstr "Le plaque est sur le plateau?"
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2253 ../../Firmware/messages.cpp:51
@@ -1348,7 +1348,7 @@ msgstr "Ne tourne pas"
 msgid ""
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
 msgstr ""
-"Maintenant je vais calibrer la distance entre de la buse et la surface du "
+"Maintenant je vais calibrer la distance entre la buse et la surface du "
 "plateau."
 
 #. MSG_WIZARD_WILL_PREHEAT c=20 r=4
@@ -1379,7 +1379,7 @@ msgstr "Changement de buse"
 #: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4412
 #: ../../Firmware/ultralcd.cpp:4414 ../../Firmware/ultralcd.cpp:4415
 #: ../../Firmware/ultralcd.cpp:4416
-msgid "Nozzle d."
+msgid "Nozzle diam."
 msgstr "Diam. buse"
 
 #. MSG_PROGRESS_OK c=4
@@ -1424,7 +1424,7 @@ msgstr "On"
 #. MSG_SOUND_ONCE c=7
 #: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:4326
 msgid "Once"
-msgstr "1 fois"
+msgstr "Une fois"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9572 ../../Firmware/messages.cpp:174
@@ -1461,7 +1461,7 @@ msgstr "Calib. PINDA"
 #. MSG_PINDA_CAL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3272
 msgid "PINDA calibration failed"
-msgstr "Echec de la calibration en PINDA"
+msgstr "Echec de la calibration du PINDA"
 
 #. MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:4968 ../../Firmware/messages.cpp:115
@@ -1482,7 +1482,7 @@ msgstr "ECHEC MOUV.T POULIE"
 #: ../../Firmware/mmu2_progress_converter.cpp:26
 #: ../../Firmware/mmu2_progress_converter.cpp:57
 msgid "Parking selector"
-msgstr "Parquage selecteur"
+msgstr "Selecteur parquage "
 
 #. MSG_PAUSE c=5
 #: ../../Firmware/messages.cpp:160 ../../Firmware/ultralcd.cpp:4153
@@ -1508,7 +1508,7 @@ msgid ""
 "points. If the nozzle catches the paper, power off the printer immediately."
 msgstr ""
 "Placez une feuille de papier sous la buse pendant la calibration des 4 "
-"premiers points. Si la buse accroche le papier, eteignez vite l'imprimante."
+"premiers points. Si la buse accroche le papier, l'imprimante immediatement."
 
 #. MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4052
@@ -1522,7 +1522,7 @@ msgstr ""
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6107
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "SVP, verifiez la connexion du capteur IR et decharge le filament."
+msgstr "SVP, verifiez la connexion du capteur IR et déchargez le filament si present."
 
 #. MSG_SELFTEST_PLEASECHECK c=20
 #: ../../Firmware/ultralcd.cpp:6812
@@ -1559,7 +1559,7 @@ msgstr ""
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3720
 msgid "Please load filament first."
-msgstr "Veuillez d'abord charger un filament."
+msgstr "Veuillez d'abord charger du filament."
 
 #. MSG_CHECK_IDLER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3536
@@ -1606,7 +1606,7 @@ msgstr "SVP, dechargez le filament et reessayez."
 
 #. MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 #: ../../Firmware/util.cpp:217
-msgid "Please upgrade."
+msgid "Please upgrade the FW."
 msgstr "Mettez a jour le FW."
 
 #. MSG_PLEASE_WAIT c=20
@@ -1620,7 +1620,7 @@ msgstr "Merci de patienter"
 #: ../../Firmware/messages.cpp:76 ../../Firmware/ultralcd.cpp:1229
 #: ../../Firmware/ultralcd.cpp:1258
 msgid "Power failures"
-msgstr "Coup.de courant"
+msgstr "Coup. de courant"
 
 #. MSG_PREHEAT c=18
 #: ../../Firmware/ultralcd.cpp:5360
@@ -1812,7 +1812,7 @@ msgstr "Rétraction de FINDA"
 #. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:329 ../../Firmware/mmu2/errors_list.h:339
 msgid "Retry"
-msgstr "Ref."
+msgstr "Reesa."
 
 #. MSG_PROGRESS_RETURN_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:25
@@ -1898,7 +1898,7 @@ msgstr "Choisir langue"
 msgid "Select nozzle preheat temperature which matches your material."
 msgstr ""
 "Selectionnez la temperature de prechauffage de la buse qui correspond a "
-"votre materiau."
+"votre materiel."
 
 #. MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3822
@@ -2012,7 +2012,7 @@ msgid ""
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is "
 "100."
 msgstr ""
-"Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
+"Certains fichiers ne seront pas tries. Max. 100 fichiers tries par dossier."
 
 #. MSG_ZLEVELING_ENFORCED c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3037
@@ -2114,7 +2114,7 @@ msgstr "ERREUR DU DRIVER TMC"
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:199
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:201
 msgid "TMC DRIVER RESET"
-msgstr "REINIT DU DRIVER TMC"
+msgstr "REINIT. DU DRIVER TMC"
 
 #. MSG_TITLE_TMC_DRIVER_SHORTED c=20
 #: ../../Firmware/mmu2/errors_list.h:162 ../../Firmware/mmu2/errors_list.h:205
@@ -2126,13 +2126,13 @@ msgstr "CC DU DRIVER TMC"
 #: ../../Firmware/mmu2/errors_list.h:150 ../../Firmware/mmu2/errors_list.h:193
 #: ../../Firmware/mmu2/errors_list.h:194 ../../Firmware/mmu2/errors_list.h:195
 msgid "TMC OVERHEAT ERROR"
-msgstr "ERR SURCHAUFFE TMC"
+msgstr "ERR. SURCHAUFFE TMC"
 
 #. MSG_TITLE_TMC_UNDERVOLTAGE_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:202
 #: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:204
 msgid "TMC UNDERVOLTAGE ERR"
-msgstr "ERR SOUS TENSION TMC"
+msgstr "ERR. SOUS TENSION TMC"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3970
@@ -2140,13 +2140,13 @@ msgid ""
 "Thermal model cal. takes approx. 12 mins. See\n"
 "prusa.io/tm-cal"
 msgstr ""
-"Cal. du modele thermique dure env. 12 min. Vois\n"
+"Cal. du modele thermique dure env. 12 min. Regardez\n"
 "prusa.io/tm-cal"
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1559 ../../Firmware/messages.cpp:177
 msgid "Thermal model not calibrated yet."
-msgstr "Modele de thermique non calibre."
+msgstr "Module thermique non calibre."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4591
@@ -2187,7 +2187,8 @@ msgid ""
 "chapter)."
 msgstr ""
 "L'imprimante commencera a imprimer une ligne en zig-zag. Tournez le bouton "
-"jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel."
+"jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel. "
+"(Chapitre Calibration)."
 
 #. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/messages.cpp:43
@@ -2195,7 +2196,7 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Il faut toujours effectuer la Calibration Z. Suivre le manuel, chapitre "
+"Il faut toujours effectuer la Calibration Z. Suivez le manuel, chapitre "
 "Premiers pas - Processus de calibration."
 
 #. MSG_SORT_TIME c=8
@@ -2273,7 +2274,7 @@ msgstr "Dechar.t vers poulie"
 #. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6114
 msgid "Verification failed, remove the filament and try again."
-msgstr "Verification en echec, retirez le filament et reessayez."
+msgstr "Verification echoue, retirez le filament et reessayez."
 
 #. MSG_MENU_VOLTAGES c=18
 #: ../../Firmware/ultralcd.cpp:1716
@@ -2284,7 +2285,7 @@ msgstr "Tensions"
 #: ../../Firmware/mmu2/errors_list.h:147 ../../Firmware/mmu2/errors_list.h:190
 #: ../../Firmware/mmu2/errors_list.h:191 ../../Firmware/mmu2/errors_list.h:192
 msgid "WARNING TMC TOO HOT"
-msgstr "ATT TMC TROP CHAUD"
+msgstr "ATT. TMC TROP CHAUD"
 
 #. MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3436
@@ -2318,7 +2319,7 @@ msgstr "Attente du refroidissement des buse et plateau"
 #: ../../Firmware/messages.cpp:132 ../../Firmware/ultralcd.cpp:4369
 #: ../../Firmware/ultralcd.cpp:4449 ../../Firmware/ultralcd.cpp:4488
 msgid "Warn"
-msgstr "Avert"
+msgstr "Avert."
 
 #. MSG_CHANGED_BOTH c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1500
@@ -2359,8 +2360,8 @@ msgstr "Correct-X"
 
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5462
-msgid "XFLASH init"
-msgstr "Init XFLASH"
+msgid "XFLASH init."
+msgstr "Init. XFLASH"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1705
@@ -2383,7 +2384,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3222
 msgid "XYZ calibration compromised. Front calibration points not reachable."
 msgstr ""
-"Calibration XYZ compromise. Les points de calibration en avant ne sont pas "
+"Calibration XYZ compromise. Les points de calibration avant ne sont pas "
 "atteignables."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
@@ -2412,7 +2413,7 @@ msgstr ""
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3207
 #: ../../Firmware/ultralcd.cpp:3235
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "Echec calibration XYZ. Consultez le manuel."
+msgstr "Echec calibration XYZ. SVP, consultez le manuel."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3213
@@ -2448,7 +2449,7 @@ msgstr "Oui"
 #: ../../Firmware/messages.cpp:122 ../../Firmware/ultralcd.cpp:4039
 msgid "You can always resume the Wizard from Calibration -> Wizard."
 msgstr ""
-"Vous pouvez toujours relancer l'Assistant dans Calibration > Assistant."
+"Vous pouvez toujours reprendre l'Assistant dans Calibration > Assistant."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4079
@@ -2518,7 +2519,7 @@ msgstr ""
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
 msgid "LOAD TO EXTR. FAILED"
-msgstr "ÉCHOUÉ CHARGE A EXTR"
+msgstr "CHARG. DANS EXTR. ÉCHOUÉE"
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
@@ -2538,7 +2539,7 @@ msgstr "MCU SOUS-TENSION VCC"
 #: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:1126
 #: ../../Firmware/ultralcd.cpp:1200
 msgid "Material changes"
-msgstr "Changes matériels"
+msgstr "Changements matériels"
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
@@ -2565,7 +2566,7 @@ msgid ""
 "The MMU firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"La version du MMU est incompatible avec le FW de l'imprimante. Mise à jour "
+"La version du MMU est incompatible avec le FW de l'imprimante. Mettez à jour "
 "vers la version 2.1.9."
 
 #~ msgid "Reset MMU"
@@ -2597,7 +2598,7 @@ msgstr ""
 #~ msgstr "Crash detecte. Poursuivre l'impression?"
 
 #~ msgid "Cutting filament"
-#~ msgstr "Je coupe filament"
+#~ msgstr "Je coupe le filament"
 
 #~ msgid "ERROR: Filament sensor is not responding, please check connection."
 #~ msgstr ""
