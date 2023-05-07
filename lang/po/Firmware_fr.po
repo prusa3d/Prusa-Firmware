@@ -347,7 +347,7 @@ msgstr "Verifications"
 #. MSG_TM_ACK_ERROR c=18
 #: ../../Firmware/messages.cpp:178 ../../Firmware/ultralcd.cpp:5390
 msgid "Clear TM error"
-msgstr "Effacer l'erreur TM"
+msgstr "Eff. l'erreur TM"
 
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2228
@@ -357,7 +357,7 @@ msgstr "Couleur incorrecte"
 #. MSG_COMMUNITY_MADE c=18
 #: ../../Firmware/messages.cpp:23 ../../Firmware/ultralcd.cpp:3581
 msgid "Community made"
-msgstr "Fait de la communaute"
+msgstr "Fait par la commun."
 
 #. MSG_CONTINUE_SHORT c=5
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4150
@@ -558,7 +558,7 @@ msgstr "F. autocharg."
 #: ../../Firmware/messages.cpp:46 ../../Firmware/ultralcd.cpp:4137
 #: ../../Firmware/ultralcd.cpp:4144
 msgid "F. jam detect"
-msgstr "Detect. bour F"
+msgstr "Detec bour. F"
 
 #. MSG_FSENSOR_RUNOUT c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4134
@@ -619,7 +619,7 @@ msgstr "CAPTEUR F TROP TOT"
 #. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
 msgid "FSENSOR: FIL. STUCK"
-msgstr "CAPTEUR F: FIL. BLOQUE"
+msgstr "CAPT.: FIL. BLOQUE"
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:218
@@ -907,7 +907,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4264 ../../Firmware/ultralcd.cpp:5630
 #: ../../Firmware/ultralcd.cpp:5633
 msgid "High power"
-msgstr "Haut. puiss."
+msgstr "Haut. puis."
 
 #. MSG_PROGRESS_HOMING c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:29
@@ -1379,7 +1379,7 @@ msgstr "Changement de buse"
 #: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4412
 #: ../../Firmware/ultralcd.cpp:4414 ../../Firmware/ultralcd.cpp:4415
 #: ../../Firmware/ultralcd.cpp:4416
-msgid "Nozzle diam."
+msgid "Nozz. diam."
 msgstr "Diam. buse"
 
 #. MSG_PROGRESS_OK c=4
@@ -1424,7 +1424,7 @@ msgstr "On"
 #. MSG_SOUND_ONCE c=7
 #: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:4326
 msgid "Once"
-msgstr "Une fois"
+msgstr "1 fois"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9572 ../../Firmware/messages.cpp:174
@@ -1620,7 +1620,7 @@ msgstr "Merci de patienter"
 #: ../../Firmware/messages.cpp:76 ../../Firmware/ultralcd.cpp:1229
 #: ../../Firmware/ultralcd.cpp:1258
 msgid "Power failures"
-msgstr "Coup. de courant"
+msgstr "Pan. de courant"
 
 #. MSG_PREHEAT c=18
 #: ../../Firmware/ultralcd.cpp:5360
@@ -2114,7 +2114,7 @@ msgstr "ERREUR DU DRIVER TMC"
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:199
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:201
 msgid "TMC DRIVER RESET"
-msgstr "REINIT. DU DRIVER TMC"
+msgstr "REINI. DU DRIVER TMC"
 
 #. MSG_TITLE_TMC_DRIVER_SHORTED c=20
 #: ../../Firmware/mmu2/errors_list.h:162 ../../Firmware/mmu2/errors_list.h:205
@@ -2132,7 +2132,7 @@ msgstr "ERR. SURCHAUFFE TMC"
 #: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:202
 #: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:204
 msgid "TMC UNDERVOLTAGE ERR"
-msgstr "ERR. SOUS TENSION TMC"
+msgstr "ERR SOUS-TENSION TMC"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3970
@@ -2519,7 +2519,7 @@ msgstr ""
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
 msgid "LOAD TO EXTR. FAILED"
-msgstr "CHARG. DANS EXTR. ÉCHOUÉE"
+msgstr "CHAR. DS. EXTR. ÉCH."
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
@@ -2539,7 +2539,7 @@ msgstr "MCU SOUS-TENSION VCC"
 #: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:1126
 #: ../../Firmware/ultralcd.cpp:1200
 msgid "Material changes"
-msgstr "Changements matériels"
+msgstr "Changmt. matériels"
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
