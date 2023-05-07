@@ -473,19 +473,16 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
         chopconf.s.intpol = 0;
     }
 #endif
-//	DBG(_n("tmc2130_setup_chopper(axis=%d, mres=%d, curh=%d, curr=%d\n"), axis, mres, current_h, current_r);
-//	DBG(_n(" toff=%d, hstr=%d, hend=%d, tbl=%d\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
 		chopconf.s.vsense = 1;
-		tmc2130_wr_CHOPCONF(axis, chopconf.dw);
-		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
+	} else {
+		current_r >>= 1;
+		current_h >>= 1;
 	}
-	else
-	{
-		tmc2130_wr_CHOPCONF(axis, chopconf.dw);
-		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
-	}
+
+	tmc2130_wr_CHOPCONF(axis, chopconf.dw);
+	tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
 }
 
 void tmc2130_set_current_h(uint8_t axis, uint8_t current)
