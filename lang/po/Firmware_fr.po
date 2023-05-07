@@ -357,7 +357,7 @@ msgstr "Couleur incorrecte"
 #. MSG_COMMUNITY_MADE c=18
 #: ../../Firmware/messages.cpp:23 ../../Firmware/ultralcd.cpp:3581
 msgid "Community made"
-msgstr "Fait par la commun."
+msgstr "Fait par la commu."
 
 #. MSG_CONTINUE_SHORT c=5
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4150
@@ -907,7 +907,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4264 ../../Firmware/ultralcd.cpp:5630
 #: ../../Firmware/ultralcd.cpp:5633
 msgid "High power"
-msgstr "Haut. puis."
+msgstr "Hte. puis."
 
 #. MSG_PROGRESS_HOMING c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:29
@@ -1379,7 +1379,7 @@ msgstr "Changement de buse"
 #: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4412
 #: ../../Firmware/ultralcd.cpp:4414 ../../Firmware/ultralcd.cpp:4415
 #: ../../Firmware/ultralcd.cpp:4416
-msgid "Nozz. diam."
+msgid "Noz. diam."
 msgstr "Diam. buse"
 
 #. MSG_PROGRESS_OK c=4
@@ -1606,7 +1606,7 @@ msgstr "SVP, dechargez le filament et reessayez."
 
 #. MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 #: ../../Firmware/util.cpp:217
-msgid "Please upgrade the FW."
+msgid "Pls upgrade the FW."
 msgstr "Mettez a jour le FW."
 
 #. MSG_PLEASE_WAIT c=20
