@@ -2832,10 +2832,10 @@ static void gcode_G80()
         nProbeRetry = 10;
     }
 
-    const float area_min_x = code_seen('X') ? code_value() - MESH_X_DIST - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
-    const float area_min_y = code_seen('Y') ? code_value() - MESH_Y_DIST - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
-    const float area_max_x = code_seen('W') ? area_min_x + code_value() + 2 * MESH_X_DIST : INFINITY;
-    const float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * MESH_Y_DIST : INFINITY;
+    const float area_min_x = code_seen('X') ? code_value() - x_mesh_density - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
+    const float area_min_y = code_seen('Y') ? code_value() - y_mesh_density - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
+    const float area_max_x = code_seen('W') ? area_min_x + code_value() + 2 * x_mesh_density : INFINITY;
+    const float area_max_y = code_seen('H') ? area_min_y + code_value() + 2 * y_mesh_density : INFINITY;
 
     mbl.reset(); //reset mesh bed leveling
     mbl.z_values[0][0] = min_pos[Z_AXIS];

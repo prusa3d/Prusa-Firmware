@@ -2186,13 +2186,11 @@ inline void scan_bed_induction_sensor_point()
 
 float __attribute__((noinline)) BED_X(const uint8_t col)
 {
-    constexpr float x_mesh_density = (BED_Xn - BED_X0) / (MESH_NUM_X_POINTS - 1);
     return ((float)col * x_mesh_density + BED_X0);
 }
 
 float __attribute__((noinline)) BED_Y(const uint8_t row)
 {
-    constexpr float y_mesh_density = (BED_Yn - BED_Y0) / (MESH_NUM_Y_POINTS - 1);
     return ((float)row * y_mesh_density + BED_Y0);
 }
 

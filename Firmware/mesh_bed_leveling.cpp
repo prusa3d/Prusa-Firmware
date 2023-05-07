@@ -15,26 +15,26 @@ float mesh_bed_leveling::get_z(float x, float y) {
     int   i, j;
     float s, t;
     
-    i = int(floor((x - MESH_MIN_X) / MESH_X_DIST));
+    i = int(floor((x - (BED_X0 + X_PROBE_OFFSET_FROM_EXTRUDER)) / x_mesh_density));
     if (i < 0) {
         i = 0;
-        s = (x - MESH_MIN_X) / MESH_X_DIST;
+        s = (x - (BED_X0 + X_PROBE_OFFSET_FROM_EXTRUDER)) / x_mesh_density;
     } else {
         if (i > MESH_NUM_X_POINTS - 2) {
             i = MESH_NUM_X_POINTS - 2;
         }
-        s = (x - get_x(i)) / MESH_X_DIST;
+        s = (x - get_x(i)) / x_mesh_density;
     }
 
-    j = int(floor((y - MESH_MIN_Y) / MESH_Y_DIST));
+    j = int(floor((y - (BED_Y0 + Y_PROBE_OFFSET_FROM_EXTRUDER)) / y_mesh_density));
     if (j < 0) {
         j = 0;
-        t = (y - MESH_MIN_Y) / MESH_Y_DIST;
+        t = (y - (BED_Y0 + Y_PROBE_OFFSET_FROM_EXTRUDER)) / y_mesh_density;
     } else {
         if (j > MESH_NUM_Y_POINTS - 2) {
             j = MESH_NUM_Y_POINTS - 2;
         }
-        t = (y - get_y(j)) / MESH_Y_DIST;
+        t = (y - get_y(j)) / y_mesh_density;
     }
     
     float si = 1.f-s;
@@ -51,9 +51,9 @@ void mesh_bed_leveling::upsample_3x3()
     int idx2 = MESH_NUM_X_POINTS - 1;
     {
         // First interpolate the points in X axis.
-        static const float x0 = MESH_MIN_X;
-        static const float x1 = 0.5f * float(MESH_MIN_X + MESH_MAX_X);
-        static const float x2 = MESH_MAX_X;
+        static const float x0 = (BED_X0 + X_PROBE_OFFSET_FROM_EXTRUDER);
+        static const float x1 = 0.5f * float(BED_X0 + BED_Xn) + X_PROBE_OFFSET_FROM_EXTRUDER;
+        static const float x2 = BED_Xn + X_PROBE_OFFSET_FROM_EXTRUDER;
         for (int j = 0; j < MESH_NUM_Y_POINTS; ++ j) {
             // Interpolate the remaining values by Largrangian polynomials.
             for (int i = 0; i < MESH_NUM_X_POINTS; ++ i) {
@@ -69,9 +69,9 @@ void mesh_bed_leveling::upsample_3x3()
     }
     {
         // Second interpolate the points in Y axis.
-        static const float y0 = MESH_MIN_Y;
-        static const float y1 = 0.5f * float(MESH_MIN_Y + MESH_MAX_Y);
-        static const float y2 = MESH_MAX_Y;
+        static const float y0 = (BED_Y0 + Y_PROBE_OFFSET_FROM_EXTRUDER);
+        static const float y1 = 0.5f * float(BED_Y0 + BED_Yn) + Y_PROBE_OFFSET_FROM_EXTRUDER;
+        static const float y2 = BED_Yn + Y_PROBE_OFFSET_FROM_EXTRUDER;
         for (int i = 0; i < MESH_NUM_X_POINTS; ++ i) {
             // Interpolate the remaining values by Largrangian polynomials.
             for (int j = 1; j + 1 < MESH_NUM_Y_POINTS; ++ j) {

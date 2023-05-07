@@ -21,6 +21,9 @@
 
 #endif //not HEATBED_V2
 
+constexpr float x_mesh_density = (BED_Xn - BED_X0) / (MESH_NUM_X_POINTS - 1);
+constexpr float y_mesh_density = (BED_Yn - BED_Y0) / (MESH_NUM_Y_POINTS - 1);
+
 // Exact positions of the print head above the bed reference points, in the world coordinates.
 // The world coordinates match the machine coordinates only in case, when the machine
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
