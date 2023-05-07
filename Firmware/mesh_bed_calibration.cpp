@@ -2493,8 +2493,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
 					uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 					if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
-					current_position[X_AXIS] = BED_X(ix);
-					current_position[Y_AXIS] = BED_Y(iy);
+					current_position[X_AXIS] = BED_X(ix * 3);
+					current_position[Y_AXIS] = BED_Y(iy * 3);
 					go_to_current(homing_feedrate[X_AXIS] / 60);
 					delay_keep_alive(3000);
 				}
@@ -2896,8 +2896,8 @@ bool sample_mesh_and_store_reference()
 		uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
 		uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 		if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
-		current_position[X_AXIS] = BED_X(ix);
-		current_position[Y_AXIS] = BED_Y(iy);
+		current_position[X_AXIS] = BED_X(ix * 3);
+		current_position[Y_AXIS] = BED_Y(iy * 3);
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
         go_to_current(homing_feedrate[X_AXIS]/60);
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
@@ -3015,8 +3015,8 @@ bool scan_bed_induction_points(int8_t verbosity_level)
 		uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
 		uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 		if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
-		float bedX = BED_X(ix);
-		float bedY = BED_Y(iy);
+		float bedX = BED_X(ix * 3);
+		float bedY = BED_Y(iy * 3);
         current_position[X_AXIS] = vec_x[0] * bedX + vec_y[0] * bedY + cntr[0];
         current_position[Y_AXIS] = vec_x[1] * bedX + vec_y[1] * bedY + cntr[1];
         // The calibration points are very close to the min Y.
