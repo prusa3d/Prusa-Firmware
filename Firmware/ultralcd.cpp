@@ -3859,7 +3859,7 @@ void lcd_wizard(WizState state)
 				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
-				unload_filament(0); // unload current filament
+				unload_filament(FILAMENTCHANGE_FINALRETRACT); // unload current filament
 				lcd_wizard_load(); // load filament
 				setTargetHotend(0); //we are finished, cooldown nozzle
 				state = S::Restore;

@@ -8391,13 +8391,13 @@ Sigma_Exit:
         M702 [ U | Z ]
     
     #### Parameters
-    - `U` - Retract distance for removal (manual reload). Default value is 0.
+    - `U` - Retract distance for removal (manual reload). Default value is FILAMENTCHANGE_FINALRETRACT.
     - `Z` - Move the Z axis by this distance. Default value is 0 to maintain backwards compatibility with older gcodes.
     */
     case 702:
     {
         float z_target = 0;
-        float unloadLength = 0;
+        float unloadLength = FILAMENTCHANGE_FINALRETRACT;
         if (code_seen('U')) unloadLength = code_value();
 
         // For safety only allow positive values
