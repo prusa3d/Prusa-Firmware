@@ -4859,11 +4859,11 @@ void unload_filament(float unloadLength)
 
     FSensorBlockRunout fsBlockRunout;
 
-    current_position[E_AXIS] -= 45;
+    current_position[E_AXIS] -= FILAMENT_UNLOAD_FAST_RETRACT_LENGTH;
     plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_FAST_RETRACT_FEEDRATE);
     st_synchronize();
 
-    current_position[E_AXIS] -= 35;
+    current_position[E_AXIS] -= FILAMENT_UNLOAD_SLOW_RETRACT_LENGTH;
     plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_SLOW_RETRACT_FEEDRATE);
     st_synchronize();
 
