@@ -336,13 +336,19 @@ bool printer_active();
 bool check_fsensor();
 
 //! Condition where Babystepping is allowed:
-//! 1) Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
-//! 2) Not allowed during Homing (printer busy)
-//! 3) Not allowed during Mesh Bed Leveling (printer busy)
+//! 1) Not allowed during Homing (printer busy)
+//! 2) Not allowed during Mesh Bed Leveling (printer busy)
+//! 3) Not allowed when a print job is paused
 //! 4) Allowed if:
-//!         - First Layer Calibration is running
-//!         - OR there are queued blocks, printJob is running and it's not paused, and Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
+//!         - First Layer Calibration is running (the event when heaters are turned off is used to dismiss the menu)
+//!         - A print job is running
+//!         - If the printer is idle with not planned moves
 bool babystep_allowed();
+
+//! Same as babystep_allowed() but additionally adds a requirement
+//! where the Z-axis position must be less than 2.0mm (only allowed
+//! during the first couple of layers)
+bool babystep_allowed_strict();
 
 extern void calculate_extruder_multipliers();
 
