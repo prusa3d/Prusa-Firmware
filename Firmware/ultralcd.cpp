@@ -67,7 +67,7 @@ int8_t SilentModeMenu = SILENT_MODE_OFF;
 
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
-static bool extraPurgeNeeded = false; ///< lcd_commands - detect if extra purge after MMU-toolchange is necessary or not
+static bool filament_changed = false; ///< lcd_commands - detect if extra purge after MMU-toolchange is necessary or not
 
 CustomMsg custom_message_type = CustomMsg::Status;
 uint8_t custom_message_state = 0;
@@ -807,13 +807,13 @@ void lcd_commands()
                 lay1cal_wait_preheat();
                 break;
             case 11:
-                extraPurgeNeeded = lay1cal_load_filament(lay1cal_filament);
+                filament_changed = lay1cal_load_filament(lay1cal_filament);
                 break;
             case 10:
                 lcd_clear();
                 menu_depth = 0;
                 menu_submenu(lcd_babystep_z, true);
-                lay1cal_intro_line(extraPurgeNeeded, layer_height, extrusion_width);
+                lay1cal_intro_line(filament_changed, layer_height, extrusion_width);
                 break;
             case 9:
                 lay1cal_before_meander();
@@ -837,7 +837,7 @@ void lcd_commands()
                 lay1cal_square(12, layer_height, extrusion_width);
                 break;
             case 2:
-                lay1cal_finish(MMU2::mmu2.Enabled());
+                lay1cal_finish(MMU2::mmu2.Enabled() && filament_changed);
                 break;
             case 1:
                 lcd_setstatuspgm(MSG_WELCOME);

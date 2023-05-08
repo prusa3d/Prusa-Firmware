@@ -66,7 +66,7 @@ void lay1cal_wait_preheat()
 //! @brief Load filament
 //! @param cmd_buffer character buffer needed to format gcodes
 //! @param filament filament to use (applies for MMU only)
-//! @returns true if extra purge distance is needed in case of MMU prints (after a toolchange), otherwise false
+//! @returns true if filament has been changed (therefore an extra purge distance is needed in case of MMU prints), otherwise false
 bool lay1cal_load_filament(uint8_t filament)
 {
     if (MMU2::mmu2.Enabled())
@@ -225,7 +225,7 @@ void lay1cal_square(uint8_t step, float layer_height, float extrusion_width)
     }
 }
 
-void lay1cal_finish(bool mmu_enabled)
+void lay1cal_finish(bool unload_filament)
 {
     static const char cmd_cal_finish_1[] PROGMEM = "G1 E-0.075 F2100"; //retract
     static const char cmd_cal_finish_2[] PROGMEM = "M104 S0"; // turn off temperature
@@ -245,6 +245,6 @@ void lay1cal_finish(bool mmu_enabled)
 
     lay1cal_common_enqueue_loop(cmd_cal_finish, (sizeof(cmd_cal_finish)/sizeof(cmd_cal_finish[0])));
 
-    if (mmu_enabled) enquecommand_P(MSG_M702); //unload from nozzle
+    if (unload_filament) enquecommand_P(MSG_M702); //unload from nozzle
     enquecommand_P(MSG_M84);// disable motors
 }
