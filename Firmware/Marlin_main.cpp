@@ -3054,7 +3054,14 @@ static void gcode_G80()
     }
 
     mbl.active = 1; //activate mesh bed leveling
-    go_home_with_z_lift();
+
+    if (code_seen('O') && !code_value_uint8()) {
+        // Don't let the manage_inactivity() function remove power from the motors.
+        refresh_cmd_timeout();
+    } else {
+        go_home_with_z_lift();
+    }
+
 #ifndef PINDA_THERMISTOR
     //unretract (after PINDA preheat retraction)
     if (temp_compensation_retracted) {
@@ -4852,6 +4859,7 @@ void process_commands()
 	#### Parameters
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
       - `R` - Probe retries. Default 3 max. 10
+      - `O` - Return to origin. Default 1 (true)
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
     #### Additional Parameters
