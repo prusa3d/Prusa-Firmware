@@ -3464,7 +3464,7 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     st_synchronize();
 }
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/) {
+static void gcode_M600(const bool automatic, const float x_position, const float y_position, const float z_shift, const float e_shift, const float e_shift_late) {
     st_synchronize();
     float lastpos[4];
 
@@ -3500,7 +3500,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     } else {
         // Beep, manage nozzle heater and wait for user to start unload filament
         M600_wait_for_user(HotendTempBckp);
-        unload_filament(FILAMENTCHANGE_FINALRETRACT);
+        unload_filament(e_shift_late);
     }
     st_synchronize();          // finish moves
     {
@@ -7590,79 +7590,40 @@ Sigma_Exit:
     
         M600 [ X | Y | Z | E | L | AUTO ]
       
-    - `X`    - X position, default 211
-    - `Y`    - Y position, default 0
+    - `X`    - X position, default FILAMENTCHANGE_XPOS
+    - `Y`    - Y position, default FILAMENTCHANGE_YPOS
     - `Z`    - relative lift Z, default MIN_Z_FOR_SWAP.
-    - `E`    - initial retract, default -2
-    - `L`    - later retract distance for removal, default -80
+    - `E`    - initial retract, default FILAMENTCHANGE_FIRSTRETRACT
+    - `L`    - later retract distance for removal, default FILAMENTCHANGE_FINALRETRACT
     - `AUTO` - Automatically (only with MMU)
     */
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
-	{
-		st_synchronize();
+    {
+    st_synchronize();
 
-		float x_position = current_position[X_AXIS];
-		float y_position = current_position[Y_AXIS];
-		float z_shift = MIN_Z_FOR_SWAP;
-		float e_shift_init = 0;
-		float e_shift_late = 0;
-		bool automatic = false;
-		
-        //Retract extruder
-        if(code_seen('E'))
-        {
-          e_shift_init = code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_FIRSTRETRACT
-            e_shift_init = FILAMENTCHANGE_FIRSTRETRACT ;
-          #endif
-        }
+    float x_position = FILAMENTCHANGE_XPOS;
+    float y_position = FILAMENTCHANGE_YPOS;
+    float z_shift = MIN_Z_FOR_SWAP;
+    float e_shift_init = FILAMENTCHANGE_FIRSTRETRACT;
+    float e_shift_late = FILAMENTCHANGE_FINALRETRACT;
+    bool automatic = false;
 
-		//currently don't work as we are using the same unload sequence as in M702, needs re-work 
-		if (code_seen('L'))
-		{
-			e_shift_late = code_value();
-		}
-		else
-		{
-		  #ifdef FILAMENTCHANGE_FINALRETRACT
-			e_shift_late = FILAMENTCHANGE_FINALRETRACT;
-		  #endif	
-		}
+    //Retract extruder
+    if (code_seen('E')) e_shift_init = code_value();
+    if (code_seen('L')) e_shift_late = code_value();
 
-        // Z lift. For safety only allow positive values
-        if (code_seen('Z')) z_shift = fabs(code_value());
+    // Z lift. For safety only allow positive values
+    if (code_seen('Z')) z_shift = fabs(code_value());
 
-        //Move XY to side
-        if(code_seen('X'))
-        {
-          x_position = code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_XPOS
-			x_position = FILAMENTCHANGE_XPOS;
-          #endif
-        }
-        if(code_seen('Y'))
-        {
-          y_position = code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_YPOS
-            y_position = FILAMENTCHANGE_YPOS ;
-          #endif
-        }
+    //Move XY to side
+    if (code_seen('X')) x_position = code_value();
+    if (code_seen('Y')) y_position = code_value();
 
-		if (MMU2::mmu2.Enabled() && code_seen_P(PSTR("AUTO")))
-			automatic = true;
+    if (MMU2::mmu2.Enabled() && code_seen_P(PSTR("AUTO")))
+        automatic = true;
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
-	
-	}
+    gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+    }
     break;
     #endif //FILAMENTCHANGEENABLE
 
@@ -8438,7 +8399,7 @@ Sigma_Exit:
         M702 [ U | Z ]
     
     #### Parameters
-    - `U` - Retract distance for removal (manual reload). Default value is 0.
+    - `U` - Retract distance for removal (manual reload). Default value is FILAMENTCHANGE_FINALRETRACT.
     - `Z` - Move the Z axis by this distance. Default value is 0 to maintain backwards compatibility with older gcodes.
     */
     case 702:
