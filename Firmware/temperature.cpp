@@ -288,7 +288,6 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
   if (extruder<0)
   {
      soft_pwm_bed = (MAX_BED_POWER)/2;
-	 timer02_set_pwm0(soft_pwm_bed << 1);
      bias = d = (MAX_BED_POWER)/2;
      target_temperature_bed = (int)temp; // to display the requested target bed temperature properly on the main screen
    }
@@ -321,10 +320,8 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
       if(heating == true && input > temp) {
         if(_millis() - t2 > 5000) { 
           heating=false;
-          if (extruder<0)
-		  {
+          if (extruder<0) {
             soft_pwm_bed = (bias - d) >> 1;
-			timer02_set_pwm0(soft_pwm_bed << 1);
 		  }
           else
             soft_pwm[extruder] = (bias - d) >> 1;
@@ -381,7 +378,6 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
           if (extruder<0)
 		  {
             soft_pwm_bed = (bias + d) >> 1;
-			timer02_set_pwm0(soft_pwm_bed << 1);
 		  }
           else
             soft_pwm[extruder] = (bias + d) >> 1;
@@ -1797,12 +1793,10 @@ static void pid_bed(const float current, const int target)
     if(current < BED_MAXTEMP)
     {
         soft_pwm_bed = (int)pid_output >> 1;
-        timer02_set_pwm0(soft_pwm_bed << 1);
     }
     else
     {
         soft_pwm_bed = 0;
-        timer02_set_pwm0(soft_pwm_bed << 1);
     }
 
 #elif !defined(BED_LIMIT_SWITCHING)
@@ -1812,18 +1806,15 @@ static void pid_bed(const float current, const int target)
         if(current >= target)
         {
             soft_pwm_bed = 0;
-            timer02_set_pwm0(soft_pwm_bed << 1);
         }
         else
         {
             soft_pwm_bed = MAX_BED_POWER>>1;
-            timer02_set_pwm0(soft_pwm_bed << 1);
         }
     }
     else
     {
         soft_pwm_bed = 0;
-        timer02_set_pwm0(soft_pwm_bed << 1);
         WRITE(HEATER_BED_PIN,LOW);
     }
 #else //#ifdef BED_LIMIT_SWITCHING
@@ -1833,18 +1824,15 @@ static void pid_bed(const float current, const int target)
         if(current > target + BED_HYSTERESIS)
         {
             soft_pwm_bed = 0;
-            timer02_set_pwm0(soft_pwm_bed << 1);
         }
         else if(current <= target - BED_HYSTERESIS)
         {
             soft_pwm_bed = MAX_BED_POWER>>1;
-            timer02_set_pwm0(soft_pwm_bed << 1);
         }
     }
     else
     {
         soft_pwm_bed = 0;
-        timer02_set_pwm0(soft_pwm_bed << 1);
         WRITE(HEATER_BED_PIN,LOW);
     }
 #endif //BED_LIMIT_SWITCHING
@@ -1852,7 +1840,6 @@ static void pid_bed(const float current, const int target)
     if(target==0)
     {
         soft_pwm_bed = 0;
-        timer02_set_pwm0(soft_pwm_bed << 1);
     }
 #endif //TEMP_SENSOR_BED
 }
@@ -2018,7 +2005,6 @@ void disable_heater()
 #endif
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
       // TODO: this doesn't take immediate effect!
-      timer02_set_pwm0(0);
       bedPWMDisabled = 0;
 #endif
   }
