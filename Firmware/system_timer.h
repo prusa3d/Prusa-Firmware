@@ -16,15 +16,12 @@
 #define _tone tone4
 #define _noTone noTone4
 
-#define timer02_set_pwm0(pwm0)
-
 #else //SYSTEM_TIMER_2
 #define _millis millis
 #define _micros micros
 #define _delay delay
 #define _tone tone
 #define _noTone noTone
-#define timer02_set_pwm0(pwm0)
 #endif //SYSTEM_TIMER_2
 
 // Timer counter, incremented by the 1ms Arduino timer.
