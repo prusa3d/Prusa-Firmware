@@ -366,9 +366,7 @@ bool MMU2::tool_change(uint8_t slot) {
         return false;
 
     if (slot != extruder) {
-        if (/*FindaDetectsFilament()*/
-            /*!IS_SD_PRINTING && !usb_timer.running()*/
-            !marlin_printingIsActive()) {
+        if (FindaDetectsFilament() && !marlin_printingIsActive()) {
             // If Tcodes are used manually through the serial
             // we need to unload manually as well -- but only if FINDA detects filament
             unload();
