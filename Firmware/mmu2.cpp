@@ -194,11 +194,11 @@ void MMU2::CheckFINDARunout() {
 
 struct ReportingRAII {
     CommandInProgress cip;
-    explicit inline ReportingRAII(CommandInProgress cip)
+    explicit inline __attribute__((always_inline)) ReportingRAII(CommandInProgress cip)
         : cip(cip) {
         BeginReport(cip, (uint16_t)ProgressCode::EngagingIdler);
     }
-    inline ~ReportingRAII() {
+    inline __attribute__((always_inline)) ~ReportingRAII() {
         EndReport(cip, (uint16_t)ProgressCode::OK);
     }
 };
