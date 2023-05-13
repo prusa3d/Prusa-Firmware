@@ -2789,7 +2789,7 @@ static void gcode_G80()
 {
     constexpr float XY_AXIS_FEEDRATE = (homing_feedrate[X_AXIS] * 3) / 60;
     constexpr float Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
-    constexpr float Z_CALIBRATION_THRESHOLD = 1.f;
+    constexpr float Z_CALIBRATION_THRESHOLD = 0.35f;
     constexpr float MESH_HOME_Z_SEARCH_FAST = 0.35f;
     st_synchronize();
     if (planner_aborted)
