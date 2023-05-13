@@ -9299,18 +9299,14 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
         get_command();
     }
 
-  if(previous_millis_cmd.expired(max_inactive_time))
-    if(max_inactive_time)
-      kill(PSTR("Inactivity Shutdown"));
-  if(stepper_inactive_time)  {
-    if(previous_millis_cmd.expired(stepper_inactive_time))
-    {
-      if(blocks_queued() == false && ignore_stepper_queue == false) {
-        disable_x();
-        disable_y();
-        disable_z();
-        disable_e0();
-      }
+  if(max_inactive_time && previous_millis_cmd.expired(max_inactive_time))
+    kill(PSTR("Inactivity Shutdown"));
+  if(stepper_inactive_time && previous_millis_cmd.expired(stepper_inactive_time)) {
+    if(blocks_queued() == false && ignore_stepper_queue == false) {
+      disable_x();
+      disable_y();
+      disable_z();
+      disable_e0();
     }
   }
   
