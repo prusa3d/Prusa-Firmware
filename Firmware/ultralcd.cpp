@@ -4758,19 +4758,19 @@ static void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_print(slot + 1);
 }
 
-void FullScreenMsgCut(uint8_t slot){
+static void FullScreenMsgCut(uint8_t slot){
     FullScreenMsg(_T(MSG_CUT_FILAMENT), slot);
 }
 
-void FullScreenMsgEject(uint8_t slot){
+static void FullScreenMsgEject(uint8_t slot){
     FullScreenMsg(_T(MSG_EJECT_FROM_MMU), slot);
 }
 
-void FullScreenMsgTest(uint8_t slot){
+static void FullScreenMsgTest(uint8_t slot){
     FullScreenMsg(_T(MSG_TESTING_FILAMENT), slot);
 }
 
-void FullScreenMsgLoad(uint8_t slot){
+static void FullScreenMsgLoad(uint8_t slot){
     FullScreenMsg(_T(MSG_LOADING_FILAMENT), slot);
 }
 
