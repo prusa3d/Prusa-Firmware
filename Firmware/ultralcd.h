@@ -193,7 +193,8 @@ void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void lcd_generic_preheat_menu();
 void unload_filament(float unloadLength);
 void lcd_AutoLoadFilament();
-
+void lcd_mmu_load_to_nozzle(uint8_t slot);
+void lcd_mmu_eject_filament(uint8_t slot);
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();

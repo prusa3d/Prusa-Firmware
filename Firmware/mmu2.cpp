@@ -336,7 +336,7 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot) {
         } else {         // Prepare a retry attempt
             unload();
             if (retries == 2 && cutter_enabled()) {
-                cut_filament(slot, false); // try cutting filament tip at the last attempt
+                cut_filament(slot); // try cutting filament tip at the last attempt
             }
         }
     }
@@ -473,48 +473,37 @@ bool MMU2::unload() {
     return true;
 }
 
-bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
+bool MMU2::cut_filament(uint8_t slot) {
     if (!WaitForMMUReady())
         return false;
 
-    if (enableFullScreenMsg) {
-        FullScreenMsgCut(slot);
+    if (FindaDetectsFilament() || extruder != MMU2_NO_TOOL) {
+        unload();
     }
-    {
-        if (FindaDetectsFilament()) {
-            unload();
-        }
 
-        ReportingRAII rep(CommandInProgress::CutFilament);
-        for (;;) {
-            Disable_E0();
-            logic.CutFilament(slot);
-            if (manage_response(false, true))
-                break;
-            IncrementMMUFails();
-        }
+    ReportingRAII rep(CommandInProgress::CutFilament);
+    for (;;) {
+        Disable_E0();
+        logic.CutFilament(slot);
+        if (manage_response(false, true))
+            break;
+        IncrementMMUFails();
     }
-    extruder = MMU2_NO_TOOL;
-    tool_change_extruder = MMU2_NO_TOOL;
+
     MakeSound(SoundType::Confirm);
-    ScreenUpdateEnable();
     return true;
 }
 
 bool MMU2::loading_test(uint8_t slot) {
-    FullScreenMsgTest(slot);
     tool_change(slot);
     planner_synchronize();
     unload();
-    ScreenUpdateEnable();
     return true;
 }
 
 bool MMU2::load_filament(uint8_t slot) {
     if (!WaitForMMUReady())
         return false;
-
-    FullScreenMsgLoad(slot);
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
     for (;;) {
@@ -527,8 +516,6 @@ bool MMU2::load_filament(uint8_t slot) {
 
     MakeSound(SoundType::Confirm);
 
-    ScreenUpdateEnable();
-
     return true;
 }
 
@@ -538,49 +525,39 @@ bool MMU2::load_filament_to_nozzle(uint8_t slot) {
 
     WaitForHotendTargetTempBeep();
 
-    FullScreenMsgLoad(slot);
-    {
-        // used for MMU-menu operation "Load to Nozzle"
-        ReportingRAII rep(CommandInProgress::ToolChange);
-        FSensorBlockRunout blockRunout;
+    // used for MMU-menu operation "Load to Nozzle"
+    ReportingRAII rep(CommandInProgress::ToolChange);
+    FSensorBlockRunout blockRunout;
 
-        if (extruder != MMU2_NO_TOOL) { // we already have some filament loaded - free it + shape its tip properly
-            filament_ramming();
-        }
-
-        ToolChangeCommon(slot);
-
-        // Finish loading to the nozzle with finely tuned steps.
-        execute_load_to_nozzle_sequence();
-        MakeSound(Confirm);
+    if (FindaDetectsFilament() || extruder != MMU2_NO_TOOL) {
+        unload();
     }
-    ScreenUpdateEnable();
+
+    ToolChangeCommon(slot);
+
+    // Finish loading to the nozzle with finely tuned steps.
+    execute_load_to_nozzle_sequence();
+    MakeSound(Confirm);
     return true;
 }
 
-bool MMU2::eject_filament(uint8_t slot, bool enableFullScreenMsg /* = true */) {
+bool MMU2::eject_filament(uint8_t slot) {
     if (!WaitForMMUReady())
         return false;
 
-    if (enableFullScreenMsg) {
-        FullScreenMsgEject(slot);
+    if (FindaDetectsFilament() || extruder != MMU2_NO_TOOL) {
+        unload();
     }
-    {
-        if (FindaDetectsFilament()) {
-            unload();
-        }
 
-        ReportingRAII rep(CommandInProgress::EjectFilament);
-        for (;;) {
-            Disable_E0();
-            logic.EjectFilament(slot);
-            if (manage_response(false, true))
-                break;
-            IncrementMMUFails();
-        }
+    ReportingRAII rep(CommandInProgress::EjectFilament);
+    for (;;) {
+        Disable_E0();
+        logic.EjectFilament(slot);
+        if (manage_response(false, true))
+            break;
+        IncrementMMUFails();
     }
-    extruder = MMU2_NO_TOOL;
-    tool_change_extruder = MMU2_NO_TOOL;
+
     MakeSound(Confirm);
     return true;
 }

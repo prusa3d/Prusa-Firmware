@@ -3457,11 +3457,7 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     }
 
     setTargetHotend(nozzle_temp);
-
-    MMU2::mmu2.load_filament_to_nozzle(slot);
-
-    load_filament_final_feed(); // @@TODO verify
-    st_synchronize();
+    lcd_mmu_load_to_nozzle(slot);
 }
 
 static void gcode_M600(const bool automatic, const float x_position, const float y_position, const float z_shift, const float e_shift, const float e_shift_late) {
@@ -3526,7 +3522,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
             if (!automatic) {
                 if (saved_printing){
                     // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
-                    MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
+                    MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool());
                 }
                 mmu_M600_wait_and_beep();
             }
@@ -3576,7 +3572,7 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
 
     if (MMU2::mmu2.Enabled()) {
         if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
-          MMU2::mmu2.load_filament_to_nozzle(mmuSlotIndex);
+          lcd_mmu_load_to_nozzle(mmuSlotIndex);
         } // else do nothing
     } else {
         custom_message_type = CustomMsg::FilamentLoading;
@@ -3617,7 +3613,7 @@ static void gcodes_M704_M705_M706(uint16_t gcode)
                 MMU2::mmu2.load_filament(mmuSlotIndex);
                 break;
             case 705:
-                MMU2::mmu2.eject_filament(mmuSlotIndex, false);
+                MMU2::mmu2.eject_filament(mmuSlotIndex);
                 break;
             case 706:
 #ifdef MMU_HAS_CUTTER
