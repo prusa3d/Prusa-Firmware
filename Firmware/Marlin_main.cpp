@@ -2970,7 +2970,11 @@ static void gcode_G80()
     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
     plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
     st_synchronize();
+    static uint8_t g80_fail_cnt = 0;
     if (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
+        if (g80_fail_cnt++ >= 2) {
+            kill(_i("Mesh bed leveling failed. Please run Z calibration"));
+        }
         Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
         bool bState;
         do   {                             // repeat until Z-leveling o.k.
@@ -3005,6 +3009,8 @@ static void gcode_G80()
         repeatcommand_front();             // re-run (i.e. of "G80")
         return;
     }
+    g80_fail_cnt = 0; // no fail was detected. Reset the error counter.
+
     clean_up_after_endstop_move(l_feedmultiply);
 
 #ifndef PINDA_THERMISTOR
