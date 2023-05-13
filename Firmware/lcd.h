@@ -139,21 +139,22 @@ extern void lcd_buttons_update(void);
 //! When destroyed (gone out of scope), original state of LCD update is restored.
 //! It has zero overhead compared to storing bool saved = lcd_update_enabled
 //! and calling lcd_update_enable(false) and lcd_update_enable(saved).
-class LcdUpdateDisabler
+struct LCDUpdateEnableRAII
 {
 public:
-    LcdUpdateDisabler(): m_updateEnabled(lcd_update_enabled)
+    explicit inline __attribute__((always_inline)) LCDUpdateEnableRAII(): m_updateEnabled(lcd_update_enabled)
     {
-        lcd_update_enable(false);
+        lcd_update_enabled = 0;
     }
-    ~LcdUpdateDisabler()
-    {
-        lcd_update_enable(m_updateEnabled);
+    inline __attribute__((always_inline)) ~LCDUpdateEnableRAII() {
+        lcd_update_enabled = m_updateEnabled;
     }
 
 private:
-    bool m_updateEnabled;
+    uint8_t m_updateEnabled;
 };
+
+static_assert(sizeof(LCDUpdateEnableRAII) == 1);
 
 ////////////////////////////////////
 
