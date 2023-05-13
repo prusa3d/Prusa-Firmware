@@ -2947,12 +2947,12 @@ static void gcode_G80()
                 break;
             }
             if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-                puts_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken."));
+                puts_P(PSTR("Bed leveling failed. Sensor triggered too soon"));
                 break;
             }
         }
         if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-            puts_P(PSTR("Bed leveling failed. Sensor triggered too high."));
+            puts_P(PSTR("Bed leveling failed. Too much variation from eeprom mesh"));
             break;
         }
 
@@ -2973,7 +2973,7 @@ static void gcode_G80()
     static uint8_t g80_fail_cnt = 0;
     if (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
         if (g80_fail_cnt++ >= 2) {
-            kill(_i("Mesh bed leveling failed. Please run Z calibration"));
+            kill(PSTR("Mesh bed leveling failed. Please run Z calibration."));
         }
         Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
         bool bState;
