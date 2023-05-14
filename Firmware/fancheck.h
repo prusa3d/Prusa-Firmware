@@ -15,6 +15,10 @@ extern volatile uint8_t fan_check_error;
 void readFanTach();
 #endif //(defined(TACH_0))
 
+#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
+void setup_fan_interrupt();
+#endif // (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
+
 #ifdef EXTRUDER_ALTFAN_DETECT
 extern bool extruder_altfan_detect();
 extern void altfanOverride_toggle();
