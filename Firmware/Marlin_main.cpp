@@ -172,7 +172,9 @@ int extrudemultiply=100; //100->1 200->2
 
 bool homing_flag = false;
 
+#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 static uint32_t t_fan_rising_edge;
+#endif // #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 LongTimer safetyTimer;
 static LongTimer crashDetTimer;
 
