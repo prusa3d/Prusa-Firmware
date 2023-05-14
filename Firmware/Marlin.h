@@ -385,10 +385,6 @@ void uvlo_tiny();
 void recover_print(uint8_t automatic); 
 void setup_uvlo_interrupt();
 
-#if defined(TACH_1) && TACH_1 >-1
-void setup_fan_interrupt();
-#endif
-
 extern bool recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom(bool mbl_was_active);
 

@@ -128,9 +128,6 @@
 
 #include "cmdqueue.h"
 
-//Macro for print fan speed
-#define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
-
 //filament types 
 #define FILAMENT_DEFAULT 0
 #define FILAMENT_FLEX 1
@@ -172,9 +169,6 @@ int extrudemultiply=100; //100->1 200->2
 
 bool homing_flag = false;
 
-#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-static uint32_t t_fan_rising_edge;
-#endif // #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 LongTimer safetyTimer;
 static LongTimer crashDetTimer;
 
@@ -1476,7 +1470,7 @@ void setup()
 	mbl_settings_init();
 	eeprom_init_default_byte((uint8_t*)EEPROM_MMU_STEALTH, 1);
 
-#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
+#if (!defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
@@ -10570,47 +10564,7 @@ void uvlo_tiny()
     printf_P(_N("UVLO_TINY - end %d\n"), _millis() - time_start);
     uvlo_drain_reset();
 }
-#endif //UVLO_SUPPORT
 
-#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-
-void setup_fan_interrupt() {
-//INT7
-	DDRE &= ~(1 << 7); //input pin
-	PORTE &= ~(1 << 7); //no internal pull-up
-
-	//start with sensing rising edge
-	EICRB &= ~(1 << 6);
-	EICRB |= (1 << 7);
-
-	//enable INT7 interrupt
-	EIMSK |= (1 << 7);
-}
-
-// The fan interrupt is triggered at maximum 325Hz (may be a bit more due to component tollerances),
-// and it takes 4.24 us to process (the interrupt invocation overhead not taken into account).
-ISR(INT7_vect) {
-	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
-#ifdef FAN_SOFT_PWM
-	if (!fan_measuring || (fanSpeedSoftPwm < MIN_PRINT_FAN_SPEED)) return;
-#else //FAN_SOFT_PWM
-	if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
-#endif //FAN_SOFT_PWM
-
-	if ((1 << 6) & EICRB) { //interrupt was triggered by rising edge
-		t_fan_rising_edge = millis_nc();
-	}
-	else { //interrupt was triggered by falling edge
-		if ((millis_nc() - t_fan_rising_edge) >= FAN_PULSE_WIDTH_LIMIT) {//this pulse was from sensor and not from pwm
-			fan_edge_counter[1] += 2; //we are currently counting all edges so lets count two edges for one pulse
-		}
-	}	
-	EICRB ^= (1 << 6); //change edge
-}
-
-#endif
-
-#ifdef UVLO_SUPPORT
 void setup_uvlo_interrupt() {
 	DDRE &= ~(1 << 4); //input pin
 	PORTE &= ~(1 << 4); //no internal pull-up
