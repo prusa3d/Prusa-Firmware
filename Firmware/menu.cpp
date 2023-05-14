@@ -300,7 +300,7 @@ void __attribute__((noinline)) menu_item_function_E(const Sheet &sheet, menu_fun
         if (menu_clicked && (lcd_encoder == menu_item))
         {
             if (func) {
-                LCDUpdateEnableRAII();
+                LCDUpdateEnableRAII lcdup;
                 func();
             }
             menu_item_ret();
@@ -337,7 +337,7 @@ void menu_item_function_P(const char* str, menu_func_t func)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			if (func) {
-				LCDUpdateEnableRAII();
+				LCDUpdateEnableRAII lcdup;
 				func();
 			}
 			menu_item_ret();
@@ -364,7 +364,7 @@ void menu_item_function_P(const char* str, char number, void (*func)(uint8_t), u
         if (menu_clicked && (lcd_encoder == menu_item))
         {
             if (func) {
-                LCDUpdateEnableRAII();
+                LCDUpdateEnableRAII lcdup;
                 func(fn_par);
             }
             menu_item_ret();
@@ -388,7 +388,7 @@ void menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func, c
 			else // do the actual toggling
 			{
 				if (func) {
-					LCDUpdateEnableRAII();
+					LCDUpdateEnableRAII lcdup;
 					func();
 				}
 			}

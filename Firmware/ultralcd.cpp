@@ -282,7 +282,7 @@ static void menu_item_sddir(const char* str_fn, char* str_fnl)
 	}
 	if (menu_clicked && (lcd_encoder == menu_item))
 	{
-		LCDUpdateEnableRAII();
+		LCDUpdateEnableRAII lcdup;
 		menu_action_sddirectory(str_fn);
 		menu_item_ret();
 		return;
@@ -298,7 +298,7 @@ static void menu_item_sdfile(const char* str_fn, char* str_fnl)
 	}
 	if (menu_clicked && (lcd_encoder == menu_item))
 	{
-		LCDUpdateEnableRAII();
+		LCDUpdateEnableRAII lcdup;
 		menu_action_sdfile(str_fn);
 		menu_item_ret();
 		return;
@@ -965,7 +965,7 @@ void lcd_commands()
                 break;
             case 3:
                 {
-                    LCDUpdateEnableRAII(); //hack to avoid lcd_update recursion.
+                    LCDUpdateEnableRAII lcdup; //hack to avoid lcd_update recursion.
                     lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
                 }
                 lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
@@ -985,7 +985,7 @@ void lcd_commands()
                 //|tightend to specs?
                 //| Yes     No
                 enquecommand_P(PSTR("M84 XY"));
-                LCDUpdateEnableRAII(); //hack to avoid lcd_update recursion.
+                LCDUpdateEnableRAII lcdup; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
                     setTargetHotend(0);
 #ifdef THERMAL_MODEL
@@ -2940,7 +2940,7 @@ const char* lcd_display_message_fullscreen_P(const char *msg)
  */
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
-    LCDUpdateEnableRAII();
+    LCDUpdateEnableRAII lcdup;
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 	lcd_consume_click();
@@ -3587,6 +3587,7 @@ void lcd_first_layer_calibration_reset()
 }
 
 void lcd_v2_calibration() {
+	LCDUpdateEnableRAII lcdup;
 	if (MMU2::mmu2.Enabled()) {
 		const uint8_t filament = choose_menu_P(
 			_T(MSG_SELECT_FILAMENT),
@@ -3605,12 +3606,10 @@ void lcd_v2_calibration() {
 		if (fsensor.isReady()) {
 			loaded = fsensor.getFilamentPresent();
 		} else {
-			LCDUpdateEnableRAII();
 			loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
 		}
 
 		if (!loaded) {
-			LCDUpdateEnableRAII();
 			lcd_display_message_fullscreen_P(_i("Please load filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
 			lcd_consume_click();
 			for (uint_least8_t i = 0; i < 20; i++) { //wait max. 2s
@@ -5731,11 +5730,9 @@ void lcd_sdcard_menu()
 		{
 			if (card.presort_flag == true) //used to force resorting if sorting type is changed.
 			{
+				LCDUpdateEnableRAII lcdup;
 				card.presort_flag = false;
-				{
-					LCDUpdateEnableRAII();
-					card.presort();
-				}
+				card.presort();
 			}
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = farm_mode ? SD_SORT_NONE : eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
