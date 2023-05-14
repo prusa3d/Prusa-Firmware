@@ -635,16 +635,9 @@ void crashdet_recover()
   if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
-void crashdet_cancel()
-{
-	saved_printing = false;
-	tmc2130_sg_stop_on_crash = true;
-	if (saved_printing_type == PowerPanic::PRINT_TYPE_SD) {
-		print_stop();
-	}else if(saved_printing_type == PowerPanic::PRINT_TYPE_USB){
-		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		cmdqueue_reset();
-	}
+/// Crash detection cancels the print
+void crashdet_cancel() {
+    print_stop();
 }
 
 #endif //TMC2130
@@ -9693,8 +9686,10 @@ void UnconditionalStop()
     cmdqueue_serial_disabled = false;
 
     // Reset the sd status
-    card.sdprinting = false;
-    card.closefile();
+    if (card.sdprinting) {
+        card.sdprinting = false;
+        card.closefile();
+    }
 
     st_reset_timer();
     CRITICAL_SECTION_END;
