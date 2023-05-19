@@ -863,7 +863,7 @@ FORCE_INLINE void isr() {
             step_rate = acc_step_rate - step_rate; // Decelerate from acceleration end point.
 
             // lower limit
-            if (step_rate < current_block->final_rate)
+            if (step_rate < uint16_t(current_block->final_rate))
                 step_rate = uint16_t(current_block->final_rate);
         }
 
