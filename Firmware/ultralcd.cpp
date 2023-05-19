@@ -5884,9 +5884,6 @@ bool lcd_selftest()
 		if (!MMU2::mmu2.Enabled()) {
 			lcd_detect_IRsensor();
 		}
-		else {
-			fsensor.setSensorRevision(IR_sensor_analog::SensorRevision::_Old, true);
-		}
 	}
 #endif
 	lcd_wait_for_cool_down();
@@ -6669,6 +6666,7 @@ static bool lcd_selftest_fsensor(void)
 //! @retval false failed
 static bool selftest_irsensor()
 {
+    set_extrude_min_temp(0);
     class TempBackup
     {
     public:
@@ -6679,13 +6677,10 @@ static bool selftest_irsensor()
         float m_temp;
     };
     uint8_t progress;
-    {
-        TempBackup tempBackup;
-        setTargetHotend(ABS_PREHEAT_HOTEND_TEMP);
-        progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
-    }
-    progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
-    MMU2::mmu2.unload();
+    progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
+    MMU2::mmu2.tool_change(0); //Allow cold extrusion only loads to the gears not nozzle
+    MMU2::mmu2.unload(); //Unload filament
+    set_extrude_min_temp(EXTRUDE_MINTEMP);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
