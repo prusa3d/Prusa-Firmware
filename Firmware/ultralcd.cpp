@@ -4760,12 +4760,12 @@ static inline void load_filament_wrapper(uint8_t i){
     MMU2::mmu2.load_filament(i);
 }
 
-static void mmu_load_filament_menu() {
+static void mmu_preload_filament_menu() {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), load_all_wrapper);
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_filament_wrapper, i); ////MSG_LOAD_FILAMENT c=16
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_filament_wrapper, i); ////MSG_PRELOAD_TO_MMU c=16
     MENU_END();
 }
 
@@ -5224,7 +5224,7 @@ static void lcd_main_menu()
 
     if ( ! ( printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
         if (MMU2::mmu2.Enabled()) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
+            MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
             MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), mmu_fil_eject_menu);
