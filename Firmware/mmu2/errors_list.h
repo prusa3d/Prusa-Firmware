@@ -77,6 +77,7 @@ typedef enum : uint16_t {
     ERR_SYSTEM_FW_RUNTIME_ERROR = 505,
     ERR_SYSTEM_UNLOAD_MANUALLY = 506,
     ERR_SYSTEM_FILAMENT_EJECTED = 507,
+    ERR_SYSTEM_FILAMENT_CHANGE = 508,
 
     ERR_OTHER_UNKNOWN_ERROR = 900
 } err_num_t;
@@ -129,6 +130,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_SYSTEM_FW_RUNTIME_ERROR,
     ERR_SYSTEM_UNLOAD_MANUALLY,
     ERR_SYSTEM_FILAMENT_EJECTED,
+    ERR_SYSTEM_FILAMENT_CHANGE,
     ERR_OTHER_UNKNOWN_ERROR
 };
 
@@ -183,6 +185,7 @@ static const char MSG_TITLE_FW_UPDATE_NEEDED[] PROGMEM_I1        = ISTR("MMU FW 
 static const char MSG_TITLE_FW_RUNTIME_ERROR[] PROGMEM_I1        = ISTR("FW RUNTIME ERROR"); ////MSG_TITLE_FW_RUNTIME_ERROR c=20
 static const char MSG_TITLE_UNLOAD_MANUALLY[] PROGMEM_I1         = ISTR("UNLOAD MANUALLY"); ////MSG_TITLE_UNLOAD_MANUALLY c=20
 static const char MSG_TITLE_FILAMENT_EJECTED[] PROGMEM_I1        = ISTR("FILAMENT EJECTED"); ////MSG_TITLE_FILAMENT_EJECTED c=20
+static const char MSG_TITLE_FILAMENT_CHANGE[] PROGMEM_I1         = ISTR("FILAMENT CHANGE"); ////MSG_TITLE_FILAMENT_CHANGE c=20
 static const char MSG_TITLE_UNKNOWN_ERROR[] PROGMEM_I1           = ISTR("UNKNOWN ERROR"); ////MSG_TITLE_UNKNOWN_ERROR c=20
 
 static const char * const errorTitles [] PROGMEM = {
@@ -229,6 +232,7 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_FW_RUNTIME_ERROR),
     _R(MSG_TITLE_UNLOAD_MANUALLY),
     _R(MSG_TITLE_FILAMENT_EJECTED),
+    _R(MSG_TITLE_FILAMENT_CHANGE),
     _R(MSG_TITLE_UNKNOWN_ERROR)
 };
 
@@ -278,6 +282,7 @@ static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal
 static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU or updating the firmware."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detected unexpectedly. Ensure no filament is loaded. Check the sensors and wiring."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
+static const char MSG_DESC_FILAMENT_CHANGE[] PROGMEM_I1 = ISTR("Printer is running M600 command"); ////MSG_DESC_FILAMENT_CHANGE c=20 r=8
 static const char MSG_DESC_UNKNOWN_ERROR[] PROGMEM_I1    = ISTR("Unexpected error occurred."); ////MSG_DESC_UNKNOWN_ERROR c=20 r=8
 
 // Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
@@ -332,6 +337,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FW_RUNTIME_ERROR),
     _R(MSG_DESC_UNLOAD_MANUALLY),
     _R(MSG_DESC_FILAMENT_EJECTED),
+    _R(MSG_DESC_FILAMENT_CHANGE),
     _R(MSG_DESC_UNKNOWN_ERROR)
 };
 
@@ -347,6 +353,8 @@ static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY 
 static const char MSG_BTN_CONTINUE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_CONTINUE c=8
 static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN_RESET_MMU c=8
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
+static const char MSG_BTN_LOAD[] PROGMEM_I1 = ISTR("Load"); ////MSG_BTN_LOAD c=8
+static const char MSG_BTN_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_BTN_EJECT c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
 static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); ////MSG_BTN_TUNE_MMU c=8
@@ -358,6 +366,8 @@ static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_CONTINUE),
     _R(MSG_BTN_RESET_MMU),
     _R(MSG_BTN_UNLOAD),
+    _R(MSG_BTN_LOAD),
+    _R(MSG_BTN_EJECT),
     _R(MSG_BTN_STOP),
     _R(MSG_BTN_DISABLE_MMU),
     _R(MSG_BTN_TUNE_MMU),
@@ -418,6 +428,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//FILAMENT_EJECTED
+    Btns(ButtonOperations::Load, ButtonOperations::Eject),//FILAMENT_CHANGE
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//UNKOWN_ERROR
 };
 
