@@ -365,6 +365,7 @@ StepStatus ProtocolLogic::ProcessCommandQueryResponse() {
         // It can also be an X0 F which means MMU just successfully restarted.
         if (ReqMsg().code == rsp.request.code && ReqMsg().value == rsp.request.value) {
             progressCode = ProgressCode::OK;
+            errorCode = ErrorCode::OK;
             scopeState = ScopeState::Ready;
             rq = RequestMsg(RequestMsgCodes::unknown, 0); // clear the successfully finished request
             return Finished;
