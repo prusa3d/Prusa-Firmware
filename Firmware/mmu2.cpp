@@ -721,24 +721,23 @@ void MMU2::CheckUserInput() {
         lastButton = Buttons::NoButton; // Clear it.
     }
 
+    if (mmu2.MMULastErrorSource() == MMU2::ErrorSourcePrinter && btn != Buttons::NoButton)
+    {
+        // When the printer has raised an error screen, and a button was selected
+        // the error screen should always be dismissed.
+        ClearPrinterError();
+        // A horrible hack - clear the explicit printer error allowing manage_response to recover on MMU's Finished state
+        // Moreover - if the MMU is currently doing something (like the LoadFilament - see comment above)
+        // we'll actually wait for it automagically in manage_response and after it finishes correctly,
+        // we'll issue another command (like toolchange)
+    }
+
     switch (btn) {
     case Left:
     case Middle:
     case Right:
         SERIAL_ECHOPGM("CheckUserInput-btnLMR ");
         SERIAL_ECHOLN(btn);
-
-        // clear the explicit printer error as soon as possible so that the MMU error screens + reporting doesn't get too confused
-        if (lastErrorCode == ErrorCode::LOAD_TO_EXTRUDER_FAILED) {
-            // A horrible hack - clear the explicit printer error allowing manage_response to recover on MMU's Finished state
-            // Moreover - if the MMU is currently doing something (like the LoadFilament - see comment above)
-            // we'll actually wait for it automagically in manage_response and after it finishes correctly,
-            // we'll issue another command (like toolchange)
-            logic.ClearPrinterError();
-            lastErrorCode = ErrorCode::OK;
-            lastErrorSource = ErrorSourceNone; // this seems to help clearing the error screen
-        }
-
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
 
         if (mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
@@ -760,6 +759,11 @@ void MMU2::CheckUserInput() {
         break;
     case TuneMMU:
         Tune();
+        break;
+    case Load:
+    case Eject:
+        // High level operation
+        setPrinterButtonOperation(btn);
         break;
     case ResetMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3

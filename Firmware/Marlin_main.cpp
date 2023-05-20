@@ -3414,18 +3414,40 @@ void gcode_M123()
 }
 #endif //FANCHECK and TACH_0 or TACH_1
 
-static void mmu_M600_wait_and_beep() {
-    // Beep and wait for user to remove old filament and prepare new filament for load
-    KEEPALIVE_STATE(PAUSED_FOR_USER);
-
-    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=4
-
-    while (!lcd_clicked()) {
+/// @brief Re-use the MMU error screen UI to present choices for filament change
+/// There are two button actions, Load and Eject
+/// Load will exit the screen and continue as normally by asking the user which slot to load from
+/// Eject will eject the depleted filament, very useful after FINDA runout events.
+/// @param eject_slot the MMU slot to eject if the user selects the Eject button choice
+static void mmu_M600_filament_change_screen(uint8_t eject_slot) {
+    MMU2::Buttons btn;
+    for(;;)
+    {
         manage_heater();
         manage_inactivity(true);
-        sound_wait_for_user();
+
+        btn = MMU2::mmu2.getPrinterButtonOperation();
+        if (btn != MMU2::Buttons::NoButton)
+        {
+            MMU2::mmu2.clearPrinterButtonOperation();
+
+            if (btn == MMU2::Buttons::Eject) {
+                MMU2::mmu2.eject_filament(eject_slot, true);
+                // The MMU will raise FILAMENT_EJECTED screen, and ask the user to confirm
+                // the operation is done. We must be careful to not raise FILAMENT_CHANGE
+                // screen too quickly
+                continue;
+            }
+            else if (btn == MMU2::Buttons::Load)
+            {
+                // External caller is expected to load the filament
+                // This event is used to exit the endless loop
+                return;
+            }
+        }
+
+        MMU2::mmu2.InvokeErrorScreen(ErrorCode::FILAMENT_CHANGE);
     }
-    sound_wait_for_user_reset();
 }
 
 /**
@@ -3471,8 +3493,13 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     st_synchronize();
     float lastpos[4];
 
-        prusa_statistics(22);
-    
+    // When using an MMU, save the currently use slot number
+    // so the firmware can know which slot to eject after the filament
+    // is unloaded.
+    uint8_t eject_slot = 0;
+
+    prusa_statistics(22);
+
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
     float HotendTempBckp = degTargetHotend(active_extruder);
@@ -3499,6 +3526,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
 
     // Unload filament
     if (MMU2::mmu2.Enabled()) {
+        eject_slot = MMU2::mmu2.get_current_tool();
         mmu_M600_unload_filament();
     } else {
         // Beep, manage nozzle heater and wait for user to start unload filament
@@ -3526,13 +3554,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         }
         else // MMU is enabled
         {
-            if (!automatic) {
-                if (saved_printing){
-                    // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
-                    MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
-                }
-                mmu_M600_wait_and_beep();
-            }
+            if (!automatic) mmu_M600_filament_change_screen(eject_slot);
             mmu_M600_load_filament(automatic, HotendTempBckp);
         }
         if (!automatic)
@@ -10820,12 +10842,14 @@ void M600_check_state(float nozzle_temp)
         {
         // Filament failed to load so load it again
         case 2:
-            if (MMU2::mmu2.Enabled()){
+            if (MMU2::mmu2.Enabled()) {
+                uint8_t eject_slot = MMU2::mmu2.get_current_tool();
+
                 // Unload filament
                 mmu_M600_unload_filament();
 
                 // Ask to remove any old filament and load new
-                mmu_M600_wait_and_beep();
+                mmu_M600_filament_change_screen(eject_slot);
 
                 // After user clicks knob, MMU will load the filament
                 mmu_M600_load_filament(false, nozzle_temp);

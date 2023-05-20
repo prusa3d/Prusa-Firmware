@@ -53,6 +53,8 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_MECHANICAL_LOAD_TO_EXTRUDER_FAILED);
     case (uint16_t)ErrorCode::FILAMENT_EJECTED:
         return FindErrorIndex(ERR_SYSTEM_FILAMENT_EJECTED);
+    case (uint16_t)ErrorCode::FILAMENT_CHANGE:
+        return FindErrorIndex(ERR_SYSTEM_FILAMENT_CHANGE);
 
     case (uint16_t)ErrorCode::STALLED_PULLEY:
     case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
@@ -234,6 +236,16 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // User solved the serious mechanical problem by hand - there is no other way around
             return Middle;
+        default:
+            break;
+        }
+        break;
+    case ERR_SYSTEM_FILAMENT_CHANGE:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::Load:
+            return Load;
+        case ButtonOperations::Eject:
+            return Eject;
         default:
             break;
         }
