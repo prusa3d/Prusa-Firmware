@@ -172,9 +172,6 @@ public:
         }
     }
 
-    // Helper variable to monitor knob in MMU error screen in blocking functions e.g. manage_response
-    bool is_mmu_error_monitor_active;
-
     /// Method to read-only mmu_print_saved
     inline bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
 

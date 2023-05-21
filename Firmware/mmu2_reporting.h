@@ -22,6 +22,9 @@ void BeginReport(CommandInProgress cip, uint16_t ec);
 /// Called at the end of every MMU operation
 void EndReport(CommandInProgress cip, uint16_t ec);
 
+/// Return true if the printer's LCD is drawing the error screen
+bool isErrorScreenRunning();
+
 /// @brief Called when the MMU or MK3S sends operation error (even repeatedly).
 /// Render MMU error screen on the LCD. This must be non-blocking
 /// and allow the MMU and printer to communicate with each other.
