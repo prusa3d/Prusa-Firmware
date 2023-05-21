@@ -324,7 +324,7 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot) {
             // if the extruder has been parked, it will get unparked once the ToolChange command finishes OK
             // - so no ResumeUnpark() at this spot
 
-            unload();
+            UnloadInner();
             // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
             // but honestly - if the MMU restarts during every toolchange,
             // something else is seriously broken and stopping a print is probably our best option.
@@ -334,9 +334,9 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot) {
         if (VerifyFilamentEnteredPTFE()) {
             return true; // success
         } else {         // Prepare a retry attempt
-            unload();
+            UnloadInner();
             if (retries == 2 && cutter_enabled()) {
-                cut_filament(slot, false); // try cutting filament tip at the last attempt
+                CutFilamentInner(slot); // try cutting filament tip at the last attempt
             }
         }
     }
@@ -444,33 +444,46 @@ bool MMU2::set_filament_type(uint8_t /*slot*/, uint8_t /*type*/) {
     return true;
 }
 
+void MMU2::UnloadInner() {
+    FSensorBlockRunout blockRunout;
+    filament_ramming();
+
+    // we assume the printer managed to relieve filament tip from the gears,
+    // so repeating that part in case of an MMU restart is not necessary
+    for (;;) {
+        Disable_E0();
+        logic.UnloadFilament();
+        if (manage_response(false, true))
+            break;
+        IncrementMMUFails();
+    }
+    MakeSound(Confirm);
+
+    // no active tool
+    extruder = MMU2_NO_TOOL;
+    tool_change_extruder = MMU2_NO_TOOL;
+}
+
 bool MMU2::unload() {
     if (!WaitForMMUReady())
         return false;
 
     WaitForHotendTargetTempBeep();
 
-    {
-        FSensorBlockRunout blockRunout;
-        ReportingRAII rep(CommandInProgress::UnloadFilament);
-        filament_ramming();
+    ReportingRAII rep(CommandInProgress::UnloadFilament);
+    UnloadInner();
 
-        // we assume the printer managed to relieve filament tip from the gears,
-        // so repeating that part in case of an MMU restart is not necessary
-        for (;;) {
-            Disable_E0();
-            logic.UnloadFilament();
-            if (manage_response(false, true))
-                break;
-            IncrementMMUFails();
-        }
-        MakeSound(Confirm);
-
-        // no active tool
-        extruder = MMU2_NO_TOOL;
-        tool_change_extruder = MMU2_NO_TOOL;
-    }
     return true;
+}
+
+void MMU2::CutFilamentInner(uint8_t slot) {
+    for (;;) {
+        Disable_E0();
+        logic.CutFilament(slot);
+        if (manage_response(false, true))
+            break;
+        IncrementMMUFails();
+    }
 }
 
 bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
@@ -486,13 +499,7 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
         }
 
         ReportingRAII rep(CommandInProgress::CutFilament);
-        for (;;) {
-            Disable_E0();
-            logic.CutFilament(slot);
-            if (manage_response(false, true))
-                break;
-            IncrementMMUFails();
-        }
+        CutFilamentInner(slot);
     }
     extruder = MMU2_NO_TOOL;
     tool_change_extruder = MMU2_NO_TOOL;
