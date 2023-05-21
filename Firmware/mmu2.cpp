@@ -884,7 +884,6 @@ void MMU2::filament_ramming() {
 
 void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     planner_synchronize();
-    Enable_E0();
 
     const E_Step *step = sequence;
     for (uint8_t i = steps; i ; --i) {
