@@ -286,6 +286,8 @@ private:
     bool ToolChangeCommonOnce(uint8_t slot);
 
     void HelpUnloadToFinda();
+    void UnloadInner();
+    void CutFilamentInner(uint8_t slot);
 
     ProtocolLogic logic;          ///< implementation of the protocol logic layer
     uint8_t extruder;             ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
