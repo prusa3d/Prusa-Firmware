@@ -304,6 +304,8 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         }
     }
 
+    Disable_E0();
+
     if (fsensorState) {
         IncrementLoadFails();
         return false;
