@@ -2529,6 +2529,11 @@ msgstr ""
 "MMU fastvareversjon er inkompatibel med skriverens FW. Oppdatering til "
 "versjon 2.1.9."
 
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Forlast til MMU"
+
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
 

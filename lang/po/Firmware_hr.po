@@ -2547,6 +2547,11 @@ msgstr ""
 "Verzija firmware-a MMU nekompatibilna s FW-om pisača. Ažuriranje na verziju "
 "2.1.9."
 
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Predpunjenje MMU"
+
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
 

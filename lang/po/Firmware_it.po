@@ -2552,6 +2552,11 @@ msgstr ""
 "La versione del firmware dell MMU non è compatibile con il firmware della "
 "stampante. Aggiornamento alla versione 2.1.9."
 
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Precarico a MMU"
+
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
 

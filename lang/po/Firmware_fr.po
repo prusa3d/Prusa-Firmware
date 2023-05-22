@@ -2568,6 +2568,11 @@ msgstr ""
 "La version du MMU est incompatible avec le FW de l'imprimante. Mise à jour "
 "vers la version 2.1.9."
 
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Précharge à MMU"
+
 #~ msgid "Reset MMU"
 #~ msgstr "Reini MMU"
 

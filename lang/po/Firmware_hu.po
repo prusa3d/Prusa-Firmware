@@ -2551,6 +2551,11 @@ msgstr ""
 "Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. Frissíts a "
 "2.1.9-es verzióra."
 
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Előtöltés az MMU"
+
 #~ msgid "Reset MMU"
 #~ msgstr "MMUreszet"
 

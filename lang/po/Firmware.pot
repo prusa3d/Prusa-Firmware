@@ -1636,6 +1636,11 @@ msgstr ""
 msgid "Preheating to unload"
 msgstr ""
 
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr ""
+
 #. MSG_PROGRESS_PREPARE_BLADE c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:22
 #: ../../Firmware/mmu2_progress_converter.cpp:53
