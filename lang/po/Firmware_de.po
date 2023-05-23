@@ -2561,7 +2561,7 @@ msgstr ""
 #. MSG_PRELOAD_TO_MMU c=17
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
 msgid "Preload to MMU"
-msgstr "Vorladen in MMU"
+msgstr "In MMU laden"
 
 #~ msgid "Eject filament"
 #~ msgstr "Filamentauswurf"
