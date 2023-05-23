@@ -192,15 +192,15 @@ void checkHitEndstops()
    SERIAL_ECHO_START;
    SERIAL_ECHORPGM(MSG_ENDSTOPS_HIT);
    if(endstop_hit & _BV(X_AXIS)) {
-     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/cs.axis_steps_per_unit[X_AXIS]);
+     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/cs.axis_steps_per_mm[X_AXIS]);
 //     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), PSTR("X")));
    }
    if(endstop_hit & _BV(Y_AXIS)) {
-     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/cs.axis_steps_per_unit[Y_AXIS]);
+     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/cs.axis_steps_per_mm[Y_AXIS]);
 //     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), PSTR("Y")));
    }
    if(endstop_hit & _BV(Z_AXIS)) {
-     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/cs.axis_steps_per_unit[Z_AXIS]);
+     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/cs.axis_steps_per_mm[Z_AXIS]);
 //     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT),PSTR("Z")));
    }
    SERIAL_ECHOLN("");
@@ -1348,7 +1348,7 @@ void st_get_position_xy(long &x, long &y)
 float st_get_position_mm(uint8_t axis)
 {
   float steper_position_in_steps = st_get_position(axis);
-  return steper_position_in_steps / cs.axis_steps_per_unit[axis];
+  return steper_position_in_steps / cs.axis_steps_per_mm[axis];
 }
 
 

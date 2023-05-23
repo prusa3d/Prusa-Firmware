@@ -146,7 +146,7 @@ void uvlo_() {
     uint16_t z_res = tmc2130_get_res(Z_AXIS);
     uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
     current_position[Z_AXIS] += float(1024 - z_microsteps)
-                                / (z_res * cs.axis_steps_per_unit[Z_AXIS])
+                                / (z_res * cs.axis_steps_per_mm[Z_AXIS])
                                 + UVLO_Z_AXIS_SHIFT;
     plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
     st_synchronize();
@@ -244,7 +244,7 @@ static void uvlo_tiny() {
     planner_abort_hard();
 
     // Allow for small roundoffs to be ignored
-    if(fabs(current_position[Z_AXIS] - eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))) >= 1.f/cs.axis_steps_per_unit[Z_AXIS])
+    if(fabs(current_position[Z_AXIS] - eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))) >= 1.f/cs.axis_steps_per_mm[Z_AXIS])
     {
         // Clean the input command queue, inhibit serial processing using saved_printing
         cmdqueue_reset();
@@ -260,7 +260,7 @@ static void uvlo_tiny() {
         uint16_t z_res = tmc2130_get_res(Z_AXIS);
         uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
         current_position[Z_AXIS] += float(1024 - z_microsteps)
-                                    / (z_res * cs.axis_steps_per_unit[Z_AXIS])
+                                    / (z_res * cs.axis_steps_per_mm[Z_AXIS])
                                     + UVLO_TINY_Z_AXIS_SHIFT;
         plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
         st_synchronize();

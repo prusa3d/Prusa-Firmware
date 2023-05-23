@@ -379,7 +379,7 @@ void PAT9125_sensor::init() {
 
     settings_init(); // also sets the state to State::initializing
 
-    calcChunkSteps(cs.axis_steps_per_unit[E_AXIS]); // for jam detection
+    calcChunkSteps(cs.axis_steps_per_mm[E_AXIS]); // for jam detection
 
     if (!pat9125_init()) {
         deinit();
