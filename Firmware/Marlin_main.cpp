@@ -3385,13 +3385,13 @@ void gcode_M114()
 	SERIAL_PROTOCOL(current_position[E_AXIS]);
 
 	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X
-	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / cs.axis_steps_per_unit[X_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / cs.axis_steps_per_mm[X_AXIS]);
 	SERIAL_PROTOCOLPGM(" Y:");
-	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / cs.axis_steps_per_unit[Y_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / cs.axis_steps_per_mm[Y_AXIS]);
 	SERIAL_PROTOCOLPGM(" Z:");
-	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / cs.axis_steps_per_unit[Z_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / cs.axis_steps_per_mm[Z_AXIS]);
 	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOLLN(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
+	SERIAL_PROTOCOLLN(float(st_get_position(E_AXIS)) / cs.axis_steps_per_mm[E_AXIS]);
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -3776,7 +3776,7 @@ static void gcode_M861_print_pinda_cal_eeprom() {
     for (uint8_t i = 0; i < 6; i++) {
         if(i > 0) {
             usteps = eeprom_read_word((uint16_t*) EEPROM_PROBE_TEMP_SHIFT + (i - 1));
-            mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
+            mm = ((float)usteps) / cs.axis_steps_per_mm[Z_AXIS];
             SERIAL_PROTOCOL(i - 1);
         } else {
           SERIAL_PROTOCOLRPGM(MSG_NA);
@@ -3884,7 +3884,7 @@ extern uint8_t st_backlash_y;
 //!          or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
 //!@n M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
 //!@n M86  - Set safety timer expiration time with parameter S<seconds>; M86 S0 will disable safety timer
-//!@n M92  - Set axis_steps_per_unit - same syntax as G92
+//!@n M92  - Set axis_steps_per_mm - same syntax as G92
 //!@n M104 - Set extruder target temp
 //!@n M105 - Read current temp
 //!@n M106 - Fan on
@@ -4565,7 +4565,7 @@ void process_commands()
             // The following code correct the Z height difference from z-probe position and hotend tip position.
             // The Z height on homing is measured by Z-Probe, but the probe is quite far from the hotend.
             // When the bed is uneven, this height must be corrected.
-            real_z = float(st_get_position(Z_AXIS))/cs.axis_steps_per_unit[Z_AXIS];  //get the real Z (since the auto bed leveling is already correcting the plane)
+            real_z = float(st_get_position(Z_AXIS))/cs.axis_steps_per_mm[Z_AXIS];  //get the real Z (since the auto bed leveling is already correcting the plane)
             x_tmp = current_position[X_AXIS] + X_PROBE_OFFSET_FROM_EXTRUDER;
             y_tmp = current_position[Y_AXIS] + Y_PROBE_OFFSET_FROM_EXTRUDER;
             z_tmp = current_position[Z_AXIS];
@@ -4829,7 +4829,7 @@ void process_commands()
                 lcd_temp_cal_show_result(find_z_result);
                 break;
             }
-            z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_unit[Z_AXIS]);
+            z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_mm[Z_AXIS]);
 
             printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
@@ -4914,7 +4914,7 @@ void process_commands()
 			plan_buffer_line_curposXYZE(3000 / 60);
 			st_synchronize();
 			find_bed_induction_sensor_point_z(-1.f);
-			z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_unit[Z_AXIS]);
+			z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_mm[Z_AXIS]);
 
 			printf_P(_N("\nTemperature: %d  Z shift (mm): %.3f\n"), t_c, current_position[Z_AXIS] - zero_z);
 
@@ -6331,18 +6331,18 @@ Sigma_Exit:
           if(i == E_AXIS) { // E
             float value = code_value();
             if(value < 20.0) {
-              float factor = cs.axis_steps_per_unit[i] / value; // increase e constants if M92 E14 is given for netfab.
+              float factor = cs.axis_steps_per_mm[i] / value; // increase e constants if M92 E14 is given for netfab.
               cs.max_jerk[E_AXIS] *= factor;
               max_feedrate[i] *= factor;
               max_acceleration_steps_per_s2[i] *= factor;
             }
-            cs.axis_steps_per_unit[i] = value;
+            cs.axis_steps_per_mm[i] = value;
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
             fsensor.init();
 #endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
           }
           else {
-            cs.axis_steps_per_unit[i] = code_value();
+            cs.axis_steps_per_mm[i] = code_value();
           }
         }
       }
@@ -6708,7 +6708,7 @@ Sigma_Exit:
     #if 0 // Not used for Sprinter/grbl gen6
     case 202: // M202
       for(int8_t i=0; i < NUM_AXIS; i++) {
-        if(code_seen(axis_codes[i])) axis_travel_steps_per_sqr_second[i] = code_value() * cs.axis_steps_per_unit[i];
+        if(code_seen(axis_codes[i])) axis_travel_steps_per_sqr_second[i] = code_value() * cs.axis_steps_per_mm[i];
       }
       break;
     #endif
@@ -7721,7 +7721,7 @@ Sigma_Exit:
 	}
 	if (code_seen('Z')){
 		z_val = code_value();
-		zraw = z_val*cs.axis_steps_per_unit[Z_AXIS];
+		zraw = z_val*cs.axis_steps_per_mm[Z_AXIS];
 		if ((zraw < Z_BABYSTEP_MIN) || (zraw > Z_BABYSTEP_MAX))
 		{
 			SERIAL_PROTOCOLLNPGM(" Z VALUE OUT OF RANGE");
@@ -7732,7 +7732,7 @@ Sigma_Exit:
 	else
 	{
 		zraw = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)));
-		z_val = ((float)zraw/cs.axis_steps_per_unit[Z_AXIS]);
+		z_val = ((float)zraw/cs.axis_steps_per_mm[Z_AXIS]);
 	}
 	
 	if (code_seen('L'))
@@ -8320,13 +8320,13 @@ Sigma_Exit:
 					if (res_new > res)
 					{
 						uint16_t fac = (res_new / res);
-						cs.axis_steps_per_unit[i] *= fac;
+						cs.axis_steps_per_mm[i] *= fac;
 						position[i] *= fac;
 					}
 					else
 					{
 						uint16_t fac = (res / res_new);
-						cs.axis_steps_per_unit[i] /= fac;
+						cs.axis_steps_per_mm[i] /= fac;
 						position[i] /= fac;
 					}
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
@@ -9386,8 +9386,8 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
      float oldepos=current_position[E_AXIS];
      float oldedes=destination[E_AXIS];
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS],
-                      destination[E_AXIS]+EXTRUDER_RUNOUT_EXTRUDE*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS],
-                      EXTRUDER_RUNOUT_SPEED/60.*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS]);
+                      destination[E_AXIS]+EXTRUDER_RUNOUT_EXTRUDE*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_mm[E_AXIS],
+                      EXTRUDER_RUNOUT_SPEED/60.*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_mm[E_AXIS]);
      current_position[E_AXIS]=oldepos;
      destination[E_AXIS]=oldedes;
      plan_set_e_position(oldepos);
@@ -10208,10 +10208,10 @@ static void temp_compensation_apply() {
 		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
 			i_add = (target_temperature_bed - 60) / 10;
 			z_shift = eeprom_read_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i_add);
-			z_shift_mm = z_shift / cs.axis_steps_per_unit[Z_AXIS];
+			z_shift_mm = z_shift / cs.axis_steps_per_mm[Z_AXIS];
 		}else {
 			//interpolation
-			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / cs.axis_steps_per_unit[Z_AXIS];
+			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / cs.axis_steps_per_mm[Z_AXIS];
 		}
 		printf_P(_N("\nZ shift applied:%.3f\n"), z_shift_mm);
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40);
@@ -10302,7 +10302,7 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 {
 	if (!eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE)) return 0;
 	if (!calibration_status_pinda()) return 0;
-	return temp_comp_interpolation(temperature_pinda) / cs.axis_steps_per_unit[Z_AXIS];
+	return temp_comp_interpolation(temperature_pinda) / cs.axis_steps_per_mm[Z_AXIS];
 }
 #endif //PINDA_THERMISTOR
 
