@@ -1062,12 +1062,12 @@ msgstr "Juster Live-Z"
 msgid "Load All"
 msgstr "Last Alle"
 
-#. MSG_LOAD_FILAMENT c=17
+#. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:4952
 #: ../../Firmware/ultralcd.cpp:4971 ../../Firmware/ultralcd.cpp:5032
 #: ../../Firmware/ultralcd.cpp:5425 ../../Firmware/ultralcd.cpp:5442
 msgid "Load filament"
-msgstr "Last inn filament"
+msgstr "Last inn filam."
 
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5426

@@ -1076,7 +1076,7 @@ msgstr "Ajuster Z en dir."
 msgid "Load All"
 msgstr "Tout Charger"
 
-#. MSG_LOAD_FILAMENT c=17
+#. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:4952
 #: ../../Firmware/ultralcd.cpp:4971 ../../Firmware/ultralcd.cpp:5032
 #: ../../Firmware/ultralcd.cpp:5425 ../../Firmware/ultralcd.cpp:5442
