@@ -81,8 +81,8 @@ float* max_feedrate = cs.max_feedrate_normal;
 
 
 // Use M201 to override by software
-unsigned long* max_acceleration_mm_per_s2 = cs.max_acceleration_mm_per_s2_normal;
-unsigned long max_acceleration_steps_per_s2[NUM_AXIS];
+uint32_t* max_acceleration_mm_per_s2 = cs.max_acceleration_mm_per_s2_normal;
+uint32_t max_acceleration_steps_per_s2[NUM_AXIS];
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 // this holds the required transform to compensate for bed level
