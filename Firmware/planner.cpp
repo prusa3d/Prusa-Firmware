@@ -82,7 +82,7 @@ float* max_feedrate = cs.max_feedrate_normal;
 
 // Use M201 to override by software
 unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
-unsigned long axis_steps_per_sqr_second[NUM_AXIS];
+unsigned long max_acceleration_steps_per_s2[NUM_AXIS];
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 // this holds the required transform to compensate for bed level
@@ -1064,14 +1064,14 @@ Having the real displacement of the head, we can calculate the total movement le
 
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
-    if(((float)accel * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
-	{  accel = axis_steps_per_sqr_second[X_AXIS]; }
-    if(((float)accel * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
-	{  accel = axis_steps_per_sqr_second[Y_AXIS]; }
-    if(((float)accel * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
-	{  accel = axis_steps_per_sqr_second[E_AXIS]; }
-    if(((float)accel * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
-	{  accel = axis_steps_per_sqr_second[Z_AXIS]; }
+    if(((float)accel * (float)block->steps_x.wide / (float)block->step_event_count.wide) > max_acceleration_steps_per_s2[X_AXIS])
+	{  accel = max_acceleration_steps_per_s2[X_AXIS]; }
+    if(((float)accel * (float)block->steps_y.wide / (float)block->step_event_count.wide) > max_acceleration_steps_per_s2[Y_AXIS])
+	{  accel = max_acceleration_steps_per_s2[Y_AXIS]; }
+    if(((float)accel * (float)block->steps_e.wide / (float)block->step_event_count.wide) > max_acceleration_steps_per_s2[E_AXIS])
+	{  accel = max_acceleration_steps_per_s2[E_AXIS]; }
+    if(((float)accel * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > max_acceleration_steps_per_s2[Z_AXIS])
+	{  accel = max_acceleration_steps_per_s2[Z_AXIS]; }
   }
   // Acceleration of the segment, in mm/sec^2
   block->acceleration_steps_per_s2 = accel;
@@ -1372,7 +1372,7 @@ void set_extrude_min_temp(int temp)
 void reset_acceleration_rates()
 {
 	for(int8_t i=0; i < NUM_AXIS; i++)
-        axis_steps_per_sqr_second[i] = max_acceleration_units_per_sq_second[i] * cs.axis_steps_per_unit[i];
+        max_acceleration_steps_per_s2[i] = max_acceleration_units_per_sq_second[i] * cs.axis_steps_per_unit[i];
 }
 
 #ifdef TMC2130
