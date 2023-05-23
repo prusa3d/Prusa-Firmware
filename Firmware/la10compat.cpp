@@ -74,7 +74,7 @@ float la10c_jerk(float j)
 
     // check for a compatible range of values prior to convert (be sure that
     // a higher E-jerk would still be compatible wrt the E accell range)
-    if(j < 4.5 && cs.max_acceleration_units_per_sq_second_normal[E_AXIS] < 2000)
+    if(j < 4.5 && cs.max_acceleration_mm_per_s2_normal[E_AXIS] < 2000)
         return j;
 
     // bring low E-jerk values into equivalent LA 1.5 values by
