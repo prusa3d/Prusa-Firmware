@@ -402,11 +402,11 @@ msgstr ""
 "byt zapnuta len v\n"
 "Normalnom rezime"
 
-#. MSG_CUT_FILAMENT c=17
+#. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:327
 #: ../../Firmware/ultralcd.cpp:5007 ../../Firmware/ultralcd.cpp:5431
 msgid "Cut filament"
-msgstr "Odstrihnut filam."
+msgstr "Odstrihnut fil."
 
 #. MSG_CUTTER c=9
 #: ../../Firmware/messages.cpp:130 ../../Firmware/ultralcd.cpp:4182

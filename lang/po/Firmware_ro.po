@@ -405,7 +405,7 @@ msgstr ""
 "poate fi pornita\n"
 "doar in modul normal"
 
-#. MSG_CUT_FILAMENT c=17
+#. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:327
 #: ../../Firmware/ultralcd.cpp:5007 ../../Firmware/ultralcd.cpp:5431
 msgid "Cut filament"
