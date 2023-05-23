@@ -56,9 +56,9 @@ static void lcd_backlight_menu();
 #endif
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
-static bool bFilamentPreheatState;
-static bool bFilamentAction = false;
-static bool bFilamentWaitingFlag = false;
+static bool bFilamentPreheatState; // True if target temperature is above min_temp
+static bool bFilamentWaitingFlag; // True if the preheat menu is waiting for the user
+static bool bFilamentSkipPreheat; // True if waiting for preheat is not required (e.g. MMU Cut and Eject)
 
 int8_t ReInitLCD = 0;
 uint8_t scrollstuff = 0;
@@ -114,13 +114,17 @@ static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
 static void lcd_menu_toolchange_stats_mmu_total();
-static void mmu_unload_filament();
 static void lcd_v2_calibration();
 //static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
 static void mmu_loading_test_menu();
+static void lcd_mmuLoadingTest();
+static void lcd_mmuCutFilament();
+static void lcd_mmuLoadFilament();
+static void lcd_mmuUnloadFilament();
+static void lcd_mmuEjectFilament();
 static void preheat_or_continue(FilamentAction action);
 
 #ifdef MMU_HAS_CUTTER
@@ -1848,7 +1852,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
     // the current temperature is within +-TEMP_HYSTERESIS of the target
     // then continue with the filament action if any is set
-    if (abs((int)current_temperature[0] - nTemp) < TEMP_HYSTERESIS)
+    if (bFilamentSkipPreheat || abs((int)current_temperature[0] - nTemp) < TEMP_HYSTERESIS)
     {
         switch (eFilamentAction)
         {
@@ -1872,32 +1876,27 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             break;
         case FilamentAction::MmuLoad:
             nLevel = bFilamentPreheatState ? 1 : 2;
-            bFilamentAction = true;
             menu_back(nLevel);
             menu_submenu(mmu_load_to_nozzle_menu, true);
             break;
         case FilamentAction::MmuLoadingTest:
             nLevel = bFilamentPreheatState ? 1 : 2;
-            bFilamentAction = true;
             menu_back(nLevel);
             menu_submenu(mmu_loading_test_menu, true);
             break;
         case FilamentAction::MmuUnLoad:
             nLevel = bFilamentPreheatState ? 1 : 2;
-            bFilamentAction = true;
             menu_back(nLevel);
             MMU2::mmu2.unload();
             break;
         case FilamentAction::MmuEject:
             nLevel = bFilamentPreheatState ? 1 : 2;
-            bFilamentAction = true;
             menu_back(nLevel);
             menu_submenu(mmu_fil_eject_menu, true);
             break;
         case FilamentAction::MmuCut:
 #ifdef MMU_HAS_CUTTER
             nLevel=bFilamentPreheatState?1:2;
-            bFilamentAction=true;
             menu_back(nLevel);
             menu_submenu(mmu_cut_filament_menu, true);
 #endif //MMU_HAS_CUTTER
@@ -2097,12 +2096,6 @@ static void lcd_unLoadFilament()
      preheat_or_continue(FilamentAction::UnLoad);
 }
 
-static void mmu_unload_filament()
-{
-    preheat_or_continue(FilamentAction::MmuUnLoad);
-}
-
-
 void lcd_wait_interact() {
 
   lcd_clear();
@@ -2245,9 +2238,16 @@ static void lcd_menu_AutoLoadFilament()
 
 static void preheat_or_continue(FilamentAction action) {
     eFilamentAction = action;
-    if (target_temperature[0] >= extrude_min_temp) {
+
+    // For MMU: If FINDA doesn't detect filament on Cut or Eject action,
+    // then preheating is unnecessary
+    bFilamentSkipPreheat = ( MMU2::mmu2.Enabled() && !MMU2::mmu2.FindaDetectsFilament()
+        && (action == FilamentAction::MmuCut ||  action == FilamentAction::MmuEject) );
+
+    if (bFilamentSkipPreheat || target_temperature[0] >= extrude_min_temp) {
         bFilamentPreheatState = true;
         mFilamentItem(target_temperature[0], target_temperature_bed);
+        bFilamentSkipPreheat = false; // Reset flag
     } else {
         lcd_generic_preheat_menu();
     }
@@ -4443,7 +4443,7 @@ static void lcd_settings_menu()
     if (MMU2::mmu2.Enabled())
     { // Only show menus when communicating with MMU
         menuitems_MMU_settings_common();
-        MENU_ITEM_SUBMENU_P(_T(MSG_LOADING_TEST), mmu_loading_test_menu);
+        MENU_ITEM_SUBMENU_P(_T(MSG_LOADING_TEST), lcd_mmuLoadingTest);
     }
 
     SETTINGS_FANS_CHECK();
@@ -4785,15 +4785,11 @@ static inline void lcd_mmu_load_to_nozzle_wrapper(uint8_t index){
 }
 
 static void mmu_load_to_nozzle_menu() {
-    if (bFilamentAction) {
-        MENU_BEGIN();
-        MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle_wrapper, i); ////MSG_LOAD_FILAMENT c=16
-        MENU_END();
-    } else {
-        preheat_or_continue(FilamentAction::MmuLoad);
-    }
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle_wrapper, i); ////MSG_LOAD_FILAMENT c=16
+    MENU_END();
 }
 
 static void mmu_eject_filament(uint8_t filament) {
@@ -4802,15 +4798,11 @@ static void mmu_eject_filament(uint8_t filament) {
 }
 
 static void mmu_fil_eject_menu() {
-    if (bFilamentAction || (!MMU2::mmu2.FindaDetectsFilament())) {
-        MENU_BEGIN();
-        MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FROM_MMU), i + '1', mmu_eject_filament, i); ////MSG_EJECT_FROM_MMU c=16
-        MENU_END();
-    } else {
-        preheat_or_continue(FilamentAction::MmuEject);
-    }
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FROM_MMU), i + '1', mmu_eject_filament, i); ////MSG_EJECT_FROM_MMU c=16
+    MENU_END();
 }
 
 #ifdef MMU_HAS_CUTTER
@@ -4819,15 +4811,11 @@ static inline void mmu_cut_filament_wrapper(uint8_t index){
 }
 
 static void mmu_cut_filament_menu() {
-    if (bFilamentAction || (!MMU2::mmu2.FindaDetectsFilament())) {
-        MENU_BEGIN();
-        MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament_wrapper, i); ////MSG_CUT_FILAMENT c=16
-        MENU_END();
-    } else {
-        preheat_or_continue(FilamentAction::MmuCut);
-    }
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament_wrapper, i); ////MSG_CUT_FILAMENT c=16
+    MENU_END();
 }
 #endif //MMU_HAS_CUTTER
 
@@ -4842,16 +4830,32 @@ static inline void loading_test_wrapper(uint8_t i){
 }
 
 static void mmu_loading_test_menu() {
-    if (bFilamentAction) {
-        MENU_BEGIN();
-        MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), loading_test_all_wrapper);
-        for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', loading_test_wrapper, i); ////MSG_LOAD_FILAMENT c=16
-        MENU_END();
-    } else {
-        preheat_or_continue(FilamentAction::MmuLoadingTest);
-    }
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), loading_test_all_wrapper);
+    for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', loading_test_wrapper, i); ////MSG_LOAD_FILAMENT c=16
+    MENU_END();
+}
+
+static void lcd_mmuLoadingTest() {
+    preheat_or_continue(FilamentAction::MmuLoadingTest);
+}
+
+static void lcd_mmuCutFilament() {
+    preheat_or_continue(FilamentAction::MmuCut);
+}
+
+static void lcd_mmuLoadFilament() {
+    preheat_or_continue(FilamentAction::MmuLoad);
+}
+
+static void lcd_mmuUnloadFilament() {
+    preheat_or_continue(FilamentAction::MmuUnLoad);
+}
+
+static void lcd_mmuEjectFilament() {
+    preheat_or_continue(FilamentAction::MmuEject);
 }
 
 /// @brief unload filament for single material printer (used in M600 and M702)
@@ -5225,12 +5229,12 @@ static void lcd_main_menu()
     if ( ! ( printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
-            MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
-            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
-            MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), mmu_fil_eject_menu);
+            MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), lcd_mmuLoadFilament);////MSG_LOAD_TO_NOZZLE c=18
+            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
+            MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
 #ifdef  MMU_HAS_CUTTER
             if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
-                MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), mmu_cut_filament_menu);
+                MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), lcd_mmuCutFilament);
             }
 #endif //MMU_HAS_CUTTER
         } else {
