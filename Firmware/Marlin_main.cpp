@@ -6695,10 +6695,10 @@ Sigma_Exit:
 					if (val_silent > SILENT_MAX_ACCEL_XY)
 						val_silent = SILENT_MAX_ACCEL_XY;
 				}
-				cs.max_acceleration_units_per_sq_second_normal[i] = val;
-				cs.max_acceleration_units_per_sq_second_silent[i] = val_silent;
+				cs.max_acceleration_mm_per_s2_normal[i] = val;
+				cs.max_acceleration_mm_per_s2_silent[i] = val_silent;
 #else //TMC2130
-				max_acceleration_units_per_sq_second[i] = val;
+				max_acceleration_mm_per_s2[i] = val;
 #endif //TMC2130
 			}
 		}

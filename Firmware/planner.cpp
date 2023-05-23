@@ -81,7 +81,7 @@ float* max_feedrate = cs.max_feedrate_normal;
 
 
 // Use M201 to override by software
-unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
+unsigned long* max_acceleration_mm_per_s2 = cs.max_acceleration_mm_per_s2_normal;
 unsigned long max_acceleration_steps_per_s2[NUM_AXIS];
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -1371,7 +1371,7 @@ void set_extrude_min_temp(int temp)
 void reset_acceleration_rates()
 {
 	for(int8_t i=0; i < NUM_AXIS; i++)
-        max_acceleration_steps_per_s2[i] = max_acceleration_units_per_sq_second[i] * cs.axis_steps_per_mm[i];
+        max_acceleration_steps_per_s2[i] = max_acceleration_mm_per_s2[i] * cs.axis_steps_per_mm[i];
 }
 
 #ifdef TMC2130
@@ -1380,12 +1380,12 @@ void update_mode_profile()
 	if (tmc2130_mode == TMC2130_MODE_NORMAL)
 	{
 		max_feedrate = cs.max_feedrate_normal;
-		max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
+		max_acceleration_mm_per_s2 = cs.max_acceleration_mm_per_s2_normal;
 	}
 	else if (tmc2130_mode == TMC2130_MODE_SILENT)
 	{
 		max_feedrate = cs.max_feedrate_silent;
-		max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_silent;
+		max_acceleration_mm_per_s2 = cs.max_acceleration_mm_per_s2_silent;
 	}
 	reset_acceleration_rates();
 }
