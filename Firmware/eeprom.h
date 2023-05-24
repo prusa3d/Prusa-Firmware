@@ -92,7 +92,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FF7 4087 | uint8   | EEPROM_CALIBRATION_STATUS_V1          | ffh 255      | ffh 255               | Calibration status (<v3.12)                       | ???          | D3 Ax0ff7 C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Calibrated                                        | ^            | ^
 | ^           | ^       | ^                                     | e6h 230      | ^                     | needs Live Z adjustment                           | ^            | ^
-| ^           | ^       | ^                                     | ebh 235      | ^                     | needs Temp Model calibration                      | ^            | ^
+| ^           | ^       | ^                                     | ebh 235      | ^                     | needs Thermal Model calibration                      | ^            | ^
 | ^           | ^       | ^                                     | f0h 240      | ^               __P__ | needs Z calibration                               | ^            | ^
 | ^           | ^       | ^                                     | fah 250      | ^                     | needs XYZ calibration                             | ^            | ^
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown (legacy)                                  | ^            | ^
@@ -336,14 +336,14 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 03h 3        | ^                     | bad_isr                                           | ^            | ^
 | ^           | ^       | ^                                     | 04h 4        | ^                     | bad_pullup_temp_isr                               | ^            | ^
 | ^           | ^       | ^                                     | 05h 5        | ^                     | bad_pullup_step_isr                               | ^            | ^
-| 0x0D02 3330 | uint8   | EEPROM_THERMAL_MODEL_ENABLE              | 00h 0        | ff/00                 | Temp model deactivated                            | Temp model   | D3 Ax0d02 C1
-| ^           | ^       | ^                                     | 01h 1        | ^                     | Temp model activated                              | ^            | ^
-| 0x0CFE 3326 | float   | EEPROM_THERMAL_MODEL_P                   | ???          | ff ff ff ffh          | Temp model power (W)                              | Temp model   | D3 Ax0cfe C4
-| 0x0CFA 3322 | float   | EEPROM_THERMAL_MODEL_C                   | ???          | ff ff ff ffh          | Temp model capacitance (J/K)                      | Temp model   | D3 Ax0cfa C4
-| 0x0CBA 3258 |float[16]| EEPROM_THERMAL_MODEL_R                   | ???          | ff ff ff ffh          | Temp model resistance (K/W)                       | Temp model   | D3 Ax0cba C64
-| 0x0CB6 3254 | float   | EEPROM_THERMAL_MODEL_Ta_corr             | ???          | ff ff ff ffh          | Temp model ambient temperature correction (K)     | Temp model   | D3 Ax0cb6 C4
-| 0x0CB2 3250 | float   | EEPROM_THERMAL_MODEL_W                   | ???          | ff ff ff ffh          | Temp model warning threshold (K/s)                | Temp model   | D3 Ax0cb2 C4
-| 0x0CAE 3246 | float   | EEPROM_THERMAL_MODEL_E                   | ???          | ff ff ff ffh          | Temp model error threshold (K/s)                  | Temp model   | D3 Ax0cae C4
+| 0x0D02 3330 | uint8   | EEPROM_THERMAL_MODEL_ENABLE              | 00h 0        | ff/00                 | Thermal Model deactivated                            | Thermal Model   | D3 Ax0d02 C1
+| ^           | ^       | ^                                     | 01h 1        | ^                     | Thermal Model activated                              | ^            | ^
+| 0x0CFE 3326 | float   | EEPROM_THERMAL_MODEL_P                   | ???          | ff ff ff ffh          | Thermal Model power (W)                              | Thermal Model   | D3 Ax0cfe C4
+| 0x0CFA 3322 | float   | EEPROM_THERMAL_MODEL_C                   | ???          | ff ff ff ffh          | Thermal Model capacitance (J/K)                      | Thermal Model   | D3 Ax0cfa C4
+| 0x0CBA 3258 |float[16]| EEPROM_THERMAL_MODEL_R                   | ???          | ff ff ff ffh          | Thermal Model resistance (K/W)                       | Thermal Model   | D3 Ax0cba C64
+| 0x0CB6 3254 | float   | EEPROM_THERMAL_MODEL_Ta_corr             | ???          | ff ff ff ffh          | Thermal Model ambient temperature correction (K)     | Thermal Model   | D3 Ax0cb6 C4
+| 0x0CB2 3250 | float   | EEPROM_THERMAL_MODEL_W                   | ???          | ff ff ff ffh          | Thermal Model warning threshold (K/s)                | Thermal Model   | D3 Ax0cb2 C4
+| 0x0CAE 3246 | float   | EEPROM_THERMAL_MODEL_E                   | ???          | ff ff ff ffh          | Thermal Model error threshold (K/s)                  | Thermal Model   | D3 Ax0cae C4
 | 0x0CAD 3245 | uint8   | EEPROM_FSENSOR_JAM_DETECTION          | 01h 1        | ff/01                 | fsensor pat9125 jam detection feature             | LCD menu     | D3 Ax0cad C1
 | 0x0CAC 3244 | uint8   | EEPROM_MMU_ENABLED                    | 00h 0        | ff/00                 | MMU enabled                                       | LCD menu     | D3 Ax0cac C1
 | 0x0CA8 3240 | uint32  | EEPROM_MMU_MATERIAL_CHANGES           | ???          | ff ff ff ffh          | MMU toolchange counter over printers lifetime     | LCD statistic| D3 Ax0ca8 C4
@@ -354,16 +354,16 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Selftest passed                                   | ^            | ^
 | ^           | ^       | ^                                     | 02h 2        | ^                     | XYZ cal passed                                    | ^            | ^
 | ^           | ^       | ^                                     | 04h 4        | ^                     | Z cal passed                                      | ^            | ^
-| ^           | ^       | ^                                     | 08h 8        | ^                     | Temp model cal passed                             | ^            | ^
+| ^           | ^       | ^                                     | 08h 8        | ^                     | Thermal Model cal passed                             | ^            | ^
 | ^           | ^       | ^                                     | 10h 16       | ^                     | Live Adjust set                                   | ^            | ^
 | ^           | ^       | ^                                     | 20h 32       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 40h 64       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 80h 128      | ^                     | Unknown                                           | ^            | ^
-| 0x0CA2 3234 | float   | EEPROM_THERMAL_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca2 C4
-| 0x0C9E 3230 | float   | EEPROM_THERMAL_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0c9e C4
-| 0x0C9A 3226 | float   | EEPROM_THERMAL_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9a C4
-| 0x0C98 3224 | uint16  | EEPROM_THERMAL_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c98 C2
-| 0x0C97 3223 | uint8   | EEPROM_THERMAL_MODEL_VER                 | 0-255        | ffh                   | Temp model Version                                | Temp model   | D3 Ax0c97 C1
+| 0x0CA2 3234 | float   | EEPROM_THERMAL_MODEL_U                   | ???          | ff ff ff ffh          | Thermal Model linear temperature coefficient (W/K/W) | Thermal Model   | D3 Ax0ca2 C4
+| 0x0C9E 3230 | float   | EEPROM_THERMAL_MODEL_V                   | ???          | ff ff ff ffh          | Thermal Model linear temperature intercept (W/W)     | Thermal Model   | D3 Ax0c9e C4
+| 0x0C9A 3226 | float   | EEPROM_THERMAL_MODEL_D                   | ???          | ff ff ff ffh          | Thermal Model sim. 1st order IIR filter factor       | Thermal Model   | D3 Ax0c9a C4
+| 0x0C98 3224 | uint16  | EEPROM_THERMAL_MODEL_L                   | 0-2160       | ff ffh                | Thermal Model sim. response lag (ms)                 | Thermal Model   | D3 Ax0c98 C2
+| 0x0C97 3223 | uint8   | EEPROM_THERMAL_MODEL_VER                 | 0-255        | ffh                   | Thermal Model Version                                | Thermal Model   | D3 Ax0c97 C1
 | 0x0C95 3221 | PGM_P   | EEPROM_KILL_MESSAGE                   | 0-65535      | ff ffh                | Kill message PGM pointer                          | kill()       | D3 Ax0c95 C2
 | 0x0C94 3220 | uint8   | EEPROM_KILL_PENDING_FLAG              | 42h, ffh     | ffh                   | Kill pending flag (0x42 magic value)              | kill()       | D3 Ax0c94 C1
 

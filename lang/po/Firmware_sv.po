@@ -2626,7 +2626,7 @@ msgstr "Ett oväntat fel inträffade."
 #~ msgstr "TM autoinst fallerad"
 
 #~ msgid "Temp. model autotune"
-#~ msgstr "Temp modell autoinst"
+#~ msgstr "Thermal Modell autoinst"
 
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
