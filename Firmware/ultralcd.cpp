@@ -5888,9 +5888,6 @@ bool lcd_selftest()
 		if (!MMU2::mmu2.Enabled()) {
 			lcd_detect_IRsensor();
 		}
-		else {
-			fsensor.setSensorRevision(IR_sensor_analog::SensorRevision::_Old, true);
-		}
 	}
 #endif
 	lcd_wait_for_cool_down();
@@ -6673,50 +6670,17 @@ static bool lcd_selftest_fsensor(void)
 //! @retval false failed
 static bool selftest_irsensor()
 {
-    class TempBackup
-    {
-    public:
-        TempBackup():
-            m_temp(degTargetHotend(active_extruder)){}
-        ~TempBackup(){setTargetHotend(m_temp);}
-    private:
-        float m_temp;
-    };
-    uint8_t progress;
-    {
-        TempBackup tempBackup;
-        setTargetHotend(ABS_PREHEAT_HOTEND_TEMP);
-        progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
-    }
-    progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
-    MMU2::mmu2.unload();
+    // Ask user which slot to load filament from
+    uint8_t slot = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
 
-    for(uint_least8_t i = 0; i < 200; ++i)
-    {
-        if (0 == (i % 32)) progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
+    // Render self-test screen
+    lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
 
-//@@TODO        mmu_load_step(false);
-        while (blocks_queued())
-        {
-            if (fsensor.getFilamentPresent())
-            {
-                lcd_selftest_error(TestError::TriggeringFsensor, "", "");
-                return false;
-            }
-#ifdef TMC2130
-            manage_heater();
-            // Vojtech: Don't disable motors inside the planner!
-            if (!tmc2130_update_sg())
-            {
-                manage_inactivity(true);
-            }
-#else //TMC2130
-            manage_heater();
-            // Vojtech: Don't disable motors inside the planner!
-            manage_inactivity(true);
-#endif //TMC2130
-        }
-    }
+    // Run self-test
+    set_extrude_min_temp(0);
+    MMU2::mmu2.tool_change(slot);
+    MMU2::mmu2.unload(); //Unload filament
+    set_extrude_min_temp(EXTRUDE_MINTEMP);
     return true;
 }
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
