@@ -1551,7 +1551,7 @@ void setup()
           if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST))
               lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
 #ifdef TEMP_MODEL
-          if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL) && temp_model_enabled())
+          if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL) && thermal_model_enabled())
               lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
 #endif //TEMP_MODEL
       }
@@ -7386,23 +7386,23 @@ Sigma_Exit:
         // report values if nothing has been requested
         if(isnan(R) && isnan(P) && isnan(U) && isnan(V) && isnan(C) && isnan(D) && isnan(T) && isnan(W) && isnan(E)
         && I < 0 && S < 0 && B < 0 && A < 0 && L < 0) {
-            temp_model_report_settings();
+            thermal_model_report_settings();
             break;
         }
 
         // update all parameters
         if(B >= 0)
-            temp_model_set_warn_beep(B);
+            thermal_model_set_warn_beep(B);
         if(!isnan(P) || !isnan(U) || !isnan(V) || !isnan(C) || !isnan(D) || (L >= 0) || !isnan(T) || !isnan(W) || !isnan(E))
-            temp_model_set_params(P, U, V, C, D, L, T, W, E);
+            thermal_model_set_params(P, U, V, C, D, L, T, W, E);
         if(I >= 0 && !isnan(R))
-            temp_model_set_resistance(I, R);
+            thermal_model_set_resistance(I, R);
 
         // enable the model last, if requested
-        if(S >= 0) temp_model_set_enabled(S);
+        if(S >= 0) thermal_model_set_enabled(S);
 
         // run autotune
-        if(A >= 0) temp_model_autotune(A, F > 0);
+        if(A >= 0) thermal_model_autotune(A, F > 0);
     }
     break;
 #endif
@@ -8890,7 +8890,7 @@ Sigma_Exit:
     */
     case 70: {
         if(code_seen('S'))
-            temp_model_log_enable(code_value_short());
+            thermal_model_log_enable(code_value_short());
         break;
     }
 #endif

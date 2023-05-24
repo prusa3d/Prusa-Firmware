@@ -175,23 +175,23 @@ FORCE_INLINE void autotempShutdown(){
 void PID_autotune(float temp, int extruder, int ncycles);
 
 #ifdef TEMP_MODEL
-bool temp_model_enabled(); // return temperature model state
-void temp_model_set_enabled(bool enabled);
-void temp_model_set_warn_beep(bool enabled);
-void temp_model_set_params(float P=NAN, float U=NAN, float V=NAN, float C=NAN, float D=NAN,
+bool thermal_model_enabled(); // return temperature model state
+void thermal_model_set_enabled(bool enabled);
+void thermal_model_set_warn_beep(bool enabled);
+void thermal_model_set_params(float P=NAN, float U=NAN, float V=NAN, float C=NAN, float D=NAN,
     int16_t L=-1, float Ta_corr=NAN, float warn=NAN, float err=NAN);
-void temp_model_set_resistance(uint8_t index, float R);
+void thermal_model_set_resistance(uint8_t index, float R);
 
-void temp_model_report_settings();
-void temp_model_reset_settings();
-void temp_model_load_settings();
-void temp_model_save_settings();
+void thermal_model_report_settings();
+void thermal_model_reset_settings();
+void thermal_model_load_settings();
+void thermal_model_save_settings();
 
-void temp_model_autotune(int16_t temp = 0, bool selftest = false);
-bool temp_model_autotune_result(); // return true if the last autotune was complete and successful
+void thermal_model_autotune(int16_t temp = 0, bool selftest = false);
+bool thermal_model_autotune_result(); // return true if the last autotune was complete and successful
 
 #ifdef TEMP_MODEL_DEBUG
-void temp_model_log_enable(bool enable);
+void thermal_model_log_enable(bool enable);
 #endif
 #endif
 

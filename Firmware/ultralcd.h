@@ -51,7 +51,7 @@ void lcd_resume_print();
 void lcd_print_stop(); // interactive print stop
 void print_stop(bool interactive=false);
 #ifdef TEMP_MODEL
-void lcd_temp_model_cal();
+void lcd_thermal_model_cal();
 #endif //TEMP_MODEL
 void lcd_load_filament_color_check();
 

@@ -908,13 +908,13 @@ void lcd_commands()
             break;
 
         case 3:
-            temp_model_set_warn_beep(false);
+            thermal_model_set_warn_beep(false);
             enquecommand_P(PSTR("M310 A F1"));
             lcd_commands_step = 2;
             break;
 
         case 2:
-            if (temp_model_autotune_result())
+            if (thermal_model_autotune_result())
                 enquecommand_P(MSG_M500);
             lcd_commands_step = 1;
             break;
@@ -922,8 +922,8 @@ void lcd_commands()
         case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
-            temp_model_set_warn_beep(true);
-            bool res = temp_model_autotune_result();
+            thermal_model_set_warn_beep(true);
+            bool res = thermal_model_autotune_result();
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
                 // resume the wizard
                 lcd_wizard(res ? WizState::Restore : WizState::Failed);
@@ -954,8 +954,8 @@ void lcd_commands()
                 enquecommand_P(PSTR("G1 X125 Z200 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
 #ifdef TEMP_MODEL
-                was_enabled = temp_model_enabled();
-                temp_model_set_enabled(false);
+                was_enabled = thermal_model_enabled();
+                thermal_model_set_enabled(false);
 #endif //TEMP_MODEL
                 lcd_commands_step = 2;
                 break;
@@ -970,7 +970,7 @@ void lcd_commands()
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
                     setTargetHotend(0);
 #ifdef TEMP_MODEL
-                    temp_model_set_enabled(was_enabled);
+                    thermal_model_set_enabled(was_enabled);
 #endif //TEMP_MODEL
                     lcd_commands_step = 1;
                 }
@@ -4552,7 +4552,7 @@ static void lcd_calibration_menu()
 #endif
   }
 #ifdef TEMP_MODEL
-    MENU_ITEM_SUBMENU_P(_n("Thermal Model cal."), lcd_temp_model_cal);
+    MENU_ITEM_SUBMENU_P(_n("Thermal Model cal."), lcd_thermal_model_cal);
 #endif //TEMP_MODEL
   
   MENU_END();
@@ -5592,7 +5592,7 @@ void lcd_print_stop()
 }
 
 #ifdef TEMP_MODEL
-void lcd_temp_model_cal()
+void lcd_thermal_model_cal()
 {
     lcd_commands_type = LcdCommands::TempModel;
     lcd_return_to_status();
@@ -6448,8 +6448,8 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	target_temperature[0] = (_isbed) ? 0 : 200;
 	target_temperature_bed = (_isbed) ? 100 : 0;
 #ifdef TEMP_MODEL
-	bool tm_was_enabled = temp_model_enabled();
-	temp_model_set_enabled(false);
+	bool tm_was_enabled = thermal_model_enabled();
+	thermal_model_set_enabled(false);
 #endif //TEMP_MODEL
 	manage_heater();
 	manage_inactivity(true);
@@ -6500,7 +6500,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
     }
 
 #ifdef TEMP_MODEL
-	temp_model_set_enabled(tm_was_enabled);
+	thermal_model_set_enabled(tm_was_enabled);
 #endif //TEMP_MODEL
 	manage_heater();
 	manage_inactivity(true);

@@ -94,7 +94,7 @@
 
 #ifdef TEMP_MODEL
 // temperature model interface
-#include "temp_model.h"
+#include "thermal_model.h"
 #endif
 
 #include "Filament_sensor.h"
@@ -556,8 +556,8 @@ void manage_heater()
 
 #ifdef TEMP_MODEL
     // handle model warnings first, so not to override the error handler
-    if(temp_model::warning_state.warning)
-        temp_model::handle_warning();
+    if(thermal_model::warning_state.warning)
+        thermal_model::handle_warning();
 #endif
 
     // handle temperature errors
@@ -568,7 +568,7 @@ void manage_heater()
     checkFans();
 
 #ifdef TEMP_MODEL_DEBUG
-    temp_model::log_usr();
+    thermal_model::log_usr();
 #endif
 }
 
@@ -1962,9 +1962,9 @@ static void temp_mgr_isr()
     check_temp_raw(); // check min/max temp using raw values
     check_temp_runaway(); // classic temperature hysteresis check
 #ifdef TEMP_MODEL
-    temp_model::check(); // model-based heater check
+    thermal_model::check(); // model-based heater check
 #ifdef TEMP_MODEL_DEBUG
-    temp_model::log_isr();
+    thermal_model::log_isr();
 #endif
 #endif
 
@@ -2079,7 +2079,7 @@ static void check_temp_raw()
 }
 
 #ifdef TEMP_MODEL
-namespace temp_model {
+namespace thermal_model {
 
 void model_data::reset(uint8_t heater_pwm _UNUSED, uint8_t fan_pwm _UNUSED,
     float heater_temp _UNUSED, float ambient_temp _UNUSED)
@@ -2165,7 +2165,7 @@ static bool calibrated()
     if(!(data.L > 0)) return false;
     if(!(data.Ta_corr != NAN)) return false;
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i) {
-        if(!(temp_model::data.R[i] >= 0))
+        if(!(thermal_model::data.R[i] >= 0))
             return false;
     }
     if(!(data.warn != NAN)) return false;
@@ -2198,7 +2198,7 @@ static void check()
     warning_state.assert = data.flag_bits.warning;
     if(warning_state.assert) {
         warning_state.warning = true;
-        warning_state.dT_err = temp_model::data.dT_err_prev;
+        warning_state.dT_err = thermal_model::data.dT_err_prev;
     }
 }
 
@@ -2281,42 +2281,42 @@ static void log_isr()
 }
 #endif
 
-} // namespace temp_model
+} // namespace thermal_model
 
-static void temp_model_reset_enabled(bool enabled)
+static void thermal_model_reset_enabled(bool enabled)
 {
     TempMgrGuard temp_mgr_guard;
-    temp_model::enabled = enabled;
-    temp_model::reinitialize();
+    thermal_model::enabled = enabled;
+    thermal_model::reinitialize();
 }
 
-bool temp_model_enabled()
+bool thermal_model_enabled()
 {
-    return temp_model::enabled;
+    return thermal_model::enabled;
 }
 
-void temp_model_set_enabled(bool enabled)
+void thermal_model_set_enabled(bool enabled)
 {
     // set the enabled flag
     {
         TempMgrGuard temp_mgr_guard;
-        temp_model::enabled = enabled;
-        temp_model::setup();
+        thermal_model::enabled = enabled;
+        thermal_model::setup();
     }
 
     // verify that the model has been enabled
-    if(enabled && !temp_model::enabled)
+    if(enabled && !thermal_model::enabled)
         SERIAL_ECHOLNPGM("TM: invalid parameters, cannot enable");
 }
 
-void temp_model_set_warn_beep(bool enabled)
+void thermal_model_set_warn_beep(bool enabled)
 {
-    temp_model::warn_beep = enabled;
+    thermal_model::warn_beep = enabled;
 }
 
 // set the model lag rounding to the effective sample resolution, ensuring the reported/stored lag
 // matches the current model constraints (future-proofing for model changes)
-static void temp_model_set_lag(uint16_t ms)
+static void thermal_model_set_lag(uint16_t ms)
 {
     static const uint16_t intv_ms = (uint16_t)(TEMP_MGR_INTV * 1000);
     uint16_t samples = ((ms + intv_ms/2) / intv_ms);
@@ -2328,75 +2328,75 @@ static void temp_model_set_lag(uint16_t ms)
         samples = TEMP_MODEL_MAX_LAG_SIZE;
 
     // round back to ms
-    temp_model::data.L = samples * intv_ms;
+    thermal_model::data.L = samples * intv_ms;
 }
 
-void temp_model_set_params(float P, float U, float V, float C, float D, int16_t L, float Ta_corr, float warn, float err)
+void thermal_model_set_params(float P, float U, float V, float C, float D, int16_t L, float Ta_corr, float warn, float err)
 {
     TempMgrGuard temp_mgr_guard;
 
-    if(!isnan(P) && P > 0) temp_model::data.P = P;
-    if(!isnan(U)) temp_model::data.U = U;
-    if(!isnan(V)) temp_model::data.V = V;
-    if(!isnan(C) && C > 0) temp_model::data.C = C;
-    if(!isnan(D)) temp_model::data.fS = D;
-    if(L >= 0) temp_model_set_lag(L);
-    if(!isnan(Ta_corr)) temp_model::data.Ta_corr = Ta_corr;
-    if(!isnan(warn) && warn > 0) temp_model::data.warn = warn;
-    if(!isnan(err) && err > 0) temp_model::data.err = err;
+    if(!isnan(P) && P > 0) thermal_model::data.P = P;
+    if(!isnan(U)) thermal_model::data.U = U;
+    if(!isnan(V)) thermal_model::data.V = V;
+    if(!isnan(C) && C > 0) thermal_model::data.C = C;
+    if(!isnan(D)) thermal_model::data.fS = D;
+    if(L >= 0) thermal_model_set_lag(L);
+    if(!isnan(Ta_corr)) thermal_model::data.Ta_corr = Ta_corr;
+    if(!isnan(warn) && warn > 0) thermal_model::data.warn = warn;
+    if(!isnan(err) && err > 0) thermal_model::data.err = err;
 
     // ensure warn <= err
-    if (temp_model::data.warn > temp_model::data.err)
-        temp_model::data.warn = temp_model::data.err;
+    if (thermal_model::data.warn > thermal_model::data.err)
+        thermal_model::data.warn = thermal_model::data.err;
 
-    temp_model::setup();
+    thermal_model::setup();
 }
 
-void temp_model_set_resistance(uint8_t index, float R)
+void thermal_model_set_resistance(uint8_t index, float R)
 {
     if(index >= TEMP_MODEL_R_SIZE || R <= 0)
         return;
 
     TempMgrGuard temp_mgr_guard;
-    temp_model::data.R[index] = R;
-    temp_model::setup();
+    thermal_model::data.R[index] = R;
+    thermal_model::setup();
 }
 
-void temp_model_report_settings()
+void thermal_model_report_settings()
 {
     SERIAL_ECHO_START;
     SERIAL_ECHOLNPGM("Temperature Model settings:");
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
-        printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)temp_model::data.R[i]);
+        printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)thermal_model::data.R[i]);
     printf_P(PSTR("%S  M310 P%.2f U%.4f V%.2f C%.2f D%.4f L%u S%u B%u E%.2f W%.2f T%.2f\n"),
-        echomagic, (double)temp_model::data.P, (double)temp_model::data.U, (double)temp_model::data.V,
-        (double)temp_model::data.C, (double)temp_model::data.fS, (unsigned)temp_model::data.L,
-        (unsigned)temp_model::enabled, (unsigned)temp_model::warn_beep,
-        (double)temp_model::data.err, (double)temp_model::data.warn,
-        (double)temp_model::data.Ta_corr);
+        echomagic, (double)thermal_model::data.P, (double)thermal_model::data.U, (double)thermal_model::data.V,
+        (double)thermal_model::data.C, (double)thermal_model::data.fS, (unsigned)thermal_model::data.L,
+        (unsigned)thermal_model::enabled, (unsigned)thermal_model::warn_beep,
+        (double)thermal_model::data.err, (double)thermal_model::data.warn,
+        (double)thermal_model::data.Ta_corr);
 }
 
-void temp_model_reset_settings()
+void thermal_model_reset_settings()
 {
     TempMgrGuard temp_mgr_guard;
 
-    temp_model::data.P = TEMP_MODEL_DEF(P);
-    temp_model::data.U = TEMP_MODEL_DEF(U);
-    temp_model::data.V = TEMP_MODEL_DEF(V);
-    temp_model::data.C = TEMP_MODEL_DEF(C);
-    temp_model::data.fS = TEMP_MODEL_DEF(fS);
-    temp_model::data.L = (uint16_t)(TEMP_MODEL_DEF(LAG) / (TEMP_MGR_INTV * 1000) + 0.5) * (uint16_t)(TEMP_MGR_INTV * 1000);
+    thermal_model::data.P = TEMP_MODEL_DEF(P);
+    thermal_model::data.U = TEMP_MODEL_DEF(U);
+    thermal_model::data.V = TEMP_MODEL_DEF(V);
+    thermal_model::data.C = TEMP_MODEL_DEF(C);
+    thermal_model::data.fS = TEMP_MODEL_DEF(fS);
+    thermal_model::data.L = (uint16_t)(TEMP_MODEL_DEF(LAG) / (TEMP_MGR_INTV * 1000) + 0.5) * (uint16_t)(TEMP_MGR_INTV * 1000);
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
-        temp_model::data.R[i] = pgm_read_float(TEMP_MODEL_R_DEFAULT + i);
-    temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
-    temp_model::data.warn = TEMP_MODEL_DEF(W);
-    temp_model::data.err = TEMP_MODEL_DEF(E);
-    temp_model::warn_beep = true;
-    temp_model::enabled = true;
-    temp_model::reinitialize();
+        thermal_model::data.R[i] = pgm_read_float(TEMP_MODEL_R_DEFAULT + i);
+    thermal_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
+    thermal_model::data.warn = TEMP_MODEL_DEF(W);
+    thermal_model::data.err = TEMP_MODEL_DEF(E);
+    thermal_model::warn_beep = true;
+    thermal_model::enabled = true;
+    thermal_model::reinitialize();
 }
 
-void temp_model_load_settings()
+void thermal_model_load_settings()
 {
     static_assert(TEMP_MODEL_R_SIZE == 16); // ensure we don't desync with the eeprom table
     TempMgrGuard temp_mgr_guard;
@@ -2409,43 +2409,43 @@ void temp_model_load_settings()
     eeprom_init_default_word((uint16_t*)EEPROM_TEMP_MODEL_L, TEMP_MODEL_DEF(LAG));
     eeprom_init_default_byte((uint8_t*)EEPROM_TEMP_MODEL_VER, TEMP_MODEL_DEF(VER));
 
-    temp_model::enabled = eeprom_read_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE);
-    temp_model::data.P = eeprom_read_float((float*)EEPROM_TEMP_MODEL_P);
-    temp_model::data.U = eeprom_read_float((float*)EEPROM_TEMP_MODEL_U);
-    temp_model::data.V = eeprom_read_float((float*)EEPROM_TEMP_MODEL_V);
-    temp_model::data.C = eeprom_read_float((float*)EEPROM_TEMP_MODEL_C);
-    temp_model::data.fS = eeprom_read_float((float*)EEPROM_TEMP_MODEL_D);
-    temp_model_set_lag(eeprom_read_word((uint16_t*)EEPROM_TEMP_MODEL_L));
+    thermal_model::enabled = eeprom_read_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE);
+    thermal_model::data.P = eeprom_read_float((float*)EEPROM_TEMP_MODEL_P);
+    thermal_model::data.U = eeprom_read_float((float*)EEPROM_TEMP_MODEL_U);
+    thermal_model::data.V = eeprom_read_float((float*)EEPROM_TEMP_MODEL_V);
+    thermal_model::data.C = eeprom_read_float((float*)EEPROM_TEMP_MODEL_C);
+    thermal_model::data.fS = eeprom_read_float((float*)EEPROM_TEMP_MODEL_D);
+    thermal_model_set_lag(eeprom_read_word((uint16_t*)EEPROM_TEMP_MODEL_L));
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
-        temp_model::data.R[i] = eeprom_read_float((float*)EEPROM_TEMP_MODEL_R + i);
-    temp_model::data.Ta_corr = eeprom_read_float((float*)EEPROM_TEMP_MODEL_Ta_corr);
-    temp_model::data.warn = eeprom_read_float((float*)EEPROM_TEMP_MODEL_W);
-    temp_model::data.err = eeprom_read_float((float*)EEPROM_TEMP_MODEL_E);
+        thermal_model::data.R[i] = eeprom_read_float((float*)EEPROM_TEMP_MODEL_R + i);
+    thermal_model::data.Ta_corr = eeprom_read_float((float*)EEPROM_TEMP_MODEL_Ta_corr);
+    thermal_model::data.warn = eeprom_read_float((float*)EEPROM_TEMP_MODEL_W);
+    thermal_model::data.err = eeprom_read_float((float*)EEPROM_TEMP_MODEL_E);
 
-    if(!temp_model::calibrated()) {
+    if(!thermal_model::calibrated()) {
         SERIAL_ECHOLNPGM("TM: stored calibration invalid, resetting");
-        temp_model_reset_settings();
+        thermal_model_reset_settings();
     }
-    temp_model::setup();
+    thermal_model::setup();
 }
 
-void temp_model_save_settings()
+void thermal_model_save_settings()
 {
-    eeprom_update_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE, temp_model::enabled);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_P, temp_model::data.P);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_U, temp_model::data.U);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_V, temp_model::data.V);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_C, temp_model::data.C);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_D, temp_model::data.fS);
-    eeprom_update_word((uint16_t*)EEPROM_TEMP_MODEL_L, temp_model::data.L);
+    eeprom_update_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE, thermal_model::enabled);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_P, thermal_model::data.P);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_U, thermal_model::data.U);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_V, thermal_model::data.V);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_C, thermal_model::data.C);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_D, thermal_model::data.fS);
+    eeprom_update_word((uint16_t*)EEPROM_TEMP_MODEL_L, thermal_model::data.L);
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
-        eeprom_update_float((float*)EEPROM_TEMP_MODEL_R + i, temp_model::data.R[i]);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_Ta_corr, temp_model::data.Ta_corr);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_W, temp_model::data.warn);
-    eeprom_update_float((float*)EEPROM_TEMP_MODEL_E, temp_model::data.err);
+        eeprom_update_float((float*)EEPROM_TEMP_MODEL_R + i, thermal_model::data.R[i]);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_Ta_corr, thermal_model::data.Ta_corr);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_W, thermal_model::data.warn);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_E, thermal_model::data.err);
 }
 
-namespace temp_model_cal {
+namespace thermal_model_cal {
 
 // set current fan speed for both front/backend
 static __attribute__((noinline)) void set_fan_speed(uint8_t fan_speed)
@@ -2491,7 +2491,7 @@ static void cooldown(float temp)
     set_fan_speed(255);
     while(current_temperature[0] >= temp) {
         if(temp_error_state.v) break;
-        float ambient = current_temperature_ambient + temp_model::data.Ta_corr;
+        float ambient = current_temperature_ambient + thermal_model::data.Ta_corr;
         if(current_temperature[0] < (ambient + TEMP_HYSTERESIS)) {
             // do not get stuck waiting very close to ambient temperature
             break;
@@ -2539,12 +2539,12 @@ static uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
 static float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, float ambient)
 {
     *var = v;
-    temp_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
+    thermal_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
     float err = 0;
     uint16_t cnt = 0;
     for(uint16_t i = 1; i < samples; ++i) {
-        temp_model::data.step(rec_buffer[i].pwm, fan_pwm, rec_buffer[i].temp, ambient);
-        float err_v = temp_model::data.dT_err_prev;
+        thermal_model::data.step(rec_buffer[i].pwm, fan_pwm, rec_buffer[i].temp, ambient);
+        float err_v = thermal_model::data.dT_err_prev;
         if(!isnan(err_v)) {
             err += err_v * err_v;
             ++cnt;
@@ -2569,8 +2569,8 @@ static float estimate(uint16_t samples,
 {
     // during estimation we alter the model values without an extra copy to conserve memory
     // so we cannot keep the main checker active until a value has been found
-    bool was_enabled = temp_model::enabled;
-    temp_model_reset_enabled(false);
+    bool was_enabled = thermal_model::enabled;
+    thermal_model_reset_enabled(false);
 
     float orig = *var;
     float e = NAN;
@@ -2595,14 +2595,14 @@ static float estimate(uint16_t samples,
             }
 
             *var = x;
-            temp_model_reset_enabled(was_enabled);
+            thermal_model_reset_enabled(was_enabled);
             return e;
         }
     }
 
     SERIAL_ECHOLNPGM("TM estimation did not converge");
     *var = orig;
-    temp_model_reset_enabled(was_enabled);
+    thermal_model_reset_enabled(was_enabled);
     return NAN;
 }
 
@@ -2633,10 +2633,10 @@ static bool autotune(int16_t cal_temp)
             return true;
 
         // we need a high R value for the initial C guess
-        if(isnan(temp_model::data.R[0]))
-            temp_model::data.R[0] = TEMP_MODEL_CAL_R_high;
+        if(isnan(thermal_model::data.R[0]))
+            thermal_model::data.R[0] = TEMP_MODEL_CAL_R_high;
 
-        e = estimate(samples, &temp_model::data.C,
+        e = estimate(samples, &thermal_model::data.C,
             TEMP_MODEL_CAL_C_low, TEMP_MODEL_CAL_C_high,
             TEMP_MODEL_CAL_C_thr, TEMP_MODEL_CAL_C_itr,
             0, current_temperature_ambient);
@@ -2653,7 +2653,7 @@ static bool autotune(int16_t cal_temp)
         if(temp_error_state.v || !samples)
             return true;
 
-        e = estimate(samples, &temp_model::data.R[0],
+        e = estimate(samples, &thermal_model::data.R[0],
             TEMP_MODEL_CAL_R_low, TEMP_MODEL_CAL_R_high,
             TEMP_MODEL_CAL_R_thr, TEMP_MODEL_CAL_R_itr,
             0, current_temperature_ambient);
@@ -2671,7 +2671,7 @@ static bool autotune(int16_t cal_temp)
     for(int8_t i = TEMP_MODEL_R_SIZE - 1; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
         // always disable the checker while estimating fan resistance as the difference
         // (esp with 3rd-party blowers) can be massive
-        temp_model::data.R[i] = NAN;
+        thermal_model::data.R[i] = NAN;
 
         uint8_t speed = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
         set_fan_speed(speed);
@@ -2685,8 +2685,8 @@ static bool autotune(int16_t cal_temp)
 
         // a fixed fan pwm (the norminal value) is used here, as soft_pwm_fan will be modified
         // during fan measurements and we'd like to include that skew during normal operation.
-        e = estimate(samples, &temp_model::data.R[i],
-            TEMP_MODEL_CAL_R_low, temp_model::data.R[0], TEMP_MODEL_CAL_R_thr, TEMP_MODEL_CAL_R_itr,
+        e = estimate(samples, &thermal_model::data.R[i],
+            TEMP_MODEL_CAL_R_low, thermal_model::data.R[0], TEMP_MODEL_CAL_R_thr, TEMP_MODEL_CAL_R_itr,
             i, current_temperature_ambient);
         if(isnan(e))
             return true;
@@ -2703,25 +2703,25 @@ static bool autotune(int16_t cal_temp)
         int8_t prev = next - TEMP_MODEL_CAL_R_STEP;
         if(prev < 0) prev = 0;
         float f = (float)(i - prev) / TEMP_MODEL_CAL_R_STEP;
-        float d = (temp_model::data.R[next] - temp_model::data.R[prev]);
-        temp_model::data.R[i] = temp_model::data.R[prev] + d * f;
+        float d = (thermal_model::data.R[next] - thermal_model::data.R[prev]);
+        thermal_model::data.R[i] = thermal_model::data.R[prev] + d * f;
     }
 
     return false;
 }
 
-} // namespace temp_model_cal
+} // namespace thermal_model_cal
 
-static bool temp_model_autotune_err = true;
+static bool thermal_model_autotune_err = true;
 
-void temp_model_autotune(int16_t temp, bool selftest)
+void thermal_model_autotune(int16_t temp, bool selftest)
 {
     float orig_C, orig_R[TEMP_MODEL_R_SIZE];
     bool orig_enabled;
-    static_assert(sizeof(orig_R) == sizeof(temp_model::data.R));
+    static_assert(sizeof(orig_R) == sizeof(thermal_model::data.R));
 
     // fail-safe error state
-    temp_model_autotune_err = true;
+    thermal_model_autotune_err = true;
 
     char tm_message[LCD_WIDTH+1];
     if(moves_planned() || printer_active()) {
@@ -2736,56 +2736,56 @@ void temp_model_autotune(int16_t temp, bool selftest)
     lcd_return_to_status();
 
     // save the original model data and set the model checking state during self-calibration
-    orig_C = temp_model::data.C;
-    memcpy(orig_R, temp_model::data.R, sizeof(temp_model::data.R));
-    orig_enabled = temp_model::enabled;
-    temp_model_reset_enabled(selftest);
+    orig_C = thermal_model::data.C;
+    memcpy(orig_R, thermal_model::data.R, sizeof(thermal_model::data.R));
+    orig_enabled = thermal_model::enabled;
+    thermal_model_reset_enabled(selftest);
 
     // autotune
     SERIAL_ECHOLNPGM("TM: calibration start");
-    temp_model_autotune_err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_T_high);
+    thermal_model_autotune_err = thermal_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_T_high);
 
     // always reset temperature
     disable_heater();
 
-    if(temp_model_autotune_err) {
+    if(thermal_model_autotune_err) {
         sprintf_P(tm_message, PSTR("TM: calibr. failed!"));
         lcd_setstatus_serial(tm_message);
         if(temp_error_state.v)
-            temp_model_cal::set_fan_speed(255);
+            thermal_model_cal::set_fan_speed(255);
 
         // show calibrated values before overwriting them
-        temp_model_report_settings();
+        thermal_model_report_settings();
 
         // restore original state
-        temp_model::data.C = orig_C;
-        memcpy(temp_model::data.R, orig_R, sizeof(temp_model::data.R));
-        temp_model_set_enabled(orig_enabled);
+        thermal_model::data.C = orig_C;
+        memcpy(thermal_model::data.R, orig_R, sizeof(thermal_model::data.R));
+        thermal_model_set_enabled(orig_enabled);
     } else {
         calibration_status_set(CALIBRATION_STATUS_TEMP_MODEL);
         lcd_setstatuspgm(MSG_WELCOME);
-        temp_model_cal::set_fan_speed(0);
-        temp_model_set_enabled(orig_enabled);
-        temp_model_report_settings();
+        thermal_model_cal::set_fan_speed(0);
+        thermal_model_set_enabled(orig_enabled);
+        thermal_model_report_settings();
     }
 
     lcd_consume_click();
     menu_unset_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
 }
 
-bool temp_model_autotune_result()
+bool thermal_model_autotune_result()
 {
-    return !temp_model_autotune_err;
+    return !thermal_model_autotune_err;
 }
 
 #ifdef TEMP_MODEL_DEBUG
-void temp_model_log_enable(bool enable)
+void thermal_model_log_enable(bool enable)
 {
     if(enable) {
         TempMgrGuard temp_mgr_guard;
-        temp_model::log_buf.entry.stamp = _millis();
+        thermal_model::log_buf.entry.stamp = _millis();
     }
-    temp_model::log_buf.enabled = enable;
+    thermal_model::log_buf.enabled = enable;
 }
 #endif
 #endif

@@ -402,7 +402,7 @@
 
 #define TEMP_MODEL_Ta_corr -7     // Default ambient temperature correction
 
-#include "temp_model/e3d_v6.h"
+#include "thermal_model/e3d_v6.h"
 #define TEMP_MODEL_DEFAULT E3D_V6 // Default model parameters
 
 
