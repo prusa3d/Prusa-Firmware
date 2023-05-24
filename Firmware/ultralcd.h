@@ -50,9 +50,9 @@ void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop(); // interactive print stop
 void print_stop(bool interactive=false);
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
 void lcd_thermal_model_cal();
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
 void lcd_load_filament_color_check();
 
 extern void lcd_belttest();
@@ -117,9 +117,9 @@ enum class LcdCommands : uint_least8_t
 	LongPause,
 	PidExtruder,
 	Layer1Cal,
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
     TempModel,
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
     NozzleCNG,
 };
 
@@ -225,9 +225,9 @@ enum class WizState : uint8_t
     Selftest,       //!< self test
     Xyz,            //!< xyz calibration
     Z,              //!< z calibration
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
     TempModel,      //!< Temp model calibration
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
     IsFil,          //!< Is filament loaded? First step of 1st layer calibration
     Preheat,        //!< Preheat for any material
     LoadFilCold,    //!< Load filament for MMU

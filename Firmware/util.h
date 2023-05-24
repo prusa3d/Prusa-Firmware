@@ -106,8 +106,8 @@ typedef uint8_t CalibrationStatus;
 const CalibrationStatus CALIBRATION_STATUS_SELFTEST    = 0b00000001; // Selftest
 const CalibrationStatus CALIBRATION_STATUS_XYZ         = 0b00000010; // XYZ calibration
 const CalibrationStatus CALIBRATION_STATUS_Z           = 0b00000100; // Z calibration
-#ifdef TEMP_MODEL
-const CalibrationStatus CALIBRATION_STATUS_TEMP_MODEL  = 0b00001000; // Temperature model calibration
+#ifdef THERMAL_MODEL
+const CalibrationStatus CALIBRATION_STATUS_THERMAL_MODEL  = 0b00001000; // Temperature model calibration
 #endif
 const CalibrationStatus CALIBRATION_STATUS_LIVE_ADJUST = 0b00010000; // 1st layer calibration
 const CalibrationStatus CALIBRATION_STATUS_UNKNOWN     = 0b10000000; // Freshly assembled or unknown status
@@ -117,8 +117,8 @@ const CalibrationStatus CALIBRATION_WIZARD_STEPS =
     CALIBRATION_STATUS_SELFTEST |
     CALIBRATION_STATUS_XYZ |
     CALIBRATION_STATUS_Z |
-#ifdef TEMP_MODEL
-    CALIBRATION_STATUS_TEMP_MODEL |
+#ifdef THERMAL_MODEL
+    CALIBRATION_STATUS_THERMAL_MODEL |
 #endif
     CALIBRATION_STATUS_LIVE_ADJUST;
 

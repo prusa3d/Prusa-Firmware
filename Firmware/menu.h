@@ -35,8 +35,8 @@ extern uint8_t menu_depth;
 enum ESeriousErrors {
 	MENU_BLOCK_NONE                = 0,
 	MENU_BLOCK_THERMAL_ERROR       = 0x01,
-#ifdef TEMP_MODEL
-	MENU_BLOCK_TEMP_MODEL_AUTOTUNE = 0x02,
+#ifdef THERMAL_MODEL
+	MENU_BLOCK_THERMAL_MODEL_AUTOTUNE = 0x02,
 #endif
     MENU_BLOCK_STATUS_SCREEN_M0    = 0x04,
 }; // and possibly others in the future.
