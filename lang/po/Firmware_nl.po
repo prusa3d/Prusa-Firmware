@@ -38,11 +38,11 @@ msgstr "%s niveau verwacht"
 msgid ">Cancel"
 msgstr ">Annuleren"
 
-#. MSG_BABYSTEPPING_Z c=15
+#. MSG_BABYSTEPPING_Z c=13
 #. Beware: must include the ':' as its last character
 #: ../../Firmware/ultralcd.cpp:2656
-msgid "Adjusting Z:"
-msgstr "Z is ingesteld:"
+msgid "Adjusting Z"
+msgstr "Z aanpassen"
 
 #. MSG_SELFTEST_CHECK_ALLCORRECT c=20
 #: ../../Firmware/ultralcd.cpp:7155

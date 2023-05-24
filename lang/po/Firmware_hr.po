@@ -38,11 +38,11 @@ msgstr "%s level ocekivan"
 msgid ">Cancel"
 msgstr ">Otkazati"
 
-#. MSG_BABYSTEPPING_Z c=15
+#. MSG_BABYSTEPPING_Z c=13
 #. Beware: must include the ':' as its last character
 #: ../../Firmware/ultralcd.cpp:2656
-msgid "Adjusting Z:"
-msgstr "Podesavanje Z:"
+msgid "Adjusting Z"
+msgstr "Podesavanje Z"
 
 #. MSG_SELFTEST_CHECK_ALLCORRECT c=20
 #: ../../Firmware/ultralcd.cpp:7155
