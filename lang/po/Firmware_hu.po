@@ -2533,6 +2533,14 @@ msgstr ""
 msgid "Preload to MMU"
 msgstr "Betöltés az MMUba"
 
+#. MSG_FW_MK3_DETECTED c=20 r=4
+msgid "MK3 firmware detected on MK3S printer"
+msgstr "MK3 firmver telepitve MK3S nyomtatora"
+
+#. MSG_FW_MK3S_DETECTED c=20 r=4
+msgid "MK3S firmware detected on MK3 printer"
+msgstr "MK3S firmver eszlelve MK3 nyomtaton"
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH inicializal"
 
@@ -2586,12 +2594,6 @@ msgstr "Betöltés az MMUba"
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117. Elso reteg kalibr."
-
-#~ msgid "MK3 firmware detected on MK3S printer"
-#~ msgstr "MK3 firmver telepitve MK3S nyomtatora"
-
-#~ msgid "MK3S firmware detected on MK3 printer"
-#~ msgstr "MK3S firmver eszlelve MK3 nyomtaton"
 
 #~ msgid "MMU OK. Resuming position..."
 #~ msgstr "MMU OK. Pozicio visszaallitasa..."

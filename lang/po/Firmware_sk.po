@@ -2517,6 +2517,14 @@ msgstr ""
 msgid "Preload to MMU"
 msgstr "Predzásobenie MMU"
 
+#. MSG_FW_MK3_DETECTED c=20 r=4
+msgid "MK3 firmware detected on MK3S printer"
+msgstr "MK3 firmware na MK3S tlaciarni"
+
+#. MSG_FW_MK3S_DETECTED c=20 r=4
+msgid "MK3S firmware detected on MK3 printer"
+msgstr "MK3S firmware na MK3 tlaciarni"
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
 
@@ -2571,12 +2579,6 @@ msgstr "Predzásobenie MMU"
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Kal. prvej vrstvy"
-
-#~ msgid "MK3 firmware detected on MK3S printer"
-#~ msgstr "MK3 firmware na MK3S tlaciarni"
-
-#~ msgid "MK3S firmware detected on MK3 printer"
-#~ msgstr "MK3S firmware na MK3 tlaciarni"
 
 #~ msgid "MMU OK. Resuming position..."
 #~ msgstr "MMU OK. Pokracujem v tlaci..."

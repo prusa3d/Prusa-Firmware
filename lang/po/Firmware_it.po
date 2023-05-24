@@ -2534,6 +2534,14 @@ msgstr ""
 msgid "Preload to MMU"
 msgstr "Precarica MMU"
 
+#. MSG_FW_MK3_DETECTED c=20 r=4
+msgid "MK3 firmware detected on MK3S printer"
+msgstr "Firmware MK3 rilevato su stampante MK3S"
+
+#. MSG_FW_MK3S_DETECTED c=20 r=4
+msgid "MK3S firmware detected on MK3 printer"
+msgstr "Firmware MK3S rilevato su stampante MK3"
+
 #~ msgid "XFLASH init"
 #~ msgstr "Inizializza XFLASH"
 
@@ -2588,12 +2596,6 @@ msgstr "Precarica MMU"
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Calibr. primo strato"
-
-#~ msgid "MK3 firmware detected on MK3S printer"
-#~ msgstr "Firmware MK3 rilevato su stampante MK3S"
-
-#~ msgid "MK3S firmware detected on MK3 printer"
-#~ msgstr "Firmware MK3S rilevato su stampante MK3"
 
 #~ msgid "MMU OK. Resuming position..."
 #~ msgstr "MMU OK. riprendendo la posizione..."

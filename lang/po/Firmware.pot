@@ -2417,3 +2417,11 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:5699
 msgid "🔃Refresh"
 msgstr ""
+
+#. MSG_FW_MK3S_DETECTED c=20 r=4
+msgid "MK3S firmware detected on MK3 printer"
+msgstr ""
+
+#. MSG_FW_MK3_DETECTED c=20 r=4
+msgid "MK3 firmware detected on MK3S printer"
+msgstr ""

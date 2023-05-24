@@ -2524,6 +2524,14 @@ msgstr ""
 msgid "Preload to MMU"
 msgstr "Förladdning MMU"
 
+#. MSG_FW_MK3_DETECTED c=20 r=4
+msgid "MK3 firmware detected on MK3S printer"
+msgstr "MK3-firmware upptäckt på MK3S-skrivare"
+
+#. MSG_FW_MK3S_DETECTED c=20 r=4
+msgid "MK3S firmware detected on MK3 printer"
+msgstr "MK3S-firmware upptäckt på MK3-skrivare"
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
 
@@ -2577,12 +2585,6 @@ msgstr "Förladdning MMU"
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Först lager kalibr."
-
-#~ msgid "MK3 firmware detected on MK3S printer"
-#~ msgstr "MK3-firmware upptäckt på MK3S-skrivare"
-
-#~ msgid "MK3S firmware detected on MK3 printer"
-#~ msgstr "MK3S-firmware upptäckt på MK3-skrivare"
 
 #~ msgid "MMU OK. Resuming position..."
 #~ msgstr "MMU OK. Återupptar position..."
