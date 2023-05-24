@@ -118,7 +118,7 @@ enum class LcdCommands : uint_least8_t
 	PidExtruder,
 	Layer1Cal,
 #ifdef THERMAL_MODEL
-    TempModel,
+    ThermalModel,
 #endif //THERMAL_MODEL
     NozzleCNG,
 };
@@ -226,7 +226,7 @@ enum class WizState : uint8_t
     Xyz,            //!< xyz calibration
     Z,              //!< z calibration
 #ifdef THERMAL_MODEL
-    TempModel,      //!< Thermal Model calibration
+    ThermalModel,      //!< Thermal Model calibration
 #endif //THERMAL_MODEL
     IsFil,          //!< Is filament loaded? First step of 1st layer calibration
     Preheat,        //!< Preheat for any material

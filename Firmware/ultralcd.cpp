@@ -888,7 +888,7 @@ void lcd_commands()
 	}
 
 #ifdef THERMAL_MODEL
-    if (lcd_commands_type == LcdCommands::TempModel && cmd_buffer_empty())
+    if (lcd_commands_type == LcdCommands::ThermalModel && cmd_buffer_empty())
     {
         switch (lcd_commands_step)
         {
@@ -3804,7 +3804,7 @@ void lcd_wizard(WizState state)
 				state = S::Z;
 #ifdef THERMAL_MODEL
 			} else if (!calibration_status_get(CALIBRATION_STATUS_THERMAL_MODEL)) {
-				state = S::TempModel;
+				state = S::ThermalModel;
 #endif //THERMAL_MODEL
 			} else if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST)) {
 				state = S::IsFil;
@@ -3848,9 +3848,9 @@ void lcd_wizard(WizState state)
 			}
 			break;
 #ifdef THERMAL_MODEL
-		case S::TempModel:
+		case S::ThermalModel:
 			lcd_show_fullscreen_message_and_wait_P(_i("Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"));////MSG_TM_CAL c=20 r=4
-			lcd_commands_type = LcdCommands::TempModel;
+			lcd_commands_type = LcdCommands::ThermalModel;
 			end = true; // Leave wizard temporarily for TM cal.
 			break;
 #endif //THERMAL_MODEL
@@ -5594,7 +5594,7 @@ void lcd_print_stop()
 #ifdef THERMAL_MODEL
 void lcd_thermal_model_cal()
 {
-    lcd_commands_type = LcdCommands::TempModel;
+    lcd_commands_type = LcdCommands::ThermalModel;
     lcd_return_to_status();
 }
 #endif //THERMAL_MODEL
