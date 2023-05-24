@@ -93,7 +93,7 @@
 #define DISABLE_TEMP_MGR_INTERRUPT() TIMSKx &= ~(1<<OCIExA)
 
 #ifdef THERMAL_MODEL
-// temperature model interface
+// thermal model interface
 #include "thermal_model.h"
 #endif
 
@@ -2365,7 +2365,7 @@ void thermal_model_set_resistance(uint8_t index, float R)
 void thermal_model_report_settings()
 {
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Temperature Model settings:");
+    SERIAL_ECHOLNPGM("Thermal Model settings:");
     for(uint8_t i = 0; i != THERMAL_MODEL_R_SIZE; ++i)
         printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)thermal_model::data.R[i]);
     printf_P(PSTR("%S  M310 P%.2f U%.4f V%.2f C%.2f D%.4f L%u S%u B%u E%.2f W%.2f T%.2f\n"),

@@ -107,7 +107,7 @@ const CalibrationStatus CALIBRATION_STATUS_SELFTEST    = 0b00000001; // Selftest
 const CalibrationStatus CALIBRATION_STATUS_XYZ         = 0b00000010; // XYZ calibration
 const CalibrationStatus CALIBRATION_STATUS_Z           = 0b00000100; // Z calibration
 #ifdef THERMAL_MODEL
-const CalibrationStatus CALIBRATION_STATUS_THERMAL_MODEL  = 0b00001000; // Temperature model calibration
+const CalibrationStatus CALIBRATION_STATUS_THERMAL_MODEL  = 0b00001000; // Thermal model calibration
 #endif
 const CalibrationStatus CALIBRATION_STATUS_LIVE_ADJUST = 0b00010000; // 1st layer calibration
 const CalibrationStatus CALIBRATION_STATUS_UNKNOWN     = 0b10000000; // Freshly assembled or unknown status

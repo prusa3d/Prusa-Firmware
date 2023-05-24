@@ -175,7 +175,7 @@ FORCE_INLINE void autotempShutdown(){
 void PID_autotune(float temp, int extruder, int ncycles);
 
 #ifdef THERMAL_MODEL
-bool thermal_model_enabled(); // return temperature model state
+bool thermal_model_enabled(); // return thermal model state
 void thermal_model_set_enabled(bool enabled);
 void thermal_model_set_warn_beep(bool enabled);
 void thermal_model_set_params(float P=NAN, float U=NAN, float V=NAN, float C=NAN, float D=NAN,

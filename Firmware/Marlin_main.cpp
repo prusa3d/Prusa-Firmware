@@ -3932,7 +3932,7 @@ extern uint8_t st_backlash_y;
 //!@n M302 - Allow cold extrudes, or set the minimum extrude S<temperature>.
 //!@n M303 - PID relay autotune S<temperature> sets the target temperature. (default target temperature = 150C)
 //!@n M304 - Set bed PID parameters P I and D
-//!@n M310 - Temperature model settings
+//!@n M310 - Thermal model settings
 //!@n M400 - Finish all moves
 //!@n M401 - Lower z-probe if present
 //!@n M402 - Raise z-probe if present
@@ -7332,7 +7332,7 @@ Sigma_Exit:
 
 #ifdef THERMAL_MODEL
     /*!
-    ### M310 - Temperature model settings <a href="https://reprap.org/wiki/G-code#M310:_Temperature_model_settings">M310: Temperature model settings</a>
+    ### M310 - Thermal model settings <a href="https://reprap.org/wiki/G-code#M310:_Temperature_model_settings">M310: Thermal model settings</a>
     #### Usage
 
         M310                                           ; report values
@@ -8880,7 +8880,7 @@ Sigma_Exit:
 
 #ifdef THERMAL_MODEL_DEBUG
     /*!
-    ## D70 - Enable low-level temperature model logging for offline simulation
+    ## D70 - Enable low-level thermal model logging for offline simulation
     #### Usage
 
         D70 [ S ]

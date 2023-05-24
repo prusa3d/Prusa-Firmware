@@ -67,9 +67,9 @@ Set the required TTY flags on the specified port to avoid reset-on-connect for *
 
 ### ``tml_decode``
 
-Decode (or plot) the temperature model trace from a serial log file.
+Decode (or plot) the thermal model trace from a serial log file.
 
-The TML trace needs to be enabled by issuing "M155 S1 C3" and "D70 S1" to the printer, generally followed by a temperature model calibration request "M310 A F0".
+The TML trace needs to be enabled by issuing "M155 S1 C3" and "D70 S1" to the printer, generally followed by a thermal model calibration request "M310 A F0".
 
 The parser is not strict, and will consume most serial logs with/without timestamps.
 
