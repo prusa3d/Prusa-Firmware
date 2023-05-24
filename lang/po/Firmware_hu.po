@@ -402,7 +402,7 @@ msgstr ""
 "normal modban\n"
 "kapcsolhato be"
 
-#. MSG_CUT_FILAMENT c=17
+#. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:327
 #: ../../Firmware/ultralcd.cpp:5007 ../../Firmware/ultralcd.cpp:5431
 msgid "Cut filament"
@@ -1069,7 +1069,7 @@ msgstr "Z magassag beall."
 msgid "Load All"
 msgstr "Ossz.bet"
 
-#. MSG_LOAD_FILAMENT c=17
+#. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:4952
 #: ../../Firmware/ultralcd.cpp:4971 ../../Firmware/ultralcd.cpp:5032
 #: ../../Firmware/ultralcd.cpp:5425 ../../Firmware/ultralcd.cpp:5442
@@ -2550,6 +2550,11 @@ msgid ""
 msgstr ""
 "Az MMU firmware-verziója nem kompatibilis a nyomtató FW-vel. Frissíts a "
 "2.1.9-es verzióra."
+
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Betöltés az MMUba"
 
 #~ msgid "Reset MMU"
 #~ msgstr "MMUreszet"

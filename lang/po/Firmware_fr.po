@@ -405,7 +405,7 @@ msgstr ""
 "active seulement en\n"
 "mode Normal"
 
-#. MSG_CUT_FILAMENT c=17
+#. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:327
 #: ../../Firmware/ultralcd.cpp:5007 ../../Firmware/ultralcd.cpp:5431
 msgid "Cut filament"
@@ -1076,7 +1076,7 @@ msgstr "Ajuster Z en dir."
 msgid "Load All"
 msgstr "Tout Charger"
 
-#. MSG_LOAD_FILAMENT c=17
+#. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:4952
 #: ../../Firmware/ultralcd.cpp:4971 ../../Firmware/ultralcd.cpp:5032
 #: ../../Firmware/ultralcd.cpp:5425 ../../Firmware/ultralcd.cpp:5442
@@ -2567,6 +2567,11 @@ msgid ""
 msgstr ""
 "La version du MMU est incompatible avec le FW de l'imprimante. Mise à jour "
 "vers la version 2.1.9."
+
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Précharge à MMU"
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reini MMU"

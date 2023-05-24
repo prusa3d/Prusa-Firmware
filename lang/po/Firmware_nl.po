@@ -404,7 +404,7 @@ msgstr ""
 "alleen in normaal\n"
 "gebruikt worden"
 
-#. MSG_CUT_FILAMENT c=17
+#. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:327
 #: ../../Firmware/ultralcd.cpp:5007 ../../Firmware/ultralcd.cpp:5431
 msgid "Cut filament"
@@ -1072,7 +1072,7 @@ msgstr "Live Z aanpassen"
 msgid "Load All"
 msgstr "Laad alle"
 
-#. MSG_LOAD_FILAMENT c=17
+#. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:4952
 #: ../../Firmware/ultralcd.cpp:4971 ../../Firmware/ultralcd.cpp:5032
 #: ../../Firmware/ultralcd.cpp:5425 ../../Firmware/ultralcd.cpp:5442
@@ -2555,6 +2555,11 @@ msgid ""
 msgstr ""
 "De firmwareversie van de MMU is niet compatibel met de firmware van de "
 "printer. Update naar versie 2.1.9."
+
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Voorladen in MMU"
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

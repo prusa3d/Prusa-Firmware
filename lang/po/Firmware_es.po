@@ -402,7 +402,7 @@ msgstr ""
 "ser activada solo en\n"
 "Modo normal"
 
-#. MSG_CUT_FILAMENT c=17
+#. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:327
 #: ../../Firmware/ultralcd.cpp:5007 ../../Firmware/ultralcd.cpp:5431
 msgid "Cut filament"
@@ -1069,12 +1069,12 @@ msgstr "Micropaso Eje Z"
 msgid "Load All"
 msgstr "Intr. todos fil."
 
-#. MSG_LOAD_FILAMENT c=17
+#. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:4952
 #: ../../Firmware/ultralcd.cpp:4971 ../../Firmware/ultralcd.cpp:5032
 #: ../../Firmware/ultralcd.cpp:5425 ../../Firmware/ultralcd.cpp:5442
 msgid "Load filament"
-msgstr "Introducir filam."
+msgstr "Introducir fil."
 
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5426
@@ -2553,6 +2553,11 @@ msgid ""
 msgstr ""
 "La versión de firmware de la MMU es incompatible con el FW de la impresora. "
 "Actualizar a la versión 2.1.9."
+
+#. MSG_PRELOAD_TO_MMU c=17
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5227
+msgid "Preload to MMU"
+msgstr "Precarga a MMU"
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
