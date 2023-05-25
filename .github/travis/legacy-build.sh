@@ -19,4 +19,8 @@ bash -x build.sh || { echo "1_75mm_MK25-RAMBo13a-E3Dv6full variant failed" && fa
 rm Firmware/Configuration_prusa.h
 cp Firmware/variants/1_75mm_MK25-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
 bash -x build.sh || { echo "1_75mm_MK25-RAMBo10a-E3Dv6full variant failed" && false; }
+cp Firmware/variants/1_75mm_MK3S-EINSy10a-E3DREVO.h Firmware/Configuration_prusa.h
+bash -x build.sh || { echo "1_75mm_MK3S-EINSy10a-E3DREVO variant failed" && false; }
+cp Firmware/variants/1_75mm_MK3-EINSy10a-E3DREVO.h Firmware/Configuration_prusa.h
+bash -x build.sh || { echo "1_75mm_MK3-EINSy10a-E3DREVO variant failed" && false; }
 rm Firmware/Configuration_prusa.h
