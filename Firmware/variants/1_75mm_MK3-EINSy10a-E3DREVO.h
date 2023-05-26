@@ -2,19 +2,20 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
+
 #include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
 
 // Printer revision
-#define PRINTER_TYPE PRINTER_MK3S
-#define PRINTER_NAME PRINTER_MK3S_NAME
-#define PRINTER_NAME_ALTERNATE PRINTER_MK3_NAME //the other similar printer to this.
-#define PRINTER_MMU_TYPE PRINTER_MK3S_MMU2
-#define PRINTER_MMU_NAME PRINTER_MK3S_MMU2_NAME
-#define FILAMENT_SIZE "1_75mm_MK3S"
-#define HOTEND 1 //1= E3Dv6 2= E3D REVO
+#define PRINTER_TYPE PRINTER_MK3
+#define PRINTER_NAME PRINTER_MK3_NAME
+#define PRINTER_NAME_ALTERNATE PRINTER_MK3S_NAME //the other similar printer to this.
+#define PRINTER_MMU_TYPE PRINTER_MK3_MMU2
+#define PRINTER_MMU_NAME PRINTER_MK3_MMU2_NAME
+#define FILAMENT_SIZE "1_75mm_MK3"
+#define HOTEND 2 //1= E3Dv6 2= E3D REVO
 #if HOTEND == 1
 #define NOZZLE_TYPE "E3Dv6full"
 #elif HOTEND ==2
@@ -22,15 +23,12 @@
 #endif
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3-R"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
 #define STEEL_SHEET
 #define HAS_SECOND_SERIAL_PORT
-
-// PSU
-// #define PSU_Delta                                 // uncomment if DeltaElectronics PSU installed
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
@@ -153,7 +151,7 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define FILAMENT_SENSOR_TYPE FSENSOR_IR_ANALOG
+#define FILAMENT_SENSOR_TYPE FSENSOR_PAT9125
 #define FSENSOR_PROBING
 
 // Backlash - 
@@ -354,8 +352,6 @@
 #define EXTRUDER_0_AUTO_FAN_PIN   8
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
-#define EXTRUDER_ALTFAN_DETECT
-#define EXTRUDER_ALTFAN_SPEED_SILENT 128
 
 #define FANCHECK_AUTO_PRINT_FAN_THRS 70 //[RPS] - Used during selftest to identify swapped fans automatically
 #define FANCHECK_AUTO_FAIL_THRS 20 //[RPS] - Used during selftest to identify a faulty fan
@@ -652,7 +648,7 @@
 // we just need to shift to the nearest fullstep, but we need a move which is at least
 // "dropsegments" steps long. All the above rules still need to apply.
 #define UVLO_TINY_Z_AXIS_SHIFT 0.16
-// If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically.
+// If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically. 
 #define AUTOMATIC_UVLO_BED_TEMP_OFFSET 5 
 
 #define HEATBED_V2
@@ -661,20 +657,12 @@
 
 //#define SUPPORT_VERBOSITY
 
-#define MMU_CONFIG_FILE "mmu2/variants/config_MMU2S.h"
+#define MMU_CONFIG_FILE "mmu2/variants/config_MMU2.h"
 #define MMU_FILAMENT_COUNT 5
 //#define MMU_FORCE_STEALTH_MODE
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
-
-// This is experimental feature requested by our test department.
-// There is no known use for ordinary user. If enabled by this macro
-// and enabled from printer menu (not enabled by default). It cuts filament
-// every time when switching filament from gcode. MMU_HAS_CUTTER needs to be
-// defined.
-
-//#define MMU_ALWAYS_CUT
 
 // MMU Error pause position
 #define MMU_ERR_X_PAUSE_POS 125

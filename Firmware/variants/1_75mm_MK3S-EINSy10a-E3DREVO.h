@@ -14,7 +14,7 @@
 #define PRINTER_MMU_TYPE PRINTER_MK3S_MMU2
 #define PRINTER_MMU_NAME PRINTER_MK3S_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3S"
-#define HOTEND 1 //1= E3Dv6 2= E3D REVO
+#define HOTEND 2 //1= E3Dv6 2= E3D REVO
 #if HOTEND == 1
 #define NOZZLE_TYPE "E3Dv6full"
 #elif HOTEND ==2
@@ -22,7 +22,7 @@
 #endif
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S-R"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
