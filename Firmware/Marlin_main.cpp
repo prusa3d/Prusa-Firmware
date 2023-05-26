@@ -6705,13 +6705,6 @@ Sigma_Exit:
 		// steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
 		reset_acceleration_rates();
 		break;
-    #if 0 // Not used for Sprinter/grbl gen6
-    case 202: // M202
-      for(int8_t i=0; i < NUM_AXIS; i++) {
-        if(code_seen(axis_codes[i])) axis_travel_steps_per_sqr_second[i] = code_value() * cs.axis_steps_per_mm[i];
-      }
-      break;
-    #endif
 
     /*!
     ### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
