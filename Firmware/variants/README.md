@@ -10,12 +10,12 @@ There are other 3rd party hotends which the community uses.
 Steps to add a new 3rd party hotend:
 
 1. Make a copy of the `/Firmware/variant/1_75mm_MK3S-EINSy10a-E3Dv6full.h` with a new name `1_75mm_MK3S-EINSy10a-<3rd party hotend:16>.h`
-  a. Example for the E3D REVO HF 60W: `/Firmware/variant/1_75mm_MK3S-EINSy10a-E3DREVO_HF_60W.h`
+  - Example for the E3D REVO HF 60W: `/Firmware/variant/1_75mm_MK3S-EINSy10a-E3DREVO_HF_60W.h`
 2. Open the new variant file.
 3. Add the 3rd party hotend with new number and the description in the comment part `#define HOTEND 1 //1= E3Dv6 2= E3D REVO`
-  a. Example: `#define HOTEND 3 //1= E3Dv6 2= E3D REVO 3= E3DREVO_HF_60W`
+  - Example: `#define HOTEND 3 //1= E3Dv6 2= E3D REVO 3= E3DREVO_HF_60W`
 4. Add a new `#elif HOTEND == <new number>` and `#define NOZZLE_TYPE "<3rd party hotend:16>"`
-  a.Example
+  - Example
   ```
   ...
   #elif HOTEND ==2
@@ -26,10 +26,10 @@ Steps to add a new 3rd party hotend:
   ...
   ```
 5. Change the `#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S-<Short description:2>`
-  a. `CUSTOM_MENDEL_NAME` string cannot exceed 17 chars in total!
+  - `CUSTOM_MENDEL_NAME` string cannot exceed 17 chars in total!
 6. Add new PID values for the new Hotend type.
-  a. Search for `#else // E3D v6  PID values`
-  b. Copy, paste (above `#else // E3D v6  PID values`) and update the new hotend PID default values
+  - Search for `#else // E3D v6  PID values`
+  - Copy, paste (above `#else // E3D v6  PID values`) and update the new hotend PID default values
   ```
   #elif HOTEND == 2 //E3D REVO PID values
   #define  DEFAULT_Kp 16.13
@@ -51,8 +51,8 @@ Example:
   ...
   ```
 7. Prepare for new 3rd party hotend TM value file
-  a. Search for `#define TEMP_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters` or the last entry
-  b. Copy the lines starting with `#elif HOTEND == 2` till the search, paste (above next `#endif`) and update this
+  - Search for `#define TEMP_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters` or the last entry
+  - Copy the lines starting with `#elif HOTEND == 2` till the search, paste (above next `#endif`) and update this
   ```
   ...
   #if HOTEND == 1
@@ -82,10 +82,10 @@ Example:
   ```
 8. Save and close the new variant file
 9. Copy/paste `Firmware/temp_model/e3d_v6.h` as `Firmware/temp_model/<3rd party hotend:16>.h`
-  a. Example: `Firmware/temp_model/e3d_REVO_HF_60W.h`
+  - Example: `Firmware/temp_model/e3d_REVO_HF_60W.h`
 10. Open the new file `Firmware/temp_model/<3rd party hotend:16>.h`
 11. Search `E3D_V6` and replace it with what you have used in `#defined TEMP_MODEL_DEFAULT`
-  a. Example
+  - Example
   ```
   #pragma once
 
