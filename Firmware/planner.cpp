@@ -483,10 +483,10 @@ void getHighESpeed()
   uint8_t block_index = block_buffer_tail;
 
   while(block_index != block_buffer_head) {
-    if((block_buffer[block_index].steps_x.wide != 0) ||
-      (block_buffer[block_index].steps_y.wide != 0) ||
-      (block_buffer[block_index].steps_z.wide != 0)) {
-      float se=(float(block_buffer[block_index].steps_e.wide)/float(block_buffer[block_index].step_event_count.wide))*block_buffer[block_index].nominal_speed;
+    if((block_buffer[block_index].steps[X_AXIS].wide != 0) ||
+      (block_buffer[block_index].steps[Y_AXIS].wide != 0) ||
+      (block_buffer[block_index].steps[Z_AXIS].wide != 0)) {
+      float se=(float(block_buffer[block_index].steps[E_AXIS].wide)/float(block_buffer[block_index].step_event_count.wide))*block_buffer[block_index].nominal_speed;
       //se; mm/sec;
       if(se>high)
       {
@@ -521,7 +521,7 @@ bool e_active()
     while(block_index != block_buffer_head)
     {
       block = &block_buffer[block_index];
-      if(block->steps_e.wide != 0) e_active++;
+      if(block->steps[E_AXIS].wide != 0) e_active++;
       block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
     }
   }
@@ -544,10 +544,10 @@ void check_axes_activity()
     while(block_index != block_buffer_head)
     {
       block = &block_buffer[block_index];
-      if(block->steps_x.wide != 0) x_active++;
-      if(block->steps_y.wide != 0) y_active++;
-      if(block->steps_z.wide != 0) z_active++;
-      if(block->steps_e.wide != 0) e_active++;
+      if(block->steps[X_AXIS].wide != 0) x_active++;
+      if(block->steps[Y_AXIS].wide != 0) y_active++;
+      if(block->steps[Z_AXIS].wide != 0) z_active++;
+      if(block->steps[E_AXIS].wide != 0) e_active++;
       block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
     }
   }
@@ -862,17 +862,17 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Number of steps for each axis
 #ifndef COREXY
 // default non-h-bot planning
-block->steps_x.wide = labs(dx);
-block->steps_y.wide = labs(dy);
+block->steps[X_AXIS].wide = labs(dx);
+block->steps[Y_AXIS].wide = labs(dy);
 #else
 // corexy planning
 // these equations follow the form of the dA and dB equations on http://www.corexy.com/theory.html
-block->steps_x.wide = labs(dx + dy);
-block->steps_y.wide = labs(dx - dy);
+block->steps[X_AXIS].wide = labs(dx + dy);
+block->steps[Y_AXIS].wide = labs(dx - dy);
 #endif
-  block->steps_z.wide = labs(dz);
-  block->steps_e.wide = labs(de);
-  block->step_event_count.wide = max(block->steps_x.wide, max(block->steps_y.wide, max(block->steps_z.wide, block->steps_e.wide)));
+  block->steps[Z_AXIS].wide = labs(dz);
+  block->steps[E_AXIS].wide = labs(de);
+  block->step_event_count.wide = max(block->steps[X_AXIS].wide, max(block->steps[Y_AXIS].wide, max(block->steps[Z_AXIS].wide, block->steps[E_AXIS].wide)));
 
   // Bail if this is a zero-length block
   if (block->step_event_count.wide <= dropsegments)
@@ -899,19 +899,19 @@ block->steps_y.wide = labs(dx - dy);
 
   //enable active axes
   #ifdef COREXY
-  if((block->steps_x.wide != 0) || (block->steps_y.wide != 0))
+  if((block->steps[X_AXIS].wide != 0) || (block->steps[Y_AXIS].wide != 0))
   {
     enable_x();
     enable_y();
   }
   #else
-  if(block->steps_x.wide != 0) enable_x();
-  if(block->steps_y.wide != 0) enable_y();
+  if(block->steps[X_AXIS].wide != 0) enable_x();
+  if(block->steps[Y_AXIS].wide != 0) enable_y();
   #endif
-  if(block->steps_z.wide != 0) enable_z();
-  if(block->steps_e.wide != 0) enable_e0();
+  if(block->steps[Z_AXIS].wide != 0) enable_z();
+  if(block->steps[E_AXIS].wide != 0) enable_e0();
 
-  if (block->steps_e.wide == 0)
+  if (block->steps[E_AXIS].wide == 0)
   {
     if(feed_rate<cs.mintravelfeedrate) feed_rate=cs.mintravelfeedrate;
   }
@@ -940,7 +940,7 @@ Having the real displacement of the head, we can calculate the total movement le
   #endif
   delta_mm[Z_AXIS] = dz / cs.axis_steps_per_unit[Z_AXIS];
   delta_mm[E_AXIS] = de / cs.axis_steps_per_unit[E_AXIS];
-  if ( block->steps_x.wide <=dropsegments && block->steps_y.wide <=dropsegments && block->steps_z.wide <=dropsegments )
+  if ( block->steps[X_AXIS].wide <=dropsegments && block->steps[Y_AXIS].wide <=dropsegments && block->steps[Z_AXIS].wide <=dropsegments )
   {
     block->millimeters = fabs(delta_mm[E_AXIS]);
   } 
@@ -1006,7 +1006,7 @@ Having the real displacement of the head, we can calculate the total movement le
   // block->millimeters ... Euclidian length of the XYZ movement or the E length, if no XYZ movement.
   float steps_per_mm = block->step_event_count.wide/block->millimeters;
   uint32_t accel;
-  if(block->steps_x.wide == 0 && block->steps_y.wide == 0 && block->steps_z.wide == 0)
+  if(block->steps[X_AXIS].wide == 0 && block->steps[Y_AXIS].wide == 0 && block->steps[Z_AXIS].wide == 0)
   {
     accel = ceil(cs.retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
     #ifdef LIN_ADVANCE
@@ -1015,7 +1015,7 @@ Having the real displacement of the head, we can calculate the total movement le
   }
   else
   {
-    accel = ceil((block->steps_e.wide ? cs.acceleration : cs.travel_acceleration) * steps_per_mm); // convert to: acceleration steps/sec^2
+    accel = ceil((block->steps[E_AXIS].wide ? cs.acceleration : cs.travel_acceleration) * steps_per_mm); // convert to: acceleration steps/sec^2
 
     #ifdef LIN_ADVANCE
     /**
@@ -1063,15 +1063,14 @@ Having the real displacement of the head, we can calculate the total movement le
     #endif
 
     // Limit acceleration per axis
-    //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
-    if(((float)accel * (float)block->steps_x.wide / (float)block->step_event_count.wide) > max_acceleration_steps_per_s2[X_AXIS])
-	{  accel = max_acceleration_steps_per_s2[X_AXIS]; }
-    if(((float)accel * (float)block->steps_y.wide / (float)block->step_event_count.wide) > max_acceleration_steps_per_s2[Y_AXIS])
-	{  accel = max_acceleration_steps_per_s2[Y_AXIS]; }
-    if(((float)accel * (float)block->steps_e.wide / (float)block->step_event_count.wide) > max_acceleration_steps_per_s2[E_AXIS])
-	{  accel = max_acceleration_steps_per_s2[E_AXIS]; }
-    if(((float)accel * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > max_acceleration_steps_per_s2[Z_AXIS])
-	{  accel = max_acceleration_steps_per_s2[Z_AXIS]; }
+    for (uint8_t axis = 0; axis < NUM_AXIS; axis++)
+    {
+      if(block->steps[axis].wide && max_acceleration_steps_per_s2[axis] < accel)
+      {
+        const float max_possible = float(max_acceleration_steps_per_s2[axis]) * float(block->step_event_count.wide) / float(block->steps[axis].wide);
+        if (max_possible < accel) accel = max_possible;
+      }
+    }
   }
   // Acceleration of the segment, in mm/sec^2
   block->acceleration_steps_per_s2 = accel;

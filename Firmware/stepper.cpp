@@ -324,7 +324,7 @@ FORCE_INLINE void stepper_next_block()
   current_block = plan_get_current_block();
   if (current_block != NULL) {
 #ifdef BACKLASH_X
-	if (current_block->steps_x.wide)
+	if (current_block->steps[X_AXIS].wide)
 	{ //X-axis movement
 		if ((current_block->direction_bits ^ last_dir_bits) & 1)
 		{
@@ -347,7 +347,7 @@ FORCE_INLINE void stepper_next_block()
 	}
 #endif
 #ifdef BACKLASH_Y
-	if (current_block->steps_y.wide)
+	if (current_block->steps[Y_AXIS].wide)
 	{ //Y-axis movement
 		if ((current_block->direction_bits ^ last_dir_bits) & 2)
 		{
@@ -401,7 +401,7 @@ FORCE_INLINE void stepper_next_block()
       counter_z.lo = counter_x.lo;
       counter_e.lo = counter_x.lo;
 #ifdef LIN_ADVANCE
-      e_extruding = current_block->steps_e.lo != 0;
+      e_extruding = current_block->steps[E_AXIS].lo != 0;
 #endif
     } else {
       counter_x.wide = -(current_block->step_event_count.wide >> 1);
@@ -409,7 +409,7 @@ FORCE_INLINE void stepper_next_block()
       counter_z.wide = counter_x.wide;
       counter_e.wide = counter_x.wide;
 #ifdef LIN_ADVANCE
-      e_extruding = current_block->steps_e.wide != 0;
+      e_extruding = current_block->steps[E_AXIS].wide != 0;
 #endif
     }
     step_events_completed.wide = 0;
@@ -488,7 +488,7 @@ FORCE_INLINE void stepper_check_endstops()
         // Normal homing
         SET_BIT_TO(_endstop, X_AXIS, (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING));
       #endif
-        if((_endstop & _old_endstop & _BV(X_AXIS)) && (current_block->steps_x.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(X_AXIS)) && (current_block->steps[X_AXIS].wide > 0)) {
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
@@ -505,7 +505,7 @@ FORCE_INLINE void stepper_check_endstops()
         // Normal homing
           SET_BIT_TO(_endstop, X_AXIS + 4, (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING));
         #endif
-        if((_endstop & _old_endstop & _BV(X_AXIS + 4)) && (current_block->steps_x.wide > 0)){
+        if((_endstop & _old_endstop & _BV(X_AXIS + 4)) && (current_block->steps[X_AXIS].wide > 0)){
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
@@ -529,7 +529,7 @@ FORCE_INLINE void stepper_check_endstops()
       // Normal homing
         SET_BIT_TO(_endstop, Y_AXIS, (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING));
       #endif
-        if((_endstop & _old_endstop & _BV(Y_AXIS)) && (current_block->steps_y.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(Y_AXIS)) && (current_block->steps[Y_AXIS].wide > 0)) {
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
@@ -546,7 +546,7 @@ FORCE_INLINE void stepper_check_endstops()
         // Normal homing
           SET_BIT_TO(_endstop, Y_AXIS + 4, (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING));
         #endif
-        if((_endstop & _old_endstop & _BV(Y_AXIS + 4)) && (current_block->steps_y.wide > 0)){
+        if((_endstop & _old_endstop & _BV(Y_AXIS + 4)) && (current_block->steps[Y_AXIS].wide > 0)){
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
@@ -571,7 +571,7 @@ FORCE_INLINE void stepper_check_endstops()
         #else
           SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
-        if((_endstop & _old_endstop & _BV(Z_AXIS)) && (current_block->steps_z.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(Z_AXIS)) && (current_block->steps[Z_AXIS].wide > 0)) {
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
@@ -593,7 +593,7 @@ FORCE_INLINE void stepper_check_endstops()
         #else
         SET_BIT_TO(_endstop, Z_AXIS + 4, (READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
-        if((_endstop & _old_endstop & _BV(Z_AXIS + 4)) && (current_block->steps_z.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(Z_AXIS + 4)) && (current_block->steps[Z_AXIS].wide > 0)) {
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
@@ -646,7 +646,7 @@ FORCE_INLINE void stepper_tick_lowres()
   for (uint8_t i=0; i < step_loops; ++ i) { // Take multiple steps per interrupt (For high speed moves)
     MSerial.checkRx(); // Check for serial chars.
     // Step in X axis
-    counter_x.lo += current_block->steps_x.lo;
+    counter_x.lo += current_block->steps[X_AXIS].lo;
     if (counter_x.lo > 0) {
       STEP_NC_HI(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
@@ -660,7 +660,7 @@ FORCE_INLINE void stepper_tick_lowres()
 #endif //DEBUG_XSTEP_DUP_PIN
     }
     // Step in Y axis
-    counter_y.lo += current_block->steps_y.lo;
+    counter_y.lo += current_block->steps[Y_AXIS].lo;
     if (counter_y.lo > 0) {
       STEP_NC_HI(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
@@ -674,7 +674,7 @@ FORCE_INLINE void stepper_tick_lowres()
 #endif //DEBUG_YSTEP_DUP_PIN    
     }
     // Step in Z axis
-    counter_z.lo += current_block->steps_z.lo;
+    counter_z.lo += current_block->steps[Z_AXIS].lo;
     if (counter_z.lo > 0) {
       STEP_NC_HI(Z_AXIS);
       counter_z.lo -= current_block->step_event_count.lo;
@@ -682,7 +682,7 @@ FORCE_INLINE void stepper_tick_lowres()
       STEP_NC_LO(Z_AXIS);
     }
     // Step in E axis
-    counter_e.lo += current_block->steps_e.lo;
+    counter_e.lo += current_block->steps[E_AXIS].lo;
     if (counter_e.lo > 0) {
 #ifndef LIN_ADVANCE
       STEP_NC_HI(E_AXIS);
@@ -708,7 +708,7 @@ FORCE_INLINE void stepper_tick_highres()
   for (uint8_t i=0; i < step_loops; ++ i) { // Take multiple steps per interrupt (For high speed moves)
     MSerial.checkRx(); // Check for serial chars.
     // Step in X axis
-    counter_x.wide += current_block->steps_x.wide;
+    counter_x.wide += current_block->steps[X_AXIS].wide;
     if (counter_x.wide > 0) {
       STEP_NC_HI(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
@@ -722,7 +722,7 @@ FORCE_INLINE void stepper_tick_highres()
 #endif //DEBUG_XSTEP_DUP_PIN
     }
     // Step in Y axis
-    counter_y.wide += current_block->steps_y.wide;
+    counter_y.wide += current_block->steps[Y_AXIS].wide;
     if (counter_y.wide > 0) {
       STEP_NC_HI(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
@@ -736,7 +736,7 @@ FORCE_INLINE void stepper_tick_highres()
 #endif //DEBUG_YSTEP_DUP_PIN    
     }
     // Step in Z axis
-    counter_z.wide += current_block->steps_z.wide;
+    counter_z.wide += current_block->steps[Z_AXIS].wide;
     if (counter_z.wide > 0) {
       STEP_NC_HI(Z_AXIS);
       counter_z.wide -= current_block->step_event_count.wide;
@@ -744,7 +744,7 @@ FORCE_INLINE void stepper_tick_highres()
       STEP_NC_LO(Z_AXIS);
     }
     // Step in E axis
-    counter_e.wide += current_block->steps_e.wide;
+    counter_e.wide += current_block->steps[E_AXIS].wide;
     if (counter_e.wide > 0) {
 #ifndef LIN_ADVANCE
       STEP_NC_HI(E_AXIS);
