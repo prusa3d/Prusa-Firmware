@@ -13,16 +13,16 @@ enum class ProgressCode : uint_fast8_t {
     UnloadingToFinda, // P3
     UnloadingToPulley, //P4
     FeedingToFinda, // P5
-    FeedingToExtruder, // P6
+    FeedingToBondtech, // P6
     FeedingToNozzle, // P7
     AvoidingGrind, // P8
     FinishingMoves, // P9
 
     ERRDisengagingIdler, // P10
-    ERREngagingIdler, // P11
+    ERREngagingIdler, // P11 - unused: intended for SlowLoad which is removed now
     ERRWaitingForUser, // P12
     ERRInternal, // P13
-    ERRHelpingFilament, // P14
+    ERRHelpingFilament, // P14 - unused: intended for SlowLoad which is removed now
     ERRTMCFailed, // P15
 
     UnloadingFilament, // P16
@@ -35,11 +35,19 @@ enum class ProgressCode : uint_fast8_t {
     ParkingSelector, // P23
     EjectingFilament, // P24
     RetractingFromFinda, // P25
-
     Homing, // P26
     MovingSelector, // P27
-
     FeedingToFSensor, // P28
+    UnloadingFilamentSlowly, // P29
+
+    HWTestBegin, // P31
+    HWTestIdler, // P31
+    HWTestSelector, // P32
+    HWTestPulley, // P33
+    HWTestCleanup, // P34
+    HWTestExec, // P35
+    HWTestDisplay, // P36
+    ErrHwTestFailed, // P37
 
     Empty = 0xff // dummy empty state
 };
