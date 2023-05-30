@@ -15,12 +15,7 @@
 #define PRINTER_MMU_TYPE PRINTER_MK3_MMU2
 #define PRINTER_MMU_NAME PRINTER_MK3_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
-#define HOTEND 1 //1= E3Dv6 2= E3D REVO
-#if HOTEND == 1
 #define NOZZLE_TYPE "E3Dv6full"
-#elif HOTEND ==2
-#define NOZZLE_TYPE "E3DREVO"
-#endif
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
@@ -331,11 +326,7 @@
 #define  DEFAULT_Kp 21.70
 #define  DEFAULT_Ki 1.60
 #define  DEFAULT_Kd 73.76
-#elif HOTEND == 2 //E3D REVO PID values
-#define  DEFAULT_Kp 16.13
-#define  DEFAULT_Ki 1.1625
-#define  DEFAULT_Kd 56.23
-#else // E3D v6  PID values
+#else
 // Define PID constants for extruder
 //#define  DEFAULT_Kp 40.925
 //#define  DEFAULT_Ki 4.875
@@ -413,13 +404,9 @@
 
 #define TEMP_MODEL_Ta_corr -7     // Default ambient temperature correction
 
-#if HOTEND == 1
 #include "temp_model/e3d_v6.h"
-#define TEMP_MODEL_DEFAULT E3D_V6 // Default E3D v6 model parameters
-#elif HOTEND == 2
-#include "temp_model/e3d_REVO.h"
-#define TEMP_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters
-#endif
+#define TEMP_MODEL_DEFAULT E3D_V6 // Default model parameters
+
 
 /*------------------------------------
  MOTOR CURRENT SETTINGS

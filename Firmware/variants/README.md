@@ -10,88 +10,90 @@ There are other 3rd party hotends which the community uses.
 Steps to add a new 3rd party hotend:
 
 1. Make a copy of the `/Firmware/variant/1_75mm_MK3S-EINSy10a-E3Dv6full.h` with a new name `1_75mm_MK3S-EINSy10a-<3rd party hotend:16>.h`
-  a. Example for the E3D REVO HF 60W: `/Firmware/variant/1_75mm_MK3S-EINSy10a-E3DREVO_HF_60W.h`
+  - Example for the E3D REVO HF 60W: `/Firmware/variant/1_75mm_MK3S-EINSy10a-E3DREVO_HF_60W.h`
 2. Open the new variant file.
-3. Add the 3rd party hotend with new number and the description in the comment part `#define HOTEND 1 //1= E3Dv6 2= E3D REVO`
-  a. Example: `#define HOTEND 3 //1= E3Dv6 2= E3D REVO 3= E3DREVO_HF_60W`
-4. Add a new `#elif HOTEND == <new number>` and `#define NOZZLE_TYPE "<3rd party hotend:16>"`
-  a.Example
+3. Search for `#define NOZZLE_TYPE`
+4. Change `"E3Dv6full"` to  `"<3rd party hotend:16>"`
   ```
   ...
-  #elif HOTEND ==2
-  #define NOZZLE_TYPE "E3DREVO"
-  #elif HOTEND ==3
+  #define NOZZLE_TYPE "E3Dv6full"
+  ...
+  ```
+  - Example
+  ```
+  ...
   #define NOZZLE_TYPE "E3DREVO_HF_60W"
-  #endif
   ...
   ```
-5. Change the `#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S-<Short description:2>`
-  a. `CUSTOM_MENDEL_NAME` string cannot exceed 17 chars in total!
-6. Add new PID values for the new Hotend type.
-  a. Search for `#else // E3D v6  PID values`
-  b. Copy, paste (above `#else // E3D v6  PID values`) and update the new hotend PID default values
+5. Search `#define CUSTOM_MENDEL_NAME`
+6. Change  `"Prusa i3 MK3S"` to `"Prusa i3 MK3S-<Short description:2>"`
+  - `CUSTOM_MENDEL_NAME` string cannot exceed 16 chars in total!
   ```
-  #elif HOTEND == 2 //E3D REVO PID values
+  ...
+  #define CUSTOM_MENDEL_NAME "Prusa i3 MK3S"
+  ...
+  ```
+  - Example
+  ```
+  ...
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S-RH"
+  ...
+  ```
+  ```
+  ...
+#define CUSTOM_MENDEL_NAME "Prusa MK3S-RHF60"
+  ...
+  ```
+7. Add new PID values for the new Hotend type.
+  - Search for `// Define PID constants for extruder`
+  - Change `extruder` to new hotend name ` <3rd party hotend:16>` and update the new hotend PID default values
+  ```
+  // Define PID constants for extruder
   #define  DEFAULT_Kp 16.13
   #define  DEFAULT_Ki 1.1625
   #define  DEFAULT_Kd 56.23
+  #endif
   ```
 Example:
   ```
   ...
-  #elif HOTEND == 2 //E3D REVO PID values
-  #define  DEFAULT_Kp 16.13
-  #define  DEFAULT_Ki 1.1625
-  #define  DEFAULT_Kd 56.23
-  #elif HOTEND == 3 //E3D REVO HF 60W PID values
+  // Define PID constants for E3D REVO HF 60W
   #define  DEFAULT_Kp 23.23
   #define  DEFAULT_Ki 1.1
   #define  DEFAULT_Kd 55.25
-  #else // E3D v6  PID values
+  #endif
   ...
   ```
-7. Prepare for new 3rd party hotend TM value file
-  a. Search for `#define TEMP_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters` or the last entry
-  b. Copy the lines starting with `#elif HOTEND == 2` till the search, paste (above next `#endif`) and update this
+8. Prepare for new 3rd party hotend TM value file
+  - Search for `#include "temp_model/e3d_v6.h"`
+  - Change the `e3d_v6.h` to `<3rd party hotend:16>.h`
+  - Change below the `E3D_V6` to `<3rd party hotend:16>`
   ```
   ...
-  #if HOTEND == 1
   #include "temp_model/e3d_v6.h"
   #define TEMP_MODEL_DEFAULT E3D_V6 // Default E3D v6 model parameters
-  #elif HOTEND == 2
-  #include "temp_model/e3d_REVO.h"
-  #define TEMP_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters
-  #endif
   ...
   ```
   Example:
 
   ```
   ...
-  #if HOTEND == 1
-  #include "temp_model/e3d_v6.h"
-  #define TEMP_MODEL_DEFAULT E3D_V6 // Default E3D v6 model parameters
-  #elif HOTEND == 2
-  #include "temp_model/e3d_REVO.h"
-  #define TEMP_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters
-  #elif HOTEND == 3
   #include "temp_model/e3d_REVO_HF_60W.h"
   #define TEMP_MODEL_DEFAULT E3D_REVO_HF_60W // Default E3D REVO HF 60W model parameters
-  #endif
   ...
   ```
-8. Save and close the new variant file
-9. Copy/paste `Firmware/temp_model/e3d_v6.h` as `Firmware/temp_model/<3rd party hotend:16>.h`
-  a. Example: `Firmware/temp_model/e3d_REVO_HF_60W.h`
-10. Open the new file `Firmware/temp_model/<3rd party hotend:16>.h`
-11. Search `E3D_V6` and replace it with what you have used in `#defined TEMP_MODEL_DEFAULT`
-  a. Example
+9. Save and close the new variant file
+10. Copy/paste `Firmware/temp_model/e3d_v6.h` as `Firmware/temp_model/<3rd party hotend:16>.h`
+  - Example: `Firmware/temp_model/e3d_REVO_HF_60W.h`
+11. Open the new file `Firmware/temp_model/<3rd party hotend:16>.h`
+12. Search `E3D_V6` and replace it with what you have used in `#defined TEMP_MODEL_DEFAULT`
+  - Example
   ```
   #pragma once
 
   #define TEMP_MODEL_E3D_REVO_HF_60W_VER 1      // model parameters version
 
-  #define TEMP_MODEL_E3D_REVO_HF_60W_P 40.      // heater power (W)
+  #define TEMP_MODEL_E3D_REVO_HF_60W_P 60.      // heater power (W)
   #define TEMP_MODEL_E3D_REVO_HF_60W_U -0.0014  // linear temperature coefficient (W/K/power)
   #define TEMP_MODEL_E3D_REVO_HF_60W_V 1.05     // linear temperature intercept (W/power)
 
