@@ -39,7 +39,7 @@ extern const char _sPrinterMmuName[] PROGMEM;
 // The debug build may be a bit slower than the non-debug build, therefore the debug build should
 // not be shipped to a customer.
 #define FW_VERSION_DEBUG    6
-// This is a development build. A development build is either built from an unofficial git repository, 
+// This is a development build. A development build is either built from an unofficial git repository,
 // or from an unofficial branch, or it does not have a label set. Only the build server should set this build type.
 #define FW_VERSION_DEVEL    5
 // This is an alpha release. Only the build server should set this build type.
