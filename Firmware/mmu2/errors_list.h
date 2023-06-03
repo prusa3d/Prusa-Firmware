@@ -428,7 +428,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//FILAMENT_EJECTED
-    Btns(ButtonOperations::Load, ButtonOperations::Eject),//FILAMENT_CHANGE
+    Btns(ButtonOperations::Eject, ButtonOperations::Load),//FILAMENT_CHANGE
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//UNKOWN_ERROR
 };
 
