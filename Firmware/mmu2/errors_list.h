@@ -282,7 +282,7 @@ static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal
 static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU or updating the firmware."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
 static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detected unexpectedly. Ensure no filament is loaded. Check the sensors and wiring."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
-static const char MSG_DESC_FILAMENT_CHANGE[] PROGMEM_I1 = ISTR("Printer is running M600 command"); ////MSG_DESC_FILAMENT_CHANGE c=20 r=8
+static const char MSG_DESC_FILAMENT_CHANGE[] PROGMEM_I1 = ISTR("M600 Filament Change. Load a new filament or eject the old one."); ////MSG_DESC_FILAMENT_CHANGE c=20 r=8
 static const char MSG_DESC_UNKNOWN_ERROR[] PROGMEM_I1    = ISTR("Unexpected error occurred."); ////MSG_DESC_UNKNOWN_ERROR c=20 r=8
 
 // Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
