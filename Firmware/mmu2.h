@@ -297,6 +297,7 @@ private:
     ErrorCode lastErrorCode = ErrorCode::MMU_NOT_RESPONDING;
     ErrorSource lastErrorSource = ErrorSource::ErrorSourceNone;
     Buttons lastButton = Buttons::NoButton;
+    uint8_t reportingStartedCnt;
 
     StepStatus logicStepLastStatus;
 
