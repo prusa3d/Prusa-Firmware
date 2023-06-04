@@ -27,7 +27,7 @@ void Config_PrintSettings(uint8_t level)
 		"%SMaximum acceleration - normal (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
 		"%SMaximum acceleration - stealth (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
 		"%SAcceleration: P=print, R=retract, T=travel\n%S  M204 P%.2f R%.2f T%.2f\n"
-		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (us), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%lu X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
 		echomagic, echomagic, cs.axis_steps_per_mm[X_AXIS], cs.axis_steps_per_mm[Y_AXIS], cs.axis_steps_per_mm[Z_AXIS], cs.axis_steps_per_mm[E_AXIS],
@@ -37,7 +37,7 @@ void Config_PrintSettings(uint8_t level)
 		echomagic, echomagic, cs.max_acceleration_mm_per_s2_normal[X_AXIS], cs.max_acceleration_mm_per_s2_normal[Y_AXIS], cs.max_acceleration_mm_per_s2_normal[Z_AXIS], cs.max_acceleration_mm_per_s2_normal[E_AXIS],
 		echomagic, echomagic, cs.max_acceleration_mm_per_s2_silent[X_AXIS], cs.max_acceleration_mm_per_s2_silent[Y_AXIS], cs.max_acceleration_mm_per_s2_silent[Z_AXIS], cs.max_acceleration_mm_per_s2_silent[E_AXIS],
 		echomagic, echomagic, cs.acceleration, cs.retract_acceleration, cs.travel_acceleration,
-		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
+		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.min_segment_time_us, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
 		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
 #else //TMC2130
 	printf_P(PSTR(
@@ -45,14 +45,14 @@ void Config_PrintSettings(uint8_t level)
 		"%SMaximum feedrates (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum acceleration (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
 		"%SAcceleration: P=print, R=retract, T=travel\n%S  M204 P%.2f R%.2f T%.2f\n"
-		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (us), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%lu X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
 		echomagic, echomagic, cs.axis_steps_per_mm[X_AXIS], cs.axis_steps_per_mm[Y_AXIS], cs.axis_steps_per_mm[Z_AXIS], cs.axis_steps_per_mm[E_AXIS],
 		echomagic, echomagic, max_feedrate[X_AXIS], max_feedrate[Y_AXIS], max_feedrate[Z_AXIS], max_feedrate[E_AXIS],
 		echomagic, echomagic, max_acceleration_mm_per_s2[X_AXIS], max_acceleration_mm_per_s2[Y_AXIS], max_acceleration_mm_per_s2[Z_AXIS], max_acceleration_mm_per_s2[E_AXIS],
 		echomagic, echomagic, cs.acceleration, cs.retract_acceleration, cs.travel_acceleration,
-		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
+		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.min_segment_time_us, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
 		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
 #endif //TMC2130
   );

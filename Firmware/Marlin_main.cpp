@@ -6318,31 +6318,30 @@ Sigma_Exit:
 	    M92 [ X | Y | Z | E ]
 	
     #### Parameters
-	- `X` - Steps per unit for the X drive
-	- `Y` - Steps per unit for the Y drive
-	- `Z` - Steps per unit for the Z drive
-	- `E` - Steps per unit for the extruder drive
+	- `X` - Steps per mm for the X drive
+	- `Y` - Steps per mm for the Y drive
+	- `Z` - Steps per mm for the Z drive
+	- `E` - Steps per mm for the extruder drive
     */
     case 92:
       for(int8_t i=0; i < NUM_AXIS; i++)
       {
         if(code_seen(axis_codes[i]))
         {
+          float value = code_value();
           if(i == E_AXIS) { // E
-            float value = code_value();
             if(value < 20.0) {
-              float factor = cs.axis_steps_per_mm[i] / value; // increase e constants if M92 E14 is given for netfab.
+              const float factor = cs.axis_steps_per_mm[E_AXIS] / value; // increase e constants if M92 E14 is given for netfab.
               cs.max_jerk[E_AXIS] *= factor;
-              max_feedrate[i] *= factor;
-              max_acceleration_steps_per_s2[i] *= factor;
+              max_feedrate[E_AXIS] *= factor;
+              max_acceleration_steps_per_s2[E_AXIS] *= factor;
             }
-            cs.axis_steps_per_mm[i] = value;
+            cs.axis_steps_per_mm[E_AXIS] = value;
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
             fsensor.init();
 #endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-          }
-          else {
-            cs.axis_steps_per_mm[i] = code_value();
+          } else {
+            cs.axis_steps_per_mm[i] = value;
           }
         }
       }
@@ -6807,7 +6806,7 @@ Sigma_Exit:
     {
       if(code_seen('S')) cs.minimumfeedrate = code_value();
       if(code_seen('T')) cs.mintravelfeedrate = code_value();
-      if(code_seen('B')) cs.minsegmenttime = code_value() ;
+      if(code_seen('B')) cs.min_segment_time_us = (uint32_t)code_value();
       if(code_seen('X')) cs.max_jerk[X_AXIS] = cs.max_jerk[Y_AXIS] = code_value();
       if(code_seen('Y')) cs.max_jerk[Y_AXIS] = code_value();
       if(code_seen('Z')) cs.max_jerk[Z_AXIS] = code_value();
