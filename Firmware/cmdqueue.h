@@ -2,8 +2,6 @@
 #define CMDQUEUE_H
 
 #include "Marlin.h"
-#include "language.h"
-
 
 // String circular buffer. Commands may be pushed to the buffer from both sides:
 // Chained commands will be pushed to the front, interactive (from LCD menu) 

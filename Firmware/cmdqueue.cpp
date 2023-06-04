@@ -5,6 +5,8 @@
 #include "ultralcd.h"
 #include "Prusa_farm.h"
 #include "meatpack.h"
+#include "messages.h"
+#include "language.h"
 
 // Reserve BUFSIZE lines of length MAX_CMD_SIZE plus CMDBUFFER_RESERVE_FRONT.
 char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];

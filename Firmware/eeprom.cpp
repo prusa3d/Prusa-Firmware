@@ -8,9 +8,6 @@
 #include <avr/eeprom.h>
 #include <stdint.h>
 
-
-#include "language.h"
-
 void eeprom_init()
 {
     eeprom_init_default_byte((uint8_t*)EEPROM_POWER_COUNT, 0);

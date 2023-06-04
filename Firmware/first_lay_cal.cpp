@@ -5,8 +5,8 @@
 
 #include "first_lay_cal.h"
 #include "Configuration_var.h"
-#include "language.h"
 #include "Marlin.h"
+#include "messages.h"
 #include "cmdqueue.h"
 #include "mmu2.h"
 #include <avr/pgmspace.h>
