@@ -965,9 +965,9 @@ Having the real displacement of the head, we can calculate the total movement le
   if (moves_queued > 1 && moves_queued < (BLOCK_BUFFER_SIZE >> 1)) {
       // segment time in micro seconds
       unsigned long segment_time = lround(1000000.0/inverse_second);
-      if (segment_time < cs.minsegmenttime)
+      if (segment_time < cs.min_segment_time_us)
           // buffer is draining, add extra time.  The amount of time added increases if the buffer is still emptied more.
-          inverse_second=1000000.0/(segment_time+lround(2*(cs.minsegmenttime-segment_time)/moves_queued));
+          inverse_second=1000000.0/(segment_time+lround(2*(cs.min_segment_time_us-segment_time)/moves_queued));
   }
 #endif // SLOWDOWN
 

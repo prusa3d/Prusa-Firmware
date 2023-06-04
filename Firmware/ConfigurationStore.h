@@ -16,7 +16,7 @@ typedef struct
     float retract_acceleration; //!< mm/s^2 filament pull-pack and push-forward while standing still in the other axis M204 TXXXX
     float minimumfeedrate;
     float mintravelfeedrate;
-    unsigned long minsegmenttime;
+    uint32_t min_segment_time_us; //!< (µs) M205 B
     float max_jerk[4]; //!< Jerk is a maximum immediate velocity change.
     float add_homing[3];
     float zprobe_zoffset; //!< Only used with define ENABLE_AUTO_BED_LEVELING
