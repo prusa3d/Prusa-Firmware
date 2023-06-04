@@ -7,6 +7,7 @@
 #include "util.h"
 #include "ultralcd.h"
 #include "Filament_sensor.h"
+#include "language.h"
 
 #ifdef PRUSA_FARM
 uint8_t farm_mode = 0;
