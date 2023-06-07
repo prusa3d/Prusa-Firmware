@@ -390,7 +390,10 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
         }
       } 
     }
-    if(input > (temp + 20)) {
+    #ifndef MAX_OVERSHOOT_PID_AUTOTUNE
+      #define MAX_OVERSHOOT_PID_AUTOTUNE 20
+    #endif
+    if(input > (temp + MAX_OVERSHOOT_PID_AUTOTUNE)) {
       SERIAL_PROTOCOLLNPGM("PID Autotune failed! Temperature too high");
 	  pid_tuning_finished = true;
 	  pid_cycle = 0;
