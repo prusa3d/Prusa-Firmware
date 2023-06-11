@@ -718,6 +718,8 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 #endif /* PLANNER_DIAGNOSTICS */
   if(planner_aborted) {
       // avoid planning the block early if aborted
+      SERIAL_ECHO_START;
+      SERIAL_ECHOLNRPGM(_n("Move aborted"));
       return;
   }
 
