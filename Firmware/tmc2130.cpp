@@ -169,6 +169,31 @@ uint16_t __tcoolthrs(uint8_t axis)
 	}
 	return 0;
 }
+
+static void tmc2130_XYZ_reg_init(uint8_t axis)
+{
+	const bool isStealth = (tmc2130_mode == TMC2130_MODE_SILENT);
+	if (axis == Z_AXIS) {
+#ifdef TMC2130_STEALTH_Z
+		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
+		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, isStealth ? 0 : __tcoolthrs(axis));
+		tmc2130_wr(axis, TMC2130_REG_GCONF, isStealth ? TMC2130_GCONF_SILENT : TMC2130_GCONF_DYNAMIC_SGSENS);
+		tmc2130_wr_PWMCONF(axis, pwmconf[axis].dw);
+		tmc2130_wr_TPWMTHRS(axis, isStealth ? 0 : 0xFFFF0);
+#else // TMC2130_STEALTH_Z
+		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
+#endif // TMC2130_STEALTH_Z
+	} else { // X Y
+		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
+		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, isStealth ? 0 : __tcoolthrs(axis));
+		tmc2130_wr(axis, TMC2130_REG_GCONF, isStealth ? TMC2130_GCONF_SILENT : TMC2130_GCONF_SGSENS);
+		tmc2130_wr_PWMCONF(axis, pwmconf[axis].dw);
+		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
+	}
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
+}
+
 void tmc2130_init(TMCInitParams params)
 {
 //	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
@@ -190,30 +215,9 @@ void tmc2130_init(TMCInitParams params)
 	WRITE(Z_TMC2130_DIAG,HIGH);
 	WRITE(E0_TMC2130_DIAG,HIGH);
 	
-	for (uint_least8_t axis = 0; axis < 2; axis++) // X Y axes
+	for (uint_least8_t axis = 0; axis < E_AXIS; axis++) // X Y Z axes
 	{
-		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
-		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
-		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
-		tmc2130_wr_PWMCONF(axis, pwmconf[axis].dw);
-		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
-		//tmc2130_wr_THIGH(axis, TMC2130_THIGH);
-	}
-	for (uint_least8_t axis = 2; axis < 3; axis++) // Z axis
-	{
-		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
-#ifndef TMC2130_STEALTH_Z
-		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
-#else //TMC2130_STEALTH_Z
-		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
-		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
-		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_DYNAMIC_SGSENS);
-		tmc2130_wr_PWMCONF(axis, pwmconf[axis].dw);
-		tmc2130_wr_TPWMTHRS(axis, (tmc2130_mode == TMC2130_MODE_SILENT)?0:0xFFFF0);
-#endif //TMC2130_STEALTH_Z
+		tmc2130_XYZ_reg_init(axis);
 	}
 
     // E axis
@@ -316,31 +320,14 @@ void tmc2130_home_exit()
 {
 	printf_P(PSTR("tmc2130_home_exit tmc2130_sg_homing_axes_mask=0x%02x\n"), tmc2130_sg_homing_axes_mask);
 #ifdef TMC2130_SG_HOMING
-	if (tmc2130_sg_homing_axes_mask & 0x03) //X or Y
+	if (tmc2130_sg_homing_axes_mask & (X_AXIS_MASK | Y_AXIS_MASK))
 		tmc2130_wait_standstill_xy(1000);
 	if (tmc2130_sg_homing_axes_mask)
 	{
 		for (uint8_t axis = X_AXIS, mask = X_AXIS_MASK; axis <= Z_AXIS; axis++, mask <<= 1) //X Y and Z axes
 		{
-			if (tmc2130_sg_homing_axes_mask & mask)
-			{
-#ifndef TMC2130_STEALTH_Z
-				if ((tmc2130_mode == TMC2130_MODE_SILENT) && (axis != Z_AXIS))
-#else //TMC2130_STEALTH_Z
-				if (tmc2130_mode == TMC2130_MODE_SILENT)
-#endif //TMC2130_STEALTH_Z
-				{
-					tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SILENT); // Configuration back to stealthChop
-					tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, 0);
-				}
-				else
-				{
-//					tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
-					tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-					tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
-					tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
-					tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
-				}
+			if (tmc2130_sg_homing_axes_mask & mask) {
+				tmc2130_XYZ_reg_init(axis);
 			}
 		}
 		tmc2130_sg_homing_axes_mask = 0x00;
