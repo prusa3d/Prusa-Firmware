@@ -3432,11 +3432,13 @@ static void mmu_M600_filament_change_screen(uint8_t eject_slot) {
             MMU2::mmu2.clearPrinterButtonOperation();
 
             if (btn == MMU2::Buttons::Eject) {
-                MMU2::mmu2.eject_filament(eject_slot, true);
-                // The MMU will raise FILAMENT_EJECTED screen, and ask the user to confirm
-                // the operation is done. We must be careful to not raise FILAMENT_CHANGE
-                // screen too quickly
-                continue;
+                if (eject_slot != (uint8_t)MMU2::FILAMENT_UNKNOWN) {
+                    MMU2::mmu2.eject_filament(eject_slot, true);
+                    // The MMU will raise FILAMENT_EJECTED screen, and ask the user to confirm
+                    // the operation is done. We must be careful to not raise FILAMENT_CHANGE
+                    // screen too quickly
+                    continue;
+                }
             }
             else if (btn == MMU2::Buttons::Load)
             {
