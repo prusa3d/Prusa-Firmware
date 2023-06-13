@@ -56,7 +56,7 @@ typedef enum : uint16_t {
 
     ERR_ELECTRICAL_TMC_PULLEY_DRIVER_SHORTED = 304,
     ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_SHORTED = 314,
-    ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED = 324,
+    ERR_ELECTRICAL_TMC_IDLER_DRIVER_SHORTED = 324,
 
     ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED = 305,
     ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED = 315,
@@ -115,7 +115,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_ELECTRICAL_TMC_IDLER_UNDERVOLTAGE_ERROR,
     ERR_ELECTRICAL_TMC_PULLEY_DRIVER_SHORTED,
     ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_SHORTED,
-    ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED,
+    ERR_ELECTRICAL_TMC_IDLER_DRIVER_SHORTED,
     ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED,
     ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED,
     ERR_ELECTRICAL_IDLER_SELFTEST_FAILED,
@@ -167,6 +167,7 @@ static const char MSG_TITLE_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1  = ISTR("TMC UND
 static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1      = ISTR("TMC DRIVER SHORTED"); ////MSG_TITLE_TMC_DRIVER_SHORTED c=20
 //static const char MSG_TITLE_TMC_PULLEY_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 //static const char MSG_TITLE_TMC_SELECTOR_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
+//static const char MSG_TITLE_TMC_IDLER_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 static const char MSG_TITLE_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTEST FAILED"); ////MSG_TITLE_SELFTEST_FAILED c=20
 static const char MSG_TITLE_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1      = ISTR("MCU UNDERVOLTAGE VCC"); ////MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 static const char MSG_TITLE_MMU_NOT_RESPONDING[] PROGMEM_I1      = ISTR("MMU NOT RESPONDING"); ////MSG_TITLE_MMU_NOT_RESPONDING c=20
@@ -258,7 +259,7 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_TMC_IDLER_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Idler TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_TMC_PULLEY_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_TMC_SELECTOR_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
-//static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors.");
+//static const char MSG_DESC_TMC_IDLER_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1 = ISTR("MMU MCU detected a 5V undervoltage. There might be an issue with the electronics. Check the wiring and connectors"); ////MSG_DESC_MCU_UNDERVOLTAGE_VCC c=20 r=8
 static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU not responding. Check the wiring and connectors."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU not responding correctly. Check the wiring and connectors."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=4
@@ -307,7 +308,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descTMC_IDLER_UNDERVOLTAGE_ERROR
     _R(MSG_DESC_TMC), // descTMC_PULLEY_DRIVER_SHORTED
     _R(MSG_DESC_TMC), // descTMC_SELECTOR_DRIVER_SHORTED
-    _R(MSG_DESC_TMC), // descIDLER_TMC_DRIVER_SHORTED
+    _R(MSG_DESC_TMC), // descTMC_IDLER_DRIVER_SHORTED
     _R(MSG_DESC_TMC), // descPULLEY_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descSELECTOR_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descIDLER_SELFTEST_FAILED
@@ -389,7 +390,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_IDLER_UNDERVOLTAGE_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_PULLEY_DRIVER_SHORTED
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_SELECTOR_DRIVER_SHORTED
-    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_SHORTED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_IDLER_DRIVER_SHORTED
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_SELFTEST_FAILED
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_SELFTEST_FAILED
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_SELFTEST_FAILED
