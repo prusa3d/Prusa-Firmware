@@ -47,7 +47,7 @@ typedef enum : uint16_t {
     ERR_ELECTRICAL_TMC_IDLER_DRIVER_ERROR = 321,
 
     ERR_ELECTRICAL_TMC_PULLEY_DRIVER_RESET = 302,
-    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_RESET = 312,
+    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_RESET = 312,
     ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET = 322,
 
     ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR = 303,
@@ -108,7 +108,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_ERROR,
     ERR_ELECTRICAL_TMC_IDLER_DRIVER_ERROR,
     ERR_ELECTRICAL_TMC_PULLEY_DRIVER_RESET,
-    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_RESET,
+    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_RESET,
     ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET,
     ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR,
     ERR_ELECTRICAL_SELECTOR_TMC_UNDERVOLTAGE_ERROR,
@@ -158,7 +158,7 @@ static const char MSG_TITLE_TMC_DRIVER_ERROR[] PROGMEM_I1        = ISTR("TMC DRI
 //static const char MSG_TITLE_TMC_IDLER_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
 static const char MSG_TITLE_TMC_DRIVER_RESET[] PROGMEM_I1        = ISTR("TMC DRIVER RESET"); ////MSG_TITLE_TMC_DRIVER_RESET c=20
 //static const char MSG_TITLE_TMC_PULLEY_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
-//static const char MSG_TITLE_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
+//static const char MSG_TITLE_TMC_SELECTOR_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
 static const char MSG_TITLE_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1  = ISTR("TMC UNDERVOLTAGE ERR"); ////MSG_TITLE_TMC_UNDERVOLTAGE_ERROR c=20
 //static const char MSG_TITLE_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLTAGE ERR");
 //static const char MSG_TITLE_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLTAGE ERR");
@@ -249,7 +249,7 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_TMC_SELECTOR_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is not responding. Try resetting the MMU. If the issue persists contact support.");
 //static const char MSG_DESC_TMC_IDLER_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is not responding. Try resetting the MMU. If the issue persists contact support.");
 //static const char MSG_DESC_TMC_PULLEY_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
-//static const char MSG_DESC_SELECTOR_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
+//static const char MSG_DESC_TMC_SELECTOR_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_PULLEY_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Pulley TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
 //static const char MSG_DESC_SELECTOR_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Selector TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
@@ -298,7 +298,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descTMC_SELECTOR_DRIVER_ERROR
     _R(MSG_DESC_TMC), // descTMC_IDLER_DRIVER_ERROR
     _R(MSG_DESC_TMC), // descTMC_PULLEY_DRIVER_RESET
-    _R(MSG_DESC_TMC), // descSELECTOR_TMC_DRIVER_RESET
+    _R(MSG_DESC_TMC), // descTMC_SELECTOR_DRIVER_RESET
     _R(MSG_DESC_TMC), // descIDLER_TMC_DRIVER_RESET
     _R(MSG_DESC_TMC), // descPULLEY_TMC_UNDERVOLTAGE_ERROR
     _R(MSG_DESC_TMC), // descSELECTOR_TMC_UNDERVOLTAGE_ERROR
@@ -380,7 +380,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_SELECTOR_DRIVER_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_IDLER_DRIVER_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_PULLEY_DRIVER_RESET
-    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_RESET
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_SELECTOR_DRIVER_RESET
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_RESET
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_UNDERVOLTAGE_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_UNDERVOLTAGE_ERROR
