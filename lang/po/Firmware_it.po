@@ -589,8 +589,8 @@ msgstr ""
 
 #. MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:179
-msgid "FINDA: FILAM. STUCK"
-msgstr "FINDA: FILAM. BLOCC"
+msgid "FINDA FILAM. STUCK"
+msgstr "FINDA FILAM. BLOCC"
 
 #. MSG_FS_ACTION c=10
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4048
@@ -610,8 +610,8 @@ msgstr "FSENSOR IN ANTICIPO"
 
 #. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
-msgid "FSENSOR: FIL. STUCK"
-msgstr "FSENSOR: FIL. BLOCC"
+msgid "FSENSOR FIL. STUCK"
+msgstr "FSENSOR FIL. BLOCC"
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:218

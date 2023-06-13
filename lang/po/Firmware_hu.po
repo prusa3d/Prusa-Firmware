@@ -588,8 +588,8 @@ msgstr ""
 
 #. MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:179
-msgid "FINDA: FILAM. STUCK"
-msgstr "FINDA: FIL. SZORULT"
+msgid "FINDA FILAM. STUCK"
+msgstr "FINDA FIL. SZORULT"
 
 #. MSG_FS_ACTION c=10
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4048
@@ -609,7 +609,7 @@ msgstr "FSZENZ. TUL HAMAR"
 
 #. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
-msgid "FSENSOR: FIL. STUCK"
+msgid "FSENSOR FIL. STUCK"
 msgstr "FSZENZOR: F SZORULT"
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20

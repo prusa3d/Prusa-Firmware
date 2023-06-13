@@ -586,8 +586,8 @@ msgstr ""
 
 #. MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:179
-msgid "FINDA: FILAM. STUCK"
-msgstr "FINDA: ATASCO FIL."
+msgid "FINDA FILAM. STUCK"
+msgstr "FINDA ATASCO FIL."
 
 #. MSG_FS_ACTION c=10
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4048
@@ -607,8 +607,8 @@ msgstr "FSENSOR MUY PRONTO"
 
 #. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
-msgid "FSENSOR: FIL. STUCK"
-msgstr "FSENSOR: ATASCO FIL."
+msgid "FSENSOR FIL. STUCK"
+msgstr "FSENSOR ATASCO FIL."
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:218
