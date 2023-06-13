@@ -33,7 +33,7 @@ typedef enum : uint16_t {
 
     ERR_TEMPERATURE = 200,
     ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT = 201,
-    ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT = 211,
+    ERR_TEMPERATURE_WARNING_TMC_SELECTOR_TOO_HOT = 211,
     ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT = 221,
 
     ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR = 202,
@@ -99,7 +99,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_IDLER_CANNOT_HOME,
     ERR_MECHANICAL_IDLER_CANNOT_MOVE,
     ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT,
-    ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT,
+    ERR_TEMPERATURE_WARNING_TMC_SELECTOR_TOO_HOT,
     ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT,
     ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR,
     ERR_TEMPERATURE_SELECTOR_TMC_OVERHEAT_ERROR,
@@ -238,7 +238,7 @@ static const char MSG_DESC_IDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cann
 //static const char MSG_DESC_IDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot move properly. Check for anything blocking its movement. Check the wiring.");
 static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////MSG_DESC_TMC c=20 r=8
 //static const char MSG_DESC_WARNING_TMC_PULLEY_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
-//static const char MSG_DESC_SELECTOR_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
+//static const char MSG_DESC_WARNING_TMC_SELECTOR_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_IDLER_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_PULLEY_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is overheated. Cool down the MMU board and reset MMU.");
 //static const char MSG_DESC_SELECTOR_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is overheated. Cool down the MMU board and reset MMU.");
@@ -287,7 +287,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_IDLER_CANNOT_HOME),
     _R(MSG_DESC_CANNOT_MOVE),
     _R(MSG_DESC_TMC), // descWARNING_TMC_PULLEY_TOO_HOT
-    _R(MSG_DESC_TMC), // descSELECTOR_WARNING_TMC_TOO_HOT
+    _R(MSG_DESC_TMC), // descWARNING_TMC_SELECTOR_TOO_HOT
     _R(MSG_DESC_TMC), // descIDLER_WARNING_TMC_TOO_HOT
     _R(MSG_DESC_TMC), // descPULLEY_TMC_OVERHEAT_ERROR
     _R(MSG_DESC_TMC), // descSELECTOR_TMC_OVERHEAT_ERROR
@@ -368,7 +368,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_MOVE
 
     Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//WARNING_TMC_PULLEY_TOO_HOT
-    Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//SELECTOR_WARNING_TMC_TOO_HOT
+    Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//WARNING_TMC_SELECTOR_TOO_HOT
     Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//IDLER_WARNING_TMC_TOO_HOT
 
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_OVERHEAT_ERROR
