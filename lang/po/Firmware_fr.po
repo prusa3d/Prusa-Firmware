@@ -2508,7 +2508,7 @@ msgstr ""
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
-msgid "MCU UNDERVOLTAGE VCC"
+msgid "MMU MCU UNDERPOWER"
 msgstr "MCU SOUS-TENSION VCC"
 
 #. MSG_MATERIAL_CHANGES c=18

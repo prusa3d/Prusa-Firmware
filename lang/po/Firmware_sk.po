@@ -2475,8 +2475,8 @@ msgstr ""
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
-msgid "MCU UNDERVOLTAGE VCC"
-msgstr "MCU UNDERVOLTAGE VCC"
+msgid "MMU MCU UNDERPOWER"
+msgstr "MMU MCU UNDERPOWER"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095
