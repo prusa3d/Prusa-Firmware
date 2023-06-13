@@ -605,7 +605,7 @@ msgstr "FSENSOR NO SE ACTIVO"
 msgid "FSENSOR TOO EARLY"
 msgstr "FSENSOR MUY PRONTO"
 
-#. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
+#. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
 msgid "FSENSOR: FIL. STUCK"
 msgstr "FSENSOR: ATASCO FIL."
@@ -710,7 +710,7 @@ msgstr "Fil. no introducido"
 msgid "Filament sensor"
 msgstr "Sensor de fil."
 
-#. MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
+#. MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:279
 msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "

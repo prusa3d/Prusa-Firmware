@@ -610,7 +610,7 @@ msgstr "CAPTEUR F. NON DECL."
 msgid "FSENSOR TOO EARLY"
 msgstr "CAPTEUR F TROP TOT"
 
-#. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
+#. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
 msgid "FSENSOR: FIL. STUCK"
 msgstr "CAPTEUR F: F. BLOQUE"
@@ -715,7 +715,7 @@ msgstr "Filament non charge"
 msgid "Filament sensor"
 msgstr "Capteur Fil."
 
-#. MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
+#. MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:279
 msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "

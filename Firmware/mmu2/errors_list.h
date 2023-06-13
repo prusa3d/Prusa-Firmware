@@ -20,7 +20,7 @@ typedef enum : uint16_t {
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER = 101,
     ERR_MECHANICAL_FINDA_FILAMENT_STUCK = 102,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER = 103,
-    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF = 104,
+    ERR_MECHANICAL_FSENSOR_FILAMENT_STUCK = 104,
 
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE = 105,
     ERR_MECHANICAL_FSENSOR_TOO_EARLY = 106,
@@ -89,7 +89,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
     ERR_MECHANICAL_FINDA_FILAMENT_STUCK,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
+    ERR_MECHANICAL_FSENSOR_FILAMENT_STUCK,
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE,
     ERR_MECHANICAL_FSENSOR_TOO_EARLY,
     ERR_MECHANICAL_INSPECT_FINDA,
@@ -135,7 +135,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
 static const char MSG_TITLE_FINDA_DIDNT_TRIGGER[] PROGMEM_I1     = ISTR("FINDA DIDNT TRIGGER"); ////MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
 static const char MSG_TITLE_FINDA_FILAMENT_STUCK[] PROGMEM_I1      = ISTR("FINDA: FILAM. STUCK"); ////MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 static const char MSG_TITLE_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1   = ISTR("FSENSOR DIDNT TRIGG."); ////MSG_TITLE_FSENSOR_DIDNT_TRIGGER c=20
-static const char MSG_TITLE_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1    = ISTR("FSENSOR: FIL. STUCK"); ////MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
+static const char MSG_TITLE_FSENSOR_FILAMENT_STUCK[] PROGMEM_I1    = ISTR("FSENSOR: FIL. STUCK"); ////MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 static const char MSG_TITLE_PULLEY_CANNOT_MOVE[] PROGMEM_I1      = ISTR("PULLEY CANNOT MOVE"); ////MSG_TITLE_PULLEY_CANNOT_MOVE c=20
 static const char MSG_TITLE_FSENSOR_TOO_EARLY[] PROGMEM_I1       = ISTR("FSENSOR TOO EARLY"); ////MSG_TITLE_FSENSOR_TOO_EARLY c=20
 static const char MSG_TITLE_INSPECT_FINDA[] PROGMEM_I1           = ISTR("INSPECT FINDA"); ////MSG_TITLE_INSPECT_FINDA c=20
@@ -178,7 +178,7 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_FINDA_DIDNT_TRIGGER),
     _R(MSG_TITLE_FINDA_FILAMENT_STUCK),
     _R(MSG_TITLE_FSENSOR_DIDNT_TRIGGER),
-    _R(MSG_TITLE_FSENSOR_DIDNT_GO_OFF),
+    _R(MSG_TITLE_FSENSOR_FILAMENT_STUCK),
     _R(MSG_TITLE_PULLEY_CANNOT_MOVE),
     _R(MSG_TITLE_FSENSOR_TOO_EARLY),
     _R(MSG_TITLE_INSPECT_FINDA),
@@ -225,7 +225,7 @@ static const char * const errorTitles [] PROGMEM = {
 static const char MSG_DESC_FINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trigger while loading the filament. Ensure the filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 static const char MSG_DESC_FINDA_FILAMENT_STUCK[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works."); ////MSG_DESC_FINDA_FILAMENT_STUCK c=20 r=8
 static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading the filament. Ensure the filament reached the fsensor and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
-static const char MSG_DESC_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
+static const char MSG_DESC_FSENSOR_FILAMENT_STUCK[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
 static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20 r=8
 static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 static const char MSG_DESC_INSPECT_FINDA[] PROGMEM_I1 = ISTR("Selector can't move due to FINDA detecting a filament. Make sure no filament is in selector and FINDA works properly."); ////MSG_DESC_INSPECT_FINDA c=20 r=8
@@ -276,7 +276,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FINDA_DIDNT_TRIGGER),
     _R(MSG_DESC_FINDA_FILAMENT_STUCK),
     _R(MSG_DESC_FSENSOR_DIDNT_TRIGGER),
-    _R(MSG_DESC_FSENSOR_DIDNT_GO_OFF),
+    _R(MSG_DESC_FSENSOR_FILAMENT_STUCK),
     _R(MSG_DESC_PULLEY_STALLED),
     _R(MSG_DESC_FSENSOR_TOO_EARLY),
     _R(MSG_DESC_INSPECT_FINDA),
@@ -355,7 +355,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FINDA_DIDNT_TRIGGER
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FINDA_FILAMENT_STUCK
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_TRIGGER
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_GO_OFF
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_FILAMENT_STUCK
 
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//PULLEY_STALLED
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_TOO_EARLY
