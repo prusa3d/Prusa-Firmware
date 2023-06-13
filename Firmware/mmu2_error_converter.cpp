@@ -135,7 +135,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         if (ec & (uint16_t)ErrorCode::TMC_IOIN_MISMATCH)
             return FindErrorIndex(ERR_ELECTRICAL_TMC_IDLER_DRIVER_ERROR);
         if (ec & (uint16_t)ErrorCode::TMC_RESET)
-            return FindErrorIndex(ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET);
+            return FindErrorIndex(ERR_ELECTRICAL_TMC_IDLER_DRIVER_RESET);
         if (ec & (uint16_t)ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP)
             return FindErrorIndex(ERR_ELECTRICAL_IDLER_TMC_UNDERVOLTAGE_ERROR);
         if (ec & (uint16_t)ErrorCode::TMC_SHORT_TO_GROUND)
@@ -251,7 +251,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         
     case ERR_ELECTRICAL_TMC_PULLEY_DRIVER_RESET:
     case ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_RESET:
-    case ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET:
+    case ERR_ELECTRICAL_TMC_IDLER_DRIVER_RESET:
         
     case ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR:
     case ERR_ELECTRICAL_SELECTOR_TMC_UNDERVOLTAGE_ERROR:
