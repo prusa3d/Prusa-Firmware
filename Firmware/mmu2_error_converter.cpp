@@ -99,7 +99,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
             return FindErrorIndex(ERR_ELECTRICAL_MMU_SELECTOR_SELFTEST_FAILED);
     } else if (ec & (uint16_t)ErrorCode::TMC_IDLER_BIT) {
         if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
-            return FindErrorIndex(ERR_ELECTRICAL_IDLER_SELFTEST_FAILED);
+            return FindErrorIndex(ERR_ELECTRICAL_MMU_MMU_IDLER_SELFTEST_FAILED);
     }
 
     // TMC-related errors - multiple of these can occur at once
@@ -263,7 +263,7 @@ Buttons ButtonAvailable(uint16_t ec) {
 
     case ERR_ELECTRICAL_MMU_PULLEY_SELFTEST_FAILED:
     case ERR_ELECTRICAL_MMU_SELECTOR_SELFTEST_FAILED:
-    case ERR_ELECTRICAL_IDLER_SELFTEST_FAILED:
+    case ERR_ELECTRICAL_MMU_MMU_IDLER_SELFTEST_FAILED:
 
     case ERR_SYSTEM_QUEUE_FULL:
     case ERR_SYSTEM_FW_RUNTIME_ERROR:
