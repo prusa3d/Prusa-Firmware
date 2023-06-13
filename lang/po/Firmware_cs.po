@@ -551,7 +551,7 @@ msgstr "Det. zaseku"
 msgid "F. runout"
 msgstr "F. runout"
 
-#. MSG_TITLE_FIL_ALREADY_LOADED c=20
+#. MSG_TITLE_FILAMENT_ALREADY_LOADED c=20
 #: ../../Firmware/mmu2/errors_list.h:169 ../../Firmware/mmu2/errors_list.h:214
 msgid "FILAMENT ALREADY LOA"
 msgstr "FILAMENT JE ZAVEDEN"
