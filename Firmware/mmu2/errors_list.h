@@ -232,7 +232,7 @@ static const char MSG_DESC_INSPECT_FINDA[] PROGMEM_I1 = ISTR("Selector can't mov
 static const char MSG_DESC_LOAD_TO_EXTRUDER_FAILED[] PROGMEM_I1 = ISTR("Loading to extruder failed. Inspect the filament tip shape. Refine the sensor calibration, if needed."); ////MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 static const char MSG_DESC_SELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Can't move Selector or Idler."); /////MSG_DESC_CANNOT_MOVE c=20 r=4
-//static const char MSG_DESC_SELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move. Check for anything blocking its movement. Check the wiring is correct.");
+//static const char MSG_DESC_SELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move. Check for anything blocking its movement. Check the wiring.");
 static const char MSG_DESC_IDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
 //static const char MSG_DESC_IDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot move properly. Check for anything blocking its movement. Check the wiring is correct.");
 static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////MSG_DESC_TMC c=20 r=8
