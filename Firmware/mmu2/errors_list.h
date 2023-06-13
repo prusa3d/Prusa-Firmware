@@ -32,7 +32,7 @@ typedef enum : uint16_t {
     ERR_MECHANICAL_IDLER_CANNOT_MOVE = 126,
 
     ERR_TEMPERATURE = 200,
-    ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT = 201,
+    ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT = 201,
     ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT = 211,
     ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT = 221,
 
@@ -98,7 +98,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE,
     ERR_MECHANICAL_IDLER_CANNOT_HOME,
     ERR_MECHANICAL_IDLER_CANNOT_MOVE,
-    ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT,
+    ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT,
     ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT,
     ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT,
     ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR,
@@ -145,8 +145,9 @@ static const char MSG_TITLE_SELECTOR_CANNOT_HOME[] PROGMEM_I1    = ISTR("SELECTO
 static const char MSG_TITLE_IDLER_CANNOT_MOVE[] PROGMEM_I1       = ISTR("IDLER CANNOT MOVE"); ////MSG_TITLE_IDLER_CANNOT_MOVE c=20
 static const char MSG_TITLE_IDLER_CANNOT_HOME[] PROGMEM_I1       = ISTR("IDLER CANNOT HOME"); ////MSG_TITLE_IDLER_CANNOT_HOME c=20
 static const char MSG_TITLE_TMC_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT"); ////MSG_TITLE_TMC_WARNING_TMC_TOO_HOT c=20
-//static const char MSG_TITLE_TMC_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT"); ////MSG_TITLE_TMC_WARNING_TMC_TOO_HOT c=20
-//static const char MSG_TITLE_TMC_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
+//static const char MSG_TITLE_WARNING_TMC_PULLEY_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
+//static const char MSG_TITLE_WARNING_TMC_SELECTOR_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
+//static const char MSG_TITLE_WARNING_TMC_IDLER_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
 static const char MSG_TITLE_TMC_OVERHEAT_ERROR[] PROGMEM_I1      = ISTR("TMC OVERHEAT ERROR"); ////MSG_TITLE_TMC_OVERHEAT_ERROR c=20
 //static const char MSG_TITLE_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
 //static const char MSG_TITLE_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
@@ -236,7 +237,7 @@ static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Can't move Selector 
 static const char MSG_DESC_IDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
 //static const char MSG_DESC_IDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot move properly. Check for anything blocking its movement. Check the wiring.");
 static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////MSG_DESC_TMC c=20 r=8
-//static const char MSG_DESC_PULLEY_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
+//static const char MSG_DESC_WARNING_TMC_PULLEY_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_SELECTOR_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_IDLER_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_PULLEY_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is overheated. Cool down the MMU board and reset MMU.");
@@ -285,7 +286,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_CANNOT_MOVE),
     _R(MSG_DESC_IDLER_CANNOT_HOME),
     _R(MSG_DESC_CANNOT_MOVE),
-    _R(MSG_DESC_TMC), // descPULLEY_WARNING_TMC_TOO_HOT
+    _R(MSG_DESC_TMC), // descWARNING_TMC_PULLEY_TOO_HOT
     _R(MSG_DESC_TMC), // descSELECTOR_WARNING_TMC_TOO_HOT
     _R(MSG_DESC_TMC), // descIDLER_WARNING_TMC_TOO_HOT
     _R(MSG_DESC_TMC), // descPULLEY_TMC_OVERHEAT_ERROR
@@ -366,7 +367,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_MOVE
 
-    Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//PULLEY_WARNING_TMC_TOO_HOT
+    Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//WARNING_TMC_PULLEY_TOO_HOT
     Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//SELECTOR_WARNING_TMC_TOO_HOT
     Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//IDLER_WARNING_TMC_TOO_HOT
 

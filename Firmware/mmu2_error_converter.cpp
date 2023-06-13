@@ -115,7 +115,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         if (ec & (uint16_t)ErrorCode::TMC_SHORT_TO_GROUND)
             return FindErrorIndex(ERR_ELECTRICAL_PULLEY_TMC_DRIVER_SHORTED);
         if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN)
-            return FindErrorIndex(ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT);
+            return FindErrorIndex(ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT);
         if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR)
             return FindErrorIndex(ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR);
     } else if (ec & (uint16_t)ErrorCode::TMC_SELECTOR_BIT) {
@@ -228,7 +228,7 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
-    case ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT:
+    case ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT:
     case ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT:
     case ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT:
         switch (buttonSelectedOperation) {
