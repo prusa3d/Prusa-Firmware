@@ -226,7 +226,7 @@ static const char MSG_DESC_FINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't
 static const char MSG_DESC_FINDA_FILAMENT_STUCK[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works."); ////MSG_DESC_FINDA_FILAMENT_STUCK c=20 r=8
 static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading the filament. Ensure the filament reached the fsensor and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 static const char MSG_DESC_FSENSOR_FILAMENT_STUCK[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
-static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20 r=8
+static const char MSG_DESC_PULLEY_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 static const char MSG_DESC_INSPECT_FINDA[] PROGMEM_I1 = ISTR("Selector can't move due to FINDA detecting a filament. Make sure no filament is in selector and FINDA works properly."); ////MSG_DESC_INSPECT_FINDA c=20 r=8
 static const char MSG_DESC_LOAD_TO_EXTRUDER_FAILED[] PROGMEM_I1 = ISTR("Loading to extruder failed. Inspect the filament tip shape. Refine the sensor calibration, if needed."); ////MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
@@ -277,7 +277,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FINDA_FILAMENT_STUCK),
     _R(MSG_DESC_FSENSOR_DIDNT_TRIGGER),
     _R(MSG_DESC_FSENSOR_FILAMENT_STUCK),
-    _R(MSG_DESC_PULLEY_STALLED),
+    _R(MSG_DESC_PULLEY_CANNOT_MOVE),
     _R(MSG_DESC_FSENSOR_TOO_EARLY),
     _R(MSG_DESC_INSPECT_FINDA),
     _R(MSG_DESC_LOAD_TO_EXTRUDER_FAILED),
@@ -357,7 +357,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_TRIGGER
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_FILAMENT_STUCK
 
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//PULLEY_STALLED
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//PULLEY_CANNOT_MOVE
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_TOO_EARLY
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//INSPECT_FINDA
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//LOAD_TO_EXTRUDER_FAILED

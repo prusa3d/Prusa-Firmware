@@ -1693,7 +1693,7 @@ msgstr ""
 "Printerens dysediameter er forskjellig fra G-Code. Sjekk Innstillinger for "
 "hva som er satt. Print avbrutt."
 
-#. MSG_DESC_PULLEY_STALLED c=20 r=8
+#. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:229 ../../Firmware/mmu2/errors_list.h:280
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
 msgstr "Reimmotor stanset. Sjekk at Reimen kan beveges og sjekk koblinger"
