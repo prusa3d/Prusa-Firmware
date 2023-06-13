@@ -38,7 +38,7 @@ typedef enum : uint16_t {
 
     ERR_TEMPERATURE_TMC_PULLEY_OVERHEAT_ERROR = 202,
     ERR_TEMPERATURE_TMC_SELECTOR_OVERHEAT_ERROR = 212,
-    ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR = 222,
+    ERR_TEMPERATURE_TMC_IDLER_OVERHEAT_ERROR = 222,
 
 
     ERR_ELECTRICAL = 300,
@@ -103,7 +103,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_TEMPERATURE_WARNING_TMC_IDLER_TOO_HOT,
     ERR_TEMPERATURE_TMC_PULLEY_OVERHEAT_ERROR,
     ERR_TEMPERATURE_TMC_SELECTOR_OVERHEAT_ERROR,
-    ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR,
+    ERR_TEMPERATURE_TMC_IDLER_OVERHEAT_ERROR,
     ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR,
     ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR,
     ERR_ELECTRICAL_IDLER_TMC_DRIVER_ERROR,
@@ -243,7 +243,7 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_WARNING_TMC_IDLER_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_TMC_PULLEY_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is overheated. Cool down the MMU board and reset MMU.");
 //static const char MSG_DESC_TMC_SELECTOR_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is overheated. Cool down the MMU board and reset MMU.");
-//static const char MSG_DESC_IDLER_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is overheated. Cool down the MMU board and reset MMU.");
+//static const char MSG_DESC_TMC_IDLER_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is overheated. Cool down the MMU board and reset MMU.");
 //static const char MSG_DESC_PULLEY_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is not responding. Try resetting the MMU.");
 //static const char MSG_DESC_SELECTOR_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is not responding. Try resetting the MMU.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is not responding. Try resetting the MMU.");
@@ -292,7 +292,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descWARNING_TMC_IDLER_TOO_HOT
     _R(MSG_DESC_TMC), // descTMC_PULLEY_OVERHEAT_ERROR
     _R(MSG_DESC_TMC), // descTMC_SELECTOR_OVERHEAT_ERROR
-    _R(MSG_DESC_TMC), // descIDLER_TMC_OVERHEAT_ERROR
+    _R(MSG_DESC_TMC), // descTMC_IDLER_OVERHEAT_ERROR
     _R(MSG_DESC_TMC), // descPULLEY_TMC_DRIVER_ERROR
     _R(MSG_DESC_TMC), // descSELECTOR_TMC_DRIVER_ERROR
     _R(MSG_DESC_TMC), // descIDLER_TMC_DRIVER_ERROR
@@ -374,7 +374,7 @@ static const uint8_t errorButtons[] PROGMEM = {
 
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_PULLEY_OVERHEAT_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_SELECTOR_OVERHEAT_ERROR
-    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_OVERHEAT_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//TMC_IDLER_OVERHEAT_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_ERROR

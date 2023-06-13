@@ -143,7 +143,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN)
             return FindErrorIndex(ERR_TEMPERATURE_WARNING_TMC_IDLER_TOO_HOT);
         if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR)
-            return FindErrorIndex(ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR);
+            return FindErrorIndex(ERR_TEMPERATURE_TMC_IDLER_OVERHEAT_ERROR);
     }
 
     // if nothing got caught, return a generic runtime error
@@ -243,7 +243,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         
     case ERR_TEMPERATURE_TMC_PULLEY_OVERHEAT_ERROR:
     case ERR_TEMPERATURE_TMC_SELECTOR_OVERHEAT_ERROR:
-    case ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR:
+    case ERR_TEMPERATURE_TMC_IDLER_OVERHEAT_ERROR:
         
     case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR:
     case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR:
