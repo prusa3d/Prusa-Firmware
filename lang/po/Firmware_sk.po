@@ -2489,10 +2489,10 @@ msgstr "Výmena materiálu"
 msgid "Remove the ejected filament from the front of the MMU."
 msgstr "Odstráňte vysunutý filament z prednej časti MMU."
 
-#. MSG_BTN_RESTART_MMU c=8
+#. MSG_BTN_RESET_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
-msgid "RstMMU"
-msgstr "RstMMU"
+msgid "ResetMMU"
+msgstr "ResetMMU"
 
 #. MSG_DESC_INSPECT_FINDA c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:282

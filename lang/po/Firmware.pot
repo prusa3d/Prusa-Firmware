@@ -1780,9 +1780,9 @@ msgstr ""
 msgid "Right side[µm]"
 msgstr ""
 
-#. MSG_BTN_RESTART_MMU c=8
+#. MSG_BTN_RESET_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
-msgid "RstMMU"
+msgid "ResetMMU"
 msgstr ""
 
 #. MSG_WIZARD_RERUN c=20 r=7

@@ -195,7 +195,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     uint8_t ei = PrusaErrorCodeIndex(ec);
     
     // The list of responses which occur in mmu error dialogs
-    // Return button index or perform some action on the MK3 by itself (like restart MMU)
+    // Return button index or perform some action on the MK3 by itself (like Reset MMU)
     // Based on Prusa-Error-Codes errors_list.h
     // So far hardcoded, but shall be generated in the future
     switch ( PrusaErrorCode(ei) ) {
@@ -234,8 +234,8 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // "Continue"
             return Left;
-        case ButtonOperations::RestartMMU: // "Restart MMU"
-            return RestartMMU;
+        case ButtonOperations::ResetMMU: // "Reset MMU"
+            return ResetMMU;
         default:
             break;
         }
@@ -269,8 +269,8 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FW_RUNTIME_ERROR:
     case ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC:
         switch (buttonSelectedOperation) {
-        case ButtonOperations::RestartMMU: // "Restart MMU"
-            return RestartMMU;
+        case ButtonOperations::ResetMMU: // "Reset MMU"
+            return ResetMMU;
         default:
             break;
         }
@@ -281,8 +281,8 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         case ButtonOperations::DisableMMU: // "Disable"
             return DisableMMU;
-        case ButtonOperations::RestartMMU: // "RestartMMU"
-            return RestartMMU;
+        case ButtonOperations::ResetMMU: // "ResetMMU"
+            return ResetMMU;
         default:
             break;
         }
@@ -302,8 +302,8 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         case ButtonOperations::StopPrint: // "Stop print"
             return StopPrint;
-        case ButtonOperations::RestartMMU: // "Restart MMU"
-            return RestartMMU;
+        case ButtonOperations::ResetMMU: // "Reset MMU"
+            return ResetMMU;
         default:
             break;
         }

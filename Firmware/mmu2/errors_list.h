@@ -329,7 +329,7 @@ static const char * const errorDescs[] PROGMEM = {
 // -> the left button on the MMU is not used/rendered on the LCD (it is also almost unused on the MMU side)
 static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY c=8
 static const char MSG_BTN_CONTINUE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_CONTINUE c=8
-static const char MSG_BTN_RESTART_MMU[] PROGMEM_I1 = ISTR("RstMMU"); ////MSG_BTN_RESTART_MMU c=8
+static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN_RESET_MMU c=8
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
@@ -339,7 +339,7 @@ static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_RETRY),
     _R(MSG_BTN_CONTINUE),
-    _R(MSG_BTN_RESTART_MMU),
+    _R(MSG_BTN_RESET_MMU),
     _R(MSG_BTN_UNLOAD),
     _R(MSG_BTN_STOP),
     _R(MSG_BTN_DISABLE_MMU),
@@ -367,37 +367,37 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_MOVE
 
-    Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//WARNING_TMC_PULLEY_TOO_HOT
-    Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//SELECTOR_WARNING_TMC_TOO_HOT
-    Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),//IDLER_WARNING_TMC_TOO_HOT
+    Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//WARNING_TMC_PULLEY_TOO_HOT
+    Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//SELECTOR_WARNING_TMC_TOO_HOT
+    Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//IDLER_WARNING_TMC_TOO_HOT
 
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_TMC_OVERHEAT_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_OVERHEAT_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_TMC_OVERHEAT_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_RESET
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_RESET
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_RESET
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_TMC_UNDERVOLTAGE_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_UNDERVOLTAGE_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_TMC_UNDERVOLTAGE_ERROR
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_SHORTED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_SHORTED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_SHORTED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_SELFTEST_FAILED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_SELFTEST_FAILED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_SELFTEST_FAILED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//MCU_UNDERVOLTAGE_VCC
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//MMU_NOT_RESPONDING
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//COMMUNICATION_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_OVERHEAT_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_OVERHEAT_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_OVERHEAT_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_RESET
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_RESET
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_RESET
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_UNDERVOLTAGE_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_UNDERVOLTAGE_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_UNDERVOLTAGE_ERROR
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_SHORTED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_SHORTED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_SHORTED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//PULLEY_SELFTEST_FAILED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//SELECTOR_SELFTEST_FAILED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//IDLER_SELFTEST_FAILED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//MCU_UNDERVOLTAGE_VCC
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::DisableMMU),//MMU_NOT_RESPONDING
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::DisableMMU),//COMMUNICATION_ERROR
 
     Btns(ButtonOperations::Unload, ButtonOperations::Continue),//FILAMENT_ALREADY_LOADED
-    Btns(ButtonOperations::StopPrint, ButtonOperations::RestartMMU),//INVALID_TOOL
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//QUEUE_FULL
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//FW_UPDATE_NEEDED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
+    Btns(ButtonOperations::StopPrint, ButtonOperations::ResetMMU),//INVALID_TOOL
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//QUEUE_FULL
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::DisableMMU),//FW_UPDATE_NEEDED
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//FILAMENT_EJECTED
 };
