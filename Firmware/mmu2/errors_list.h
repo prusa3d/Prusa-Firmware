@@ -18,7 +18,7 @@ typedef enum : uint16_t {
 
     ERR_MECHANICAL = 100,
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER = 101,
-    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF = 102,
+    ERR_MECHANICAL_FINDA_FILAMENT_STUCK = 102,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER = 103,
     ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF = 104,
 
@@ -87,7 +87,7 @@ typedef enum : uint16_t {
 // it really makes no difference if there are "nice" data structures or plain arrays.
 static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
+    ERR_MECHANICAL_FINDA_FILAMENT_STUCK,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
     ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE,
@@ -133,7 +133,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
 
 // @@TODO some of the strings are duplicates, can be merged into one     01234567890123456789
 static const char MSG_TITLE_FINDA_DIDNT_TRIGGER[] PROGMEM_I1     = ISTR("FINDA DIDNT TRIGGER"); ////MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
-static const char MSG_TITLE_FINDA_DIDNT_GO_OFF[] PROGMEM_I1      = ISTR("FINDA: FILAM. STUCK"); ////MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
+static const char MSG_TITLE_FINDA_FILAMENT_STUCK[] PROGMEM_I1      = ISTR("FINDA: FILAM. STUCK"); ////MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 static const char MSG_TITLE_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1   = ISTR("FSENSOR DIDNT TRIGG."); ////MSG_TITLE_FSENSOR_DIDNT_TRIGGER c=20
 static const char MSG_TITLE_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1    = ISTR("FSENSOR: FIL. STUCK"); ////MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
 static const char MSG_TITLE_PULLEY_CANNOT_MOVE[] PROGMEM_I1      = ISTR("PULLEY CANNOT MOVE"); ////MSG_TITLE_PULLEY_CANNOT_MOVE c=20
@@ -176,7 +176,7 @@ static const char MSG_TITLE_FILAMENT_EJECTED[] PROGMEM_I1        = ISTR("FILAMEN
 
 static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_FINDA_DIDNT_TRIGGER),
-    _R(MSG_TITLE_FINDA_DIDNT_GO_OFF),
+    _R(MSG_TITLE_FINDA_FILAMENT_STUCK),
     _R(MSG_TITLE_FSENSOR_DIDNT_TRIGGER),
     _R(MSG_TITLE_FSENSOR_DIDNT_GO_OFF),
     _R(MSG_TITLE_PULLEY_CANNOT_MOVE),
@@ -223,7 +223,7 @@ static const char * const errorTitles [] PROGMEM = {
 // @@TODO looking at the texts, they can be composed of several parts and/or parametrized (could save a lot of space ;) )
 // Moreover, some of them have been disabled in favour of saving some more code size.
 static const char MSG_DESC_FINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trigger while loading the filament. Ensure the filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
-static const char MSG_DESC_FINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
+static const char MSG_DESC_FINDA_FILAMENT_STUCK[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works."); ////MSG_DESC_FINDA_FILAMENT_STUCK c=20 r=8
 static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading the filament. Ensure the filament reached the fsensor and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 static const char MSG_DESC_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
 static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20 r=8
@@ -274,7 +274,7 @@ static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 3] == ('0' + mmuVersionPatch));
 
 static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FINDA_DIDNT_TRIGGER),
-    _R(MSG_DESC_FINDA_DIDNT_GO_OFF),
+    _R(MSG_DESC_FINDA_FILAMENT_STUCK),
     _R(MSG_DESC_FSENSOR_DIDNT_TRIGGER),
     _R(MSG_DESC_FSENSOR_DIDNT_GO_OFF),
     _R(MSG_DESC_PULLEY_STALLED),
@@ -353,7 +353,7 @@ uint8_t constexpr Btns(ButtonOperations bMiddle, ButtonOperations bRight){
 
 static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FINDA_DIDNT_TRIGGER
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FINDA_DIDNT_GO_OFF
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FINDA_FILAMENT_STUCK
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_TRIGGER
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_GO_OFF
 

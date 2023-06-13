@@ -568,7 +568,7 @@ msgstr "FILAMENT MAR BENT"
 msgid "FINDA DIDNT TRIGGER"
 msgstr "FINDA NEM KAPCSOLT"
 
-#. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
+#. MSG_DESC_FINDA_FILAMENT_STUCK c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:277
 msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
@@ -586,7 +586,7 @@ msgstr ""
 "A FINDA nem kapcsolt filament betoltese kozben. Ellenorizd a fil. utjat es a"
 " FINDA mukodeset."
 
-#. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
+#. MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:179
 msgid "FINDA: FILAM. STUCK"
 msgstr "FINDA: FIL. SZORULT"

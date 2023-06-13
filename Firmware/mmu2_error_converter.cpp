@@ -31,7 +31,7 @@ static constexpr uint8_t FindErrorIndex(uint16_t pec) {
 
 // check that the searching algoritm works
 static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_TRIGGER) == 0);
-static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_GO_OFF) == 1);
+static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_FILAMENT_STUCK) == 1);
 static_assert( FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER) == 2);
 static_assert( FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF) == 3);
 
@@ -40,7 +40,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     case (uint16_t)ErrorCode::FINDA_DIDNT_SWITCH_ON:
         return FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_TRIGGER);
     case (uint16_t)ErrorCode::FINDA_DIDNT_SWITCH_OFF:
-        return FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_GO_OFF);
+        return FindErrorIndex(ERR_MECHANICAL_FINDA_FILAMENT_STUCK);
     case (uint16_t)ErrorCode::FSENSOR_DIDNT_SWITCH_ON:
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER);
     case (uint16_t)ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
@@ -200,7 +200,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     // So far hardcoded, but shall be generated in the future
     switch ( PrusaErrorCode(ei) ) {
     case ERR_MECHANICAL_FINDA_DIDNT_TRIGGER:
-    case ERR_MECHANICAL_FINDA_DIDNT_GO_OFF:
+    case ERR_MECHANICAL_FINDA_FILAMENT_STUCK:
     case ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER:
     case ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF:
     case ERR_MECHANICAL_FSENSOR_TOO_EARLY:

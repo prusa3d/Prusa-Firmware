@@ -563,7 +563,7 @@ msgstr "FIL. BEREITS GELADEN"
 msgid "FINDA DIDNT TRIGGER"
 msgstr "FINDA N. AUSGELÖST"
 
-#. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
+#. MSG_DESC_FINDA_FILAMENT_STUCK c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:277
 msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
@@ -581,7 +581,7 @@ msgstr ""
 "FINDA hat beim Laden des Filaments nicht ausgelöst. Stellen Sie sicher, dass"
 " sich das Filament bewegen kann und FINDA funktioniert."
 
-#. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
+#. MSG_TITLE_FINDA_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:179
 msgid "FINDA: FILAM. STUCK"
 msgstr "FINDA NICHT FIL.FREI"
