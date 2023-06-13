@@ -107,7 +107,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     // By carefully ordering the checks here we can prioritize the errors being reported to the user.
     if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
         if (ec & (uint16_t)ErrorCode::TMC_IOIN_MISMATCH)
-            return FindErrorIndex(ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR);
+            return FindErrorIndex(ERR_ELECTRICAL_TMC_PULLEY_DRIVER_ERROR);
         if (ec & (uint16_t)ErrorCode::TMC_RESET)
             return FindErrorIndex(ERR_ELECTRICAL_PULLEY_TMC_DRIVER_RESET);
         if (ec & (uint16_t)ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP)
@@ -245,7 +245,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_TEMPERATURE_TMC_SELECTOR_OVERHEAT_ERROR:
     case ERR_TEMPERATURE_TMC_IDLER_OVERHEAT_ERROR:
         
-    case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR:
+    case ERR_ELECTRICAL_TMC_PULLEY_DRIVER_ERROR:
     case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR:
     case ERR_ELECTRICAL_IDLER_TMC_DRIVER_ERROR:
         
