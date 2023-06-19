@@ -557,7 +557,7 @@ msgstr "F. isteko"
 
 #. MSG_TITLE_FILAMENT_ALREADY_LOADED c=20
 #: ../../Firmware/mmu2/errors_list.h:169 ../../Firmware/mmu2/errors_list.h:214
-msgid "FILAMENT ALREADY LOA"
+msgid "FIL. ALREADY LOADED"
 msgstr "FILAMENT VEC NAPUNJ."
 
 #. MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
@@ -722,7 +722,7 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:227 ../../Firmware/mmu2/errors_list.h:278
 msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
-"filament reached the fsensor and the sensor works."
+"sensor is calibrated and the filament reached it."
 msgstr ""
 "Senzor filamenta nije se aktivirao tijekom punjenja filamenta. Osigurajte da"
 " je filament dosegao fsenzor i da senzor radi."
@@ -2518,7 +2518,7 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
 msgid ""
-"The MMU firmware version incompatible with the printer's FW. Update to "
+"MMU FW version is incompatible with printer FW.Update to "
 "version 2.1.9."
 msgstr ""
 "Verzija firmware-a MMU nekompatibilna s FW-om pisača. Ažuriranje na verziju "
