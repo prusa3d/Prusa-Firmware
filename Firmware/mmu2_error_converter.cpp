@@ -147,7 +147,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     }
 
     // if nothing got caught, return a generic runtime error
-    return FindErrorIndex(ERR_SYSTEM_FW_RUNTIME_ERROR);
+    return FindErrorIndex(ERR_OTHER_UNKNOWN_ERROR);
 }
 
 uint16_t PrusaErrorCode(uint8_t i){
