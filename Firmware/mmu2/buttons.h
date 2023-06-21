@@ -13,7 +13,7 @@ enum class ButtonOperations : uint8_t {
     NoOperation = 0,
     Retry       = 1,
     Continue    = 2,
-    RestartMMU  = 3,
+    ResetMMU  = 3,
     Unload      = 4,
     StopPrint   = 5,
     DisableMMU  = 6,
@@ -26,7 +26,7 @@ enum Buttons : uint8_t {
     Left,
     
     // performed on the printer's side
-    RestartMMU,
+    ResetMMU,
     StopPrint,
     DisableMMU,
     
