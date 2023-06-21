@@ -722,7 +722,7 @@ void MMU2::CheckUserInput() {
             break;
         }
         break;
-    case RestartMMU:
+    case ResetMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
         // ... but mmu2_power.cpp knows this and triggers a soft-reset instead.
         break;
