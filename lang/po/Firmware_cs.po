@@ -199,7 +199,7 @@ msgid "Brightness"
 msgstr "Podsviceni"
 
 #. MSG_TITLE_COMMUNICATION_ERROR c=20
-#: ../../Firmware/mmu2/errors_list.h:168 ../../Firmware/mmu2/errors_list.h:213
+#: ../../Firmware/mmu2/errors_list.h:178 ../../Firmware/mmu2/errors_list.h:224
 msgid "COMMUNICATION ERROR"
 msgstr "CHYBA KOMUNIKACE"
 
@@ -253,13 +253,13 @@ msgid "Calibration done"
 msgstr "Kalibrace OK"
 
 #. MSG_DESC_CANNOT_MOVE c=20 r=4
-#: ../../Firmware/mmu2/errors_list.h:234 ../../Firmware/mmu2/errors_list.h:285
-#: ../../Firmware/mmu2/errors_list.h:287
+#: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:301
+#: ../../Firmware/mmu2/errors_list.h:303
 msgid "Can't move Selector or Idler."
 msgstr "Chyba pohybu selektoru nebo idleru"
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:260 ../../Firmware/mmu2/errors_list.h:312
+#: ../../Firmware/mmu2/errors_list.h:275 ../../Firmware/mmu2/errors_list.h:328
 msgid ""
 "Cannot perform the action, filament is already loaded. Unload it first."
 msgstr "Nelze provest akci, filament je zaveden. Nejprve jej vyjmete."
@@ -419,7 +419,7 @@ msgid "Dim"
 msgstr "Temny"
 
 #. MSG_BTN_DISABLE_MMU c=8
-#: ../../Firmware/mmu2/errors_list.h:334 ../../Firmware/mmu2/errors_list.h:344
+#: ../../Firmware/mmu2/errors_list.h:351 ../../Firmware/mmu2/errors_list.h:361
 msgid "Disable"
 msgstr "Vypnout"
 
@@ -456,7 +456,7 @@ msgstr ""
 "podlozkou?"
 
 #. MSG_BTN_CONTINUE c=8
-#: ../../Firmware/mmu2/errors_list.h:330 ../../Firmware/mmu2/errors_list.h:340
+#: ../../Firmware/mmu2/errors_list.h:347 ../../Firmware/mmu2/errors_list.h:357
 msgid "Done"
 msgstr "Konec"
 
@@ -551,18 +551,18 @@ msgstr "Det. zaseku"
 msgid "F. runout"
 msgstr "F. runout"
 
-#. MSG_TITLE_FIL_ALREADY_LOADED c=20
-#: ../../Firmware/mmu2/errors_list.h:169 ../../Firmware/mmu2/errors_list.h:214
-msgid "FILAMENT ALREADY LOA"
+#. MSG_TITLE_FILAMENT_ALREADY_LOADED c=20
+#: ../../Firmware/mmu2/errors_list.h:179 ../../Firmware/mmu2/errors_list.h:225
+msgid "FIL. ALREADY LOADED"
 msgstr "FILAMENT JE ZAVEDEN"
 
 #. MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
-#: ../../Firmware/mmu2/errors_list.h:135 ../../Firmware/mmu2/errors_list.h:178
+#: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:189
 msgid "FINDA DIDNT TRIGGER"
 msgstr "FINDA NESEPNULA"
 
-#. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:277
+#. MSG_DESC_FINDA_FILAMENT_STUCK c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:238 ../../Firmware/mmu2/errors_list.h:293
 msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
@@ -571,7 +571,7 @@ msgstr ""
 " ze se filament nezasekl a FINDA funguje."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:225 ../../Firmware/mmu2/errors_list.h:276
+#: ../../Firmware/mmu2/errors_list.h:237 ../../Firmware/mmu2/errors_list.h:292
 msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
@@ -579,10 +579,10 @@ msgstr ""
 "FINDA se nesepnula pri zavadeni filamentu. Neni pohyb filamentu blokovan? Je"
 " senzor ok?"
 
-#. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
-#: ../../Firmware/mmu2/errors_list.h:136 ../../Firmware/mmu2/errors_list.h:179
-msgid "FINDA: FILAM. STUCK"
-msgstr "FINDA: ZASEK. FILAM."
+#. MSG_TITLE_FINDA_FILAMENT_STUCK c=20
+#: ../../Firmware/mmu2/errors_list.h:137 ../../Firmware/mmu2/errors_list.h:190
+msgid "FINDA FILAM. STUCK"
+msgstr "FINDA ZASEK. FILAM."
 
 #. MSG_FS_ACTION c=10
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:4048
@@ -591,22 +591,22 @@ msgid "FS Action"
 msgstr "FS reakce"
 
 #. MSG_TITLE_FSENSOR_DIDNT_TRIGGER c=20
-#: ../../Firmware/mmu2/errors_list.h:137 ../../Firmware/mmu2/errors_list.h:180
+#: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:191
 msgid "FSENSOR DIDNT TRIGG."
 msgstr "F. SENZOR NESEPNUL"
 
 #. MSG_TITLE_FSENSOR_TOO_EARLY c=20
-#: ../../Firmware/mmu2/errors_list.h:140 ../../Firmware/mmu2/errors_list.h:183
+#: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:194
 msgid "FSENSOR TOO EARLY"
 msgstr "F.SENZOR MOC BRZY"
 
-#. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
-#: ../../Firmware/mmu2/errors_list.h:138 ../../Firmware/mmu2/errors_list.h:181
-msgid "FSENSOR: FIL. STUCK"
+#. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
+#: ../../Firmware/mmu2/errors_list.h:139 ../../Firmware/mmu2/errors_list.h:192
+msgid "FSENSOR FIL. STUCK"
 msgstr "FSENZOR ZASEK FILAM."
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
-#: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:218
+#: ../../Firmware/mmu2/errors_list.h:183 ../../Firmware/mmu2/errors_list.h:229
 msgid "FW RUNTIME ERROR"
 msgstr "FW RUNTIME CHYBA"
 
@@ -705,8 +705,8 @@ msgstr "Filament nezaveden"
 msgid "Filament sensor"
 msgstr "Senzor filamentu"
 
-#. MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:279
+#. MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:240 ../../Firmware/mmu2/errors_list.h:295
 msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
@@ -715,16 +715,16 @@ msgstr ""
 "filament muze pohybovat a senzor funguje."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:227 ../../Firmware/mmu2/errors_list.h:278
+#: ../../Firmware/mmu2/errors_list.h:239 ../../Firmware/mmu2/errors_list.h:294
 msgid ""
-"Filament sensor didn't trigger while loading the filament. Ensure the "
-"filament reached the fsensor and the sensor works."
+"Filament sensor didn't trigger while loading the filament. Ensure the sensor"
+" is calibrated and the filament reached it."
 msgstr ""
 "Senzor filamentu nesepnul pri zavadeni filamentu. Ujistete se, ze se k nemu "
 "filament dostal a ze senzor funguje."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:230 ../../Firmware/mmu2/errors_list.h:281
+#: ../../Firmware/mmu2/errors_list.h:242 ../../Firmware/mmu2/errors_list.h:297
 msgid ""
 "Filament sensor triggered too early while loading to extruder. Check there "
 "isn't anything stuck in PTFE tube. Check that sensor reads properly."
@@ -914,22 +914,22 @@ msgid "I will run z calibration now."
 msgstr "Nyni provedu z kalibraci."
 
 #. MSG_TITLE_IDLER_CANNOT_HOME c=20
-#: ../../Firmware/mmu2/errors_list.h:146 ../../Firmware/mmu2/errors_list.h:188
+#: ../../Firmware/mmu2/errors_list.h:147 ../../Firmware/mmu2/errors_list.h:199
 msgid "IDLER CANNOT HOME"
 msgstr "IDLER: CHYBA HOMINGU"
 
 #. MSG_TITLE_IDLER_CANNOT_MOVE c=20
-#: ../../Firmware/mmu2/errors_list.h:145 ../../Firmware/mmu2/errors_list.h:189
+#: ../../Firmware/mmu2/errors_list.h:146 ../../Firmware/mmu2/errors_list.h:200
 msgid "IDLER CANNOT MOVE"
 msgstr "CHYBA POHYBU IDLERU"
 
 #. MSG_TITLE_INSPECT_FINDA c=20
-#: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:184
+#: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:195
 msgid "INSPECT FINDA"
 msgstr "KONTROLA FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
-#: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:215
+#: ../../Firmware/mmu2/errors_list.h:180 ../../Firmware/mmu2/errors_list.h:226
 msgid "INVALID TOOL"
 msgstr "NEPLATNY NASTROJ"
 
@@ -970,7 +970,7 @@ msgid ""
 msgstr "Vlozte filament (nezavadejte) do extruderu a stisknete tlacitko"
 
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:263 ../../Firmware/mmu2/errors_list.h:316
+#: ../../Firmware/mmu2/errors_list.h:278 ../../Firmware/mmu2/errors_list.h:332
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
 msgstr "Interní chyba. Zkuste resetovat MMU ci aktualizujte FW."
@@ -1089,12 +1089,12 @@ msgid "Loud"
 msgstr "Hlasity"
 
 #. MSG_TITLE_FW_UPDATE_NEEDED c=20
-#: ../../Firmware/mmu2/errors_list.h:172 ../../Firmware/mmu2/errors_list.h:217
+#: ../../Firmware/mmu2/errors_list.h:182 ../../Firmware/mmu2/errors_list.h:228
 msgid "MMU FW UPDATE NEEDED"
 msgstr "AKTUALIZUJTE MMU FW"
 
 #. MSG_DESC_QUEUE_FULL c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:262 ../../Firmware/mmu2/errors_list.h:314
+#: ../../Firmware/mmu2/errors_list.h:277 ../../Firmware/mmu2/errors_list.h:330
 msgid "MMU Firmware internal error, please reset the MMU."
 msgstr "Interni chyba MMU FW, resetujte MMU"
 
@@ -1104,7 +1104,7 @@ msgid "MMU Mode"
 msgstr "MMU mod"
 
 #. MSG_TITLE_MMU_NOT_RESPONDING c=20
-#: ../../Firmware/mmu2/errors_list.h:167 ../../Firmware/mmu2/errors_list.h:212
+#: ../../Firmware/mmu2/errors_list.h:177 ../../Firmware/mmu2/errors_list.h:223
 msgid "MMU NOT RESPONDING"
 msgstr "MMU NEODPOVIDA"
 
@@ -1114,8 +1114,8 @@ msgid "MMU Retry: Restoring temperature..."
 msgstr "MMU opakovani: Obnova teploty..."
 
 #. MSG_TITLE_SELFTEST_FAILED c=20
-#: ../../Firmware/mmu2/errors_list.h:165 ../../Firmware/mmu2/errors_list.h:208
-#: ../../Firmware/mmu2/errors_list.h:209 ../../Firmware/mmu2/errors_list.h:210
+#: ../../Firmware/mmu2/errors_list.h:172 ../../Firmware/mmu2/errors_list.h:219
+#: ../../Firmware/mmu2/errors_list.h:220 ../../Firmware/mmu2/errors_list.h:221
 msgid "MMU SELFTEST FAILED"
 msgstr "MMU SELFTEST SELAHL"
 
@@ -1132,12 +1132,12 @@ msgid "MMU load fails"
 msgstr "MMU selhani zav"
 
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
-#: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:311
+#: ../../Firmware/mmu2/errors_list.h:274 ../../Firmware/mmu2/errors_list.h:327
 msgid "MMU not responding correctly. Check the wiring and connectors."
 msgstr "MMU neodpovida spravne. Zkontrolujte zapojeni kabelu."
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
-#: ../../Firmware/mmu2/errors_list.h:258 ../../Firmware/mmu2/errors_list.h:310
+#: ../../Firmware/mmu2/errors_list.h:273 ../../Firmware/mmu2/errors_list.h:326
 msgid "MMU not responding. Check the wiring and connectors."
 msgstr "MMU neodpovida. Zkontrolujte kabely a jejich zapojeni."
 
@@ -1205,18 +1205,18 @@ msgid "Model"
 msgstr "Model"
 
 #. MSG_DESC_TMC c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:238 ../../Firmware/mmu2/errors_list.h:288
-#: ../../Firmware/mmu2/errors_list.h:289 ../../Firmware/mmu2/errors_list.h:290
-#: ../../Firmware/mmu2/errors_list.h:291 ../../Firmware/mmu2/errors_list.h:292
-#: ../../Firmware/mmu2/errors_list.h:293 ../../Firmware/mmu2/errors_list.h:294
-#: ../../Firmware/mmu2/errors_list.h:295 ../../Firmware/mmu2/errors_list.h:296
-#: ../../Firmware/mmu2/errors_list.h:297 ../../Firmware/mmu2/errors_list.h:298
-#: ../../Firmware/mmu2/errors_list.h:299 ../../Firmware/mmu2/errors_list.h:300
-#: ../../Firmware/mmu2/errors_list.h:301 ../../Firmware/mmu2/errors_list.h:302
-#: ../../Firmware/mmu2/errors_list.h:303 ../../Firmware/mmu2/errors_list.h:304
+#: ../../Firmware/mmu2/errors_list.h:250 ../../Firmware/mmu2/errors_list.h:304
 #: ../../Firmware/mmu2/errors_list.h:305 ../../Firmware/mmu2/errors_list.h:306
 #: ../../Firmware/mmu2/errors_list.h:307 ../../Firmware/mmu2/errors_list.h:308
-#: ../../Firmware/mmu2/errors_list.h:309
+#: ../../Firmware/mmu2/errors_list.h:309 ../../Firmware/mmu2/errors_list.h:310
+#: ../../Firmware/mmu2/errors_list.h:311 ../../Firmware/mmu2/errors_list.h:312
+#: ../../Firmware/mmu2/errors_list.h:313 ../../Firmware/mmu2/errors_list.h:314
+#: ../../Firmware/mmu2/errors_list.h:315 ../../Firmware/mmu2/errors_list.h:316
+#: ../../Firmware/mmu2/errors_list.h:317 ../../Firmware/mmu2/errors_list.h:318
+#: ../../Firmware/mmu2/errors_list.h:319 ../../Firmware/mmu2/errors_list.h:320
+#: ../../Firmware/mmu2/errors_list.h:321 ../../Firmware/mmu2/errors_list.h:322
+#: ../../Firmware/mmu2/errors_list.h:323 ../../Firmware/mmu2/errors_list.h:324
+#: ../../Firmware/mmu2/errors_list.h:325
 msgid "More details online."
 msgstr "Vice info na webu"
 
@@ -1433,7 +1433,7 @@ msgstr ""
 "menu Nastaveni->Tepl. kal."
 
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
-#: ../../Firmware/mmu2/errors_list.h:139 ../../Firmware/mmu2/errors_list.h:182
+#: ../../Firmware/mmu2/errors_list.h:140 ../../Firmware/mmu2/errors_list.h:193
 msgid "PULLEY CANNOT MOVE"
 msgstr "KLADKA SE NEOTACI"
 
@@ -1684,8 +1684,8 @@ msgstr ""
 "Prumer trysky tiskarny se lisi od G-code. Zkontrolujte nastaveni. Tisk "
 "zrusen."
 
-#. MSG_DESC_PULLEY_STALLED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:229 ../../Firmware/mmu2/errors_list.h:280
+#. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:241 ../../Firmware/mmu2/errors_list.h:296
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
 msgstr ""
 "Kladkový motor se zastavil. Ujistete se, ze neni pohyb blokovan a "
@@ -1698,7 +1698,7 @@ msgid "Pushing filament"
 msgstr "Posun filamentu"
 
 #. MSG_TITLE_QUEUE_FULL c=20
-#: ../../Firmware/mmu2/errors_list.h:171 ../../Firmware/mmu2/errors_list.h:216
+#: ../../Firmware/mmu2/errors_list.h:181 ../../Firmware/mmu2/errors_list.h:227
 msgid "QUEUE FULL"
 msgstr "FRONTA PLNA"
 
@@ -1728,7 +1728,7 @@ msgid "Rename"
 msgstr "Prejmenovat"
 
 #. MSG_DESC_INVALID_TOOL c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:261 ../../Firmware/mmu2/errors_list.h:313
+#: ../../Firmware/mmu2/errors_list.h:276 ../../Firmware/mmu2/errors_list.h:329
 msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
@@ -1765,7 +1765,7 @@ msgid "Retract from FINDA"
 msgstr "Vysouvani od FINDy"
 
 #. MSG_BTN_RETRY c=8
-#: ../../Firmware/mmu2/errors_list.h:329 ../../Firmware/mmu2/errors_list.h:339
+#: ../../Firmware/mmu2/errors_list.h:346 ../../Firmware/mmu2/errors_list.h:356
 msgid "Retry"
 msgstr "Znovu"
 
@@ -1801,12 +1801,12 @@ msgid "SD card"
 msgstr "SD karta"
 
 #. MSG_TITLE_SELECTOR_CANNOT_HOME c=20
-#: ../../Firmware/mmu2/errors_list.h:144 ../../Firmware/mmu2/errors_list.h:186
+#: ../../Firmware/mmu2/errors_list.h:145 ../../Firmware/mmu2/errors_list.h:197
 msgid "SELECTOR CANNOT HOME"
 msgstr "SELEKTOR: HOMING ERR"
 
 #. MSG_TITLE_SELECTOR_CANNOT_MOVE c=20
-#: ../../Firmware/mmu2/errors_list.h:143 ../../Firmware/mmu2/errors_list.h:187
+#: ../../Firmware/mmu2/errors_list.h:144 ../../Firmware/mmu2/errors_list.h:198
 msgid "SELECTOR CANNOT MOVE"
 msgstr "SELEKTOR SE NEHYBE"
 
@@ -2022,7 +2022,7 @@ msgid "Steel sheets"
 msgstr "Tiskove platy"
 
 #. MSG_BTN_STOP c=8
-#: ../../Firmware/mmu2/errors_list.h:333 ../../Firmware/mmu2/errors_list.h:343
+#: ../../Firmware/mmu2/errors_list.h:350 ../../Firmware/mmu2/errors_list.h:360
 msgid "Stop"
 msgstr "Stop"
 
@@ -2054,32 +2054,32 @@ msgid "THERMAL ANOMALY"
 msgstr "TEPLOTNI VYJIMKA"
 
 #. MSG_TITLE_TMC_DRIVER_ERROR c=20
-#: ../../Firmware/mmu2/errors_list.h:153 ../../Firmware/mmu2/errors_list.h:196
-#: ../../Firmware/mmu2/errors_list.h:197 ../../Firmware/mmu2/errors_list.h:198
+#: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:207
+#: ../../Firmware/mmu2/errors_list.h:208 ../../Firmware/mmu2/errors_list.h:209
 msgid "TMC DRIVER ERROR"
 msgstr "CHYBA TMC DRIVER"
 
 #. MSG_TITLE_TMC_DRIVER_RESET c=20
-#: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:199
-#: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:201
+#: ../../Firmware/mmu2/errors_list.h:160 ../../Firmware/mmu2/errors_list.h:210
+#: ../../Firmware/mmu2/errors_list.h:211 ../../Firmware/mmu2/errors_list.h:212
 msgid "TMC DRIVER RESET"
 msgstr "TMC RESET DRIVERU"
 
 #. MSG_TITLE_TMC_DRIVER_SHORTED c=20
-#: ../../Firmware/mmu2/errors_list.h:162 ../../Firmware/mmu2/errors_list.h:205
-#: ../../Firmware/mmu2/errors_list.h:206 ../../Firmware/mmu2/errors_list.h:207
+#: ../../Firmware/mmu2/errors_list.h:168 ../../Firmware/mmu2/errors_list.h:216
+#: ../../Firmware/mmu2/errors_list.h:217 ../../Firmware/mmu2/errors_list.h:218
 msgid "TMC DRIVER SHORTED"
 msgstr "TMC DRIVER: ZKRAT"
 
 #. MSG_TITLE_TMC_OVERHEAT_ERROR c=20
-#: ../../Firmware/mmu2/errors_list.h:150 ../../Firmware/mmu2/errors_list.h:193
-#: ../../Firmware/mmu2/errors_list.h:194 ../../Firmware/mmu2/errors_list.h:195
+#: ../../Firmware/mmu2/errors_list.h:152 ../../Firmware/mmu2/errors_list.h:204
+#: ../../Firmware/mmu2/errors_list.h:205 ../../Firmware/mmu2/errors_list.h:206
 msgid "TMC OVERHEAT ERROR"
 msgstr "TMC CHYBA: PREHRATI"
 
 #. MSG_TITLE_TMC_UNDERVOLTAGE_ERROR c=20
-#: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:202
-#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:204
+#: ../../Firmware/mmu2/errors_list.h:164 ../../Firmware/mmu2/errors_list.h:213
+#: ../../Firmware/mmu2/errors_list.h:214 ../../Firmware/mmu2/errors_list.h:215
 msgid "TMC UNDERVOLTAGE ERR"
 msgstr "TMC CHYBA NIZKE NAP."
 
@@ -2113,7 +2113,7 @@ msgid "Testing filament"
 msgstr "Testovani filamentu"
 
 #. MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:236 ../../Firmware/mmu2/errors_list.h:286
+#: ../../Firmware/mmu2/errors_list.h:248 ../../Firmware/mmu2/errors_list.h:302
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
@@ -2121,7 +2121,7 @@ msgstr ""
 "pohyb."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:233 ../../Firmware/mmu2/errors_list.h:284
+#: ../../Firmware/mmu2/errors_list.h:245 ../../Firmware/mmu2/errors_list.h:300
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
@@ -2184,12 +2184,12 @@ msgid "Tune"
 msgstr "Ladit"
 
 #. MSG_TITLE_UNLOAD_MANUALLY c=20
-#: ../../Firmware/mmu2/errors_list.h:174 ../../Firmware/mmu2/errors_list.h:219
+#: ../../Firmware/mmu2/errors_list.h:184 ../../Firmware/mmu2/errors_list.h:230
 msgid "UNLOAD MANUALLY"
 msgstr "MANUALNI VYJMUTI"
 
 #. MSG_BTN_UNLOAD c=8
-#: ../../Firmware/mmu2/errors_list.h:332 ../../Firmware/mmu2/errors_list.h:342
+#: ../../Firmware/mmu2/errors_list.h:349 ../../Firmware/mmu2/errors_list.h:359
 msgid "Unload"
 msgstr "Vyjmout"
 
@@ -2229,8 +2229,8 @@ msgid "Voltages"
 msgstr "Napeti"
 
 #. MSG_TITLE_TMC_WARNING_TMC_TOO_HOT c=20
-#: ../../Firmware/mmu2/errors_list.h:147 ../../Firmware/mmu2/errors_list.h:190
-#: ../../Firmware/mmu2/errors_list.h:191 ../../Firmware/mmu2/errors_list.h:192
+#: ../../Firmware/mmu2/errors_list.h:148 ../../Firmware/mmu2/errors_list.h:201
+#: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:203
 msgid "WARNING TMC TOO HOT"
 msgstr "TMC: VYSOKA TEPLOTA!"
 
@@ -2441,12 +2441,12 @@ msgid "Eject from MMU"
 msgstr "Vysunutí z MMU"
 
 #. MSG_TITLE_FILAMENT_EJECTED c=20
-#: ../../Firmware/mmu2/errors_list.h:175 ../../Firmware/mmu2/errors_list.h:220
+#: ../../Firmware/mmu2/errors_list.h:185 ../../Firmware/mmu2/errors_list.h:231
 msgid "FILAMENT EJECTED"
 msgstr "FILAMENT VLÁKNO"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:264 ../../Firmware/mmu2/errors_list.h:317
+#: ../../Firmware/mmu2/errors_list.h:279 ../../Firmware/mmu2/errors_list.h:333
 msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
@@ -2455,12 +2455,12 @@ msgstr ""
 " Zkontrolujte snímače a kabeláž."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
-#: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
+#: ../../Firmware/mmu2/errors_list.h:143 ../../Firmware/mmu2/errors_list.h:196
 msgid "LOAD TO EXTR. FAILED"
 msgstr "NAČÍST DO EXTR. SEL."
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
+#: ../../Firmware/mmu2/errors_list.h:244 ../../Firmware/mmu2/errors_list.h:299
 msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
@@ -2469,8 +2469,8 @@ msgstr ""
 "případě potřeby upřesněte kalibraci snímače."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
-#: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
-msgid "MCU UNDERVOLTAGE VCC"
+#: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
+msgid "MMU MCU UNDERPOWER"
 msgstr "MCU PODPĚTÍ VCC"
 
 #. MSG_MATERIAL_CHANGES c=18
@@ -2480,17 +2480,17 @@ msgid "Material changes"
 msgstr "Výměn materiálů"
 
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
+#: ../../Firmware/mmu2/errors_list.h:280 ../../Firmware/mmu2/errors_list.h:334
 msgid "Remove the ejected filament from the front of the MMU."
 msgstr "Odstraňte vysunuté filament z přední části MMU."
 
-#. MSG_BTN_RESTART_MMU c=8
-#: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
-msgid "RstMMU"
-msgstr "RstMMU"
+#. MSG_BTN_RESET_MMU c=8
+#: ../../Firmware/mmu2/errors_list.h:348 ../../Firmware/mmu2/errors_list.h:358
+msgid "ResetMMU"
+msgstr "ResetMMU"
 
 #. MSG_DESC_INSPECT_FINDA c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:282
+#: ../../Firmware/mmu2/errors_list.h:243 ../../Firmware/mmu2/errors_list.h:298
 msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
@@ -2499,10 +2499,9 @@ msgstr ""
 " ve voliči není žádné vlákno a FINDA funguje správně."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
+#: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:331
 msgid ""
-"The MMU firmware version incompatible with the printer's FW. Update to "
-"version 2.1.9."
+"MMU FW version is incompatible with printer FW.Update to version 2.1.9."
 msgstr ""
 "Verze firmwaru MMU není kompatibilní s FW tiskárny. Aktualizujte na verzi "
 "2.1.9."
@@ -2519,6 +2518,16 @@ msgstr "MK3 firmware detekovan na MK3S tiskarne"
 #. MSG_FW_MK3S_DETECTED c=20 r=4
 msgid "MK3S firmware detected on MK3 printer"
 msgstr "MK3S firmware detekovan na tiskarne MK3"
+
+#. MSG_TITLE_UNKNOWN_ERROR c=20
+#: ../../Firmware/mmu2/errors_list.h:186 ../../Firmware/mmu2/errors_list.h:232
+msgid "UNKNOWN ERROR"
+msgstr "NEZNÁMÁ CHYBA"
+
+#. MSG_DESC_UNKNOWN_ERROR c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:335
+msgid "Unexpected error occurred."
+msgstr "Došlo k neočekávané chybě."
 
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
