@@ -1,5 +1,6 @@
 # Community made
-
+Community made features aren't fully supported by Prusa and the owners are responsible to maintain them.
+In case the feature isn't maintained OR causes issues Prusa will deactivate these.
 ## Prusa-Firmware build
 - `PF-build.sh`
   - Maintainers: **@3d-gussner**
@@ -32,5 +33,33 @@ After compiling with `PF-build.sh` you get the option to start the `MK404` simul
 
 Help `./MK404-build.sh -h`
 
-## Translations
+# Translations
 - see [/lang/Community_made_translations.md](https://github.com/prusa3d/Prusa-Firmware/blob/MK3/lang/Community_made_translations.md)
+
+# Arc interpolation features
+**Arc interpolation features by @FormerLurker**
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/2657) and [here](https://github.com/FormerLurker/ArcWelderPlugin)
+
+- Maintainers: **@FormerLurker**
+- Co-maintainers:
+- Contributors:
+- [X] **Active**      since January 2023
+- [X] **Maintained**  since May 2020
+
+# MeatPack
+**MeatPack by @scottmudge**
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/2955), [here](https://github.com/prusa3d/Prusa-Firmware/pull/4067) and [here](https://github.com/scottmudge/OctoPrint-MeatPack/)
+
+- Maintainers: **@scottmudge**
+- Co-maintainers:
+- Contributors:
+- [X] **Active**      since April 2023
+- [X] **Maintained**  since January 2021
+
+# E3D Revo
+**The E3D REVO support is a community effort thanks to these Contributors, E3D and others.**
+- Maintainers: **E3D**
+- Co-maintainers:
+- Contributors: @alexiri @kromeninja @ulab @JWvP @snafu1282 @matthiazzz @sdh2 @jdrozdz @peschkaj @MarcelTh @zuidwijk @davejhilton @WhiterRice @NightSkySK @D-an-W
+- [X] **Active**      since June 2023
+- [X] **Maintained**  since April 2023
