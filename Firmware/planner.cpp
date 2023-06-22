@@ -1330,7 +1330,7 @@ void plan_set_position(float x, float y, float z, const float &e)
   position_float[Z_AXIS] = z;
   position_float[E_AXIS] = e;
   #endif
-  st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
+  st_set_position(position);
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
   memset(previous_speed, 0, sizeof(previous_speed));
 }
@@ -1342,7 +1342,7 @@ void plan_set_z_position(const float &z)
   position_float[Z_AXIS] = z;
   #endif
   position[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
-  st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
+  st_set_position(position);
 }
 
 void plan_set_e_position(const float &e)
