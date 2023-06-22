@@ -1313,18 +1313,15 @@ void st_synchronize()
 	}
 }
 
-void st_set_position(const long &x, const long &y, const long &z, const long &e)
+void st_set_position(const long *pos)
 {
   CRITICAL_SECTION_START;
   // Copy 4x4B.
-  // This block locks the interrupts globally for 4.56 us,
-  // which corresponds to a maximum repeat frequency of 219.18 kHz.
+  // This block locks the interrupts globally for 2.06 us,
+  // which corresponds to a maximum repeat frequency of ~484kHz.
   // This blocking is safe in the context of a 10kHz stepper driver interrupt
   // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
-  count_position[X_AXIS] = x;
-  count_position[Y_AXIS] = y;
-  count_position[Z_AXIS] = z;
-  count_position[E_AXIS] = e;
+  memcpy((uint8_t *)count_position, pos, sizeof(count_position));
   CRITICAL_SECTION_END;
 }
 
