@@ -43,10 +43,6 @@
 #include "adc.h"
 #include "config.h"
 
-#ifndef LA_NOCOMPAT
-#include "la10compat.h"
-#endif
-
 #include "Prusa_farm.h"
 
 static void lcd_sd_updir();
