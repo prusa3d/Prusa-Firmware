@@ -5,7 +5,6 @@
 #ifdef TMC2130
 
 #include "tmc2130.h"
-#include "ultralcd.h"
 #include "language.h"
 #include "spi.h"
 #include "Timer.h"

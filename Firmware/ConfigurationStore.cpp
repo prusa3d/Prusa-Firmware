@@ -3,7 +3,6 @@
 #include "Marlin.h"
 #include "planner.h"
 #include "temperature.h"
-#include "ultralcd.h"
 #include "ConfigurationStore.h"
 #include "Configuration_var.h"
 
