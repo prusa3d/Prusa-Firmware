@@ -6,10 +6,6 @@
 #include "ConfigurationStore.h"
 #include "Configuration_var.h"
 
-#ifdef MESH_BED_LEVELING
-#include "mesh_bed_leveling.h"
-#endif
-
 #ifdef TMC2130
 #include "tmc2130.h"
 #endif
