@@ -3,8 +3,6 @@
 #define _BACKLIGHT_H
 
 #include <inttypes.h>
-#include "Marlin.h"
-#include "pins.h"
 
 enum Backlight_Mode
 {
