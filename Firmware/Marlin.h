@@ -380,14 +380,6 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 void serialecho_temperatures();
 bool check_commands();
 
-void uvlo_();
-void uvlo_tiny();
-void recover_print(uint8_t automatic); 
-void setup_uvlo_interrupt();
-
-extern bool recover_machine_state_after_power_panic();
-extern void restore_print_from_eeprom(bool mbl_was_active);
-
 extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
@@ -396,6 +388,13 @@ extern void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_extruder_temperature_from_ram();
 extern void restore_print_from_ram_and_continue(float e_move);
 extern void cancel_saved_printing();
+
+// Define some coordinates outside the clamp limits (making them invalid past the parsing stage) so
+// that they can be used later for various logical checks
+#define X_COORD_INVALID (X_MIN_POS-1)
+#define SAVED_START_POSITION_UNSET X_COORD_INVALID
+extern float saved_start_position[NUM_AXIS];
+extern uint16_t saved_segment_idx;
 
 
 //estimated time to end of the print
