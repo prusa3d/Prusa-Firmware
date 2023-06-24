@@ -163,6 +163,7 @@ set(FW_SOURCES
     optiboot_xflash.cpp
     pat9125.cpp
     planner.cpp
+    power_panic.cpp
     Prusa_farm.cpp
     qr_solve.cpp
     rbuf.c
