@@ -1321,7 +1321,7 @@ void st_set_position(const long *pos)
   // which corresponds to a maximum repeat frequency of ~484kHz.
   // This blocking is safe in the context of a 10kHz stepper driver interrupt
   // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
-  memcpy((uint8_t *)count_position, pos, sizeof(count_position));
+  memcpy((long *)count_position, pos, sizeof(count_position));
   CRITICAL_SECTION_END;
 }
 
