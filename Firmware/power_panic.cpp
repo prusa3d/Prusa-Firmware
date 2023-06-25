@@ -60,12 +60,7 @@ void uvlo_() {
     setTargetBed(0);
 
     // Calculate the file position, from which to resume this print.
-    long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
-    uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
-    sd_position -= sdlen_planner;
-    uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
-    sd_position -= sdlen_cmdqueue;
-    if (sd_position < 0) sd_position = 0;
+    save_print_file_state();
 
     // save the global state at planning time
     bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
@@ -134,7 +129,7 @@ void uvlo_() {
     poweroff_z();
 
     // Write the file position.
-    eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
+    eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), saved_sdpos);
 
     // Store the mesh bed leveling offsets. This is 2*7*7=98 bytes, which takes 98*3.4us=333us in worst case.
     for (uint8_t mesh_point = 0; mesh_point < MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS; ++ mesh_point)
