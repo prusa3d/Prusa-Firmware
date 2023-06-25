@@ -10335,43 +10335,31 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOLLN();
 }
 
-//! @brief Immediately stop print moves
-//!
-//! Immediately stop print moves, save current extruder temperature and position to RAM.
-//! If printing from sd card, position in file is saved.
-//! If printing from USB, line number is saved.
-//!
-//! @param z_move
-//! @param e_move
-void stop_and_save_print_to_ram(float z_move, float e_move)
-{
-	if (saved_printing) return;
-	unsigned char nlines;
-	uint16_t sdlen_planner;
-	uint16_t sdlen_cmdqueue;
-	
+void save_print_file_state() {
+    uint8_t nlines;
+    uint16_t sdlen_cmdqueue;
+    uint16_t sdlen_planner;
 
-	cli();
-	if (card.sdprinting) {
-		saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
-		sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
-		saved_sdpos -= sdlen_planner;
-		sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
-		saved_sdpos -= sdlen_cmdqueue;
-		saved_printing_type = PRINTING_TYPE_SD;
-	}
-	else if (usb_timer.running()) { //reuse saved_sdpos for storing line number
-		 saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
-		 //reuse planner_calc_sd_length function for getting number of lines of commands in planner:
-		 nlines = planner_calc_sd_length(); //number of lines of commands in planner 
-		 saved_sdpos -= nlines;
-		 saved_sdpos -= buflen; //number of blocks in cmd buffer
-		 saved_printing_type = PRINTING_TYPE_USB;
-	}
-	else {
-		 saved_printing_type = PRINTING_TYPE_NONE;
-		 //not sd printing nor usb printing
-	}
+    if (card.sdprinting) {
+        saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
+        sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
+        saved_sdpos -= sdlen_planner;
+        sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
+        saved_sdpos -= sdlen_cmdqueue;
+        saved_printing_type = PRINTING_TYPE_SD;
+    }
+    else if (usb_timer.running()) { //reuse saved_sdpos for storing line number
+        saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
+        //reuse planner_calc_sd_length function for getting number of lines of commands in planner:
+        nlines = planner_calc_sd_length(); //number of lines of commands in planner 
+        saved_sdpos -= nlines;
+        saved_sdpos -= buflen; //number of blocks in cmd buffer
+        saved_printing_type = PRINTING_TYPE_USB;
+    }
+    else {
+        saved_printing_type = PRINTING_TYPE_NONE;
+        //not sd printing nor usb printing
+    }
 
 #if 0
   SERIAL_ECHOPGM("SDPOS_ATOMIC="); MYSERIAL.println(sdpos_atomic, DEC);
@@ -10460,6 +10448,36 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     }
   }
 #endif
+}
+
+void restore_print_file_state() {
+    if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
+        card.setIndex(saved_sdpos);
+        sdpos_atomic = saved_sdpos;
+        card.sdprinting = true;
+    } else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
+        gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
+        serial_count = 0; 
+        FlushSerialRequestResend();
+    } else {
+      //not sd printing nor usb printing
+    }
+}
+
+//! @brief Immediately stop print moves
+//!
+//! Immediately stop print moves, save current extruder temperature and position to RAM.
+//! If printing from sd card, position in file is saved.
+//! If printing from USB, line number is saved.
+//!
+//! @param z_move
+//! @param e_move
+void stop_and_save_print_to_ram(float z_move, float e_move)
+{
+	if (saved_printing) return;
+
+	cli();
+	save_print_file_state();
 
   // save the global state at planning time
   bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
@@ -10599,19 +10617,8 @@ void restore_print_from_ram_and_continue(float e_move)
 
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	set_destination_to_current();
-	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
-		card.setIndex(saved_sdpos);
-		sdpos_atomic = saved_sdpos;
-		card.sdprinting = true;
-	}
-	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
-		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
-		serial_count = 0; 
-		FlushSerialRequestResend();
-	}
-	else {
-		//not sd printing nor usb printing
-	}
+
+    restore_print_file_state();
 
 	lcd_setstatuspgm(MSG_WELCOME);
     saved_printing_type = PRINTING_TYPE_NONE;
