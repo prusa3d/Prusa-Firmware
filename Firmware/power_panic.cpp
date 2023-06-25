@@ -38,15 +38,20 @@ void uvlo_() {
     unsigned long time_start = _millis();
     bool sd_print = card.sdprinting;
     const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
-    // Conserve power as soon as possible.
+
+    // Conserve as much power as soon as possible
+    // Turn off the LCD backlight
 #ifdef LCD_BL_PIN
     backlightMode = BACKLIGHT_MODE_DIM;
     backlightLevel_LOW = 0;
     backlight_update();
 #endif //LCD_BL_PIN
+
+    // Disable X and Y motors to conserve power
     disable_x();
     disable_y();
 
+    // Minimise Z and E motor currents (Hold and Run)
 #ifdef TMC2130
     tmc2130_set_current_h(Z_AXIS, 20);
     tmc2130_set_current_r(Z_AXIS, 20);
