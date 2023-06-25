@@ -306,6 +306,7 @@ extern uint8_t saved_printing_type;
 extern float saved_extruder_temperature; //!< Active extruder temperature
 extern float saved_bed_temperature; //!< Bed temperature
 extern uint8_t saved_fan_speed; //!< Print fan speed, ranges from 0 to 255
+extern uint16_t saved_feedrate2;
 
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
@@ -387,6 +388,7 @@ extern void print_mesh_bed_leveling_table();
 
 void save_print_file_state();
 void restore_print_file_state();
+void save_planner_global_state();
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_extruder_temperature_from_ram();
 extern void restore_print_from_ram_and_continue(float e_move);

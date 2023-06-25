@@ -312,7 +312,7 @@ bool saved_printing = false; //!< Print is paused and saved in RAM
 uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
-static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
+uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
 float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 float saved_bed_temperature = 0.0;
@@ -10464,6 +10464,21 @@ void restore_print_file_state() {
     }
 }
 
+void save_planner_global_state() {
+    if (current_block && !(mesh_bed_leveling_flag || homing_flag))
+    {
+        memcpy(saved_start_position, current_block->gcode_start_position, sizeof(saved_start_position));
+        saved_feedrate2 = current_block->gcode_feedrate;
+        saved_segment_idx = current_block->segment_idx;
+    }
+    else
+    {
+        saved_start_position[0] = SAVED_START_POSITION_UNSET;
+        saved_feedrate2 = feedrate;
+        saved_segment_idx = 0;
+    }
+}
+
 //! @brief Immediately stop print moves
 //!
 //! Immediately stop print moves, save current extruder temperature and position to RAM.
@@ -10479,21 +10494,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	cli();
 	save_print_file_state();
 
-  // save the global state at planning time
-  bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
-  if (current_block && !pos_invalid)
-  {
-      memcpy(saved_start_position, current_block->gcode_start_position, sizeof(saved_start_position));
-      saved_feedrate2 = current_block->gcode_feedrate;
-      saved_segment_idx = current_block->segment_idx;
-      // printf_P(PSTR("stop_and_save_print_to_ram: %f, %f, %f, %f, %u\n"), saved_start_position[0], saved_start_position[1], saved_start_position[2], saved_start_position[3], saved_segment_idx);
-  }
-  else
-  {
-      saved_start_position[0] = SAVED_START_POSITION_UNSET;
-      saved_feedrate2 = feedrate;
-      saved_segment_idx = 0;
-  }
+    // save the global state at planning time
+    const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
+    save_planner_global_state();
 
 	planner_abort_hard(); //abort printing
 
