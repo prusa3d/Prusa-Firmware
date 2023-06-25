@@ -37,6 +37,7 @@ static void uvlo_drain_reset() {
 void uvlo_() {
     unsigned long time_start = _millis();
     bool sd_print = card.sdprinting;
+    const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
     // Conserve power as soon as possible.
 #ifdef LCD_BL_PIN
     backlightMode = BACKLIGHT_MODE_DIM;
@@ -63,20 +64,7 @@ void uvlo_() {
     save_print_file_state();
 
     // save the global state at planning time
-    bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
-    uint16_t feedrate_bckp;
-    if (current_block && !pos_invalid)
-    {
-        memcpy(saved_start_position, current_block->gcode_start_position, sizeof(saved_start_position));
-        feedrate_bckp = current_block->gcode_feedrate;
-        saved_segment_idx = current_block->segment_idx;
-    }
-    else
-    {
-        saved_start_position[0] = SAVED_START_POSITION_UNSET;
-        feedrate_bckp = feedrate;
-        saved_segment_idx = 0;
-    }
+    save_planner_global_state();
 
     // From this point on and up to the print recovery, Z should not move during X/Y travels and
     // should be controlled precisely. Reset the MBL status before planner_abort_hard in order to
@@ -156,7 +144,7 @@ void uvlo_() {
     }
 
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
+    eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, saved_feedrate2);
     eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
     eeprom_update_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_target_temperature_ext);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_target_temperature_bed);
