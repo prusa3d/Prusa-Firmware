@@ -309,7 +309,7 @@ static bool chdkActive = false;
 //! @name RAM save/restore printing
 //! @{
 bool saved_printing = false; //!< Print is paused and saved in RAM
-static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
+uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
 static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
