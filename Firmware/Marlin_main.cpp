@@ -7921,9 +7921,11 @@ Sigma_Exit:
       - MK2.5SMMU2S (20252)
       - MK3         (300)
       - MK3MMU2     (20300)
+      - MK3MMU3     (30300)
       - MK3S        (302)
       - MK3SMMU2S   (20302)
-	
+      - MK3SMMU3    (30302)
+
     */
     case 862: // M862: print checking
     {
