@@ -408,14 +408,14 @@ return pStrBegin;
 
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
 char* pResult;
-size_t nLength,nPrinterNameLength;
+size_t nLength;
 
-nPrinterNameLength = strlen_P(actualPrinterSModel);
 pResult=code_string(pStrPos,&nLength);
 
-if(pResult != NULL && nLength == nPrinterNameLength) {
-     // Only compare them if the lengths match
-     if (strncmp_P(pResult, actualPrinterSModel, nLength) == 0) return;
+if(pResult != NULL) {
+    // Only compare first 6 chars on MK3|MK3S
+    if (strncmp_P(pResult, PSTR("MK3"), 3) == 0) nLength = 6;
+    if (strncmp_P(pResult, actualPrinterSModel, nLength) == 0) return;
 }
 
     render_M862_warnings(
