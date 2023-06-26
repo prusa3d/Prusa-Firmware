@@ -201,8 +201,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 1c 4fh 20252 | ^                     | PRINTER_MK2.5S with MMU2S                         | ???          | ^
 | ^           | ^       | ^                                     | 2c 01h 300   | ^                     | PRINTER_MK3                                       | ???          | ^
 | ^           | ^       | ^                                     | 4c 4fh 20300 | ^                     | PRINTER_MK3 with MMU2                             | ???          | ^
+| ^           | ^       | ^                                     | 5c 76h 30300 | ^                     | PRINTER_MK3 with MMU3                             | ???          | ^
 | ^           | ^       | ^                                     | 2e 01h 302   | ^                     | PRINTER_MK3S                                      | ???          | ^
 | ^           | ^       | ^                                     | 4e 4fh 20302 | ^                     | PRINTER_MK3S with MMU2S                           | ???          | ^
+| ^           | ^       | ^                                     | 5e 76h 30302 | ^                     | PRINTER_MK3S with MMU3                            | ???          | ^
 | 0x0EEC 3820 | uint16  | EEPROM_BOARD_TYPE                     | ???          | ff ffh 65535          | Board Type                                        | ???          | D3 Ax0eec C2
 | ^           | ^       | ^                                     | c8 00h 200   | ^                     | BOARD_RAMBO_MINI_1_0                              | ???          | ^
 | ^           | ^       | ^                                     | cb 00h 203   | ^                     | BOARD_RAMBO_MINI_1_3                              | ???          | ^
