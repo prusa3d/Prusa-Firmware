@@ -23,4 +23,8 @@ cp Firmware/variants/1_75mm_MK3S-EINSy10a-E3DREVO.h Firmware/Configuration_prusa
 bash -x build.sh || { echo "1_75mm_MK3S-EINSy10a-E3DREVO variant failed" && false; }
 cp Firmware/variants/1_75mm_MK3-EINSy10a-E3DREVO.h Firmware/Configuration_prusa.h
 bash -x build.sh || { echo "1_75mm_MK3-EINSy10a-E3DREVO variant failed" && false; }
+cp Firmware/variants/1_75mm_MK3S-EINSy10a-E3DREVO_HF_60W.h Firmware/Configuration_prusa.h
+bash -x build.sh || { echo "1_75mm_MK3S-EINSy10a-E3DREVO_HF_60W variant failed" && false; }
+cp Firmware/variants/1_75mm_MK3-EINSy10a-E3DREVO_HF_60W.h Firmware/Configuration_prusa.h
+bash -x build.sh || { echo "1_75mm_MK3-EINSy10a-E3DREVO_HF_60W variant failed" && false; }
 rm Firmware/Configuration_prusa.h
