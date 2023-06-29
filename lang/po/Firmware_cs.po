@@ -851,7 +851,7 @@ msgid "Heating"
 msgstr "Zahrivani"
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:9272
+#: ../../Firmware/Marlin_main.cpp:9274
 msgid "Heating disabled by safety timer."
 msgstr "Zahrivani preruseno bezpecnostnim casovacem."
 
@@ -1386,7 +1386,7 @@ msgid "Once"
 msgstr "Jednou"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
-#: ../../Firmware/Marlin_main.cpp:9451 ../../Firmware/messages.cpp:175
+#: ../../Firmware/Marlin_main.cpp:9453 ../../Firmware/messages.cpp:175
 msgid "PAUSED THERMAL ERROR"
 msgstr "STOP: CHYBA TEPLOTY"
 
@@ -1529,7 +1529,7 @@ msgid "Please place steel sheet on heatbed."
 msgstr "Umistete tiskovy plat na podlozku"
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11208 ../../Firmware/Marlin_main.cpp:11238
+#: ../../Firmware/Marlin_main.cpp:11210 ../../Firmware/Marlin_main.cpp:11240
 #: ../../Firmware/messages.cpp:79
 msgid "Please press the knob to unload filament"
 msgstr "Pro vysunuti filamentu stisknete tlacitko"
@@ -1626,7 +1626,7 @@ msgid "Press the knob"
 msgstr "Stisknete tlacitko"
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11220
+#: ../../Firmware/Marlin_main.cpp:11222
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Pro nahrati trysky a pokracovani stisknete tlacitko."
 
@@ -1713,7 +1713,7 @@ msgid "Rear side [µm]"
 msgstr "Vzadu [µm]"
 
 #. MSG_RECOVERING_PRINT c=20
-#: ../../Firmware/Marlin_main.cpp:10598
+#: ../../Firmware/Marlin_main.cpp:10600
 msgid "Recovering print"
 msgstr "Obnovovani tisku"
 
@@ -1811,7 +1811,7 @@ msgid "SELECTOR CANNOT MOVE"
 msgstr "SELEKTOR SE NEHYBE"
 
 #. MSG_STOPPED c=20
-#: ../../Firmware/Marlin_main.cpp:9477 ../../Firmware/messages.cpp:114
+#: ../../Firmware/Marlin_main.cpp:9479 ../../Firmware/messages.cpp:114
 msgid "STOPPED."
 msgstr "ZASTAVENO."
 
@@ -2049,7 +2049,7 @@ msgid "Swapped"
 msgstr "Prohozene"
 
 #. MSG_THERMAL_ANOMALY c=20
-#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2233
+#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2236
 msgid "THERMAL ANOMALY"
 msgstr "TEPLOTNI VYJIMKA"
 

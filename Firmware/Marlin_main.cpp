@@ -8423,7 +8423,7 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M704 - Load to MMU <a href="https://reprap.org/wiki/G-code#M704:_Load_to_MMU">M704: Load to MMU</a>
+    ### M704 - Preload to MMU <a href="https://reprap.org/wiki/G-code#M704:_Preload_to_MMU">M704: Preload to MMU</a>
     #### Usage
 
         M704 [ P ]

@@ -861,7 +861,7 @@ msgid "Heating"
 msgstr "Futes folyamatban"
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:9272
+#: ../../Firmware/Marlin_main.cpp:9274
 msgid "Heating disabled by safety timer."
 msgstr "A bizonsagi idozito leallitotta a futest"
 
@@ -1402,7 +1402,7 @@ msgid "Once"
 msgstr "Egyszer"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
-#: ../../Firmware/Marlin_main.cpp:9451 ../../Firmware/messages.cpp:175
+#: ../../Firmware/Marlin_main.cpp:9453 ../../Firmware/messages.cpp:175
 msgid "PAUSED THERMAL ERROR"
 msgstr "SZUNET HOMERSEK.HIBA"
 
@@ -1549,7 +1549,7 @@ msgid "Please place steel sheet on heatbed."
 msgstr "Kerlek, helyzed az acellapot a targyasztalra."
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11208 ../../Firmware/Marlin_main.cpp:11238
+#: ../../Firmware/Marlin_main.cpp:11210 ../../Firmware/Marlin_main.cpp:11240
 #: ../../Firmware/messages.cpp:79
 msgid "Please press the knob to unload filament"
 msgstr "Kerlek, nyomd meg a gombot a filament kiadasahoz"
@@ -1646,7 +1646,7 @@ msgid "Press the knob"
 msgstr "Nyomd meg a gombot"
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11220
+#: ../../Firmware/Marlin_main.cpp:11222
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Nyomd meg a gombot a folytatashoz es a fuvoka felfutesehez."
 
@@ -1731,7 +1731,7 @@ msgid "Rear side [µm]"
 msgstr "Hatso old.[µm]"
 
 #. MSG_RECOVERING_PRINT c=20
-#: ../../Firmware/Marlin_main.cpp:10598
+#: ../../Firmware/Marlin_main.cpp:10600
 msgid "Recovering print"
 msgstr "Nyomt. visszaallit"
 
@@ -1829,7 +1829,7 @@ msgid "SELECTOR CANNOT MOVE"
 msgstr "SZELEKTOR NEM MOZOG"
 
 #. MSG_STOPPED c=20
-#: ../../Firmware/Marlin_main.cpp:9477 ../../Firmware/messages.cpp:114
+#: ../../Firmware/Marlin_main.cpp:9479 ../../Firmware/messages.cpp:114
 msgid "STOPPED."
 msgstr "MEGALLITVA."
 
@@ -2070,7 +2070,7 @@ msgid "Swapped"
 msgstr "Felcserelve"
 
 #. MSG_THERMAL_ANOMALY c=20
-#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2233
+#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2236
 msgid "THERMAL ANOMALY"
 msgstr "Homersekl. anomalia"
 
