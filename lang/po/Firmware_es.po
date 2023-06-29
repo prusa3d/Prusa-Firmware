@@ -860,7 +860,7 @@ msgid "Heating"
 msgstr "Calentando..."
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:9272
+#: ../../Firmware/Marlin_main.cpp:9274
 msgid "Heating disabled by safety timer."
 msgstr "Calentadores desactivados por el temporizador de seguridad."
 
@@ -1403,7 +1403,7 @@ msgid "Once"
 msgstr "Una vez"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
-#: ../../Firmware/Marlin_main.cpp:9451 ../../Firmware/messages.cpp:175
+#: ../../Firmware/Marlin_main.cpp:9453 ../../Firmware/messages.cpp:175
 msgid "PAUSED THERMAL ERROR"
 msgstr "PAUSA ERROR TERMICO"
 
@@ -1548,7 +1548,7 @@ msgid "Please place steel sheet on heatbed."
 msgstr "Coloca la lam. de acero en la base calefactable."
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11208 ../../Firmware/Marlin_main.cpp:11238
+#: ../../Firmware/Marlin_main.cpp:11210 ../../Firmware/Marlin_main.cpp:11240
 #: ../../Firmware/messages.cpp:79
 msgid "Please press the knob to unload filament"
 msgstr "Pulsa el dial para descargar el filamento"
@@ -1645,7 +1645,7 @@ msgid "Press the knob"
 msgstr "Pulsa el dial"
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11220
+#: ../../Firmware/Marlin_main.cpp:11222
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Pulsa el dial para precalentar la boquilla y continue."
 
@@ -1732,7 +1732,7 @@ msgid "Rear side [µm]"
 msgstr "Trasera [µm]"
 
 #. MSG_RECOVERING_PRINT c=20
-#: ../../Firmware/Marlin_main.cpp:10598
+#: ../../Firmware/Marlin_main.cpp:10600
 msgid "Recovering print"
 msgstr "Recuper. impresion"
 
@@ -1831,7 +1831,7 @@ msgid "SELECTOR CANNOT MOVE"
 msgstr "SELECT. SIN MOVERSE"
 
 #. MSG_STOPPED c=20
-#: ../../Firmware/Marlin_main.cpp:9477 ../../Firmware/messages.cpp:114
+#: ../../Firmware/Marlin_main.cpp:9479 ../../Firmware/messages.cpp:114
 msgid "STOPPED."
 msgstr "PARADA"
 
@@ -2076,7 +2076,7 @@ msgid "Swapped"
 msgstr "Intercambiado"
 
 #. MSG_THERMAL_ANOMALY c=20
-#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2233
+#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2236
 msgid "THERMAL ANOMALY"
 msgstr "ANOMALIA TERMICA"
 
