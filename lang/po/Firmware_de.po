@@ -857,7 +857,7 @@ msgid "Heating"
 msgstr "Aufwärmen"
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:9272
+#: ../../Firmware/Marlin_main.cpp:9274
 msgid "Heating disabled by safety timer."
 msgstr "Heizung durch Sicherheitstimer deaktiviert."
 
@@ -1402,7 +1402,7 @@ msgid "Once"
 msgstr "Einmal"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
-#: ../../Firmware/Marlin_main.cpp:9451 ../../Firmware/messages.cpp:175
+#: ../../Firmware/Marlin_main.cpp:9453 ../../Firmware/messages.cpp:175
 msgid "PAUSED THERMAL ERROR"
 msgstr "PAUSE THERM. FEHLER"
 
@@ -1549,7 +1549,7 @@ msgid "Please place steel sheet on heatbed."
 msgstr "Legen Sie das Stahlblech auf das Heizbett."
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11208 ../../Firmware/Marlin_main.cpp:11238
+#: ../../Firmware/Marlin_main.cpp:11210 ../../Firmware/Marlin_main.cpp:11240
 #: ../../Firmware/messages.cpp:79
 msgid "Please press the knob to unload filament"
 msgstr "Drücken Sie den Knopf um das Filament zu entladen."
@@ -1646,7 +1646,7 @@ msgid "Press the knob"
 msgstr "Knopf drücken zum"
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11220
+#: ../../Firmware/Marlin_main.cpp:11222
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Drücken Sie den Knopf um die Düse vorzuheizen und fortzufahren."
 
@@ -1733,7 +1733,7 @@ msgid "Rear side [µm]"
 msgstr "Hinten [µm]"
 
 #. MSG_RECOVERING_PRINT c=20
-#: ../../Firmware/Marlin_main.cpp:10598
+#: ../../Firmware/Marlin_main.cpp:10600
 msgid "Recovering print"
 msgstr "Druck wiederherst"
 
@@ -1831,7 +1831,7 @@ msgid "SELECTOR CANNOT MOVE"
 msgstr "SELEKTOR SITZT FEST"
 
 #. MSG_STOPPED c=20
-#: ../../Firmware/Marlin_main.cpp:9477 ../../Firmware/messages.cpp:114
+#: ../../Firmware/Marlin_main.cpp:9479 ../../Firmware/messages.cpp:114
 msgid "STOPPED."
 msgstr "GESTOPPT."
 
@@ -2071,7 +2071,7 @@ msgid "Swapped"
 msgstr "Ausgetauscht"
 
 #. MSG_THERMAL_ANOMALY c=20
-#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2233
+#: ../../Firmware/messages.cpp:177 ../../Firmware/temperature.cpp:2236
 msgid "THERMAL ANOMALY"
 msgstr "THERMISCHE ANOMALIE"
 
@@ -2530,9 +2530,7 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:331
 msgid ""
 "MMU FW version is incompatible with printer FW.Update to version 2.1.9."
-msgstr ""
-"MMU FW ist inkompatibel mit Drucker FW. "
-"Update auf Version 2.1.9."
+msgstr "MMU FW ist inkompatibel mit Drucker FW. Update auf Version 2.1.9."
 
 #. MSG_PRELOAD_TO_MMU c=17
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5231
