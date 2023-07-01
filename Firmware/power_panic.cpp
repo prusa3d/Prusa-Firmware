@@ -64,13 +64,14 @@ void uvlo_() {
     tmc2130_set_current_r(E_AXIS, 20);
 #endif //TMC2130
 
-    // Stop all heaters
     if (!sd_print_saved_in_ram)
     {
         saved_bed_temperature = target_temperature_bed;
         saved_extruder_temperature = target_temperature[active_extruder];
+        saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
     }
 
+    // Stop all heaters
     setTargetHotend(0);
     setTargetBed(0);
 
@@ -99,7 +100,7 @@ void uvlo_() {
 
     // Store the print E position before we lose track
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, (axis_relative_modes & E_AXIS_MASK)?0:1);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, !saved_extruder_relative_mode);
 
     // Clean the input command queue, inhibit serial processing using saved_printing
     cmdqueue_reset();
