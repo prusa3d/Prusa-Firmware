@@ -303,8 +303,8 @@ extern uint8_t saved_printing_type;
 #define PRINTING_TYPE_USB 1
 #define PRINTING_TYPE_NONE 2
 
-extern float saved_extruder_temperature; //!< Active extruder temperature
-extern float saved_bed_temperature; //!< Bed temperature
+extern uint16_t saved_extruder_temperature; //!< Active extruder temperature
+extern uint8_t saved_bed_temperature; //!< Bed temperature
 extern uint8_t saved_fan_speed; //!< Print fan speed, ranges from 0 to 255
 extern uint16_t saved_feedrate2;
 
