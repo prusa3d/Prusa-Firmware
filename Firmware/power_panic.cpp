@@ -364,8 +364,6 @@ bool recover_machine_state_after_power_panic() {
 
     // 3) Initialize the logical to physical coordinate system transformation.
     world2machine_initialize();
-    //  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
-    //  print_mesh_bed_leveling_table();
 
     // 4) Load the baby stepping value, which is expected to be active at the time of power panic.
     // The baby stepping value is used to reset the physical Z axis when rehoming the Z axis.
@@ -428,7 +426,6 @@ void restore_print_from_eeprom(bool mbl_was_active) {
         }
         dir_name[8] = '\0';
         MYSERIAL.println(dir_name);
-        // strcpy(card.dir_names[i], dir_name);
         card.chdir(dir_name, false);
     }
 
