@@ -21,6 +21,8 @@
 #include "temperature.h"
 #include "ultralcd.h"
 
+static const char MSG_INT4[] PROGMEM = "INT4";
+
 static bool recover_machine_state_after_power_panic();
 static void restore_print_from_eeprom(bool mbl_was_active);
 
@@ -285,14 +287,14 @@ void setup_uvlo_interrupt() {
     // check if power was lost before we armed the interrupt
     if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO))
     {
-        SERIAL_ECHOLNPGM("INT4");
+        SERIAL_ECHOLNRPGM(MSG_INT4);
         uvlo_drain_reset();
     }
 }
 
 ISR(INT4_vect) {
     EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once
-    SERIAL_ECHOLNPGM("INT4");
+    SERIAL_ECHOLNRPGM(MSG_INT4);
     //fire normal uvlo only in case where EEPROM_UVLO is 0 or if IS_SD_PRINTING is 1.
      if(printer_active() && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
      if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
