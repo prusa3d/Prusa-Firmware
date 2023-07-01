@@ -316,7 +316,7 @@ uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
 uint16_t saved_extruder_temperature; //!< Active extruder temperature
 uint8_t saved_bed_temperature; //!< Bed temperature
-static bool saved_extruder_relative_mode = false;
+bool saved_extruder_relative_mode;
 uint8_t saved_fan_speed = 0; //!< Print fan speed
 //! @}
 
