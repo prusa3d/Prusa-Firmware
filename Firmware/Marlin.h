@@ -307,6 +307,7 @@ extern uint16_t saved_extruder_temperature; //!< Active extruder temperature
 extern uint8_t saved_bed_temperature; //!< Bed temperature
 extern bool saved_extruder_relative_mode;
 extern uint8_t saved_fan_speed; //!< Print fan speed, ranges from 0 to 255
+extern float saved_pos[NUM_AXIS];
 extern uint16_t saved_feedrate2;
 
 //estimated time to end of the print
