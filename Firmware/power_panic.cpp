@@ -69,6 +69,7 @@ void uvlo_() {
         saved_bed_temperature = target_temperature_bed;
         saved_extruder_temperature = target_temperature[active_extruder];
         saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
+        saved_fan_speed = fanSpeed;
     }
 
     // Stop all heaters before continuing
@@ -163,7 +164,7 @@ void uvlo_() {
     eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
     eeprom_update_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_extruder_temperature);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_bed_temperature);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, saved_fan_speed);
     eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
     eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
 
