@@ -71,15 +71,20 @@ void uvlo_() {
         saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
     }
 
-    // Stop all heaters
+    // Stop all heaters before continuing
     setTargetHotend(0);
     setTargetBed(0);
 
-    // Calculate the file position, from which to resume this print.
-    save_print_file_state();
+    if (!sd_print_saved_in_ram) {
+        // Calculate the file position, from which to resume this print.
+        save_print_file_state();
 
-    // save the global state at planning time
-    save_planner_global_state();
+        // save the global state at planning time
+        save_planner_global_state();
+
+        memcpy(saved_pos, current_position, sizeof(saved_pos));
+        if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
+    }
 
     // From this point on and up to the print recovery, Z should not move during X/Y travels and
     // should be controlled precisely. Reset the MBL status before planner_abort_hard in order to
@@ -94,12 +99,12 @@ void uvlo_() {
 
     // Store the print logical Z position, which we need to recover (a slight error here would be
     // recovered on the next Gcode instruction, while a physical location error would not)
-    float logical_z = current_position[Z_AXIS];
-    if(mbl_was_active) logical_z -= mbl.get_z(st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS));
+    float logical_z = saved_pos[Z_AXIS];
+    if(mbl_was_active) logical_z = current_position[Z_AXIS] - mbl.get_z(st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS));
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z, logical_z);
 
     // Store the print E position before we lose track
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), saved_pos[E_AXIS]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, !saved_extruder_relative_mode);
 
     // Clean the input command queue, inhibit serial processing using saved_printing
@@ -150,13 +155,8 @@ void uvlo_() {
     eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
 
     // Store the current position.
-    if (pos_invalid)
-        eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), X_COORD_INVALID);
-    else
-    {
-        eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
-        eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
-    }
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), saved_pos[X_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), saved_pos[Y_AXIS]);
 
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
     eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, saved_feedrate2);
