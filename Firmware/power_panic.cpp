@@ -36,7 +36,12 @@ static void uvlo_drain_reset() {
 
 void uvlo_() {
     unsigned long time_start = _millis();
-    bool sd_print = card.sdprinting;
+
+    // True if a print is already saved to RAM
+    bool sd_print_saved_in_ram = saved_printing && (saved_printing_type == PRINTING_TYPE_SD);
+
+    // Flag to decide whether or not to set EEPROM_UVLO bit
+    bool sd_print = card.sdprinting || sd_print_saved_in_ram;
     const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
 
     // Conserve as much power as soon as possible
@@ -60,8 +65,12 @@ void uvlo_() {
 #endif //TMC2130
 
     // Stop all heaters
-    uint8_t saved_target_temperature_bed = target_temperature_bed;
-    uint16_t saved_target_temperature_ext = target_temperature[active_extruder];
+    if (!sd_print_saved_in_ram)
+    {
+        saved_bed_temperature = target_temperature_bed;
+        saved_extruder_temperature = target_temperature[active_extruder];
+    }
+
     setTargetHotend(0);
     setTargetBed(0);
 
@@ -151,8 +160,8 @@ void uvlo_() {
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
     eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, saved_feedrate2);
     eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
-    eeprom_update_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_target_temperature_ext);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_target_temperature_bed);
+    eeprom_update_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_extruder_temperature);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_bed_temperature);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
     eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
     eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
@@ -173,7 +182,10 @@ void uvlo_() {
     eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
 #endif
 
-    // Finaly store the "power outage" flag.
+    // Finally store the "power outage" flag.
+    // Note: Recovering a print from EEPROM currently assumes the user
+    // is printing from an SD card, this is why this EEPROM byte is only set
+    // when SD card print is detected
     if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
     // Increment power failure counter
