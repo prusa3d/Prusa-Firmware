@@ -391,6 +391,8 @@ extern void print_mesh_bed_leveling_table();
 void save_print_file_state();
 void restore_print_file_state();
 void save_planner_global_state();
+void refresh_print_state_in_ram();
+void clear_print_state_in_ram();
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_extruder_temperature_from_ram();
 extern void restore_print_from_ram_and_continue(float e_move);
@@ -402,6 +404,7 @@ extern void cancel_saved_printing();
 #define SAVED_START_POSITION_UNSET X_COORD_INVALID
 extern float saved_start_position[NUM_AXIS];
 extern uint16_t saved_segment_idx;
+extern bool isPartialBackupAvailable;
 
 
 //estimated time to end of the print

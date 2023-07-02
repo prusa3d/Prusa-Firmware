@@ -627,6 +627,10 @@ void MMU2::SaveAndPark(bool move_axes) {
         Disable_E0();
         planner_synchronize();
 
+        // In case a power panic happens while waiting for the user
+        // take a partial back up of print state into RAM (current position, etc.)
+        refresh_print_state_in_ram();
+
         if (move_axes) {
             mmu_print_saved |= SavedState::ParkExtruder;
             resume_position = planner_current_position(); // save current pos
@@ -680,6 +684,11 @@ void MMU2::ResumeUnpark() {
 
         // Move Z_AXIS to saved position
         motion_do_blocking_move_to_z(resume_position.xyz[2], feedRate_t(NOZZLE_PARK_Z_FEEDRATE));
+
+        // From this point forward, power panic should not use
+        // the partial backup in RAM since the extruder is no
+        // longer in parking position
+        clear_print_state_in_ram();
 
         mmu_print_saved &= ~(SavedState::ParkExtruder);
     }

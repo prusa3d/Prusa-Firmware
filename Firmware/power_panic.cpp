@@ -66,12 +66,14 @@ void uvlo_() {
     tmc2130_set_current_r(E_AXIS, 20);
 #endif //TMC2130
 
-    if (!sd_print_saved_in_ram)
+    if (!sd_print_saved_in_ram && !isPartialBackupAvailable)
     {
         saved_bed_temperature = target_temperature_bed;
         saved_extruder_temperature = target_temperature[active_extruder];
         saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
         saved_fan_speed = fanSpeed;
+        memcpy(saved_pos, current_position, sizeof(saved_pos));
+        if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
     }
 
     // Stop all heaters before continuing
@@ -84,9 +86,6 @@ void uvlo_() {
 
         // save the global state at planning time
         save_planner_global_state();
-
-        memcpy(saved_pos, current_position, sizeof(saved_pos));
-        if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
     }
 
     // From this point on and up to the print recovery, Z should not move during X/Y travels and
