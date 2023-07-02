@@ -247,6 +247,7 @@ const char echomagic[] PROGMEM = "echo:";
 float saved_start_position[NUM_AXIS] = {SAVED_START_POSITION_UNSET, 0, 0, 0};
 
 uint16_t saved_segment_idx = 0;
+bool isPartialBackupAvailable;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
@@ -7624,6 +7625,10 @@ Sigma_Exit:
     {
     st_synchronize();
 
+    // In case a power panic happens while waiting for the user
+    // take a partial back up of print state into RAM (current position, etc.)
+    refresh_print_state_in_ram();
+
     float x_position = FILAMENTCHANGE_XPOS;
     float y_position = FILAMENTCHANGE_YPOS;
     float z_shift = MIN_Z_FOR_SWAP;
@@ -10477,6 +10482,29 @@ void save_planner_global_state() {
         saved_feedrate2 = feedrate;
         saved_segment_idx = 0;
     }
+}
+
+/// Take a backup of the current state of variables
+/// e.g. feedrate, Z-axis position etc.
+/// This function should backup variables which may be lost
+/// For example a power panic in M600 or during MMU error
+void refresh_print_state_in_ram()
+{
+    if (saved_printing) return;
+    memcpy(saved_pos, current_position, sizeof(saved_pos));
+    saved_feedmultiply2 = feedmultiply; //save feedmultiply
+    saved_extruder_temperature = (uint16_t)degTargetHotend(active_extruder);
+    saved_bed_temperature = (uint8_t)degTargetBed();
+    saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
+    saved_fan_speed = fanSpeed;
+    isPartialBackupAvailable = true;
+}
+
+void clear_print_state_in_ram()
+{
+    // Set flag to false in order to avoid using
+    // the saved values during power panic
+    isPartialBackupAvailable = false;
 }
 
 //! @brief Immediately stop print moves
