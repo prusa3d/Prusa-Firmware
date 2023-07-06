@@ -122,6 +122,17 @@ public:
         return initRegs8[0];
     }
 
+    /// Sets the Pulley slow feed rate to be reported to the MMU.
+    /// Beware - this call doesn't send anything to the MMU.
+    /// The MMU gets the newly set value either by a communication restart or via an explicit WriteRegister call
+    inline void PlanPulleySlowFeedRate(uint8_t psfr) {
+        initRegs8[1] = psfr;
+    }
+    /// @returns the currently preset Pulley slow feed rate
+    inline uint8_t PulleySlowFeedRate() const {
+        return initRegs8[1]; // even though MMU register 0x14 is 16bit, reasonable speeds are way below 255mm/s - saving space ;)
+    }
+
     /// Step the state machine
     StepStatus Step();
 
