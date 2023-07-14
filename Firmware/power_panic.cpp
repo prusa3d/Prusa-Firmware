@@ -9,6 +9,7 @@
 #include "cmdqueue.h"
 #include "eeprom.h"
 #include "fastio.h"
+#include "language.h"
 #include "lcd.h"
 #include "mesh_bed_leveling.h"
 #include "mesh_bed_calibration.h"
