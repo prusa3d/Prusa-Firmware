@@ -73,14 +73,13 @@ void uvlo_() {
         saved_extruder_temperature = target_temperature[active_extruder];
         saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
         saved_fan_speed = fanSpeed;
-        memcpy(saved_pos, current_position, sizeof(saved_pos));
-        if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
     }
 
     // Stop all heaters before continuing
     setTargetHotend(0);
     setTargetBed(0);
 
+    // Fetch data not included in a partial back-up
     if (!sd_print_saved_in_ram) {
         // Calculate the file position, from which to resume this print.
         save_print_file_state();
@@ -99,6 +98,14 @@ void uvlo_() {
     // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
     // are in action.
     planner_abort_hard();
+
+    // When there is no position already saved, then we must grab whatever the current position is.
+    // This is most likely a position where the printer is in the middle of a G-code move
+    if (!sd_print_saved_in_ram && !isPartialBackupAvailable)
+    {
+        memcpy(saved_pos, current_position, sizeof(saved_pos));
+        if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
+    }
 
     // Store the print logical Z position, which we need to recover (a slight error here would be
     // recovered on the next Gcode instruction, while a physical location error would not)
