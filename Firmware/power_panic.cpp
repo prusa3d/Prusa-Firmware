@@ -343,11 +343,13 @@ void recover_print(uint8_t automatic) {
         enquecommandf_P(G1_E_F2700, default_retraction);
     }
 
-    printf_P(_N("After waiting for temp:\nCurrent pos X_AXIS:%.3f\nCurrent pos Y_AXIS:%.3f\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+    puts_P(_N("Temperature Restored\n"));
+    gcode_M114();
 
     // Restart the print.
     restore_print_from_eeprom(mbl_was_active);
-    printf_P(_N("Current pos Z_AXIS:%.3f\nCurrent pos E_AXIS:%.3f\n"), current_position[Z_AXIS], current_position[E_AXIS]);
+    puts_P(_N("Done reading EEPROM\n"));
+    gcode_M114();
 }
 
 bool recover_machine_state_after_power_panic() {
