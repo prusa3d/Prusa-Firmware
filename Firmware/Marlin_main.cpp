@@ -10648,10 +10648,8 @@ void recover_print(uint8_t automatic) {
 
     // If not automatically recoreverd (long power loss)
     if(automatic == 0){
-        //Extrude some filament to stabilize the pressure
-        enquecommand_P(PSTR("G1 E5 F120"));
         // Retract to be consistent with a short pause
-        enquecommandf_P(G1_E_F2700, default_retraction);
+        enquecommandf_P(G1_E_F2700, -default_retraction);
     }
 
 	printf_P(_N("After waiting for temp:\nCurrent pos X_AXIS:%.3f\nCurrent pos Y_AXIS:%.3f\n"), current_position[X_AXIS], current_position[Y_AXIS]);
