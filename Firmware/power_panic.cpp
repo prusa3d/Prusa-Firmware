@@ -163,10 +163,8 @@ void uvlo_() {
         eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING_FULL +2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
     }
 
-    // Write the _final_ Z position and motor microstep counter (unused).
+    // Write the _final_ Z position
     eeprom_update_float((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z, current_position[Z_AXIS]);
-    z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
-    eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
 
     // Store the current position.
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), saved_pos[X_AXIS]);
@@ -267,10 +265,6 @@ static void uvlo_tiny() {
 
         // Update Z position
         eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
-
-        // Update the _final_ Z motor microstep counter (unused).
-        z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
-        eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
     }
 
     // Update the the "power outage" flag.
