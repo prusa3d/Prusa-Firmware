@@ -3535,12 +3535,6 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     
         // Not let's go back to print
         fanSpeed = fanSpeedBckp;
-    
-        // Feed a little of filament to stabilize pressure
-        if (!automatic) {
-            current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
-        }
 
         // Move XY back
         plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED);
