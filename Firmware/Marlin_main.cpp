@@ -1457,7 +1457,7 @@ void setup()
 		}
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
-	eeprom_init_default_byte((uint8_t*)EEPROM_UVLO, 0);
+	eeprom_init_default_byte((uint8_t*)EEPROM_UVLO, NO_PENDING_RECOVERY);
 	eeprom_init_default_byte((uint8_t*)EEPROM_SD_SORT, 0);
 
 	//mbl_mode_init();
@@ -1578,7 +1578,7 @@ void setup()
     fw_crash_init();
 
 #ifdef UVLO_SUPPORT
-  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
+  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != NO_PENDING_RECOVERY) { //previous print was terminated by UVLO
       manage_heater(); // Update temperatures 
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
 		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
@@ -1596,7 +1596,7 @@ void setup()
           if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE) {
               recover_print(0); 
           } else { 
-              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
+              eeprom_update_byte((uint8_t*)EEPROM_UVLO, NO_PENDING_RECOVERY); 
               lcd_update_enable(true); 
               lcd_update(2); 
               lcd_setstatuspgm(MSG_WELCOME); 
@@ -4149,7 +4149,7 @@ void process_commands()
             printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
         }
         else if (code_seen_P(PSTR("uvlo"))) { // PRUSA uvlo
-            eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
+            eeprom_update_byte((uint8_t*)EEPROM_UVLO, NO_PENDING_RECOVERY); 
             enquecommand_P(MSG_M24); 
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
@@ -10660,7 +10660,7 @@ void restore_print_from_ram_and_continue(float e_move)
 // Cancel the state related to a currently saved print
 void cancel_saved_printing()
 {
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO, NO_PENDING_RECOVERY);
     saved_start_position[0] = SAVED_START_POSITION_UNSET;
     saved_printing_type = PRINTING_TYPE_NONE;
     saved_printing = false;
