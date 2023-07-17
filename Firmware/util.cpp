@@ -408,13 +408,13 @@ return pStrBegin;
 
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
     char* pResult;
-    char gStr[12];
+    char gStr[8];
     size_t nLength;
 
     pResult=code_string(pStrPos,&nLength);
     if(pResult != NULL) {
 
-        if(nLength > 11) nLength = 11;
+        if(nLength > 7) nLength = 7;
         memcpy(gStr, pResult, nLength);
         gStr[nLength] = 0;
 
