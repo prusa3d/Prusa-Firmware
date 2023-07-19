@@ -2494,10 +2494,10 @@ msgstr ""
 "Laden naar extruder is mislukt. Inspecteer de vorm van de filamenttip. "
 "Verfijn de sensorkalibratie, indien nodig."
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
-msgstr "MCU ONDERSPANN. VCC"
+msgid "MMU MCU ERROR"
+msgstr "MMU MCU FOUT"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095
