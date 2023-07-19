@@ -62,7 +62,7 @@ typedef enum : uint16_t {
     ERR_ELECTRICAL_MMU_SELECTOR_SELFTEST_FAILED = 315,
     ERR_ELECTRICAL_MMU_IDLER_SELFTEST_FAILED = 325,
 
-    ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC = 306,
+    ERR_ELECTRICAL_MMU_MCU_ERROR = 306,
 
     ERR_CONNECT = 400,
     ERR_CONNECT_MMU_NOT_RESPONDING = 401,
@@ -119,7 +119,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_ELECTRICAL_MMU_PULLEY_SELFTEST_FAILED,
     ERR_ELECTRICAL_MMU_SELECTOR_SELFTEST_FAILED,
     ERR_ELECTRICAL_MMU_IDLER_SELFTEST_FAILED,
-    ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC,
+    ERR_ELECTRICAL_MMU_MCU_ERROR,
     ERR_CONNECT_MMU_NOT_RESPONDING,
     ERR_CONNECT_COMMUNICATION_ERROR,
     ERR_SYSTEM_FILAMENT_ALREADY_LOADED, 
@@ -173,7 +173,7 @@ static const char MSG_TITLE_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTE
 //static const char MSG_TITLE_MMU_PULLEY_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTEST FAILED");
 //static const char MSG_TITLE_MMU_SELECTOR_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTEST FAILED");
 //static const char MSG_TITLE_MMU_IDLER_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTEST FAILED");
-static const char MSG_TITLE_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1      = ISTR("MMU MCU UNDERPOWER"); ////MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+static const char MSG_TITLE_MMU_MCU_ERROR[] PROGMEM_I1      = ISTR("MMU MCU ERROR"); ////MSG_TITLE_MMU_MCU_ERROR c=20
 static const char MSG_TITLE_MMU_NOT_RESPONDING[] PROGMEM_I1      = ISTR("MMU NOT RESPONDING"); ////MSG_TITLE_MMU_NOT_RESPONDING c=20
 static const char MSG_TITLE_COMMUNICATION_ERROR[] PROGMEM_I1     = ISTR("COMMUNICATION ERROR"); ////MSG_TITLE_COMMUNICATION_ERROR c=20
 static const char MSG_TITLE_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("FIL. ALREADY LOADED"); ////MSG_TITLE_FILAMENT_ALREADY_LOADED c=20
@@ -219,7 +219,7 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_SELFTEST_FAILED),
     _R(MSG_TITLE_SELFTEST_FAILED),
     _R(MSG_TITLE_SELFTEST_FAILED),
-    _R(MSG_TITLE_MCU_UNDERVOLTAGE_VCC),
+    _R(MSG_TITLE_MMU_MCU_ERROR),
     _R(MSG_TITLE_MMU_NOT_RESPONDING),
     _R(MSG_TITLE_COMMUNICATION_ERROR),
     _R(MSG_TITLE_FILAMENT_ALREADY_LOADED),
@@ -240,7 +240,7 @@ static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament s
 static const char MSG_DESC_FSENSOR_FILAMENT_STUCK[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
 static const char MSG_DESC_PULLEY_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
-static const char MSG_DESC_INSPECT_FINDA[] PROGMEM_I1 = ISTR("Selector can't move due to FINDA detecting a filament. Make sure no filament is in selector and FINDA works properly."); ////MSG_DESC_INSPECT_FINDA c=20 r=8
+static const char MSG_DESC_INSPECT_FINDA[] PROGMEM_I1 = ISTR("Selector can't move due to FINDA detecting a filament. Make sure no filament is in Selector and FINDA works properly."); ////MSG_DESC_INSPECT_FINDA c=20 r=8
 static const char MSG_DESC_LOAD_TO_EXTRUDER_FAILED[] PROGMEM_I1 = ISTR("Loading to extruder failed. Inspect the filament tip shape. Refine the sensor calibration, if needed."); ////MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 static const char MSG_DESC_SELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Can't move Selector or Idler."); /////MSG_DESC_CANNOT_MOVE c=20 r=4
@@ -269,7 +269,7 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_MMU_PULLEY_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("MMU selftest failed on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_MMU_SELECTOR_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("MMU selftest failed on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_MMU_IDLER_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("MMU selftest failed on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
-//static const char MSG_DESC_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1 = ISTR("MMU MCU detected a 5V undervoltage. There might be an issue with the electronics. Check the wiring and connectors"); ////MSG_DESC_MCU_UNDERVOLTAGE_VCC c=20 r=8
+//static const char MSG_DESC_MMU_MCU_ERROR[] PROGMEM_I1 = ISTR("MMU detected a power-related issue. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_MCU_ERROR c=20 r=8
 static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU not responding. Check the wiring and connectors."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU not responding correctly. Check the wiring and connectors."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
@@ -322,7 +322,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descMMU_PULLEY_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descMMU_SELECTOR_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descMMU_IDLER_SELFTEST_FAILED
-    _R(MSG_DESC_TMC), // descMSG_DESC_MCU_UNDERVOLTAGE_VCC
+    _R(MSG_DESC_TMC), // descMSG_DESC_MMU_MCU_ERROR
     _R(MSG_DESC_MMU_NOT_RESPONDING),
     _R(MSG_DESC_COMMUNICATION_ERROR),
     _R(MSG_DESC_FILAMENT_ALREADY_LOADED),
@@ -405,7 +405,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//MMU_PULLEY_SELFTEST_FAILED
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//MMU_SELECTOR_SELFTEST_FAILED
     Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//MMU_IDLER_SELFTEST_FAILED
-    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//MCU_UNDERVOLTAGE_VCC
+    Btns(ButtonOperations::ResetMMU, ButtonOperations::NoOperation),//MMU_MCU_ERROR
     Btns(ButtonOperations::ResetMMU, ButtonOperations::DisableMMU),//MMU_NOT_RESPONDING
     Btns(ButtonOperations::ResetMMU, ButtonOperations::DisableMMU),//COMMUNICATION_ERROR
 

@@ -2467,10 +2467,10 @@ msgstr ""
 "Lasting til ekstruder mislyktes. Inspiser filamentspissens form. Avgrens "
 "sensorkalibreringen om nødvendig."
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
-msgstr "MCU UNDERSPENN. VCC"
+msgid "MMU MCU ERROR"
+msgstr "MMU MCU FEIL"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095
