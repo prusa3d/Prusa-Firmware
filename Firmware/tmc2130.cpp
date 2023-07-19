@@ -140,6 +140,39 @@ static ShortTimer tmc2130_overtemp_timer;
 #define TMC2130_REG_ENCM_CTRL  0x72 // 2 bits
 #define TMC2130_REG_LOST_STEPS 0x73 // 20 bits
 
+#define _GET_PWR_X      (READ(X_ENABLE_PIN) == X_ENABLE_ON)
+#define _GET_PWR_Y      (READ(Y_ENABLE_PIN) == Y_ENABLE_ON)
+#define _GET_PWR_Z      (READ(Z_ENABLE_PIN) == Z_ENABLE_ON)
+#define _GET_PWR_E      (READ(E0_ENABLE_PIN) == E_ENABLE_ON)
+
+#define _SET_PWR_X(ena) WRITE(X_ENABLE_PIN, ena?X_ENABLE_ON:!X_ENABLE_ON)
+#define _SET_PWR_Y(ena) WRITE(Y_ENABLE_PIN, ena?Y_ENABLE_ON:!Y_ENABLE_ON)
+#define _SET_PWR_Z(ena) WRITE(Z_ENABLE_PIN, ena?Z_ENABLE_ON:!Z_ENABLE_ON)
+#define _SET_PWR_E(ena) WRITE(E0_ENABLE_PIN, ena?E_ENABLE_ON:!E_ENABLE_ON)
+
+#define _GET_DIR_X      (READ(X_DIR_PIN) == INVERT_X_DIR)
+#define _GET_DIR_Y      (READ(Y_DIR_PIN) == INVERT_Y_DIR)
+#define _GET_DIR_Z      (READ(Z_DIR_PIN) == INVERT_Z_DIR)
+#define _GET_DIR_E      (READ(E0_DIR_PIN) == INVERT_E0_DIR)
+
+#define _SET_DIR_X(dir) WRITE(X_DIR_PIN, dir?INVERT_X_DIR:!INVERT_X_DIR)
+#define _SET_DIR_Y(dir) WRITE(Y_DIR_PIN, dir?INVERT_Y_DIR:!INVERT_Y_DIR)
+#define _SET_DIR_Z(dir) WRITE(Z_DIR_PIN, dir?INVERT_Z_DIR:!INVERT_Z_DIR)
+#define _SET_DIR_E(dir) WRITE(E0_DIR_PIN, dir?INVERT_E0_DIR:!INVERT_E0_DIR)
+
+#ifdef TMC2130_DEDGE_STEPPING
+static constexpr uint8_t default_dedge_bit = 1;
+#define _DO_STEP_X      TOGGLE(X_STEP_PIN)
+#define _DO_STEP_Y      TOGGLE(Y_STEP_PIN)
+#define _DO_STEP_Z      TOGGLE(Z_STEP_PIN)
+#define _DO_STEP_E      TOGGLE(E0_STEP_PIN)
+#else // !TMC2130_DEDGE_STEPPING
+static constexpr uint8_t default_dedge_bit = 0;
+#define _DO_STEP_X      { WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(X_STEP_PIN, INVERT_X_STEP_PIN); }
+#define _DO_STEP_Y      { WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN); }
+#define _DO_STEP_Z      { WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN); }
+#define _DO_STEP_E      { WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN); }
+#endif // TMC2130_DEDGE_STEPPING
 
 uint16_t tmc2130_rd_TSTEP(uint8_t axis);
 uint16_t tmc2130_rd_MSCNT(uint8_t axis);
@@ -420,11 +453,7 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	chopconf.dw = 0; // Zero initialise
 	
 	chopconf.s.intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
-#ifdef TMC2130_DEDGE_STEPPING
-	chopconf.s.dedge = 1;
-#else
-	chopconf.s.dedge = 0;
-#endif
+	chopconf.s.dedge = default_dedge_bit;
 	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
 	chopconf.s.hstrt = tmc2130_chopper_config[axis].hstr; // initial 4, modified to 5
 	chopconf.s.hend = tmc2130_chopper_config[axis].hend; // original value = 1
@@ -655,39 +684,6 @@ static uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
 	if (rval != 0) *rval = val32;
 	return stat;
 }
-
-#define _GET_PWR_X      (READ(X_ENABLE_PIN) == X_ENABLE_ON)
-#define _GET_PWR_Y      (READ(Y_ENABLE_PIN) == Y_ENABLE_ON)
-#define _GET_PWR_Z      (READ(Z_ENABLE_PIN) == Z_ENABLE_ON)
-#define _GET_PWR_E      (READ(E0_ENABLE_PIN) == E_ENABLE_ON)
-
-#define _SET_PWR_X(ena) WRITE(X_ENABLE_PIN, ena?X_ENABLE_ON:!X_ENABLE_ON)
-#define _SET_PWR_Y(ena) WRITE(Y_ENABLE_PIN, ena?Y_ENABLE_ON:!Y_ENABLE_ON)
-#define _SET_PWR_Z(ena) WRITE(Z_ENABLE_PIN, ena?Z_ENABLE_ON:!Z_ENABLE_ON)
-#define _SET_PWR_E(ena) WRITE(E0_ENABLE_PIN, ena?E_ENABLE_ON:!E_ENABLE_ON)
-
-#define _GET_DIR_X      (READ(X_DIR_PIN) == INVERT_X_DIR)
-#define _GET_DIR_Y      (READ(Y_DIR_PIN) == INVERT_Y_DIR)
-#define _GET_DIR_Z      (READ(Z_DIR_PIN) == INVERT_Z_DIR)
-#define _GET_DIR_E      (READ(E0_DIR_PIN) == INVERT_E0_DIR)
-
-#define _SET_DIR_X(dir) WRITE(X_DIR_PIN, dir?INVERT_X_DIR:!INVERT_X_DIR)
-#define _SET_DIR_Y(dir) WRITE(Y_DIR_PIN, dir?INVERT_Y_DIR:!INVERT_Y_DIR)
-#define _SET_DIR_Z(dir) WRITE(Z_DIR_PIN, dir?INVERT_Z_DIR:!INVERT_Z_DIR)
-#define _SET_DIR_E(dir) WRITE(E0_DIR_PIN, dir?INVERT_E0_DIR:!INVERT_E0_DIR)
-
-#ifdef TMC2130_DEDGE_STEPPING
-#define _DO_STEP_X      TOGGLE(X_STEP_PIN)
-#define _DO_STEP_Y      TOGGLE(Y_STEP_PIN)
-#define _DO_STEP_Z      TOGGLE(Z_STEP_PIN)
-#define _DO_STEP_E      TOGGLE(E0_STEP_PIN)
-#else
-#define _DO_STEP_X      { WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(X_STEP_PIN, INVERT_X_STEP_PIN); }
-#define _DO_STEP_Y      { WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN); }
-#define _DO_STEP_Z      { WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN); }
-#define _DO_STEP_E      { WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN); }
-#endif
-
 
 uint16_t tmc2130_get_res(uint8_t axis)
 {
