@@ -423,6 +423,21 @@ void tmc2130_check_overtemp()
 	}
 }
 
+/// Helper function to determine the value of the CHOPCONF intpol flag
+static constexpr bool getIntpolBit([[maybe_unused]]const uint8_t axis, const uint8_t mres) {
+#if defined(TMC2130_INTPOL_E) && (TMC2130_INTPOL_E == 0)
+    if (axis == E_AXIS) return 0;
+#endif
+#if defined(TMC2130_INTPOL_XY) && (TMC2130_INTPOL_XY == 0)
+    if (axis == X_AXIS || axis == Y_AXIS) return 0;
+#endif
+#if defined(TMC2130_INTPOL_Z) && (TMC2130_INTPOL_Z == 0)
+    if (axis == Z_AXIS) return 0;
+#endif
+
+    return (mres != 0); // intpol to 256 only if microsteps aren't 256
+}
+
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
 	union ChopConfU {
@@ -451,8 +466,8 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	static_assert(sizeof(ChopConfU) == 4);
 
 	chopconf.dw = 0; // Zero initialise
-	
-	chopconf.s.intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
+
+	chopconf.s.intpol = getIntpolBit(axis, mres);
 	chopconf.s.dedge = default_dedge_bit;
 	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
 	chopconf.s.hstrt = tmc2130_chopper_config[axis].hstr; // initial 4, modified to 5
@@ -467,28 +482,15 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	chopconf.s.vhighchm = 0;
 	chopconf.s.sync = 0;
 	chopconf.s.mres = mres;
-	if (axis == E_AXIS)
-	{
-#if defined(TMC2130_INTPOL_E) && (TMC2130_INTPOL_E == 0)
-		chopconf.s.intpol = 0;
-#endif
+
 #ifdef TMC2130_CNSTOFF_E
+	if (axis == E_AXIS) {
 		chopconf.s.hstrt = 0; // fd0..2
 		chopconf.s.fd = 0; // fd3
 		chopconf.s.hend = 0; // sine wave offset
 		chopconf.s.chm = 0; // constant off time mod
-#endif //TMC2130_CNSTOFF_E
 	}
-#if defined(TMC2130_INTPOL_XY) && (TMC2130_INTPOL_XY == 0)
-    else if (axis == X_AXIS || axis == Y_AXIS) {
-        chopconf.s.intpol = 0;
-    }
-#endif
-#if defined(TMC2130_INTPOL_Z) && (TMC2130_INTPOL_Z == 0)
-    else if (axis == Z_AXIS) {
-        chopconf.s.intpol = 0;
-    }
-#endif
+#endif //TMC2130_CNSTOFF_E
 	if (current_r <= 31)
 	{
 		chopconf.s.vsense = 1;
