@@ -2506,10 +2506,10 @@ msgstr ""
 "Le chargement dans l'extrudeuse a échoué. Inspectez la forme de la pointe du"
 " filament. Affiner l'étalonnage du capteur, si nécessaire."
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
-msgstr "MCU SOUS-TENSION VCC"
+msgid "MMU MCU ERROR"
+msgstr "MMU MCU ERREUR"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095

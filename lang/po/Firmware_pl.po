@@ -2486,10 +2486,10 @@ msgstr ""
 "Ładowanie do ekstrudera nie powiodło się. Sprawdź kształt końcówki "
 "filamentu. W razie potrzeby doprecyzuj kalibrację czujnika."
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
-msgstr "MCU POD NAPIĘCI. VCC"
+msgid "MMU MCU ERROR"
+msgstr "MMU MCU BLAD"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095

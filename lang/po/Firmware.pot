@@ -1088,9 +1088,9 @@ msgstr ""
 msgid "MMU Firmware internal error, please reset the MMU."
 msgstr ""
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
+msgid "MMU MCU ERROR"
 msgstr ""
 
 #. MSG_MMU_MODE c=8
