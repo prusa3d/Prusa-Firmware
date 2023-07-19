@@ -2473,10 +2473,10 @@ msgstr ""
 "Zavedenie do extrudéra zlyhalo. Skontrolujte tvar konca filamentu. V prípade"
 " potreby upravte kalibráciu snímača."
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
-msgstr "MMU MCU UNDERPOWER"
+msgid "MMU MCU ERROR"
+msgstr "MMU MCU CHYBA"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095

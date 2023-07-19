@@ -1117,7 +1117,7 @@ msgstr "MMU opakovani: Obnova teploty..."
 #: ../../Firmware/mmu2/errors_list.h:172 ../../Firmware/mmu2/errors_list.h:219
 #: ../../Firmware/mmu2/errors_list.h:220 ../../Firmware/mmu2/errors_list.h:221
 msgid "MMU SELFTEST FAILED"
-msgstr "MMU SELFTEST SELAHL"
+msgstr "MMU SELFTEST SELHAL"
 
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1118
@@ -2468,10 +2468,10 @@ msgstr ""
 "Načítání do extrudéru se nezdařilo. Zkontrolujte tvar špičky vlákna. V "
 "případě potřeby upřesněte kalibraci snímače."
 
-#. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
+#. MSG_TITLE_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:222
-msgid "MMU MCU UNDERPOWER"
-msgstr "MCU PODPĚTÍ VCC"
+msgid "MMU MCU ERROR"
+msgstr "MMU MCU CHYBA"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:1095
