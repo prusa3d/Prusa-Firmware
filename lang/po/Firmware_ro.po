@@ -2514,7 +2514,7 @@ msgstr "ResetMMU"
 #: ../../Firmware/mmu2/errors_list.h:243 ../../Firmware/mmu2/errors_list.h:298
 msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
-" is in selector and FINDA works properly."
+" is in Selector and FINDA works properly."
 msgstr ""
 "Selectorul nu se poate mișca deoarece FINDA detectează un filament. "
 "Asigurați-vă că nu există filament în selector și că FINDA funcționează "
