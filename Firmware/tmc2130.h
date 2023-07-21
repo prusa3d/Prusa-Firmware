@@ -58,7 +58,7 @@ typedef struct
 } tmc2130_chopper_config_t;
 #pragma pack(pop)
 
-extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
+extern tmc2130_chopper_config_t tmc2130_chopper_config[NUM_AXIS];
 
 //initialize tmc2130
 

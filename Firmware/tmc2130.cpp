@@ -143,11 +143,45 @@ uint8_t tmc2130_home_fsteps[2] = {48, 48};
 
 uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
 
-tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
-	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
-	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
-	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
-	{TMC2130_TOFF_E, 5, 1, 2, 0}
+tmc2130_chopper_config_t tmc2130_chopper_config[NUM_AXIS] = {
+	{ // X axis
+		.toff = TMC2130_TOFF_XYZ,
+		.hstr = 5,
+		.hend = 1,
+		.tbl = 2,
+		.res = 0
+	},
+	{ // Y axis
+		.toff = TMC2130_TOFF_XYZ,
+		.hstr = 5,
+		.hend = 1,
+		.tbl = 2,
+		.res = 0
+	},
+	{ // Z axis
+		.toff = TMC2130_TOFF_XYZ,
+		.hstr = 5,
+		.hend = 1,
+		.tbl = 2,
+		.res = 0
+	},
+#ifdef TMC2130_CNSTOFF_E
+	{ // E axis
+		.toff = TMC2130_TOFF_E,
+		.hstr = 0,
+		.hend = 0,
+		.tbl = 2,
+		.res = 0
+	}
+#else // !TMC2130_CNSTOFF_E
+	{ // E axis
+		.toff = TMC2130_TOFF_E,
+		.hstr = 5,
+		.hend = 1,
+		.tbl = 2,
+		.res = 0
+	}
+#endif
 };
 
 bool tmc2130_sg_stop_on_crash = true;
@@ -499,13 +533,6 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	chopconf.s.hstrt = tmc2130_chopper_config[axis].hstr; // initial 4, modified to 5
 	chopconf.s.hend = tmc2130_chopper_config[axis].hend; // original value = 1
 	chopconf.s.tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
-
-#ifdef TMC2130_CNSTOFF_E
-	if (axis == E_AXIS) {
-		chopconf.s.hstrt = 0; // fd0..2
-		chopconf.s.hend = 0; // sine wave offset
-	}
-#endif //TMC2130_CNSTOFF_E
 
 	tmc2130_wr_CHOPCONF(axis, chopconf.dw);
 	tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
