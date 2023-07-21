@@ -14,6 +14,19 @@
 #define TMC2130_GCONF_DYNAMIC_SGSENS 0x00000184 // stealthChop/spreadCycle (dynamic) with stallguard (stall activates DIAG0 and DIAG1 [open collector])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
 
+#ifdef TMC2130_DEDGE_STEPPING
+static constexpr uint8_t default_dedge_bit = 1;
+#define _DO_STEP_X      TOGGLE(X_STEP_PIN)
+#define _DO_STEP_Y      TOGGLE(Y_STEP_PIN)
+#define _DO_STEP_Z      TOGGLE(Z_STEP_PIN)
+#define _DO_STEP_E      TOGGLE(E0_STEP_PIN)
+#else // !TMC2130_DEDGE_STEPPING
+static constexpr uint8_t default_dedge_bit = 0;
+#define _DO_STEP_X      { WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(X_STEP_PIN, INVERT_X_STEP_PIN); }
+#define _DO_STEP_Y      { WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN); }
+#define _DO_STEP_Z      { WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN); }
+#define _DO_STEP_E      { WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN); }
+#endif // TMC2130_DEDGE_STEPPING
 
 //mode
 uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
@@ -23,6 +36,51 @@ uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 
 //running currents for homing
 static uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
+
+union ChopConfU {
+	struct __attribute__((packed)) S {
+		uint32_t toff : 4;
+		uint32_t hstrt : 3;
+		uint32_t hend : 4;
+		uint32_t fd : 1;
+		uint32_t disfdcc : 1;
+		uint32_t rndtf : 1;
+		uint32_t chm : 1;
+		uint32_t tbl : 2;
+		uint32_t vsense : 1;
+		uint32_t vhighfs : 1;
+		uint32_t vhighchm : 1;
+		uint32_t sync : 4;
+		uint32_t mres : 4;
+		uint32_t intpol : 1;
+		uint32_t dedge : 1;
+		uint32_t diss2g : 1;
+		uint32_t reserved : 1;
+		constexpr S(bool vsense, uint8_t mres)
+			: toff(TMC2130_TOFF_XYZ)
+			, hstrt(5)
+			, hend(1)
+			, fd(0)
+			, disfdcc(0)
+			, rndtf(0)
+			, chm(0)
+			, tbl(2)
+			, vsense(vsense)
+			, vhighfs(0)
+			, vhighchm(0)
+			, sync(0)
+			, mres(mres)
+			, intpol(0)
+			, dedge(default_dedge_bit)
+			, diss2g(0)
+			, reserved(0) {}
+	} s;
+	uint32_t dw;
+	constexpr ChopConfU(bool vsense, uint8_t mres)
+		: s(vsense, mres) {}
+};
+static_assert(sizeof(ChopConfU::S) == 4);
+static_assert(sizeof(ChopConfU) == 4);
 
 union PWMConfU {
     struct __attribute__((packed)) S {
@@ -159,20 +217,6 @@ static ShortTimer tmc2130_overtemp_timer;
 #define _SET_DIR_Y(dir) WRITE(Y_DIR_PIN, dir?INVERT_Y_DIR:!INVERT_Y_DIR)
 #define _SET_DIR_Z(dir) WRITE(Z_DIR_PIN, dir?INVERT_Z_DIR:!INVERT_Z_DIR)
 #define _SET_DIR_E(dir) WRITE(E0_DIR_PIN, dir?INVERT_E0_DIR:!INVERT_E0_DIR)
-
-#ifdef TMC2130_DEDGE_STEPPING
-static constexpr uint8_t default_dedge_bit = 1;
-#define _DO_STEP_X      TOGGLE(X_STEP_PIN)
-#define _DO_STEP_Y      TOGGLE(Y_STEP_PIN)
-#define _DO_STEP_Z      TOGGLE(Z_STEP_PIN)
-#define _DO_STEP_E      TOGGLE(E0_STEP_PIN)
-#else // !TMC2130_DEDGE_STEPPING
-static constexpr uint8_t default_dedge_bit = 0;
-#define _DO_STEP_X      { WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(X_STEP_PIN, INVERT_X_STEP_PIN); }
-#define _DO_STEP_Y      { WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN); }
-#define _DO_STEP_Z      { WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN); }
-#define _DO_STEP_E      { WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN); }
-#endif // TMC2130_DEDGE_STEPPING
 
 uint16_t tmc2130_rd_TSTEP(uint8_t axis);
 uint16_t tmc2130_rd_MSCNT(uint8_t axis);
@@ -440,64 +484,28 @@ static constexpr bool getIntpolBit([[maybe_unused]]const uint8_t axis, const uin
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	union ChopConfU {
-		struct __attribute__((packed)) S {
-			uint32_t toff : 4;
-			uint32_t hstrt : 3;
-			uint32_t hend : 4;
-			uint32_t fd : 1;
-			uint32_t disfdcc : 1;
-			uint32_t rndtf : 1;
-			uint32_t chm : 1;
-			uint32_t tbl : 2;
-			uint32_t vsense : 1;
-			uint32_t vhighfs : 1;
-			uint32_t vhighchm : 1;
-			uint32_t sync : 4;
-			uint32_t mres : 4;
-			uint32_t intpol : 1;
-			uint32_t dedge : 1;
-			uint32_t diss2g : 1;
-			uint32_t reserved : 1;
-		} s;
-		uint32_t dw;
-	} chopconf;
-	static_assert(sizeof(ChopConfU::S) == 4);
-	static_assert(sizeof(ChopConfU) == 4);
-
-	chopconf.dw = 0; // Zero initialise
-
-	chopconf.s.intpol = getIntpolBit(axis, mres);
-	chopconf.s.dedge = default_dedge_bit;
-	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
-	chopconf.s.hstrt = tmc2130_chopper_config[axis].hstr; // initial 4, modified to 5
-	chopconf.s.hend = tmc2130_chopper_config[axis].hend; // original value = 1
-	chopconf.s.fd = 0;
-	chopconf.s.disfdcc = 0;
-	chopconf.s.rndtf = 0; //random off time
-	chopconf.s.chm = 0; //spreadCycle
-	chopconf.s.tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
-	chopconf.s.vsense = 0;
-	chopconf.s.vhighfs = 0;
-	chopconf.s.vhighchm = 0;
-	chopconf.s.sync = 0;
-	chopconf.s.mres = mres;
-
-#ifdef TMC2130_CNSTOFF_E
-	if (axis == E_AXIS) {
-		chopconf.s.hstrt = 0; // fd0..2
-		chopconf.s.fd = 0; // fd3
-		chopconf.s.hend = 0; // sine wave offset
-		chopconf.s.chm = 0; // constant off time mod
-	}
-#endif //TMC2130_CNSTOFF_E
-	if (current_r <= 31)
-	{
-		chopconf.s.vsense = 1;
+	bool vsense = 0;
+	if (current_r <= 31) {
+		vsense = 1;
 	} else {
 		current_r >>= 1;
 		current_h >>= 1;
 	}
+
+	ChopConfU chopconf = ChopConfU(vsense, mres);
+
+	chopconf.s.intpol = getIntpolBit(axis, mres);
+	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
+	chopconf.s.hstrt = tmc2130_chopper_config[axis].hstr; // initial 4, modified to 5
+	chopconf.s.hend = tmc2130_chopper_config[axis].hend; // original value = 1
+	chopconf.s.tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
+
+#ifdef TMC2130_CNSTOFF_E
+	if (axis == E_AXIS) {
+		chopconf.s.hstrt = 0; // fd0..2
+		chopconf.s.hend = 0; // sine wave offset
+	}
+#endif //TMC2130_CNSTOFF_E
 
 	tmc2130_wr_CHOPCONF(axis, chopconf.dw);
 	tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
