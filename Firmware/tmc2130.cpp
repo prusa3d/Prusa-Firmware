@@ -46,31 +46,31 @@ MotorCurrents currents[NUM_AXIS] = {
 
 union ChopConfU {
 	struct __attribute__((packed)) S {
-		uint32_t toff : 4;
-		uint32_t hstrt : 3;
-		uint32_t hend : 4;
+		uint32_t toff : 4;     // Off time and driver enable
+		uint32_t hstrt : 3;    // Hysteresis start value added to HEND
+		uint32_t hend : 4;     // HEND hysteresis low value (chm = 0) or OFFSET sine wave offset (chm = 1)
 		uint32_t fd : 1;
-		uint32_t disfdcc : 1;
-		uint32_t rndtf : 1;
-		uint32_t chm : 1;
-		uint32_t tbl : 2;
-		uint32_t vsense : 1;
-		uint32_t vhighfs : 1;
-		uint32_t vhighchm : 1;
-		uint32_t sync : 4;
-		uint32_t mres : 4;
-		uint32_t intpol : 1;
-		uint32_t dedge : 1;
-		uint32_t diss2g : 1;
-		uint32_t reserved : 1;
+		uint32_t disfdcc : 1;  // Fast decay mode
+		uint32_t rndtf : 1;    // Random TOFF time 
+		uint32_t chm : 1;      // Chopper mode
+		uint32_t tbl : 2;      // Blank time select
+		uint32_t vsense : 1;   // Sense resistor voltage based current scaling
+		uint32_t vhighfs : 1;  // High velocity fullstep selection
+		uint32_t vhighchm : 1; // High velocity chopper mode
+		uint32_t sync : 4;     // PWM synchronization clock
+		uint32_t mres : 4;     // Micro step resolution
+		uint32_t intpol : 1;   // Interpolation to 256 microsteps
+		uint32_t dedge : 1;    // Enable double edgestep pulses
+		uint32_t diss2g : 1;   // Short to GND protection disable
+		uint32_t reserved : 1; // Reserved, set to 0
 		constexpr S(bool vsense, uint8_t mres)
 			: toff(TMC2130_TOFF_XYZ)
 			, hstrt(5)
 			, hend(1)
 			, fd(0)
 			, disfdcc(0)
-			, rndtf(0)
-			, chm(0)
+			, rndtf(0)   // Chopper off time is fixed as set by TOFF
+			, chm(0)     // Standard mode (spreadCycle)
 			, tbl(2)
 			, vsense(vsense)
 			, vhighfs(0)
@@ -79,7 +79,7 @@ union ChopConfU {
 			, mres(mres)
 			, intpol(0)
 			, dedge(default_dedge_bit)
-			, diss2g(0)
+			, diss2g(0)  // Short to GND protection is on
 			, reserved(0) {}
 	} s;
 	uint32_t dw;
