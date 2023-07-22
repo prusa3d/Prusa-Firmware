@@ -1084,10 +1084,10 @@ void setup()
     farm_mode_init();
 
 #ifdef TMC2130
-    if( FarmOrUserECool() ){
-		//increased extruder current (PFW363)
-		tmc2130_current_h[E_AXIS] = TMC2130_CURRENTS_FARM;
-		tmc2130_current_r[E_AXIS] = TMC2130_CURRENTS_FARM;
+    if(FarmOrUserECool()) {
+        //increased extruder current (PFW363)
+        currents[E_AXIS].iRun = TMC2130_CURRENTS_FARM;
+        currents[E_AXIS].iHold = TMC2130_CURRENTS_FARM;
     }
 #endif //TMC2130
 
@@ -4090,7 +4090,7 @@ void process_commands()
 				tmc2130_chopper_config[axis].hstr = chop1 & 7;
 				tmc2130_chopper_config[axis].hend = chop2 & 15;
 				tmc2130_chopper_config[axis].tbl = chop3 & 3;
-				tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+				tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 				//printf_P(_N("TMC_SET_CHOP_%c %d %d %d %d\n"), "xyze"[axis], chop0, chop1, chop2, chop3);
 			}
 		}
@@ -8066,9 +8066,9 @@ Sigma_Exit:
                 }
                 long cur_mA = code_value_long();
                 uint8_t val = tmc2130_cur2val(cur_mA);
-                tmc2130_set_current_h(i, val);
-                tmc2130_set_current_r(i, val);
-                //if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
+                currents[i].iHold = val;
+                currents[i].iRun = val;
+                tmc2130_setup_chopper(i, tmc2130_mres[i]);
             }
         }
 #else //TMC2130
@@ -8140,10 +8140,12 @@ Sigma_Exit:
     */
 	case 911: 
     {
-		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
-		if (code_seen('Y')) tmc2130_set_current_h(1, code_value());
-        if (code_seen('Z')) tmc2130_set_current_h(2, code_value());
-        if (code_seen('E')) tmc2130_set_current_h(3, code_value());
+        for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
+            if (code_seen(axis_codes[axis])) {
+                currents[axis].iHold = code_value_uint8();
+                tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
+          }
+        }
     }
     break;
 
@@ -8162,10 +8164,12 @@ Sigma_Exit:
     */
 	case 912: 
     {
-		if (code_seen('X')) tmc2130_set_current_r(0, code_value());
-		if (code_seen('Y')) tmc2130_set_current_r(1, code_value());
-        if (code_seen('Z')) tmc2130_set_current_r(2, code_value());
-        if (code_seen('E')) tmc2130_set_current_r(3, code_value());
+        for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
+            if (code_seen(axis_codes[axis])) {
+                currents[axis].iRun = code_value_uint8();
+                tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
+            }
+        }
     }
     break;
 

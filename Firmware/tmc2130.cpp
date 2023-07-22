@@ -37,6 +37,13 @@ uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 //running currents for homing
 static uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
 
+MotorCurrents currents[NUM_AXIS] = {
+	MotorCurrents(tmc2130_current_r[0], tmc2130_current_h[0]),
+	MotorCurrents(tmc2130_current_r[1], tmc2130_current_h[1]),
+	MotorCurrents(tmc2130_current_r[2], tmc2130_current_h[2]),
+	MotorCurrents(tmc2130_current_r[3], tmc2130_current_h[3])
+};
+
 union ChopConfU {
 	struct __attribute__((packed)) S {
 		uint32_t toff : 4;
@@ -267,9 +274,6 @@ void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32);
 static void tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval);
 static uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval);
 
-
-void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
-
 uint16_t __tcoolthrs(uint8_t axis)
 {
 	switch (axis)
@@ -301,7 +305,7 @@ static void tmc2130_XYZ_reg_init(uint8_t axis)
 		tmc2130_wr_PWMCONF(axis, pwmconf[axis].dw);
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 	}
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 	tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 }
 
@@ -332,7 +336,7 @@ void tmc2130_init(TMCInitParams params)
 	}
 
     // E axis
-    tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS], tmc2130_current_h[E_AXIS], tmc2130_current_r[E_AXIS]);
+    tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS]);
     tmc2130_wr(E_AXIS, TMC2130_REG_TPOWERDOWN, 0x00000000);
 #ifndef TMC2130_STEALTH_E
     if( ! params.enableECool ){
@@ -420,7 +424,8 @@ void tmc2130_home_enter(uint8_t axes_mask)
 			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[axis]) << 16));
 			tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
-			tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r_home[axis]);
+			currents[axis].iRun = tmc2130_current_r_home[axis];
+			tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
 		}
 	}
@@ -516,17 +521,38 @@ static constexpr bool getIntpolBit([[maybe_unused]]const uint8_t axis, const uin
     return (mres != 0); // intpol to 256 only if microsteps aren't 256
 }
 
-void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
-{
-	bool vsense = 0;
-	if (current_r <= 31) {
-		vsense = 1;
-	} else {
-		current_r >>= 1;
-		current_h >>= 1;
-	}
+static void SetCurrents(const uint8_t axis) {
+    uint8_t iHold = currents[axis].iHold;
+    const uint8_t iRun = currents[axis].iRun;
 
-	ChopConfU chopconf = ChopConfU(vsense, mres);
+    union IHoldRun {
+        struct S {
+            uint8_t iHold;
+            uint8_t iRun;
+            uint16_t iHoldDelay;
+            constexpr S(uint8_t ih, uint8_t ir)
+                : iHold(ih)
+                , iRun(ir)
+                , iHoldDelay(15 & 0x0F) {}
+        } s;
+        uint32_t dw;
+        constexpr IHoldRun(uint8_t ih, uint8_t ir)
+            : s(ih, ir) {}
+    };
+
+    // also, make sure iHold never exceeds iRun at runtime
+    IHoldRun ihold_irun((iHold > iRun ? iRun : iHold) & 0x1f, iRun & 0x1f);
+
+    tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, ihold_irun.dw);
+}
+
+void tmc2130_setup_chopper(uint8_t axis, uint8_t mres)
+{
+	// Update the currents, this will re-calculate the Vsense flag
+	currents[axis] = MotorCurrents(currents[axis].iRun, currents[axis].iHold);
+
+	// Initialise the chopper configuration
+	ChopConfU chopconf = ChopConfU(currents[axis].vSense, mres);
 
 	chopconf.s.intpol = getIntpolBit(axis, mres);
 	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
@@ -535,30 +561,30 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	chopconf.s.tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
 
 	tmc2130_wr_CHOPCONF(axis, chopconf.dw);
-	tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
+	SetCurrents(axis);
 }
 
 void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 {
 //	DBG(_n("tmc2130_set_current_h(axis=%d, current=%d\n"), axis, current);
-	tmc2130_current_h[axis] = current;
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	currents[axis].iHold = current;
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 }
 
 void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 {
 //	DBG(_n("tmc2130_set_current_r(axis=%d, current=%d\n"), axis, current);
-	tmc2130_current_r[axis] = current;
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	currents[axis].iRun = current;
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 }
 
 void tmc2130_print_currents()
 {
 	printf_P(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
-		tmc2130_current_h[0], tmc2130_current_r[0],
-		tmc2130_current_h[1], tmc2130_current_r[1],
-		tmc2130_current_h[2], tmc2130_current_r[2],
-		tmc2130_current_h[3], tmc2130_current_r[3]
+		currents[0].iHold, currents[0].iRun,
+		currents[1].iHold, currents[1].iRun,
+		currents[2].iHold, currents[2].iRun,
+		currents[3].iHold, currents[3].iRun
 	);
 }
 
@@ -731,7 +757,7 @@ void tmc2130_set_res(uint8_t axis, uint16_t res)
 {
 	tmc2130_mres[axis] = tmc2130_usteps2mres(res);
 //	uint32_t u = _micros();
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 //	u = _micros() - u;
 //	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
 }
@@ -858,7 +884,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 {
 	uint8_t pwr = tmc2130_get_pwr(axis);
 	tmc2130_set_pwr(axis, 0);
-	tmc2130_setup_chopper(axis, tmc2130_usteps2mres(256), tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_setup_chopper(axis, tmc2130_usteps2mres(256));
 	tmc2130_goto_step(axis, 0, 2, 100, 256);
 	tmc2130_set_dir(axis, tmc2130_get_inv(axis)?0:1);
 	for (unsigned int i = 0; i <= 255; i++)
@@ -877,7 +903,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 		tmc2130_do_step(axis);
 		delayMicroseconds(100);
 	}
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 	tmc2130_set_pwr(axis, pwr);
 }
 

@@ -2,11 +2,10 @@
 #define TMC2130_H
 
 #include <stdint.h>
+#include "Configuration_var.h"
 
 //mode
 extern uint8_t tmc2130_mode;
-extern uint8_t tmc2130_current_h[4];
-extern uint8_t tmc2130_current_r[4];
 //microstep resolution (0 means 256usteps, 8 means 1ustep
 extern uint8_t tmc2130_mres[4];
 
@@ -60,6 +59,19 @@ typedef struct
 
 extern tmc2130_chopper_config_t tmc2130_chopper_config[NUM_AXIS];
 
+struct MotorCurrents {
+    bool vSense; ///< VSense current scaling
+    uint8_t iRun; ///< Running current
+    uint8_t iHold; ///< Holding current
+
+    constexpr inline __attribute__((always_inline)) MotorCurrents(uint8_t ir, uint8_t ih)
+        : vSense((ir < 32) ? 1 : 0)
+        , iRun((ir < 32) ? ir : (ir >> 1))
+        , iHold((ir < 32) ? ih : (ih >> 1)) {}
+};
+
+extern MotorCurrents currents[NUM_AXIS];
+
 //initialize tmc2130
 
 struct TMCInitParams {
@@ -94,7 +106,7 @@ extern void tmc2130_sg_measure_start(uint8_t axis);
 //stop current stallguard measuring and report result
 extern uint16_t tmc2130_sg_measure_stop();
 
-extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
+extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres);
 
 //set holding current for any axis (M911)
 extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);

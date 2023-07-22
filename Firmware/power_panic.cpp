@@ -61,10 +61,12 @@ void uvlo_() {
 
     // Minimise Z and E motor currents (Hold and Run)
 #ifdef TMC2130
-    tmc2130_set_current_h(Z_AXIS, 20);
-    tmc2130_set_current_r(Z_AXIS, 20);
-    tmc2130_set_current_h(E_AXIS, 20);
-    tmc2130_set_current_r(E_AXIS, 20);
+    currents[Z_AXIS].iHold = 20;
+    currents[Z_AXIS].iRun = 20;
+    tmc2130_setup_chopper(Z_AXIS, tmc2130_mres[Z_AXIS]);
+    currents[E_AXIS].iHold = 20;
+    currents[E_AXIS].iRun = 20;
+    tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS]);
 #endif //TMC2130
 
     if (!sd_print_saved_in_ram && !isPartialBackupAvailable)
@@ -225,8 +227,9 @@ static void uvlo_tiny() {
     disable_e0();
 
 #ifdef TMC2130
-    tmc2130_set_current_h(Z_AXIS, 20);
-    tmc2130_set_current_r(Z_AXIS, 20);
+    currents[Z_AXIS].iHold = 20;
+    currents[Z_AXIS].iRun = 20;
+    tmc2130_setup_chopper(Z_AXIS, tmc2130_mres[Z_AXIS]);
 #endif //TMC2130
 
     // Stop all heaters
