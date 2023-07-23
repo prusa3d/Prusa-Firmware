@@ -22,6 +22,11 @@ enum : uint8_t {
     FILAMENT_UNKNOWN = 0xffU
 };
 
+enum MotorMode : uint8_t {
+    Stealth,
+    Normal
+};
+
 struct Version {
     uint8_t major, minor, build;
 };
@@ -151,6 +156,9 @@ public:
     /// Issue a "button" click into the MMU - to be used from Error screens of the MMU
     /// to select one of the 3 possible options to resolve the issue
     void Button(uint8_t index);
+
+    /// Issue a Mode change on the MMU side (Normal or Silent mode)
+    void Mode(uint8_t mode);
 
     /// Issue an explicit "homing" command into the MMU
     void Home(uint8_t mode);

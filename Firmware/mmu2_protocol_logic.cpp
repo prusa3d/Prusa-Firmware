@@ -604,6 +604,10 @@ void ProtocolLogic::Button(uint8_t index) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Button, index));
 }
 
+void ProtocolLogic::Mode(uint8_t mode) {
+    PlanGenericRequest(RequestMsg(RequestMsgCodes::Mode, mode));
+}
+
 void ProtocolLogic::Home(uint8_t mode) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Home, mode));
 }

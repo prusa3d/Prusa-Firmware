@@ -1118,14 +1118,15 @@ void setup()
 	SERIAL_ECHO_START;
 	puts_P(PSTR(" " FW_VERSION_FULL));
 
-	// by default the MMU shall remain disabled - PFW-1418
-	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
-		MMU2::mmu2.Start();
-	}
-	MMU2::mmu2.Status();
-	SpoolJoin::spooljoin.initSpoolJoinStatus();
-
-	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
+    // by default the MMU shall remain disabled - PFW-1418
+    if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0))
+    {
+        MMU2::mmu2.Start();
+        uint8_t mode = eeprom_init_default_byte((uint8_t*)EEPROM_MMU_STEALTH, MMU2::Normal);
+        MMU2::mmu2.Mode(mode ? MMU2::Stealth : MMU2::Normal);
+    }
+    MMU2::mmu2.Status();
+    SpoolJoin::spooljoin.initSpoolJoinStatus();
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
@@ -1458,7 +1459,6 @@ void setup()
 
 	//mbl_mode_init();
 	mbl_settings_init();
-	eeprom_init_default_byte((uint8_t*)EEPROM_MMU_STEALTH, 1);
 
 #if (!defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	setup_fan_interrupt();

@@ -606,6 +606,13 @@ void MMU2::Button(uint8_t index) {
     logic.Button(index);
 }
 
+void MMU2::Mode(uint8_t mode) {
+    logic.Mode(mode);
+
+    // Wait for the command to report as finished
+    (void) manage_response(false, false);
+}
+
 void MMU2::Home(uint8_t mode) {
     logic.Home(mode);
 }
