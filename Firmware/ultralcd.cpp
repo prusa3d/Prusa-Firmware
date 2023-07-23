@@ -5224,7 +5224,11 @@ static void lcd_main_menu()
 
     if ( ! ( printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
         if (MMU2::mmu2.Enabled()) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
+            if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
+                // The MMU 'Load filament' state machine will reject the command if any 
+                // filament sensor is reporting a detected filament
+                MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
+            }
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), lcd_mmuLoadFilament);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
             MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
