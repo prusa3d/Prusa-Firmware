@@ -8065,7 +8065,7 @@ Sigma_Exit:
                     SERIAL_ECHOLNPGM(", M907 E ignored");
                     continue;
                 }
-                long cur_mA = code_value_long();
+                float cur_mA = code_value();
                 uint8_t val = tmc2130_cur2val(cur_mA);
                 currents[i].iHold = val;
                 currents[i].iRun = val;
