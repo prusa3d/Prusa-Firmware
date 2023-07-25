@@ -8210,8 +8210,8 @@ Sigma_Exit:
     break;
 
     /*!
-	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>
-	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+    ### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>
+    Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     #### Usage
     
         M916 [ X | Y | Z | E ]
@@ -8222,20 +8222,20 @@ Sigma_Exit:
     - `Z` - Z stepper driver stallguard sensitivity threshold value
     - `E` - Extruder stepper driver stallguard sensitivity threshold value
     */
-	case 916:
+    case 916:
     {
-		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
-		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
-		if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
-		if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
-		for (uint8_t a = X_AXIS; a <= E_AXIS; a++)
-			printf_P(_N("tmc2130_sg_thr[%c]=%d\n"), "XYZE"[a], tmc2130_sg_thr[a]);
+        for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
+            if (code_seen(axis_codes[axis])) {
+                    tmc2130_sg_thr[axis] = code_value_uint8();
+            }
+            printf_P(_N("tmc2130_sg_thr[%c]=%d\n"), "XYZE"[axis], tmc2130_sg_thr[axis]);
+        }
     }
     break;
 
     /*!
-	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#M917:_Set_TMC2130_PWM_amplitude_offset_.28pwm_ampl.29">M917: Set TMC2130 PWM amplitude offset (pwm_ampl)</a>
-	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+    ### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#M917:_Set_TMC2130_PWM_amplitude_offset_.28pwm_ampl.29">M917: Set TMC2130 PWM amplitude offset (pwm_ampl)</a>
+    Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     #### Usage
     
         M917 [ X | Y | Z | E ]
@@ -8246,18 +8246,19 @@ Sigma_Exit:
     - `Z` - Z stepper driver PWM amplitude offset value
     - `E` - Extruder stepper driver PWM amplitude offset value
     */
-	case 917:
+    case 917:
     {
-		if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
-		if (code_seen('Y')) tmc2130_set_pwm_ampl(1, code_value());
-        if (code_seen('Z')) tmc2130_set_pwm_ampl(2, code_value());
-        if (code_seen('E')) tmc2130_set_pwm_ampl(3, code_value());
+        for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
+            if (code_seen(axis_codes[axis])) {
+                    tmc2130_set_pwm_ampl(axis, code_value_uint8());
+            }
+        }
     }
     break;
 
     /*!
-	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#M918:_Set_TMC2130_PWM_amplitude_gradient_.28pwm_grad.29">M918: Set TMC2130 PWM amplitude gradient (pwm_grad)</a>
-	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+    ### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#M918:_Set_TMC2130_PWM_amplitude_gradient_.28pwm_grad.29">M918: Set TMC2130 PWM amplitude gradient (pwm_grad)</a>
+    Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     #### Usage
     
         M918 [ X | Y | Z | E ]
@@ -8268,12 +8269,13 @@ Sigma_Exit:
     - `Z` - Z stepper driver PWM amplitude gradient value
     - `E` - Extruder stepper driver PWM amplitude gradient value
     */
-	case 918:
+    case 918:
     {
-		if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
-		if (code_seen('Y')) tmc2130_set_pwm_grad(1, code_value());
-        if (code_seen('Z')) tmc2130_set_pwm_grad(2, code_value());
-        if (code_seen('E')) tmc2130_set_pwm_grad(3, code_value());
+        for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
+            if (code_seen(axis_codes[axis])) {
+                    tmc2130_set_pwm_grad(axis, code_value_uint8());
+            }
+        }
     }
     break;
 
