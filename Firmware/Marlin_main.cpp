@@ -7332,7 +7332,7 @@ Sigma_Exit:
 
 #ifdef THERMAL_MODEL
     /*!
-    ### M310 - Thermal model settings <a href="https://reprap.org/wiki/G-code#M310:_Themal_model_settings">M310: Thermal model settings</a>
+    ### M310 - Thermal model settings <a href="https://reprap.org/wiki/G-code#M310:_Thermal_model_settings">M310: Thermal model settings</a>
     #### Usage
 
         M310                                           ; report values

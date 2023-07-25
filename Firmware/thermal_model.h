@@ -27,10 +27,10 @@ struct model_data
 {
     // temporary buffers
     float dT_lag_buf[THERMAL_MODEL_MAX_LAG_SIZE]; // transport delay buffer
-    uint8_t dT_lag_size = 0;                   // transport delay buffer size
-    uint8_t dT_lag_idx = 0;                    // transport delay buffer index
-    float dT_err_prev = 0;                     // previous temperature delta error
-    float T_prev = 0;                          // last temperature extruder
+    uint8_t dT_lag_size = 0;                      // transport delay buffer size
+    uint8_t dT_lag_idx = 0;                       // transport delay buffer index
+    float dT_err_prev = 0;                        // previous temperature delta error
+    float T_prev = 0;                             // last temperature extruder
 
     // configurable parameters
     float P;                               // heater power (W)
