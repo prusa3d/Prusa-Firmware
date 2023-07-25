@@ -180,6 +180,7 @@ bool mesh_bed_leveling_flag = false;
 uint32_t total_filament_used;
 HeatingStatus heating_status;
 bool loading_flag = false;
+bool autoload_flag = false;
 int fan_edge_counter[2];
 int fan_speed[2];
 
@@ -3574,6 +3575,11 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
 
         current_position[E_AXIS] += fastLoadLength;
         plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
+
+        if (autoload_flag) { // backwards compatibility for 3.12 and older FW
+          raise_z_above(MIN_Z_FOR_LOAD);
+          autoload_flag = false;
+        }
 
         load_filament_final_feed(); // slow sequence
         st_synchronize();
@@ -8409,7 +8415,7 @@ Sigma_Exit:
 
         // Z lift. For safety only allow positive values
         if (code_seen('Z')) z_target = fabs(code_value());
-        else raise_z_above(MIN_Z_FOR_LOAD); // backwards compatibility for 3.12 and older FW
+        else autoload_flag = true; //trigger raise_z_above for backwards compatibility on 3.12 and older FW
 
         // Raise the Z axis
         float delta = raise_z(z_target);

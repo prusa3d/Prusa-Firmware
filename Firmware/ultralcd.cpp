@@ -1756,66 +1756,65 @@ void lcd_print_target_temps_first_line(){
     }
 }
 
-static void mFilamentPrompt()
-{
-uint8_t nLevel;
+static void mFilamentPrompt() {
+    uint8_t nLevel;
 
-lcd_print_target_temps_first_line();
-lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
-lcd_set_cursor(0,2);
-switch(eFilamentAction)
-     {
-     case FilamentAction::Load:
-     case FilamentAction::AutoLoad:
-     case FilamentAction::MmuLoad:
-     case FilamentAction::MmuLoadingTest:
-          lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
-          break;
-     case FilamentAction::UnLoad:
-     case FilamentAction::MmuUnLoad:
-          lcd_puts_P(_i("to unload filament"));   ////MSG_TO_UNLOAD_FIL c=20
-          break;
-     case FilamentAction::MmuEject:
-     case FilamentAction::MmuCut:
-     case FilamentAction::None:
-     case FilamentAction::Preheat:
-     case FilamentAction::Lay1Cal:
-          break;
-     }
+    lcd_print_target_temps_first_line();
+    lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
+    lcd_set_cursor(0,2);
+    switch(eFilamentAction) {
+        case FilamentAction::Load:
+        case FilamentAction::AutoLoad:
+        case FilamentAction::MmuLoad:
+        case FilamentAction::MmuLoadingTest:
+            lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
+            break;
+        case FilamentAction::UnLoad:
+        case FilamentAction::MmuUnLoad:
+            lcd_puts_P(_i("to unload filament"));   ////MSG_TO_UNLOAD_FIL c=20
+            break;
+        case FilamentAction::MmuEject:
+        case FilamentAction::MmuCut:
+        case FilamentAction::None:
+        case FilamentAction::Preheat:
+        case FilamentAction::Lay1Cal:
+            break;
+    }
     if(lcd_clicked()
 #ifdef FILAMENT_SENSOR
 /// @todo leptun - add this as a specific retest item
         || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
 #endif //FILAMENT_SENSOR
     ) {
-     nLevel=2;
-     if(!bFilamentPreheatState) {
-        nLevel++;
-     }
-     menu_back(nLevel);
-     switch(eFilamentAction)
-          {
-          case FilamentAction::AutoLoad:
-               eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
-               // FALLTHRU
-          case FilamentAction::Load:
-               loading_flag=true;
-               enquecommand_P(MSG_M701);      // load filament
-               break;
-          case FilamentAction::UnLoad:
-               enquecommand_P(MSG_M702);      // unload filament
-               break;
-          case FilamentAction::MmuLoad:
-          case FilamentAction::MmuLoadingTest:
-          case FilamentAction::MmuUnLoad:
-          case FilamentAction::MmuEject:
-          case FilamentAction::MmuCut:
-          case FilamentAction::None:
-          case FilamentAction::Preheat:
-          case FilamentAction::Lay1Cal:
-               break;
-          }
-     }
+        nLevel=2;
+        if(!bFilamentPreheatState) {
+            nLevel++;
+        }
+        menu_back(nLevel);
+        switch(eFilamentAction) {
+            case FilamentAction::AutoLoad:
+                eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
+                // FALLTHRU
+            case FilamentAction::Load:
+                loading_flag=true;
+                raise_z_above(MIN_Z_FOR_LOAD);
+                enquecommand_P(MSG_M701);      // load filament
+                break;
+            case FilamentAction::UnLoad:
+                raise_z_above(MIN_Z_FOR_UNLOAD);
+                enquecommand_P(MSG_M702);      // unload filament
+                break;
+            case FilamentAction::MmuLoad:
+            case FilamentAction::MmuLoadingTest:
+            case FilamentAction::MmuUnLoad:
+            case FilamentAction::MmuEject:
+            case FilamentAction::MmuCut:
+            case FilamentAction::None:
+            case FilamentAction::Preheat:
+            case FilamentAction::Lay1Cal:
+                break;
+        }
+    }
 }
 
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
@@ -1871,16 +1870,19 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             }
             break;
         case FilamentAction::MmuLoad:
+            raise_z_above(MIN_Z_FOR_LOAD);
             nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             menu_submenu(mmu_load_to_nozzle_menu, true);
             break;
         case FilamentAction::MmuLoadingTest:
+            raise_z_above(MIN_Z_FOR_LOAD);
             nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             menu_submenu(mmu_loading_test_menu, true);
             break;
         case FilamentAction::MmuUnLoad:
+            raise_z_above(MIN_Z_FOR_UNLOAD);
             nLevel = bFilamentPreheatState ? 1 : 2;
             menu_back(nLevel);
             MMU2::mmu2.unload();
@@ -1916,7 +1918,6 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             // modified elsewhere and needs to be redrawn in full.
 
             // reset bFilamentWaitingFlag immediately to avoid re-entry from raise_z_above()!
-            bool once = !bFilamentWaitingFlag;
             bFilamentWaitingFlag = true;
 
             // also force-enable lcd_draw_update (might be 0 when called from outside a menu)
@@ -1933,12 +1934,10 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::MmuLoad:
             case FilamentAction::MmuLoadingTest:
                 lcd_puts_P(_i("Preheating to load")); ////MSG_PREHEATING_TO_LOAD c=20
-                if (once) raise_z_above(MIN_Z_FOR_LOAD);
                 break;
             case FilamentAction::UnLoad:
             case FilamentAction::MmuUnLoad:
                 lcd_puts_P(_i("Preheating to unload")); ////MSG_PREHEATING_TO_UNLOAD c=20
-                if (once) raise_z_above(MIN_Z_FOR_UNLOAD);
                 break;
             case FilamentAction::MmuEject:
                 lcd_puts_P(_i("Preheating to eject")); ////MSG_PREHEATING_TO_EJECT c=20
