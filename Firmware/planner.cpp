@@ -960,14 +960,40 @@ Having the real displacement of the head, we can calculate the total movement le
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef SLOWDOWN
-  //FIXME Vojtech: Why moves_queued > 1? Why not >=1?
-  // Can we somehow differentiate the filling of the buffer at the start of a g-code from a buffer draining situation?
-  if (moves_queued > 1 && moves_queued < (BLOCK_BUFFER_SIZE >> 1)) {
-      // segment time in micro seconds
-      unsigned long segment_time = lround(1000000.0/inverse_second);
-      if (segment_time < cs.minsegmenttime)
-          // buffer is draining, add extra time.  The amount of time added increases if the buffer is still emptied more.
-          inverse_second=1000000.0/(segment_time+lround(2*(cs.minsegmenttime-segment_time)/moves_queued));
+  {
+    static_assert(BLOCK_BUFFER_SIZE == 16, "Regulation constants hard-coded for exact BLOCK_BUFFER_SIZE.");
+    static float slowdown_multiplier = 1.f;
+    static uint8_t last_moves_queued = 0;
+    static bool const_rate_mode = false;
+    const float maximum_slowdown_multiplier = 1000000.0f / (inverse_second * cs.minsegmenttime);
+
+    if (const_rate_mode) {
+      if (maximum_slowdown_multiplier > 1.f) {
+        slowdown_multiplier = 1.f;
+        const_rate_mode = false;
+      } else {
+        const float diff = slowdown_multiplier - maximum_slowdown_multiplier;
+        if (diff > 0.12f || diff < -0.12f) slowdown_multiplier = maximum_slowdown_multiplier;
+      }
+    }
+    else if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)
+        && (static_cast<unsigned long>(lround(1000000.0f / (inverse_second * slowdown_multiplier))) < cs.minsegmenttime)) {
+      slowdown_multiplier -= 0.0833f * (last_moves_queued - moves_queued);
+      if (slowdown_multiplier < maximum_slowdown_multiplier) {
+        slowdown_multiplier = maximum_slowdown_multiplier;
+        const_rate_mode = true;
+      }
+      else if ((slowdown_multiplier - maximum_slowdown_multiplier) < 0.12f) const_rate_mode = true;
+    }
+    else if ((maximum_slowdown_multiplier - slowdown_multiplier) > 0.12f) {
+      slowdown_multiplier = maximum_slowdown_multiplier;
+    }
+    else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
+      slowdown_multiplier += 0.0833f;
+    }
+    if (slowdown_multiplier > 1.f) slowdown_multiplier = 1.f;
+    if (block->steps_e.wide != 0) inverse_second *= slowdown_multiplier;
+    last_moves_queued = moves_queued;
   }
 #endif // SLOWDOWN
 
