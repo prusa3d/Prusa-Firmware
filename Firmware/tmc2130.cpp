@@ -870,7 +870,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data)
 		if (mscnt == i)
 			printf_P(PSTR("%d\t%d\n"), i, curA);
 		else //TODO - remove this check
-			printf_P(PSTR("!! (i=%d MSCNT=%d)\n"), i, mscnt);
+			printf_P(PSTR("! (i=%d MSCNT=%d)\n"), i, mscnt);
 		if (data) *(data++) = curA;
 		tmc2130_do_step(axis);
 		delayMicroseconds(100);
