@@ -3335,7 +3335,7 @@ static void lcd_crash_mode_info()
 	if ((tim + 1000) < _millis())
 	{
 		lcd_clear();
-		fputs_P(_i("Crash detection can\nbe turned on only in\nNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+		lcd_puts_P(_i("Crash detection can\nbe turned on only in\nNormal mode"));////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();
@@ -3348,7 +3348,7 @@ static void lcd_crash_mode_info2()
 	if ((tim + 1000) < _millis())
 	{
 		lcd_clear();
-		fputs_P(_i("WARNING:\nCrash detection\ndisabled in\nStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+		lcd_puts_P(_i("WARNING:\nCrash detection\ndisabled in\nStealth mode"));////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();
