@@ -4597,8 +4597,7 @@ void process_commands()
             SERIAL_PROTOCOLPGM(" Y: ");
             SERIAL_PROTOCOL(current_position[Y_AXIS]);
             SERIAL_PROTOCOLPGM(" Z: ");
-            SERIAL_PROTOCOL(current_position[Z_AXIS]);
-            SERIAL_PROTOCOLPGM("\n");
+            SERIAL_PROTOCOLLN(current_position[Z_AXIS]);
 
             clean_up_after_endstop_move(l_feedmultiply);
         }
@@ -7217,8 +7216,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLPGM(" i:");
         SERIAL_PROTOCOL(unscalePID_i(cs.Ki));
         SERIAL_PROTOCOLPGM(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(cs.Kd));
-        SERIAL_PROTOCOLLN();
+        SERIAL_PROTOCOLLN(unscalePID_d(cs.Kd));
       }
       break;
     #endif //PIDTEMP
