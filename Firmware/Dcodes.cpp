@@ -822,7 +822,7 @@ void dcode_2130()
 			}
 			else if (strcmp(strchr_pointer + 7, "wave") == 0)
 			{
-				tmc2130_get_wave(axis, 0, stdout);
+				tmc2130_get_wave(axis, 0);
 			}
 		}
 		else if (strchr_pointer[1+5] == '!')

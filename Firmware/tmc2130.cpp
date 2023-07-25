@@ -855,7 +855,7 @@ void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_u
 	}
 }
 
-void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
+void tmc2130_get_wave(uint8_t axis, uint8_t* data)
 {
 	uint8_t pwr = tmc2130_get_pwr(axis);
 	tmc2130_set_pwr(axis, 0);
@@ -867,13 +867,10 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 		uint32_t val = tmc2130_rd_MSCURACT(axis);
 		uint16_t mscnt = tmc2130_rd_MSCNT(axis);
 		int curA = (val & 0xff) | ((val << 7) & 0x8000);
-		if (stream)
-		{
-			if (mscnt == i)
-				fprintf_P(stream, PSTR("%d\t%d\n"), i, curA);
-			else //TODO - remove this check
-				fprintf_P(stream, PSTR("!! (i=%d MSCNT=%d)\n"), i, mscnt);
-		}
+		if (mscnt == i)
+			printf_P(PSTR("%d\t%d\n"), i, curA);
+		else //TODO - remove this check
+			printf_P(PSTR("!! (i=%d MSCNT=%d)\n"), i, mscnt);
 		if (data) *(data++) = curA;
 		tmc2130_do_step(axis);
 		delayMicroseconds(100);

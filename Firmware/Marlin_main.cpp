@@ -898,7 +898,8 @@ void update_sec_lang_from_external_flash()
 		if (lang_get_header(lang, &header, &src_addr))
 		{
 			lcd_puts_at_P(1,0,PSTR("Language update"));
-			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
+			for (uint8_t i = 0; i < state; i++)
+				lcd_print('.');
 			_delay(100);
 			boot_reserved = (boot_reserved & 0xF8) | ((state + 1) & 0x07);
 			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
@@ -1441,7 +1442,7 @@ void setup()
 	uint16_t sec_lang_code = lang_get_code(1);
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
-	lang_print_sec_lang(uartout);
+	lang_print_sec_lang();
 #endif //DEBUG_SEC_LANG
 
 #endif //(LANG_MODE != 0)

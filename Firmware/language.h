@@ -171,7 +171,7 @@ extern uint8_t lang_is_selected(void);
 
 #ifdef DEBUG_SEC_LANG
 extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
-extern uint16_t lang_print_sec_lang(FILE* out);
+extern uint16_t lang_print_sec_lang();
 #endif //DEBUG_SEC_LANG
 
 extern void lang_boot_update_start(uint8_t lang);
