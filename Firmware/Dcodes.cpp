@@ -3,6 +3,7 @@
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
+#include "util.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
 
