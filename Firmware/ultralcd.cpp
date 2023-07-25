@@ -2686,7 +2686,7 @@ void pid_extruder()
 	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=20
 	pid_temp += lcd_encoder;
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
-	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
+	else if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
 	lcd_encoder = 0;
 	lcd_set_cursor(1, 2);
 	lcd_printf_P(PSTR("%3u"), pid_temp);
