@@ -175,17 +175,17 @@ void lcd_hw_setup_menu(void);                     // NOT static due to using ins
 
 enum class FilamentAction : uint_least8_t
 {
-    None, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+    None, // no filament action is taking place
     Load,
-    AutoLoad,
+    AutoLoad, // triggered by insertion, cancellable until it transitions to Load
     UnLoad,
     MmuLoad,
     MmuUnLoad,
     MmuEject,
     MmuCut,
     MmuLoadingTest,
-    Preheat,
-    Lay1Cal,
+    Preheat, // triggered by preheat (cancellable)
+    Lay1Cal, // triggered by 1st layer calibration (cancellable)
 };
 
 extern FilamentAction eFilamentAction;

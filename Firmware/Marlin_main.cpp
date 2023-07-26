@@ -179,7 +179,6 @@ bool mesh_bed_leveling_flag = false;
 
 uint32_t total_filament_used;
 HeatingStatus heating_status;
-bool loading_flag = false;
 int fan_edge_counter[2];
 int fan_speed[2];
 
@@ -513,9 +512,8 @@ bool __attribute__((noinline)) printJobOngoing() {
 bool __attribute__((noinline)) printer_active() {
     return printJobOngoing()
         || isPrintPaused
-        || (custom_message_type == CustomMsg::TempCal)
         || saved_printing
-        || (lcd_commands_type == LcdCommands::Layer1Cal)
+        || (lcd_commands_type != LcdCommands::Idle)
         || MMU2::mmu2.MMU_PRINT_SAVED()
         || homing_flag
         || mesh_bed_leveling_flag;
@@ -3581,13 +3579,12 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
 
         Sound_MakeCustom(50, 500, false);
 
-        if (!farm_mode && loading_flag) {
+        if (!farm_mode && (eFilamentAction != FilamentAction::None)) {
             lcd_load_filament_color_check();
         }
         lcd_update_enable(true);
         lcd_update(2);
         lcd_setstatuspgm(MSG_WELCOME);
-        loading_flag = false;
         custom_message_type = CustomMsg::Status;
     }
 

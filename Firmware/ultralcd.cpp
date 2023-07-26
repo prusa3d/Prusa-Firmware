@@ -1796,10 +1796,10 @@ switch(eFilamentAction)
      switch(eFilamentAction)
           {
           case FilamentAction::AutoLoad:
-               eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
+               // loading no longer cancellable
+               eFilamentAction = FilamentAction::Load;
                // FALLTHRU
           case FilamentAction::Load:
-               loading_flag=true;
                enquecommand_P(MSG_M701);      // load filament
                break;
           case FilamentAction::UnLoad:
@@ -1816,6 +1816,17 @@ switch(eFilamentAction)
                break;
           }
      }
+}
+
+void mFilamentBack()
+{
+    if (eFilamentAction == FilamentAction::AutoLoad ||
+        eFilamentAction == FilamentAction::Preheat ||
+        eFilamentAction == FilamentAction::Lay1Cal)
+    {
+        // filament action has been cancelled
+        eFilamentAction = FilamentAction::None;
+    }
 }
 
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
@@ -1860,14 +1871,16 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             {
                 nLevel = bFilamentPreheatState ? 1 : 2;
                 menu_back(nLevel);
-                if ((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad))
-                {
-                    loading_flag = true;
-                    enquecommand_P(MSG_M701); // load filament
-                    if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
+
+                if (eFilamentAction == FilamentAction::AutoLoad) {
+                    // loading no longer cancellable
+                    eFilamentAction = FilamentAction::Load;
                 }
-                if (eFilamentAction == FilamentAction::UnLoad)
-                enquecommand_P(MSG_M702); // unload filament
+
+                if (eFilamentAction == FilamentAction::Load)
+                    enquecommand_P(MSG_M701); // load filament
+                else if (eFilamentAction == FilamentAction::UnLoad)
+                    enquecommand_P(MSG_M702); // unload filament
             }
             break;
         case FilamentAction::MmuLoad:
@@ -1968,7 +1981,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 menu_back();
             }
             menu_back();
-            if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
+            mFilamentBack();
         }
     }
 }
@@ -2042,16 +2055,6 @@ static void mFilamentItem_PVB()
 {
     bFilamentPreheatState = false;
     mFilamentItem(PVB_PREHEAT_HOTEND_TEMP, PVB_PREHEAT_HPB_TEMP);
-}
-
-void mFilamentBack()
-{
-    if (eFilamentAction == FilamentAction::AutoLoad ||
-            eFilamentAction == FilamentAction::Preheat ||
-            eFilamentAction == FilamentAction::Lay1Cal)
-    {
-        eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
-    }
 }
 
 void lcd_generic_preheat_menu()
@@ -3678,13 +3681,14 @@ static void lcd_wizard_load() {
         // NOTE: a full screen message showing which filament is being inserted
         // is performed by M701. For this reason MSG_LOADING_FILAMENT is not
         // used here when a MMU is used.
+        eFilamentAction = FilamentAction::MmuLoad;
     } else {
         lcd_show_fullscreen_message_and_wait_P(
             _i("Please insert filament into the extruder, then press the knob to load it.")); ////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
         lcd_update_enable(false);
         lcd_clear();
         lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
-        loading_flag = true;
+        eFilamentAction = FilamentAction::Load;
     }
 
     // When MMU is disabled P parameter is ignored
@@ -5179,9 +5183,9 @@ static void lcd_main_menu()
     }
 #endif
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
-    if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal) {
+    if (card.cardOK || lcd_commands_type != LcdCommands::Idle) {
         if (!card.isFileOpen()) {
-            if (!usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+            if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
                 bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
                 MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
             }
@@ -5198,7 +5202,7 @@ static void lcd_main_menu()
     }
 #endif //SDSUPPORT
 
-    if(!isPrintPaused && !printJobOngoing() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+    if(!isPrintPaused && !printJobOngoing() && (lcd_commands_type == LcdCommands::Idle)) {
         if (!farm_mode) {
             const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
             const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
@@ -5208,7 +5212,7 @@ static void lcd_main_menu()
         }
     }
 
-    if ( ! ( printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
+    if ( ! ( printJobOngoing() || (lcd_commands_type != LcdCommands::Idle) || (eFilamentAction != FilamentAction::None) || Stopped ) ) {
         if (MMU2::mmu2.Enabled()) {
             if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
                 // The MMU 'Load filament' state machine will reject the command if any 
@@ -5239,7 +5243,7 @@ static void lcd_main_menu()
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
-    if (!usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+    if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
     }
 
@@ -6913,7 +6917,8 @@ static bool check_file(const char* filename) {
 
 static void menu_action_sdfile(const char* filename)
 {
-  loading_flag = false;
+  if(eFilamentAction != FilamentAction::None) return;
+
   char cmd[30];
   char* c;
   bool result = true;
