@@ -11,8 +11,8 @@
 #define PRINTER_TYPE PRINTER_MK3S
 #define PRINTER_NAME PRINTER_MK3S_NAME
 #define PRINTER_NAME_ALTERNATE PRINTER_MK3_NAME //the other similar printer to this.
-#define PRINTER_MMU_TYPE PRINTER_MK3S_MMU2
-#define PRINTER_MMU_NAME PRINTER_MK3S_MMU2_NAME
+#define PRINTER_MMU_TYPE PRINTER_MK3S_MMU3
+#define PRINTER_MMU_NAME PRINTER_MK3S_MMU3_NAME
 #define FILAMENT_SIZE "1_75mm_MK3S"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -40,9 +40,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-//#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
-//#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,560}
 
 // Endstop inverting
 #define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
@@ -362,7 +360,7 @@
 #define FILAMENTCHANGE_YPOS 0
 #define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
-#define FILAMENTCHANGE_FINALRETRACT -80
+#define FILAMENTCHANGE_FINALRETRACT 0
 
 #define FILAMENTCHANGE_FIRSTFEED 70 //E distance in mm for fast filament loading sequence used used in filament change (M600)
 #define FILAMENTCHANGE_FINALFEED 25 //E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701) 
@@ -390,26 +388,26 @@
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 // model-based temperature check
-#define TEMP_MODEL 1              // enable model-based temperature checks
-#define TEMP_MODEL_DEBUG 1        // extended runtime logging
+#define THERMAL_MODEL 1              // enable model-based temperature checks
+#define THERMAL_MODEL_DEBUG 1        // extended runtime logging
 
-#define TEMP_MODEL_CAL_C_low 5    // C estimation lower limit
-#define TEMP_MODEL_CAL_C_high 20  // C estimation upper limit
-#define TEMP_MODEL_CAL_C_thr 0.01 // C estimation iteration threshold
-#define TEMP_MODEL_CAL_C_itr 30   // C estimation iteration limit
+#define THERMAL_MODEL_CAL_C_low 5    // C estimation lower limit
+#define THERMAL_MODEL_CAL_C_high 20  // C estimation upper limit
+#define THERMAL_MODEL_CAL_C_thr 0.01 // C estimation iteration threshold
+#define THERMAL_MODEL_CAL_C_itr 30   // C estimation iteration limit
 
-#define TEMP_MODEL_CAL_R_low 5    // R estimation lower limit
-#define TEMP_MODEL_CAL_R_high 50  // R estimation upper limit
-#define TEMP_MODEL_CAL_R_thr 0.01 // R estimation iteration threshold
-#define TEMP_MODEL_CAL_R_itr 30   // R estimation iteration limit
+#define THERMAL_MODEL_CAL_R_low 5    // R estimation lower limit
+#define THERMAL_MODEL_CAL_R_high 50  // R estimation upper limit
+#define THERMAL_MODEL_CAL_R_thr 0.01 // R estimation iteration threshold
+#define THERMAL_MODEL_CAL_R_itr 30   // R estimation iteration limit
 
-#define TEMP_MODEL_CAL_T_low 50   // Default calibration cooling temperature (C)
-#define TEMP_MODEL_CAL_T_high 230 // Default calibration working temperature (C)
+#define THERMAL_MODEL_CAL_T_low 50   // Default calibration cooling temperature (C)
+#define THERMAL_MODEL_CAL_T_high 230 // Default calibration working temperature (C)
 
-#define TEMP_MODEL_Ta_corr -7     // Default ambient temperature correction
+#define THERMAL_MODEL_Ta_corr -7     // Default ambient temperature correction
 
-#include "temp_model/e3d_v6.h"
-#define TEMP_MODEL_DEFAULT E3D_V6 // Default model parameters
+#include "thermal_model/e3d_v6.h"
+#define THERMAL_MODEL_DEFAULT E3D_V6 // Default model parameters
 
 
 /*------------------------------------
@@ -599,9 +597,6 @@
 
 #define MAX_BED_TEMP_CALIBRATION 50
 #define MAX_HOTEND_TEMP_CALIBRATION 50
-
-#define MAX_E_STEPS_PER_UNIT 250
-#define MIN_E_STEPS_PER_UNIT 100
 
 #define Z_BABYSTEP_MIN -3999
 #define Z_BABYSTEP_MAX 0

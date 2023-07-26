@@ -535,7 +535,7 @@ void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us
 /// moves X, Y, Z one after each other
 /// starts and ends at 0 speed
 void go_manhattan(int16_t x, int16_t y, int16_t z, int16_t acc, uint16_t min_delay_us){
-	int32_t length;
+	int16_t length;
 
 	// DBG(_n("x %d -> %d, "), x, _X);
 	length = x - _X;

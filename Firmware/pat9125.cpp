@@ -100,10 +100,6 @@ static void pat9125_wr_reg(uint8_t addr, uint8_t data);
 static uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data);
 static uint8_t pat9125_wr_seq(const uint8_t* seq);
 
-extern FILE _uartout;
-#define uartout (&_uartout)
-
-
 uint8_t pat9125_probe()
 {
 #if defined(PAT9125_SWI2C)

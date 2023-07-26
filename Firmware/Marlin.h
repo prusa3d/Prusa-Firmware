@@ -279,7 +279,6 @@ extern uint32_t start_pause_print; // milliseconds
 extern ShortTimer usb_timer;
 extern bool processing_tcode;
 extern bool homing_flag;
-extern bool loading_flag;
 extern uint32_t total_filament_used; // mm/100 or 10um
 
 /// @brief Save print statistics to EEPROM
@@ -298,14 +297,18 @@ extern bool mesh_bed_leveling_flag;
 
 // save/restore printing
 extern bool saved_printing;
+extern uint32_t saved_sdpos;
 extern uint8_t saved_printing_type;
 #define PRINTING_TYPE_SD 0
 #define PRINTING_TYPE_USB 1
 #define PRINTING_TYPE_NONE 2
 
-extern float saved_extruder_temperature; //!< Active extruder temperature
-extern float saved_bed_temperature; //!< Bed temperature
+extern uint16_t saved_extruder_temperature; //!< Active extruder temperature
+extern uint8_t saved_bed_temperature; //!< Bed temperature
+extern bool saved_extruder_relative_mode;
 extern uint8_t saved_fan_speed; //!< Print fan speed, ranges from 0 to 255
+extern float saved_pos[NUM_AXIS];
+extern uint16_t saved_feedrate2;
 
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
@@ -337,13 +340,19 @@ bool printer_active();
 bool check_fsensor();
 
 //! Condition where Babystepping is allowed:
-//! 1) Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
-//! 2) Not allowed during Homing (printer busy)
-//! 3) Not allowed during Mesh Bed Leveling (printer busy)
+//! 1) Not allowed during Homing (printer busy)
+//! 2) Not allowed during Mesh Bed Leveling (printer busy)
+//! 3) Not allowed when a print job is paused
 //! 4) Allowed if:
-//!         - First Layer Calibration is running
-//!         - OR there are queued blocks, printJob is running and it's not paused, and Z-axis position is less than 2.0mm (only allowed during the first couple of layers)
+//!         - First Layer Calibration is running (the event when heaters are turned off is used to dismiss the menu)
+//!         - A print job is running
+//!         - If the printer is idle with not planned moves
 bool babystep_allowed();
+
+//! Same as babystep_allowed() but additionally adds a requirement
+//! where the Z-axis position must be less than 2.0mm (only allowed
+//! during the first couple of layers)
+bool babystep_allowed_strict();
 
 extern void calculate_extruder_multipliers();
 
@@ -375,26 +384,27 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 void serialecho_temperatures();
 bool check_commands();
 
-void uvlo_();
-void uvlo_tiny();
-void recover_print(uint8_t automatic); 
-void setup_uvlo_interrupt();
-
-#if defined(TACH_1) && TACH_1 >-1
-void setup_fan_interrupt();
-#endif
-
-extern bool recover_machine_state_after_power_panic();
-extern void restore_print_from_eeprom(bool mbl_was_active);
-
 extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
 
+void save_print_file_state();
+void restore_print_file_state();
+void save_planner_global_state();
+void refresh_print_state_in_ram();
+void clear_print_state_in_ram();
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_extruder_temperature_from_ram();
 extern void restore_print_from_ram_and_continue(float e_move);
 extern void cancel_saved_printing();
+
+// Define some coordinates outside the clamp limits (making them invalid past the parsing stage) so
+// that they can be used later for various logical checks
+#define X_COORD_INVALID (X_MIN_POS-1)
+#define SAVED_START_POSITION_UNSET X_COORD_INVALID
+extern float saved_start_position[NUM_AXIS];
+extern uint16_t saved_segment_idx;
+extern bool isPartialBackupAvailable;
 
 
 //estimated time to end of the print

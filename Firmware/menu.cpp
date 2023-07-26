@@ -90,7 +90,6 @@ void menu_end(void)
 	if (((uint8_t)lcd_encoder) >= menu_top + LCD_HEIGHT)
 	{
 		menu_top = lcd_encoder - LCD_HEIGHT + 1;
-		lcd_draw_update = 1;
 		menu_line = menu_top - 1;
 		menu_row = -1;
 	}
@@ -411,36 +410,26 @@ void menu_item_gcode_P(const char* str, const char* str_gcode)
 	menu_item++;
 }
 
-const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
-
 const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
-
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-
-
-template <typename T>
-void menu_draw_P(char chr, const char* str, T val)
+/// @brief Draw the label and value for a menu edit item
+/// @param chr 1 byte character
+/// @param str String residing in program memory (PROGMEM)
+/// @param val value to render, ranges from -999 to 9999
+static void menu_draw_P(const char chr, const char* str, const int16_t val)
 {
-	// The LCD row position is controlled externally. We may only modify the column here
 	lcd_putc(chr);
-	uint8_t len = lcd_print_pad_P(str, LCD_WIDTH - 1);
-	lcd_set_cursor_column((LCD_WIDTH - 1) - len + 1);
+	lcd_puts_P(str);
 	lcd_putc(':');
 
-	// The value is right adjusted, set the cursor then render the value
-	if (val < 10) { // 1 digit
-		lcd_set_cursor_column(LCD_WIDTH - 1);
-	} else if (val < 100) { // 2 digits
-		lcd_set_cursor_column(LCD_WIDTH - 2);
-	} else { // 3 digits
-		lcd_set_cursor_column(LCD_WIDTH - 3);
-	}
-	lcd_print(val, DEC);
-}
+	// Padding to compensate variable string length
+	const uint8_t len = strlen_P(str);
+	lcd_space((LCD_WIDTH - 4) - (2 + len));
 
-template void menu_draw_P<int16_t>(char chr, const char* str, int16_t val);
-template void menu_draw_P<uint8_t>(char chr, const char* str, uint8_t val);
+	// Right adjusted value
+	lcd_printf_P(PSTR("%4d"), val);
+}
 
 //! @brief Draw up to 10 chars of text and a float number in format from +0.0 to +12345.0. The increased range is necessary
 //! for displaying large values of extruder positions, which caused text overflow in the previous implementation.

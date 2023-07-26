@@ -33,12 +33,12 @@ extern uint8_t menu_depth;
 //! definition of reasons blocking the main menu
 //! Use them as bit mask, so that the code may set various errors at the same time
 enum ESeriousErrors {
-	MENU_BLOCK_NONE                = 0,
-	MENU_BLOCK_THERMAL_ERROR       = 0x01,
-#ifdef TEMP_MODEL
-	MENU_BLOCK_TEMP_MODEL_AUTOTUNE = 0x02,
+	MENU_BLOCK_NONE                   = 0,
+	MENU_BLOCK_THERMAL_ERROR          = 0x01,
+#ifdef THERMAL_MODEL
+	MENU_BLOCK_THERMAL_MODEL_AUTOTUNE = 0x02,
 #endif
-    MENU_BLOCK_STATUS_SCREEN_M0    = 0x04,
+    MENU_BLOCK_STATUS_SCREEN_M0       = 0x04,
 }; // and possibly others in the future.
 
 //! this is a flag for disabling entering the main menu and longpress. If this is set to anything !=
@@ -148,9 +148,6 @@ extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 //#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
 template <typename T>
 extern void menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
-
-template <typename T>
-extern void menu_draw_P(char chr, const char* str, T val);
 
 extern void menu_progressbar_init(uint16_t total, const char* title);
 extern void menu_progressbar_update(uint16_t newVal);

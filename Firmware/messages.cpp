@@ -52,12 +52,13 @@ const char MSG_ITERATION[] PROGMEM_I1 = ISTR("Iteration"); ////MSG_ITERATION c=1
 const char MSG_SELECT_FILAMENT[] PROGMEM_I1 = ISTR("Select filament:"); ////MSG_SELECT_FILAMENT c=20
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////MSG_LAST_PRINT c=18
 const char MSG_LAST_PRINT_FAILURES[] PROGMEM_I1 = ISTR("Last print failures"); ////MSG_LAST_PRINT_FAILURES c=20
-const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////MSG_LOAD_FILAMENT c=17
+const char MSG_PRELOAD_TO_MMU[] PROGMEM_I1 = ISTR("Preload to MMU"); ////MSG_PRELOAD_TO_MMU c=17
+const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////MSG_LOAD_FILAMENT c=16
 const char MSG_LOADING_TEST[] PROGMEM_I1 = ISTR("Loading Test"); ////MSG_LOADING_TEST c=18
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////MSG_LOADING_FILAMENT c=20
 const char MSG_TESTING_FILAMENT[] PROGMEM_I1 = ISTR("Testing filament"); ////MSG_TESTING_FILAMENT c=20
 const char MSG_EJECT_FROM_MMU[] PROGMEM_I1 = ISTR("Eject from MMU"); ////MSG_EJECT_FROM_MMU c=16
-const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); ////MSG_CUT_FILAMENT c=17
+const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); ////MSG_CUT_FILAMENT c=16
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////MSG_MAIN c=18
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////MSG_BACK c=18
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////MSG_SHEET c=10
@@ -172,7 +173,7 @@ const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////MSG_IR_03
 const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////MSG_IR_UNKNOWN c=18
 #endif
 extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////MSG_PAUSED_THERMAL_ERROR c=20
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
 extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");////MSG_THERMAL_ANOMALY c=20
 extern const char MSG_TM_NOT_CAL[] PROGMEM_I1 = ISTR("Thermal model not calibrated yet.");////MSG_TM_NOT_CAL c=20 r=4
 extern const char MSG_TM_ACK_ERROR[] PROGMEM_I1 = ISTR("Clear TM error");////MSG_TM_ACK_ERROR c=18

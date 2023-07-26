@@ -3,6 +3,7 @@
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
+#include "util.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
 
@@ -192,7 +193,7 @@ void dcode_3()
 
 #if 0
 extern float current_temperature_pinda;
-extern float axis_steps_per_unit[NUM_AXIS];
+extern float axis_steps_per_mm[NUM_AXIS];
 
 
 #define LOG(args...) printf(args)
@@ -478,7 +479,7 @@ void dcode_8()
 		{
 			uint16_t offs = 0;
 			if (i > 0) offs = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
-			float foffs = ((float)offs) / cs.axis_steps_per_unit[Z_AXIS];
+			float foffs = ((float)offs) / cs.axis_steps_per_mm[Z_AXIS];
 			offs = 1000 * foffs;
 			printf_P(PSTR("temp_pinda=%dC temp_shift=%dum\n"), 35 + i * 5, offs);
 		}
@@ -822,7 +823,7 @@ void dcode_2130()
 			}
 			else if (strcmp(strchr_pointer + 7, "wave") == 0)
 			{
-				tmc2130_get_wave(axis, 0, stdout);
+				tmc2130_get_wave(axis, 0);
 			}
 		}
 		else if (strchr_pointer[1+5] == '!')
@@ -843,9 +844,9 @@ void dcode_2130()
 					uint16_t res_new = tmc2130_mres2usteps(mres);
 					tmc2130_set_res(axis, res_new);
 					if (res_new > res)
-						cs.axis_steps_per_unit[axis] *= (res_new / res);
+						cs.axis_steps_per_mm[axis] *= (res_new / res);
 					else
-						cs.axis_steps_per_unit[axis] /= (res / res_new);
+						cs.axis_steps_per_mm[axis] /= (res / res_new);
 				}
 			}
 			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)

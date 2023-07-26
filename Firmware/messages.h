@@ -58,6 +58,7 @@ extern const char MSG_ITERATION[];
 extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
+extern const char MSG_PRELOAD_TO_MMU[];
 extern const char MSG_LOAD_FILAMENT[];
 extern const char MSG_LOADING_TEST[];
 extern const char MSG_LOADING_FILAMENT[];
@@ -176,7 +177,7 @@ extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
 #endif
 extern const char MSG_PAUSED_THERMAL_ERROR[];
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
 extern const char MSG_TM_NOT_CAL[];
 extern const char MSG_TM_ACK_ERROR[];

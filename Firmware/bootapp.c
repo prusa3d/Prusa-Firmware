@@ -6,19 +6,17 @@
 
 
 #include <stdio.h>
-extern FILE _uartout;
-#define uartout (&_uartout)
 
 extern void softReset();
 
 void bootapp_print_vars(void)
 {
-	fprintf_P(uartout, PSTR("boot_src_addr  =0x%08lx\n"), boot_src_addr);
-	fprintf_P(uartout, PSTR("boot_dst_addr  =0x%08lx\n"), boot_dst_addr);
-	fprintf_P(uartout, PSTR("boot_copy_size =0x%04x\n"), boot_copy_size);
-	fprintf_P(uartout, PSTR("boot_reserved  =0x%02x\n"), boot_reserved);
-	fprintf_P(uartout, PSTR("boot_app_flags =0x%02x\n"), boot_app_flags);
-	fprintf_P(uartout, PSTR("boot_app_magic =0x%08lx\n"), boot_app_magic);
+	printf_P(PSTR("boot_src_addr  =0x%08lx\n"), boot_src_addr);
+	printf_P(PSTR("boot_dst_addr  =0x%08lx\n"), boot_dst_addr);
+	printf_P(PSTR("boot_copy_size =0x%04x\n"), boot_copy_size);
+	printf_P(PSTR("boot_reserved  =0x%02x\n"), boot_reserved);
+	printf_P(PSTR("boot_app_flags =0x%02x\n"), boot_app_flags);
+	printf_P(PSTR("boot_app_magic =0x%08lx\n"), boot_app_magic);
 }
 
 

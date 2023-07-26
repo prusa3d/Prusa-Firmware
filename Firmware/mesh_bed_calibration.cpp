@@ -3060,7 +3060,7 @@ void babystep_load()
         SERIAL_ECHO(", current Z: ");
         SERIAL_ECHO(current_position[Z_AXIS]);
         SERIAL_ECHO("correction: ");
-        SERIAL_ECHO(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+        SERIAL_ECHO(float(babystepLoadZ) / float(axis_steps_per_mm[Z_AXIS]));
         SERIAL_ECHOLN("");
     #endif
     }
@@ -3069,12 +3069,12 @@ void babystep_load()
 void babystep_apply()
 {
     babystep_load();
-    shift_z(- float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
+    shift_z(- float(babystepLoadZ) / float(cs.axis_steps_per_mm[Z_AXIS]));
 }
 
 void babystep_undo()
 {
-      shift_z(float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
+      shift_z(float(babystepLoadZ) / float(cs.axis_steps_per_mm[Z_AXIS]));
       babystepLoadZ = 0;
 }
 

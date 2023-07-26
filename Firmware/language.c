@@ -276,7 +276,7 @@ const char* lang_get_sec_lang_str_by_id(uint16_t id)
 	return ui + pgm_read_word(((uint16_t*)(ui + 16 + id * 2))); //read relative offset and return calculated pointer
 }
 
-uint16_t lang_print_sec_lang(FILE* out)
+uint16_t lang_print_sec_lang()
 {
 	printf_P(_n("&_SEC_LANG        = 0x%04x\n"), &_SEC_LANG);
 	printf_P(_n("sizeof(_SEC_LANG) = 0x%04x\n"), sizeof(_SEC_LANG));
@@ -298,7 +298,7 @@ uint16_t lang_print_sec_lang(FILE* out)
 	puts_P(_n(" strings:\n"));
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	for (ui = 0; ui < _lt_count; ui++)
-		fprintf_P(out, _n("  %3d %S\n"), ui, lang_get_sec_lang_str_by_id(ui));
+		printf_P(_n("  %3d %S\n"), ui, lang_get_sec_lang_str_by_id(ui));
 	return _lt_count;
 }
 #endif //DEBUG_SEC_LANG

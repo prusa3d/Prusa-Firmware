@@ -407,16 +407,19 @@ return pStrBegin;
 }
 
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
-char* pResult;
-size_t nLength,nPrinterNameLength;
+    char* pResult;
+    size_t nLength;
+    size_t aLength;
 
-nPrinterNameLength = strlen_P(actualPrinterSModel);
-pResult=code_string(pStrPos,&nLength);
+    pResult=code_string(pStrPos,&nLength);
+    if(pResult != NULL) {
+        aLength=strlen_P(actualPrinterSModel);
+        if(aLength > nLength) nLength = aLength;
 
-if(pResult != NULL && nLength == nPrinterNameLength) {
-     // Only compare them if the lengths match
-     if (strncmp_P(pResult, actualPrinterSModel, nLength) == 0) return;
-}
+        // Only compare first 6 chars on MK3|MK3S if string longer than 4 characters
+        if (nLength > 4 && strncmp_P(pResult, PSTR("MK3"), 3) == 0) nLength = 6;
+        if (strncmp_P(pResult, actualPrinterSModel, nLength) == 0) return;
+    }
 
     render_M862_warnings(
         _T(MSG_GCODE_DIFF_PRINTER_CONTINUE)

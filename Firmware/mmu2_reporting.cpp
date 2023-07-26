@@ -212,6 +212,13 @@ enum class ReportErrorHookStates : uint8_t {
 
 enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
 
+// Helper variable to monitor knob in MMU error screen in blocking functions e.g. manage_response
+static bool is_mmu_error_monitor_active;
+
+bool isErrorScreenRunning() {
+    return is_mmu_error_monitor_active;
+}
+
 void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
     if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
         // If the error code suddenly changes to OK, that means
@@ -228,7 +235,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
         [[fallthrough]];
     case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
-        mmu2.is_mmu_error_monitor_active = true;
+        is_mmu_error_monitor_active = true;
         ReportErrorHookDynamicRender(); // Render dynamic characters
         sound_wait_for_user();
         switch (ReportErrorHookMonitor(ei)) {
@@ -246,7 +253,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
                 lcd_return_to_status();
                 sound_wait_for_user_reset();
                 // Reset the state in case a new error is reported
-                mmu2.is_mmu_error_monitor_active = false;
+                is_mmu_error_monitor_active = false;
                 ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
                 break;
             default:
@@ -260,7 +267,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
         lcd_return_to_status();
         sound_wait_for_user_reset();
         // Reset the state in case a new error is reported
-        mmu2.is_mmu_error_monitor_active = false;
+        is_mmu_error_monitor_active = false;
         ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
         break;
     default:

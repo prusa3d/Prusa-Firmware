@@ -71,7 +71,7 @@ union dda_usteps_t
 typedef struct {
   // Fields used by the bresenham algorithm for tracing the line
   // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
-  dda_isteps_t steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
+  dda_isteps_t steps[NUM_AXIS];             // Step count along each axis
   dda_usteps_t step_event_count;            // The number of step events required to complete this block
   uint32_t acceleration_rate;               // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
@@ -187,8 +187,8 @@ extern float* max_feedrate;
 
 
 // Use M201 to override by software
-extern unsigned long* max_acceleration_units_per_sq_second; 
-extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
+extern uint32_t* max_acceleration_mm_per_s2; 
+extern uint32_t max_acceleration_steps_per_s2[NUM_AXIS];
 
 extern long position[NUM_AXIS];
 

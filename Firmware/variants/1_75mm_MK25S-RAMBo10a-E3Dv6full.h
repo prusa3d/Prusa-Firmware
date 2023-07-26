@@ -219,7 +219,7 @@
 #define FILAMENTCHANGE_YPOS 0
 #define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
-#define FILAMENTCHANGE_FINALRETRACT -80
+#define FILAMENTCHANGE_FINALRETRACT 0
 
 #define FILAMENTCHANGE_FIRSTFEED 70 //E distance in mm for fast filament loading sequence used used in filament change (M600)
 #define FILAMENTCHANGE_FINALFEED 25 //E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701) 
@@ -443,9 +443,6 @@
 
 #define MAX_BED_TEMP_CALIBRATION 50
 #define MAX_HOTEND_TEMP_CALIBRATION 50
-
-#define MAX_E_STEPS_PER_UNIT 250
-#define MIN_E_STEPS_PER_UNIT 100
 
 #define Z_BABYSTEP_MIN -3999
 #define Z_BABYSTEP_MAX 0
