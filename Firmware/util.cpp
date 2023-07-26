@@ -210,18 +210,18 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         return false;
 
     if (upgrade) {
-        lcd_display_message_fullscreen_P(_i("New firmware version available:"));////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
-        lcd_puts_at_P(0, 2, PSTR(""));
-        for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
-            lcd_putc(*c);
-        lcd_puts_at_P(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
-        Sound_MakeCustom(50,1000,false);
-        delay_keep_alive(500);
-        Sound_MakeCustom(50,1000,false);
-        lcd_wait_for_click_delay(30);
-        lcd_update_enable(true);
-        lcd_clear();
-        lcd_update(0);
+        // lcd_display_message_fullscreen_P(_i("New firmware version available:"));////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
+        // lcd_puts_at_P(0, 2, PSTR(""));
+        // for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
+        //    lcd_putc(*c);
+        // lcd_puts_at_P(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
+        // Sound_MakeCustom(50,1000,false);
+        // delay_keep_alive(500);
+        // Sound_MakeCustom(50,1000,false);
+        // lcd_wait_for_click_delay(30);
+        // lcd_update_enable(true);
+        // lcd_clear();
+        // lcd_update(0);
     }
 
     // Succeeded.
