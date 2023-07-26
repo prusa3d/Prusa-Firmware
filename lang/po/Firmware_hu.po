@@ -2637,9 +2637,6 @@ msgstr "Váratlan hiba történt."
 #~ msgid "TM autotune failed"
 #~ msgstr "HM kalib. sikertelen"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Homers. modell kalib"
-
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
 #~ msgstr "XYZ kalibracio nem jo. Bal elso kal. pont nem elerheto."

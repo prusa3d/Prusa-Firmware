@@ -2616,9 +2616,6 @@ msgstr "Vyskytla sa neočakávaná chyba."
 #~ msgid "TM autotune failed"
 #~ msgstr "TM autotune failed"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Autom. nast. teploty"
-
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
 #~ msgstr "Kalibracia XYZ je nepresna. Lavy predny bod je nedostupny."

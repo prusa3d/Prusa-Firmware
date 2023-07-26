@@ -2613,9 +2613,6 @@ msgstr "Det oppstod en uventet feil."
 #~ msgid "TM autotune failed"
 #~ msgstr "TM autotune feilet"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Temp. model autotune"
-
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
 #~ msgstr "XYZ kalibrasjon feilet. Fremre venstre kalibrerings kan ikke nås."

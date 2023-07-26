@@ -2653,6 +2653,3 @@ msgstr "Une erreur inattendue s'est produite."
 
 #~ msgid "TM autotune failed"
 #~ msgstr "Echec regl. auto MT"
-
-#~ msgid "Temp. model autotune"
-#~ msgstr "Regl. auto mod temp."

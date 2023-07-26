@@ -2636,9 +2636,6 @@ msgstr "Si è verificato un errore imprevisto."
 #~ msgid "TM autotune failed"
 #~ msgstr "Autocal. MT fallita"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Cal. modello termico"
-
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
 #~ msgstr ""

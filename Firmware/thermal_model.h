@@ -39,7 +39,7 @@ struct model_data
     float C;                               // heatblock capacitance (J/K)
     float fS;                              // sim. 1st order IIR filter factor (f=100/27)
     uint16_t L;                            // sim. response lag (ms)
-    float R[THERMAL_MODEL_R_SIZE];            // heatblock resistance for all fan levels (K/W)
+    float R[THERMAL_MODEL_R_SIZE];         // heatblock resistance for all fan levels (K/W)
     float Ta_corr;                         // ambient temperature correction (K)
 
     // thresholds
