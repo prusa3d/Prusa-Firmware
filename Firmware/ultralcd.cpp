@@ -887,8 +887,8 @@ void lcd_commands()
 		}
 	}
 
-#ifdef TEMP_MODEL
-    if (lcd_commands_type == LcdCommands::TempModel && cmd_buffer_empty())
+#ifdef THERMAL_MODEL
+    if (lcd_commands_type == LcdCommands::ThermalModel && cmd_buffer_empty())
     {
         switch (lcd_commands_step)
         {
@@ -908,13 +908,13 @@ void lcd_commands()
             break;
 
         case 3:
-            temp_model_set_warn_beep(false);
+            thermal_model_set_warn_beep(false);
             enquecommand_P(PSTR("M310 A F1"));
             lcd_commands_step = 2;
             break;
 
         case 2:
-            if (temp_model_autotune_result())
+            if (thermal_model_autotune_result())
                 enquecommand_P(MSG_M500);
             lcd_commands_step = 1;
             break;
@@ -922,8 +922,8 @@ void lcd_commands()
         case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
-            temp_model_set_warn_beep(true);
-            bool res = temp_model_autotune_result();
+            thermal_model_set_warn_beep(true);
+            bool res = thermal_model_autotune_result();
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
                 // resume the wizard
                 lcd_wizard(res ? WizState::Restore : WizState::Failed);
@@ -931,15 +931,15 @@ void lcd_commands()
             break;
         }
     }
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
 
 	if (lcd_commands_type == LcdCommands::NozzleCNG)
 	{
         if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
             static bool was_enabled;
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
             switch(lcd_commands_step)
             {
             case 0:
@@ -953,10 +953,10 @@ void lcd_commands()
                 enquecommand_P(G28W);
                 enquecommand_P(PSTR("G1 X125 Z200 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
-#ifdef TEMP_MODEL
-                was_enabled = temp_model_enabled();
-                temp_model_set_enabled(false);
-#endif //TEMP_MODEL
+#ifdef THERMAL_MODEL
+                was_enabled = thermal_model_enabled();
+                thermal_model_set_enabled(false);
+#endif //THERMAL_MODEL
                 lcd_commands_step = 2;
                 break;
             case 2:
@@ -969,9 +969,9 @@ void lcd_commands()
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
                     setTargetHotend(0);
-#ifdef TEMP_MODEL
-                    temp_model_set_enabled(was_enabled);
-#endif //TEMP_MODEL
+#ifdef THERMAL_MODEL
+                    thermal_model_set_enabled(was_enabled);
+#endif //THERMAL_MODEL
                     lcd_commands_step = 1;
                 }
                 lcd_update_enabled = true;
@@ -3802,10 +3802,10 @@ void lcd_wizard(WizState state)
 				state = S::Xyz;
 			} else if (!calibration_status_get(CALIBRATION_STATUS_Z)) {
 				state = S::Z;
-#ifdef TEMP_MODEL
-			} else if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL)) {
-				state = S::TempModel;
-#endif //TEMP_MODEL
+#ifdef THERMAL_MODEL
+			} else if (!calibration_status_get(CALIBRATION_STATUS_THERMAL_MODEL)) {
+				state = S::ThermalModel;
+#endif //THERMAL_MODEL
 			} else if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST)) {
 				state = S::IsFil;
 			} else {
@@ -3847,13 +3847,13 @@ void lcd_wizard(WizState state)
 				state = S::Restore;
 			}
 			break;
-#ifdef TEMP_MODEL
-		case S::TempModel:
+#ifdef THERMAL_MODEL
+		case S::ThermalModel:
 			lcd_show_fullscreen_message_and_wait_P(_i("Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"));////MSG_TM_CAL c=20 r=4
-			lcd_commands_type = LcdCommands::TempModel;
+			lcd_commands_type = LcdCommands::ThermalModel;
 			end = true; // Leave wizard temporarily for TM cal.
 			break;
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
 		case S::IsFil:
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
@@ -4551,9 +4551,9 @@ static void lcd_calibration_menu()
 	    MENU_ITEM_FUNCTION_P(_T(MSG_PINDA_CALIBRATION), lcd_calibrate_pinda);
 #endif
   }
-#ifdef TEMP_MODEL
-    MENU_ITEM_SUBMENU_P(_n("Thermal Model cal."), lcd_temp_model_cal);
-#endif //TEMP_MODEL
+#ifdef THERMAL_MODEL
+    MENU_ITEM_SUBMENU_P(_n("Thermal Model cal."), lcd_thermal_model_cal);
+#endif //THERMAL_MODEL
   
   MENU_END();
 }
@@ -5173,7 +5173,7 @@ static void lcd_main_menu()
     if((printJobOngoing() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
     else if(Stopped) {
         MENU_ITEM_SUBMENU_P(_T(MSG_TM_ACK_ERROR), lcd_print_stop);
     }
@@ -5591,13 +5591,13 @@ void lcd_print_stop()
     print_stop(true);
 }
 
-#ifdef TEMP_MODEL
-void lcd_temp_model_cal()
+#ifdef THERMAL_MODEL
+void lcd_thermal_model_cal()
 {
-    lcd_commands_type = LcdCommands::TempModel;
+    lcd_commands_type = LcdCommands::ThermalModel;
     lcd_return_to_status();
 }
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
 
 void lcd_sdcard_stop()
 {
@@ -6447,10 +6447,10 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	target_temperature[0] = (_isbed) ? 0 : 200;
 	target_temperature_bed = (_isbed) ? 100 : 0;
-#ifdef TEMP_MODEL
-	bool tm_was_enabled = temp_model_enabled();
-	temp_model_set_enabled(false);
-#endif //TEMP_MODEL
+#ifdef THERMAL_MODEL
+	bool tm_was_enabled = thermal_model_enabled();
+	thermal_model_set_enabled(false);
+#endif //THERMAL_MODEL
 	manage_heater();
 	manage_inactivity(true);
 
@@ -6499,9 +6499,9 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
         lcd_selftest_error(TestError::Bed, "", "");
     }
 
-#ifdef TEMP_MODEL
-	temp_model_set_enabled(tm_was_enabled);
-#endif //TEMP_MODEL
+#ifdef THERMAL_MODEL
+	thermal_model_set_enabled(tm_was_enabled);
+#endif //THERMAL_MODEL
 	manage_heater();
 	manage_inactivity(true);
 	return _stepresult;

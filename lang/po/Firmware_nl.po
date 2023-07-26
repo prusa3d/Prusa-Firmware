@@ -2641,8 +2641,5 @@ msgstr "Er is een onverwachte fout opgetreden."
 #~ msgid "TM autotune failed"
 #~ msgstr "TM autotune mislukt"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Temp. model autotune"
-
 #~ msgid "XYZ calibration failed. Left front calibration point not reachable."
 #~ msgstr "XYZ-kalibratie mislukt. Kalibratiepunt linksvoor niet bereikbaar."

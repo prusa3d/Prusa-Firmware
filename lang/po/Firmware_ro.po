@@ -2633,9 +2633,6 @@ msgstr "A apărut o eroare neașteptată."
 #~ msgid "TM autotune failed"
 #~ msgstr "Autotune TM esuat"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Temp. model autotune"
-
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
 #~ msgstr ""

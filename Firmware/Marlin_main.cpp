@@ -1550,10 +1550,10 @@ void setup()
           // warn about other important steps individually
           if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST))
               lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
-#ifdef TEMP_MODEL
-          if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL) && temp_model_enabled())
+#ifdef THERMAL_MODEL
+          if (!calibration_status_get(CALIBRATION_STATUS_THERMAL_MODEL) && thermal_model_enabled())
               lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
-#endif //TEMP_MODEL
+#endif //THERMAL_MODEL
       }
   }
 
@@ -3932,7 +3932,7 @@ extern uint8_t st_backlash_y;
 //!@n M302 - Allow cold extrudes, or set the minimum extrude S<temperature>.
 //!@n M303 - PID relay autotune S<temperature> sets the target temperature. (default target temperature = 150C)
 //!@n M304 - Set bed PID parameters P I and D
-//!@n M310 - Temperature model settings
+//!@n M310 - Thermal model settings
 //!@n M400 - Finish all moves
 //!@n M401 - Lower z-probe if present
 //!@n M402 - Raise z-probe if present
@@ -7330,9 +7330,9 @@ Sigma_Exit:
     }
     break;
 
-#ifdef TEMP_MODEL
+#ifdef THERMAL_MODEL
     /*!
-    ### M310 - Temperature model settings <a href="https://reprap.org/wiki/G-code#M310:_Temperature_model_settings">M310: Temperature model settings</a>
+    ### M310 - Thermal model settings <a href="https://reprap.org/wiki/G-code#M310:_Thermal_model_settings">M310: Thermal model settings</a>
     #### Usage
 
         M310                                           ; report values
@@ -7386,23 +7386,23 @@ Sigma_Exit:
         // report values if nothing has been requested
         if(isnan(R) && isnan(P) && isnan(U) && isnan(V) && isnan(C) && isnan(D) && isnan(T) && isnan(W) && isnan(E)
         && I < 0 && S < 0 && B < 0 && A < 0 && L < 0) {
-            temp_model_report_settings();
+            thermal_model_report_settings();
             break;
         }
 
         // update all parameters
         if(B >= 0)
-            temp_model_set_warn_beep(B);
+            thermal_model_set_warn_beep(B);
         if(!isnan(P) || !isnan(U) || !isnan(V) || !isnan(C) || !isnan(D) || (L >= 0) || !isnan(T) || !isnan(W) || !isnan(E))
-            temp_model_set_params(P, U, V, C, D, L, T, W, E);
+            thermal_model_set_params(P, U, V, C, D, L, T, W, E);
         if(I >= 0 && !isnan(R))
-            temp_model_set_resistance(I, R);
+            thermal_model_set_resistance(I, R);
 
         // enable the model last, if requested
-        if(S >= 0) temp_model_set_enabled(S);
+        if(S >= 0) thermal_model_set_enabled(S);
 
         // run autotune
-        if(A >= 0) temp_model_autotune(A, F > 0);
+        if(A >= 0) thermal_model_autotune(A, F > 0);
     }
     break;
 #endif
@@ -8878,9 +8878,9 @@ Sigma_Exit:
     };
 #endif
 
-#ifdef TEMP_MODEL_DEBUG
+#ifdef THERMAL_MODEL_DEBUG
     /*!
-    ## D70 - Enable low-level temperature model logging for offline simulation
+    ## D70 - Enable low-level thermal model logging for offline simulation
     #### Usage
 
         D70 [ S ]
@@ -8890,7 +8890,7 @@ Sigma_Exit:
     */
     case 70: {
         if(code_seen('S'))
-            temp_model_log_enable(code_value_short());
+            thermal_model_log_enable(code_value_short());
         break;
     }
 #endif

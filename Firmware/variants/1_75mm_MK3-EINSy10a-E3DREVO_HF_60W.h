@@ -382,26 +382,26 @@
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 // model-based temperature check
-#define TEMP_MODEL 1              // enable model-based temperature checks
-#define TEMP_MODEL_DEBUG 1        // extended runtime logging
+#define THERMAL_MODEL 1              // enable model-based temperature checks
+#define THERMAL_MODEL_DEBUG 1        // extended runtime logging
 
-#define TEMP_MODEL_CAL_C_low 5    // C estimation lower limit
-#define TEMP_MODEL_CAL_C_high 20  // C estimation upper limit
-#define TEMP_MODEL_CAL_C_thr 0.01 // C estimation iteration threshold
-#define TEMP_MODEL_CAL_C_itr 30   // C estimation iteration limit
+#define THERMAL_MODEL_CAL_C_low 5    // C estimation lower limit
+#define THERMAL_MODEL_CAL_C_high 20  // C estimation upper limit
+#define THERMAL_MODEL_CAL_C_thr 0.01 // C estimation iteration threshold
+#define THERMAL_MODEL_CAL_C_itr 30   // C estimation iteration limit
 
-#define TEMP_MODEL_CAL_R_low 5    // R estimation lower limit
-#define TEMP_MODEL_CAL_R_high 50  // R estimation upper limit
-#define TEMP_MODEL_CAL_R_thr 0.01 // R estimation iteration threshold
-#define TEMP_MODEL_CAL_R_itr 30   // R estimation iteration limit
+#define THERMAL_MODEL_CAL_R_low 5    // R estimation lower limit
+#define THERMAL_MODEL_CAL_R_high 50  // R estimation upper limit
+#define THERMAL_MODEL_CAL_R_thr 0.01 // R estimation iteration threshold
+#define THERMAL_MODEL_CAL_R_itr 30   // R estimation iteration limit
 
-#define TEMP_MODEL_CAL_T_low 50   // Default calibration cooling temperature (C)
-#define TEMP_MODEL_CAL_T_high 230 // Default calibration working temperature (C)
+#define THERMAL_MODEL_CAL_T_low 50   // Default calibration cooling temperature (C)
+#define THERMAL_MODEL_CAL_T_high 230 // Default calibration working temperature (C)
 
-#define TEMP_MODEL_Ta_corr -7     // Default ambient temperature correction
+#define THERMAL_MODEL_Ta_corr -7     // Default ambient temperature correction
 
-#include "temp_model/e3d_REVO_HF_60W.h"
-#define TEMP_MODEL_DEFAULT E3D_REVO_HF_60W // Default E3D REVO HF 60W model parameters
+#include "thermal_model/e3d_REVO_HF_60W.h"
+#define THERMAL_MODEL_DEFAULT E3D_REVO_HF_60W // Default E3D REVO HF 60W model parameters
 
 
 /*------------------------------------

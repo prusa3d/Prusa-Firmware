@@ -33,12 +33,12 @@ extern uint8_t menu_depth;
 //! definition of reasons blocking the main menu
 //! Use them as bit mask, so that the code may set various errors at the same time
 enum ESeriousErrors {
-	MENU_BLOCK_NONE                = 0,
-	MENU_BLOCK_THERMAL_ERROR       = 0x01,
-#ifdef TEMP_MODEL
-	MENU_BLOCK_TEMP_MODEL_AUTOTUNE = 0x02,
+	MENU_BLOCK_NONE                   = 0,
+	MENU_BLOCK_THERMAL_ERROR          = 0x01,
+#ifdef THERMAL_MODEL
+	MENU_BLOCK_THERMAL_MODEL_AUTOTUNE = 0x02,
 #endif
-    MENU_BLOCK_STATUS_SCREEN_M0    = 0x04,
+    MENU_BLOCK_STATUS_SCREEN_M0       = 0x04,
 }; // and possibly others in the future.
 
 //! this is a flag for disabling entering the main menu and longpress. If this is set to anything !=

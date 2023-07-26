@@ -2614,6 +2614,3 @@ msgstr "Došlo k neočekávané chybě."
 
 #~ msgid "TM autotune failed"
 #~ msgstr "TM ladeni selhalo"
-
-#~ msgid "Temp. model autotune"
-#~ msgstr "Ladeni tepl. modelu"

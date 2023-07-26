@@ -103,8 +103,8 @@ void Config_PrintSettings(uint8_t level)
     printf_P(PSTR(
         "%SArc Settings: P:Max length(mm) S:Min length (mm) N:Corrections R:Min segments F:Segments/sec.\n%S  M214 P%.2f S%.2f N%d R%d F%d\n"),
         echomagic, echomagic, cs.mm_per_arc_segment, cs.min_mm_per_arc_segment, cs.n_arc_correction, cs.min_arc_segments, cs.arc_segments_per_sec);
-#ifdef TEMP_MODEL
-    temp_model_report_settings();
+#ifdef THERMAL_MODEL
+    thermal_model_report_settings();
 #endif
 }
 #endif
@@ -182,8 +182,8 @@ void Config_StoreSettings()
 {
   strcpy_P(cs.version, default_conf.version);
   eeprom_update_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
-#ifdef TEMP_MODEL
-  temp_model_save_settings();
+#ifdef THERMAL_MODEL
+  thermal_model_save_settings();
 #endif
 
   SERIAL_ECHO_START;
@@ -246,8 +246,8 @@ bool Config_RetrieveSettings()
 
     // Call updatePID (similar to when we have processed M301)
     updatePID();
-#ifdef TEMP_MODEL
-    temp_model_load_settings();
+#ifdef THERMAL_MODEL
+    thermal_model_load_settings();
 #endif
 
         SERIAL_ECHO_START;
@@ -276,8 +276,8 @@ void Config_ResetDefault()
 #ifdef PIDTEMP
     updatePID();
 #endif//PIDTEMP
-#ifdef TEMP_MODEL
-    temp_model_reset_settings();
+#ifdef THERMAL_MODEL
+    thermal_model_reset_settings();
 #endif
 
   calculate_extruder_multipliers();

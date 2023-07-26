@@ -2635,9 +2635,6 @@ msgstr "Došlo je do neočekivane pogreške."
 #~ msgid "TM autotune failed"
 #~ msgstr "TM autotune nije usp"
 
-#~ msgid "Temp. model autotune"
-#~ msgstr "Temp. autptune model"
-
 #~ msgid ""
 #~ "XYZ calibration compromised. Left front calibration point not reachable."
 #~ msgstr ""
