@@ -173,6 +173,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
     #define  enable_z()  poweron_z()
     #define disable_z() poweroff_z()
 #else
+    extern bool bEnableForce_z; // Used by ultralcd stealth toggle
     void init_force_z();
     void check_force_z();
     void enable_force_z();
@@ -440,6 +441,7 @@ extern int8_t busy_state;
 #define FORCE_HIGH_POWER_END	force_high_power_mode(false)
 
 void force_high_power_mode(bool start_high_power_section);
+void change_power_mode_live(uint8_t mode);
 
 #endif //TMC2130
 
