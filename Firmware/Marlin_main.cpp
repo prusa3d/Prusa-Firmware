@@ -7644,6 +7644,11 @@ Sigma_Exit:
         automatic = true;
 
     gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+
+    // From this point forward, power panic should not use
+    // the partial backup in RAM since the extruder is no
+    // longer in parking position
+    clear_print_state_in_ram();
     }
     break;
     #endif //FILAMENTCHANGEENABLE
