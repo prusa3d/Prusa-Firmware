@@ -978,7 +978,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
         lastErrorSource = res;
         LogErrorEvent_P(_O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))));
 
-        if (ec != ErrorCode::OK && ec != ErrorCode::FILAMENT_EJECTED) {
+        if (ec != ErrorCode::OK && ec != ErrorCode::FILAMENT_EJECTED && ec != ErrorCode::FILAMENT_CHANGE) {
             IncrementMMUFails();
 
             // check if it is a "power" failure - we consider TMC-related errors as power failures
