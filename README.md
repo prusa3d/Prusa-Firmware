@@ -147,7 +147,7 @@ After updating the kit, you may need to reload VScode.
 
 #### Building
 
-To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_ENGLISH`) and select the small icon which shows "Build" when hovered over.
+To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S_ENGLISH`) and select the small icon which shows "Build" when hovered over.
 
 The built .hex file can then be found in folder `Prusa-Firmware/build`
 
