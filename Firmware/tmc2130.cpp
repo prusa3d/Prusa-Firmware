@@ -520,14 +520,26 @@ static void SetCurrents(const uint8_t axis) {
     uint8_t iHold = currents[axis].iHold;
     const uint8_t iRun = currents[axis].iRun;
 
+    // Make sure iHold never exceeds iRun at runtime
+    if (iHold > iRun) {
+        iHold = iRun;
+
+        // Update global array such that M913 reports correct values
+        currents[axis].iHold = currents[axis].iRun;
+
+        // Let user know firmware modified the value
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNRPGM(_n("Hold current truncated to Run current"));
+    }
+
     union IHoldRun {
         struct S {
             uint8_t iHold;
             uint8_t iRun;
             uint16_t iHoldDelay;
             constexpr S(uint8_t ih, uint8_t ir)
-                : iHold(ih)
-                , iRun(ir)
+                : iHold(ih & 0x1F)
+                , iRun(ir & 0x1F)
                 , iHoldDelay(15 & 0x0F) {}
         } s;
         uint32_t dw;
@@ -535,8 +547,7 @@ static void SetCurrents(const uint8_t axis) {
             : s(ih, ir) {}
     };
 
-    // also, make sure iHold never exceeds iRun at runtime
-    IHoldRun ihold_irun((iHold > iRun ? iRun : iHold) & 0x1f, iRun & 0x1f);
+    IHoldRun ihold_irun(iHold, iRun);
 
     tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, ihold_irun.dw);
 }
