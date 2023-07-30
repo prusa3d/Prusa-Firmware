@@ -282,6 +282,8 @@ uint16_t __tcoolthrs(uint8_t axis)
 
 static void tmc2130_XYZ_reg_init(uint8_t axis)
 {
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
+	tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 	const bool isStealth = (tmc2130_mode == TMC2130_MODE_SILENT);
 	if (axis == Z_AXIS) {
 #ifdef TMC2130_STEALTH_Z
@@ -300,8 +302,6 @@ static void tmc2130_XYZ_reg_init(uint8_t axis)
 		tmc2130_wr(axis, TMC2130_REG_PWMCONF, pwmconf[axis].dw);
 		tmc2130_wr(axis, TMC2130_REG_TPWMTHRS, TMC2130_TPWMTHRS);
 	}
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
-	tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 }
 
 void tmc2130_init(TMCInitParams params)
