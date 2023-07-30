@@ -60,14 +60,70 @@ typedef struct
 extern tmc2130_chopper_config_t tmc2130_chopper_config[NUM_AXIS];
 
 struct MotorCurrents {
-    bool vSense; ///< VSense current scaling
-    uint8_t iRun; ///< Running current
-    uint8_t iHold; ///< Holding current
+    // Refresh the vSense flag
+    // If the vSense flag changes then both Run and Hold current values
+    // must be shifted accordingly. This is done especially to handle
+    // the edge case where only either of the current values are changed at runtime.
+    // See M911 and M912
+    void refreshCurrentScaling() {
+        // IMPORTANT: iRun must have range 0 to 63 (2^6) so we can properly
+        //            update the current scaling back and forth
+
+        // Detect new vSense value
+        const bool newvSense = (iRun < 32);
+        if (vSense != newvSense) {
+            // Update currents to match current scaling
+            if (vSense) {
+                // vSense was 1 [V_FS = 0.32V] but is changing to 0 [V_FS = 0.18V]
+                // Half both current values to be in sync with current scale range
+                iHold >>= 1;
+                iRun >>= 1;
+            } else {
+                // vSense was 0 [V_FS = 0.18V], but is changing to 1 [V_FS = 0.32V]
+                // double the Hold current value
+                // iRun is expected to already be correct so no shift needed.
+                // Keep in mind, only a change in iRun can change vSense.
+                iHold <<= 1;
+            }
+
+            // Update vSense
+            vSense = newvSense;
+        } else if (!vSense) {
+            // No change in vSense, but vSense = 0, which means we must scale down the iRun value
+            // from range [0, 63] to range [0, 31]
+            iRun >>= 1;
+        }
+    }
 
     constexpr inline __attribute__((always_inline)) MotorCurrents(uint8_t ir, uint8_t ih)
         : vSense((ir < 32) ? 1 : 0)
         , iRun((ir < 32) ? ir : (ir >> 1))
         , iHold((ir < 32) ? ih : (ih >> 1)) {}
+
+    inline uint8_t getiRun() const { return iRun; }
+    inline uint8_t getiHold() const { return iHold; }
+    inline uint8_t getvSense() const { return vSense; }
+
+    void __attribute__((noinline)) setiRun(uint8_t ir) {
+        iRun = ir;
+
+        // Refresh the vSense bit and take care of updating Hold/Run currents
+        // accordingly
+        refreshCurrentScaling();
+    }
+
+    void __attribute__((noinline)) setiHold(uint8_t ih) {
+        iHold = vSense ? ih : ih >> 1;
+        // Note that iHold cannot change the vSense bit. If iHold is larger
+        // than iRun, then iHold is truncated later in SetCurrents()
+    }
+
+    private:
+        // These members are protected in order to ensure that
+        // the struct methods are used always to update these values at runtime.
+        bool vSense; ///< VSense current scaling
+        uint8_t iRun; ///< Running current
+        uint8_t iHold; ///< Holding current
 };
 
 extern MotorCurrents currents[NUM_AXIS];

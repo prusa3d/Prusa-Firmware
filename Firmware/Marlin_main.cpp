@@ -1085,8 +1085,8 @@ void setup()
 #ifdef TMC2130
     if(FarmOrUserECool()) {
         //increased extruder current (PFW363)
-        currents[E_AXIS].iRun = TMC2130_CURRENTS_FARM;
-        currents[E_AXIS].iHold = TMC2130_CURRENTS_FARM;
+        currents[E_AXIS].setiRun(TMC2130_CURRENTS_FARM);
+        currents[E_AXIS].setiHold(TMC2130_CURRENTS_FARM);
     }
 #endif //TMC2130
 
@@ -8059,8 +8059,8 @@ Sigma_Exit:
                 }
                 float cur_mA = code_value();
                 uint8_t val = tmc2130_cur2val(cur_mA);
-                currents[i].iHold = val;
-                currents[i].iRun = val;
+                currents[i].setiHold(val);
+                currents[i].setiRun(val);
                 tmc2130_setup_chopper(i, tmc2130_mres[i]);
             }
         }
@@ -8135,7 +8135,7 @@ Sigma_Exit:
     {
         for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
             if (code_seen(axis_codes[axis])) {
-                currents[axis].iHold = code_value_uint8();
+                currents[axis].setiHold(code_value_uint8());
                 tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
           }
         }
@@ -8159,7 +8159,7 @@ Sigma_Exit:
     {
         for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
             if (code_seen(axis_codes[axis])) {
-                currents[axis].iRun = code_value_uint8();
+                currents[axis].setiRun(code_value_uint8());
                 tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
             }
         }

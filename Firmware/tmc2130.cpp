@@ -419,7 +419,7 @@ void tmc2130_home_enter(uint8_t axes_mask)
 			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[axis]) << 16));
 			tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
-			currents[axis].iRun = tmc2130_current_r_home[axis];
+			currents[axis].setiRun(tmc2130_current_r_home[axis]);
 			tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
 		}
@@ -517,15 +517,15 @@ static constexpr bool getIntpolBit([[maybe_unused]]const uint8_t axis, const uin
 }
 
 static void SetCurrents(const uint8_t axis) {
-    uint8_t iHold = currents[axis].iHold;
-    const uint8_t iRun = currents[axis].iRun;
+    uint8_t iHold = currents[axis].getiHold();
+    const uint8_t iRun = currents[axis].getiRun();
 
     // Make sure iHold never exceeds iRun at runtime
     if (iHold > iRun) {
         iHold = iRun;
 
         // Update global array such that M913 reports correct values
-        currents[axis].iHold = currents[axis].iRun;
+        currents[axis].setiHold(iRun);
 
         // Let user know firmware modified the value
         SERIAL_ECHO_START;
@@ -554,11 +554,8 @@ static void SetCurrents(const uint8_t axis) {
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres)
 {
-	// Update the currents, this will re-calculate the Vsense flag
-	currents[axis] = MotorCurrents(currents[axis].iRun, currents[axis].iHold);
-
 	// Initialise the chopper configuration
-	ChopConfU chopconf = ChopConfU(currents[axis].vSense, mres);
+	ChopConfU chopconf = ChopConfU(currents[axis].getvSense(), mres);
 
 	chopconf.s.intpol = getIntpolBit(axis, mres);
 	chopconf.s.toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
@@ -573,24 +570,24 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres)
 void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 {
 //	DBG(_n("tmc2130_set_current_h(axis=%d, current=%d\n"), axis, current);
-	currents[axis].iHold = current;
+	currents[axis].setiHold(current);
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 }
 
 void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 {
 //	DBG(_n("tmc2130_set_current_r(axis=%d, current=%d\n"), axis, current);
-	currents[axis].iRun = current;
+	currents[axis].setiRun(current);
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 }
 
 void tmc2130_print_currents()
 {
 	printf_P(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
-		currents[0].iHold, currents[0].iRun,
-		currents[1].iHold, currents[1].iRun,
-		currents[2].iHold, currents[2].iRun,
-		currents[3].iHold, currents[3].iRun
+		currents[0].getiHold(), currents[0].getiRun(),
+		currents[1].getiHold(), currents[1].getiRun(),
+		currents[2].getiHold(), currents[2].getiRun(),
+		currents[3].getiHold(), currents[3].getiRun()
 	);
 }
 
