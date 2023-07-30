@@ -61,11 +61,11 @@ void uvlo_() {
 
     // Minimise Z and E motor currents (Hold and Run)
 #ifdef TMC2130
-    currents[Z_AXIS].iHold = 20;
-    currents[Z_AXIS].iRun = 20;
+    currents[Z_AXIS].setiHold(20);
+    currents[Z_AXIS].setiRun(20);
     tmc2130_setup_chopper(Z_AXIS, tmc2130_mres[Z_AXIS]);
-    currents[E_AXIS].iHold = 20;
-    currents[E_AXIS].iRun = 20;
+    currents[E_AXIS].setiHold(20);
+    currents[E_AXIS].setiRun(20);
     tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS]);
 #endif //TMC2130
 
@@ -227,8 +227,8 @@ static void uvlo_tiny() {
     disable_e0();
 
 #ifdef TMC2130
-    currents[Z_AXIS].iHold = 20;
-    currents[Z_AXIS].iRun = 20;
+    currents[Z_AXIS].setiHold(20);
+    currents[Z_AXIS].setiRun(20);
     tmc2130_setup_chopper(Z_AXIS, tmc2130_mres[Z_AXIS]);
 #endif //TMC2130
 
