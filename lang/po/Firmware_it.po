@@ -2551,6 +2551,26 @@ msgstr "ERRORE SCONOSCIUTO"
 msgid "Unexpected error occurred."
 msgstr "Si è verificato un errore imprevisto."
 
+#. MSG_BTN_EJECT c=8
+#: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
+msgid "Eject"
+msgstr "Espelli"
+
+#. MSG_TITLE_FILAMENT_CHANGE c=20
+#: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
+msgid "FILAMENT CHANGE"
+msgstr "CAMBIO FILAMENTO"
+
+#. MSG_BTN_LOAD c=8
+#: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
+msgid "Load"
+msgstr "Carica"
+
+#. MSG_DESC_FILAMENT_CHANGE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
+msgid "M600 Filament Change. Load a new filament or eject the old one."
+msgstr "Cambio filamento M600. Carica un nuovo filamento o espelli quello vecchio."
+
 #~ msgid "XFLASH init"
 #~ msgstr "Inizializza XFLASH"
 

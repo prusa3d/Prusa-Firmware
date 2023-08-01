@@ -2534,6 +2534,26 @@ msgstr "NEZNÁMA CHYBA"
 msgid "Unexpected error occurred."
 msgstr "Vyskytla sa neočakávaná chyba."
 
+#. MSG_BTN_EJECT c=8
+#: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
+msgid "Eject"
+msgstr "Vysunúť"
+
+#. MSG_TITLE_FILAMENT_CHANGE c=20
+#: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
+msgid "FILAMENT CHANGE"
+msgstr "ZMENA FILAMENTU"
+
+#. MSG_BTN_LOAD c=8
+#: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
+msgid "Load"
+msgstr "Zaviest"
+
+#. MSG_DESC_FILAMENT_CHANGE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
+msgid "M600 Filament Change. Load a new filament or eject the old one."
+msgstr "Výmena vlákna M600. Vložte nové vlákno alebo vysuňte staré."
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
 

@@ -471,6 +471,11 @@ msgstr ""
 msgid "ERROR:"
 msgstr ""
 
+#. MSG_BTN_EJECT c=8
+#: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
+msgid "Eject"
+msgstr ""
+
 #. MSG_EJECT_FROM_MMU c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:325
 #: ../../Firmware/ultralcd.cpp:4804 ../../Firmware/ultralcd.cpp:5234
@@ -537,6 +542,11 @@ msgstr ""
 #. MSG_TITLE_FILAMENT_ALREADY_LOADED c=20
 #: ../../Firmware/mmu2/errors_list.h:179 ../../Firmware/mmu2/errors_list.h:225
 msgid "FIL. ALREADY LOADED"
+msgstr ""
+
+#. MSG_TITLE_FILAMENT_CHANGE c=20
+#: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
+msgid "FILAMENT CHANGE"
 msgstr ""
 
 #. MSG_TITLE_FILAMENT_EJECTED c=20
@@ -1018,6 +1028,11 @@ msgstr ""
 msgid "Live adjust Z"
 msgstr ""
 
+#. MSG_BTN_LOAD c=8
+#: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
+msgid "Load"
+msgstr ""
+
 #. MSG_LOAD_ALL c=18
 #: ../../Firmware/messages.cpp:181 ../../Firmware/ultralcd.cpp:4766
 #: ../../Firmware/ultralcd.cpp:4835
@@ -1070,6 +1085,11 @@ msgstr ""
 #: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:4158
 #: ../../Firmware/ultralcd.cpp:4170
 msgid "Loud"
+msgstr ""
+
+#. MSG_DESC_FILAMENT_CHANGE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
+msgid "M600 Filament Change. Load a new filament or eject the old one."
 msgstr ""
 
 #. MSG_TITLE_FW_UPDATE_NEEDED c=20
