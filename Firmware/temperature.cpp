@@ -2724,7 +2724,7 @@ void thermal_model_autotune(int16_t temp, bool selftest)
     thermal_model_autotune_err = true;
 
     char tm_message[LCD_WIDTH+1];
-    if(moves_planned() || printer_active()) {
+    if(moves_planned() || (lcd_commands_type != LcdCommands::ThermalModel && printer_active())) {
         sprintf_P(tm_message, PSTR("TM: Cal. NOT IDLE"));
         lcd_setstatus_serial(tm_message);
         return;
