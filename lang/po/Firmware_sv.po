@@ -2541,6 +2541,26 @@ msgstr "OKÄNT FEL"
 msgid "Unexpected error occurred."
 msgstr "Ett oväntat fel inträffade."
 
+#. MSG_BTN_EJECT c=8
+#: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
+msgid "Eject"
+msgstr "Mata ut"
+
+#. MSG_TITLE_FILAMENT_CHANGE c=20
+#: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
+msgid "FILAMENT CHANGE"
+msgstr "FILAMENTBYTE"
+
+#. MSG_BTN_LOAD c=8
+#: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
+msgid "Load"
+msgstr "Ladda"
+
+#. MSG_DESC_FILAMENT_CHANGE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
+msgid "M600 Filament Change. Load a new filament or eject the old one."
+msgstr "M600 filamentbyte. Ladda en ny filament eller mata ut den gamla."
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
 

@@ -2546,6 +2546,26 @@ msgstr "NEPOZNATA POGREŠKA"
 msgid "Unexpected error occurred."
 msgstr "Došlo je do neočekivane pogreške."
 
+#. MSG_BTN_EJECT c=8
+#: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
+msgid "Eject"
+msgstr "Izbaciti"
+
+#. MSG_TITLE_FILAMENT_CHANGE c=20
+#: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
+msgid "FILAMENT CHANGE"
+msgstr "PROMJENA FILAMENTA"
+
+#. MSG_BTN_LOAD c=8
+#: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
+msgid "Load"
+msgstr "Napunite"
+
+#. MSG_DESC_FILAMENT_CHANGE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
+msgid "M600 Filament Change. Load a new filament or eject the old one."
+msgstr "Promjena žarne niti M600. Stavite novu nit ili izbacite staru."
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH  validacija"
 

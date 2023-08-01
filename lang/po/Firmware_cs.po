@@ -2529,6 +2529,26 @@ msgstr "NEZNÁMÁ CHYBA"
 msgid "Unexpected error occurred."
 msgstr "Došlo k neočekávané chybě."
 
+#. MSG_BTN_EJECT c=8
+#: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
+msgid "Eject"
+msgstr "Vyhodit"
+
+#. MSG_TITLE_FILAMENT_CHANGE c=20
+#: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
+msgid "FILAMENT CHANGE"
+msgstr "VÝMĚNA FILAMENTU"
+
+#. MSG_BTN_LOAD c=8
+#: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
+msgid "Load"
+msgstr "Nacist"
+
+#. MSG_DESC_FILAMENT_CHANGE c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
+msgid "M600 Filament Change. Load a new filament or eject the old one."
+msgstr "Výměna vlákna M600. Vložte nové vlákno nebo vyjměte staré."
+
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
 
