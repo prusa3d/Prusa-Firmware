@@ -386,10 +386,7 @@ void tuneIdlerStallguardThreshold() {
     tuningDone = false;
     menu_goto(tuneIdlerStallguardThresholdMenu, 0, 0, 0);
     while(!tuningDone) {
-        manage_heater();
-        // Manage inactivity, but don't disable steppers on timeout.
-        manage_inactivity(true);
-        lcd_update(0);
+        delay_keep_alive(0);
     }
     lcd_return_to_status();
 }
