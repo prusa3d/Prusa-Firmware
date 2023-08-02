@@ -6,6 +6,7 @@
 #include "mmu2/error_codes.h"
 #include "mmu2/progress_codes.h"
 #include "mmu2/buttons.h"
+#include "mmu2/registers.h"
 #include "mmu2_protocol.h"
 
 // #include <array> std array is not available on AVR ... we need to "fake" it
@@ -372,19 +373,19 @@ private:
     // 8bit registers
     static constexpr uint8_t regs8Count = 3;
     static_assert(regs8Count > 0); // code is not ready for empty lists of registers
-    static const uint8_t regs8Addrs[regs8Count] PROGMEM;
+    static const Register regs8Addrs[regs8Count] PROGMEM;
     uint8_t regs8[regs8Count] = { 0, 0, 0 };
 
     // 16bit registers
     static constexpr uint8_t regs16Count = 2;
     static_assert(regs16Count > 0); // code is not ready for empty lists of registers
-    static const uint8_t regs16Addrs[regs16Count] PROGMEM;
+    static const Register regs16Addrs[regs16Count] PROGMEM;
     uint16_t regs16[regs16Count] = { 0, 0 };
 
     // 8bit init values to be sent to the MMU after line up
     static constexpr uint8_t initRegs8Count = 2;
     static_assert(initRegs8Count > 0); // code is not ready for empty lists of registers
-    static const uint8_t initRegs8Addrs[initRegs8Count] PROGMEM;
+    static const Register initRegs8Addrs[initRegs8Count] PROGMEM;
     uint8_t initRegs8[initRegs8Count];
 
     uint8_t regIndex;
