@@ -86,4 +86,6 @@ void FullScreenMsgRestoringTemperature();
 void ScreenUpdateEnable();
 void ScreenClear();
 
+void tuneIdlerStallguardThreshold();
+
 } // namespace

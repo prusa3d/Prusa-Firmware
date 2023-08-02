@@ -69,6 +69,10 @@ public:
         ErrorSourceNone = 0xFF,
     };
 
+    /// Tune value in MMU registers as a way to recover from errors
+    /// e.g. Idler Stallguard threshold
+    void Tune();
+
     /// Perform a reset of the MMU
     /// @param level physical form of the reset
     void Reset(ResetForm level);

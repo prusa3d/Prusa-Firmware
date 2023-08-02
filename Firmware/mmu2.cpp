@@ -78,6 +78,19 @@ void MMU2::StopKeepPowered() {
     mmu2Serial.close();
 }
 
+void MMU2::Tune() {
+    switch (lastErrorCode) {
+    case ErrorCode::HOMING_IDLER_FAILED:
+    {
+        // Prompt a menu for different values
+        tuneIdlerStallguardThreshold();
+        break;
+    }
+    default:
+        break;
+    }
+}
+
 void MMU2::Reset(ResetForm level) {
     switch (level) {
     case Software:
@@ -741,6 +754,9 @@ void MMU2::CheckUserInput() {
         default:
             break;
         }
+        break;
+    case TuneMMU:
+        Tune();
         break;
     case ResetMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
