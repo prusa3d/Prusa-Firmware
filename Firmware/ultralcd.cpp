@@ -4152,12 +4152,12 @@ static void SETTINGS_SILENT_MODE()
 
 static void menuitems_temperature_common() {
 #if TEMP_SENSOR_0 != 0
-    MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
+    MENU_ITEM_EDIT_int3_jmp_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10, LCD_JUMP_HOTEND_TEMP);
 #endif
 #if TEMP_SENSOR_BED != 0
-    MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 5);
+    MENU_ITEM_EDIT_int3_jmp_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 5, LCD_JUMP_BED_TEMP);
 #endif
-    MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
+    MENU_ITEM_EDIT_int3_jmp_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255, LCD_JUMP_FAN_SPEED);
 }
 
 void SETTINGS_FANS_CHECK() {

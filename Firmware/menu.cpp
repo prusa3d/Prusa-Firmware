@@ -461,12 +461,21 @@ void menu_draw_float13(const char* str, float val)
 	lcd_printf_P(menu_fmt_float13, ' ', str, val);
 }
 
-template <typename T>
-static void _menu_edit_P(void)
+static void _menu_edit_P()
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
+        // handle initial value jumping
+        if (_md->minJumpValue && lcd_encoder) {
+            if (lcd_encoder > 0 && _md->currentValue == _md->minEditValue) {
+                _md->currentValue = _md->minJumpValue;
+                lcd_encoder = 0;
+            }
+            // disable after first use and/or if the initial value is not minEditValue
+            _md->minJumpValue = 0;
+        }
+
 		_md->currentValue += lcd_encoder;
 		lcd_encoder = 0; // Consume knob rotation event
 
@@ -477,39 +486,42 @@ static void _menu_edit_P(void)
 	}
 	if (lcd_clicked())
 	{
-		*((T)(_md->editValue)) = _md->currentValue;
+        if (_md->editValueBits == 8)
+            *((uint8_t*)(_md->editValuePtr)) = _md->currentValue;
+        else
+            *((int16_t*)(_md->editValuePtr)) = _md->currentValue;
 		menu_back_no_reset();
 	}
 }
 
-template <typename T>
-void menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val)
+void menu_item_edit_P(const char* str, void* pval, uint8_t pbits, int16_t min_val, int16_t max_val, int16_t jmp_val)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
 	{
+        int16_t cur_val = (pbits == 8 ? *((uint8_t*)pval) : *((int16_t*)pval));
+
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_P(menu_selection_mark(), str, *pval);
+			menu_draw_P(menu_selection_mark(), str, cur_val);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_submenu_no_reset(_menu_edit_P<T>);
+			menu_submenu_no_reset(_menu_edit_P);
 			_md->editLabel = str;
-			_md->editValue = pval;
-			_md->currentValue = *pval;
+			_md->editValuePtr = pval;
+			_md->editValueBits = pbits;
+			_md->currentValue = cur_val;
 			_md->minEditValue = min_val;
 			_md->maxEditValue = max_val;
+			_md->minJumpValue = jmp_val;
 			menu_item_ret();
 			return;
 		}
 	}
 	menu_item++;
 }
-
-template void menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
-template void menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
 static uint8_t progressbar_block_count = 0;
 static uint16_t progressbar_total = 0;
