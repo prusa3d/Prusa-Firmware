@@ -26,20 +26,20 @@ namespace MMU2 {
 /// To save space a "dumb" solution was chosen + a few static_assert checks in errors_list.h preventing the code from compiling when the string doesn't match.
 static constexpr uint8_t supportedMmuFWVersion[3] PROGMEM = { mmuVersionMajor, mmuVersionMinor, mmuVersionPatch };
 
-const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
-    8,    // FINDA state
-    0x1b, // Selector slot
-    0x1c, // Idler slot
+const Register ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
+    Register::FINDA_State,    // FINDA state
+    Register::Set_Get_Selector_Slot, // Selector slot
+    Register::Set_Get_Idler_Slot, // Idler slot
 };
 
-const uint8_t ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
-    4,    // MMU errors - aka statistics
-    0x1a, // Pulley position [mm]
+const Register ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
+    Register::MMU_Errors,    // MMU errors - aka statistics
+    Register::Get_Pulley_Position, // Pulley position [mm]
 };
 
-const uint8_t ProtocolLogic::initRegs8Addrs[ProtocolLogic::initRegs8Count] PROGMEM = {
-    0x0b, // extra load distance [mm]
-    0x14, // pulley slow feedrate [mm/s]
+const Register ProtocolLogic::initRegs8Addrs[ProtocolLogic::initRegs8Count] PROGMEM = {
+    Register::Extra_Load_Distance, // extra load distance [mm]
+    Register::Pulley_Slow_Feedrate, // pulley slow feedrate [mm/s]
 };
 
 void ProtocolLogic::CheckAndReportAsyncEvents() {
