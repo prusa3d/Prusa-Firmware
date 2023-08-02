@@ -10718,7 +10718,7 @@ void print_mesh_bed_leveling_table()
 {
   SERIAL_ECHOPGM("mesh bed leveling: ");
   for (int8_t y = 0; y < MESH_NUM_Y_POINTS; ++ y)
-    for (int8_t x = 0; x < MESH_NUM_Y_POINTS; ++ x) {
+    for (int8_t x = 0; x < MESH_NUM_X_POINTS; ++ x) {
       MYSERIAL.print(mbl.z_values[y][x], 3);
       SERIAL_ECHO(' ');
     }
