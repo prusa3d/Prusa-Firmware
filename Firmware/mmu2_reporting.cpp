@@ -4,6 +4,7 @@
 #include "mmu2_error_converter.h"
 #include "mmu2/error_codes.h"
 #include "mmu2/buttons.h"
+#include "menu.h"
 #include "ultralcd.h"
 #include "Filament_sensor.h"
 #include "language.h"
@@ -357,6 +358,40 @@ void ScreenUpdateEnable(){
 
 void ScreenClear(){
     lcd_clear();
+}
+
+// These are global while testing this concept
+uint8_t stallGuardValue = 6; // default
+bool tuningDone = false;
+
+void tuneIdlerStallguardThresholdMenu() {
+    constexpr uint8_t maxStallguardThreshold = 7;
+    constexpr uint8_t minStallguardThreshold = 4;
+    MENU_BEGIN();
+    ON_MENU_LEAVE(
+        tuningDone = true;
+        mmu2.WriteRegister(0x19, (uint16_t)stallGuardValue);
+    );
+    MENU_ITEM_BACK_P(_i("Done"));
+    MENU_ITEM_EDIT_int3_P(
+        _i("Idler"),
+        &stallGuardValue,
+        minStallguardThreshold,
+        maxStallguardThreshold
+    );
+    MENU_END();
+}
+
+void tuneIdlerStallguardThreshold() {
+    tuningDone = false;
+    menu_goto(tuneIdlerStallguardThresholdMenu, 0, 0, 0);
+    while(!tuningDone) {
+        manage_heater();
+        // Manage inactivity, but don't disable steppers on timeout.
+        manage_inactivity(true);
+        lcd_update(0);
+    }
+    lcd_return_to_status();
 }
 
 } // namespace MMU2

@@ -349,6 +349,7 @@ static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
+static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); ////MSG_BTN_DISABLE_MMU c=8
 static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 
 // Used to parse the buttons from Btns().
@@ -359,6 +360,7 @@ static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_UNLOAD),
     _R(MSG_BTN_STOP),
     _R(MSG_BTN_DISABLE_MMU),
+    _R(MSG_BTN_TUNE_MMU),
 };
 
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
@@ -380,7 +382,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//LOAD_TO_EXTRUDER_FAILED
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//SELECTOR_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//SELECTOR_CANNOT_MOVE
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_HOME
+    Btns(ButtonOperations::Retry, ButtonOperations::Tune),//IDLER_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_MOVE
 
     Btns(ButtonOperations::Continue, ButtonOperations::ResetMMU),//WARNING_TMC_PULLEY_TOO_HOT

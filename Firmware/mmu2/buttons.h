@@ -17,6 +17,7 @@ enum class ButtonOperations : uint8_t {
     Unload      = 4,
     StopPrint   = 5,
     DisableMMU  = 6,
+    Tune = 7,
 };
 
 /// Button codes + extended actions performed on the printer's side
@@ -29,6 +30,7 @@ enum Buttons : uint8_t {
     ResetMMU,
     StopPrint,
     DisableMMU,
+    TuneMMU, // Printer changes MMU register value
     
     NoButton = 0xff // shall be kept last
 };
