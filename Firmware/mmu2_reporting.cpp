@@ -1,4 +1,5 @@
 #include "mmu2.h"
+#include "mmu2_log.h"
 #include "mmu2_reporting.h"
 #include "mmu2_error_converter.h"
 #include "mmu2/error_codes.h"
@@ -283,16 +284,29 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
 }
 
 void TryLoadUnloadProgressbarInit() {
-    // Clear the status line
-    lcd_set_cursor(0, 3);
-    lcd_space(LCD_WIDTH);
+    lcd_clearstatus();
+}
+
+void TryLoadUnloadProgressbarDeinit() {
+    // Delay the next status message just so
+    // the user can see the results clearly
+    lcd_reset_status_message_timeout();
+}
+
+void TryLoadUnloadProgressbarEcho() {
+    char buf[LCD_WIDTH];
+    lcd_getstatus(buf);
+    for (uint8_t i = 0; i < sizeof(buf); i++) {
+        // 0xFF is -1 when converting from unsigned to signed char
+        // If the number is negative, that means filament is present
+        buf[i] = (buf[i] < 0) ? '1' : '0';
+    }
+    MMU2_ECHO_MSGLN(buf);
 }
 
 void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
-    // Set the cursor position each time in case some other
-    // part of the firmware changes the cursor position
-    lcd_putc_at(col, 3, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
-    lcd_reset_status_message_timeout();
+    lcd_insert_char_into_status(col, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
+    if (!lcd_update_enabled) lcdui_print_status_line();
 }
 
 void IncrementLoadFails(){
