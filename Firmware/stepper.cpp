@@ -189,20 +189,17 @@ void checkHitEndstops()
 {
  if(endstop_hit) {
 #ifdef VERBOSE_CHECK_HIT_ENDSTOPS
-   SERIAL_ECHO_START;
-   SERIAL_ECHORPGM(MSG_ENDSTOPS_HIT);
-   if(endstop_hit & _BV(X_AXIS)) {
-     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/cs.axis_steps_per_mm[X_AXIS]);
-//     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), PSTR("X")));
-   }
-   if(endstop_hit & _BV(Y_AXIS)) {
-     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/cs.axis_steps_per_mm[Y_AXIS]);
-//     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), PSTR("Y")));
-   }
-   if(endstop_hit & _BV(Z_AXIS)) {
-     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/cs.axis_steps_per_mm[Z_AXIS]);
-//     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT),PSTR("Z")));
-   }
+    SERIAL_ECHO_START;
+    SERIAL_ECHORPGM(PSTR("Endstops Hit"));
+    for (uint8_t axis = 0; axis < E_AXIS; axis++) // XYZ
+    {
+        if(endstop_hit & _BV(axis)) {
+            SERIAL_ECHO(' ');
+            SERIAL_ECHO(char('X' + axis));
+            SERIAL_ECHO(':');
+            SERIAL_ECHO(float(endstops_trigsteps[axis]) / cs.axis_steps_per_mm[axis]);
+        }
+    }
    SERIAL_ECHOLN("");
 #endif //VERBOSE_CHECK_HIT_ENDSTOPS
    endstop_hit = 0;
