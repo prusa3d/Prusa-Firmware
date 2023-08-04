@@ -161,9 +161,9 @@
 #define MINTEMP_MINAMBIENT      10
 #define MINTEMP_MINAMBIENT_RAW  1002
 
-#define DEBUG_DCODE2
-#define DEBUG_DCODE3
-#define DEBUG_DCODE6
+//#define DEBUG_DCODE2
+//#define DEBUG_DCODE3
+//#define DEBUG_DCODE6
 
 //#define DEBUG_PULLUP_CRASH //Test Pullup crash
 
