@@ -3108,7 +3108,11 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
 exit:
     KEEPALIVE_STATE(IN_HANDLER);
     lcd_set_custom_characters();
-    lcd_update_enable(true);
+    // Enable LCD updates again. We may not call lcd_update_enable(true)
+    // because it may create a recursion scenario when the caller of lcd_show_multiscreen_message_with_choices_and_wait_P
+    // is a submenu lcd_update_enable(true) will cause another call to the submenu immediately
+    // and so won't allow the user to exit the submenu
+    lcd_update_enabled = true;
     return current_selection;
 }
 
