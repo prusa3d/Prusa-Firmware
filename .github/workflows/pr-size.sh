@@ -26,11 +26,14 @@ avr_ram()
 echo "This PR will consume:" > "$MESSAGE"
 for TARGET in $@
 do
-    base_bin=$(echo ${BASE_DIR}/build_gen/*/$TARGET)
+    # strip the multilang prefix
+    variant=${TARGET%_MULTILANG}
+
+    base_bin=$(echo ${BASE_DIR}/build_gen/$variant/${variant}_lang_base)
     base_flash=$(avr_flash "$base_bin")
     base_ram=$(avr_ram "$base_bin")
 
-    pr_bin=$(echo ${PR_DIR}/build_gen/*/$TARGET)
+    pr_bin=$(echo ${PR_DIR}/build_gen/$variant/${variant}_lang_base)
     pr_flash=$(avr_flash "$pr_bin")
     pr_ram=$(avr_ram "$pr_bin")
 

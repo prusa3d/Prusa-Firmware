@@ -5,11 +5,13 @@ on:
     branches: [ MK3, MK3_* ]
 
 env:
-    TARGETS: "MK3S-EINSy10a_ENGLISH MK3-EINSy10a_ENGLISH"
+    TARGETS: "MK3S_MULTILANG MK3_MULTILANG"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
 
