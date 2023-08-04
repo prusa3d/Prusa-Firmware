@@ -23,7 +23,10 @@ avr_ram()
     avr_size "$@" | sed -ne 's/^Data: *\([0-9]\+\).*/\1/p'
 }
 
-echo "This PR will consume:" > "$MESSAGE"
+cat <<EOF > "$MESSAGE"
+| Target | ΔFlash (bytes) | ΔSRAM (bytes) |
+| ------ | -------------- | ------------- |
+EOF
 for TARGET in $@
 do
     # strip the multilang prefix
@@ -40,5 +43,5 @@ do
     flash_d=$(($pr_flash - $base_flash))
     ram_d=$(($pr_ram - $base_ram))
 
-    echo "- \`$TARGET\`: ${flash_d}b of flash, ${ram_d}b of ram" >> "$MESSAGE"
+    echo "| \`$TARGET\` | $flash_d | $ram_d |" >> "$MESSAGE"
 done
