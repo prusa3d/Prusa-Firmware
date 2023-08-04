@@ -5,11 +5,13 @@ on:
     branches: [ MK3, MK3_* ]
 
 env:
-    TARGETS: "MK3S-EINSy10a_ENGLISH MK3-EINSy10a_ENGLISH"
+    TARGETS: "MK3S_MULTILANG MK3_MULTILANG"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
 
@@ -61,6 +63,13 @@ jobs:
           ./build-pr/pr-size.sh build-changes build-base build-pr $TARGETS
 
     - name: Add PR Comment
-      uses: mshick/add-pr-comment@v2
+      uses: actions/github-script@v3
       with:
-        message-path: build-changes
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Does this comment appear when using Github fork?'
+            })
