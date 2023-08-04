@@ -1837,10 +1837,15 @@ void mFilamentBack()
     eFilamentAction = FilamentAction::None;
 }
 
+/// Reset the menu stack and clear the planned filament action flag
+static void mFilamentDone()
+{
+    menu_back(bFilamentPreheatState ? 1 : 2);
+    mFilamentBack();
+}
+
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 {
-    uint8_t nLevel;
-
     setTargetHotend((float)nTemp);
     if (!shouldPreheatOnlyNozzle()) setTargetBed((float)nTempBed);
 
@@ -1869,6 +1874,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     // then continue with the filament action if any is set
     if (bFilamentSkipPreheat || abs((int)current_temperature[0] - nTemp) < TEMP_HYSTERESIS)
     {
+        menu_func_t filamentActionMenu = nullptr;
         switch (eFilamentAction)
         {
         case FilamentAction::Load:
@@ -1877,9 +1883,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             if (bFilamentWaitingFlag) menu_submenu(mFilamentPrompt, true);
             else
             {
-                nLevel = bFilamentPreheatState ? 1 : 2;
-                menu_back(nLevel);
-
+                mFilamentDone();
                 if (eFilamentAction == FilamentAction::AutoLoad) {
                     // loading no longer cancellable
                     eFilamentAction = FilamentAction::Load;
@@ -1892,30 +1896,21 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             }
             break;
         case FilamentAction::MmuLoad:
-            nLevel = bFilamentPreheatState ? 1 : 2;
-            menu_back(nLevel);
-            menu_submenu(mmu_load_to_nozzle_menu, true);
+            filamentActionMenu = mmu_load_to_nozzle_menu;
             break;
         case FilamentAction::MmuLoadingTest:
-            nLevel = bFilamentPreheatState ? 1 : 2;
-            menu_back(nLevel);
-            menu_submenu(mmu_loading_test_menu, true);
+            filamentActionMenu = mmu_loading_test_menu;
             break;
         case FilamentAction::MmuUnLoad:
-            nLevel = bFilamentPreheatState ? 1 : 2;
-            menu_back(nLevel);
+            mFilamentDone();
             MMU2::mmu2.unload();
             break;
         case FilamentAction::MmuEject:
-            nLevel = bFilamentPreheatState ? 1 : 2;
-            menu_back(nLevel);
-            menu_submenu(mmu_fil_eject_menu, true);
+            filamentActionMenu = mmu_fil_eject_menu;
             break;
         case FilamentAction::MmuCut:
 #ifdef MMU_HAS_CUTTER
-            nLevel=bFilamentPreheatState?1:2;
-            menu_back(nLevel);
-            menu_submenu(mmu_cut_filament_menu, true);
+            filamentActionMenu = mmu_cut_filament_menu;
 #endif //MMU_HAS_CUTTER
             break;
         case FilamentAction::None:
@@ -1924,8 +1919,16 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             // handled earlier
             break;
         }
-        if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
-        bFilamentWaitingFlag = false;
+        if (bFilamentWaitingFlag) {
+            Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+            bFilamentWaitingFlag = false;
+        }
+
+        if (filamentActionMenu) {
+            // Reset the menu stack and filament action before entering action menu
+            mFilamentDone();
+            menu_submenu(filamentActionMenu, true);
+        }
     }
     else // still preheating, continue updating LCD UI
     {
