@@ -1833,13 +1833,8 @@ switch(eFilamentAction)
 
 void mFilamentBack()
 {
-    if (eFilamentAction == FilamentAction::AutoLoad ||
-        eFilamentAction == FilamentAction::Preheat ||
-        eFilamentAction == FilamentAction::Lay1Cal)
-    {
-        // filament action has been cancelled
-        eFilamentAction = FilamentAction::None;
-    }
+    // filament action has been cancelled
+    eFilamentAction = FilamentAction::None;
 }
 
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
