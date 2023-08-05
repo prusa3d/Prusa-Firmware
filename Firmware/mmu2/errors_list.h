@@ -380,7 +380,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_TOO_EARLY
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//INSPECT_FINDA
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//LOAD_TO_EXTRUDER_FAILED
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//SELECTOR_CANNOT_HOME
+    Btns(ButtonOperations::Retry, ButtonOperations::Tune),//SELECTOR_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//SELECTOR_CANNOT_MOVE
     Btns(ButtonOperations::Retry, ButtonOperations::Tune),//IDLER_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_MOVE

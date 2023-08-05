@@ -88,6 +88,12 @@ public:
     /// @returns true upon success
     bool ReadRegister(uint8_t address);
 
+    /// Variant of ReadRegister which runs in blocking context such as manage_response()
+    /// Be careful of using this as it is not recursion protected!
+    /// @param address Address of register in hexidecimal
+    /// @return true upon success
+    bool ReadRegisterInner(uint8_t address);
+
     /// Write from a MMU register (See gcode M708)
     /// @param address Address of register in hexidecimal
     /// @param data Data to write to register
@@ -193,6 +199,12 @@ public:
     inline uint16_t TMCFailures() const { return tmcFailures; }
     inline void IncrementTMCFailures() { ++tmcFailures; }
     inline void ClearTMCFailures() { tmcFailures = 0; }
+
+    /// Retrieve cached value parsed from ReadRegister()
+    /// or using M707
+    inline uint16_t GetLastReadRegisterValue() const {
+        return lastReadRegisterValue;
+    };
 
 private:
     /// Perform software self-reset of the MMU (sends an X0 command)
@@ -301,6 +313,7 @@ private:
     ErrorCode lastErrorCode = ErrorCode::MMU_NOT_RESPONDING;
     ErrorSource lastErrorSource = ErrorSource::ErrorSourceNone;
     Buttons lastButton = Buttons::NoButton;
+    uint16_t lastReadRegisterValue = 0;
 
     StepStatus logicStepLastStatus;
 

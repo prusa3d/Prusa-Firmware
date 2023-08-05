@@ -205,7 +205,6 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_MECHANICAL_FSENSOR_FILAMENT_STUCK:
     case ERR_MECHANICAL_FSENSOR_TOO_EARLY:
     case ERR_MECHANICAL_INSPECT_FINDA:
-    case ERR_MECHANICAL_SELECTOR_CANNOT_HOME:
     case ERR_MECHANICAL_SELECTOR_CANNOT_MOVE:
     case ERR_MECHANICAL_IDLER_CANNOT_MOVE:
     case ERR_MECHANICAL_PULLEY_CANNOT_MOVE:
@@ -218,6 +217,7 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
+    case ERR_MECHANICAL_SELECTOR_CANNOT_HOME:
     case ERR_MECHANICAL_IDLER_CANNOT_HOME:
         switch (buttonSelectedOperation) {
         // may be allow move selector right and left in the future
