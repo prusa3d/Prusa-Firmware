@@ -1,3 +1,4 @@
+#include <avr/pgmspace.h>
 #include "mmu2.h"
 #include "mmu2_log.h"
 #include "mmu2_reporting.h"
@@ -360,24 +361,59 @@ void ScreenClear(){
     lcd_clear();
 }
 
-// These are global while testing this concept
-uint8_t stallGuardValue = 6; // default
 bool tuningDone = false;
 
+struct TuneItem {
+    uint8_t address;
+    uint8_t minValue;
+    uint8_t maxValue;
+} __attribute__((packed));
+
+static const TuneItem TuneItems[] PROGMEM = {
+  { (uint8_t)Register::Selector_sg_thrs_R, 1, 4},
+  { (uint8_t)Register::Idler_sg_thrs_R, 4, 7},
+};
+
+static_assert(sizeof(TuneItems)/sizeof(TuneItem) == 2);
+
+typedef struct
+{
+    menu_data_edit_t reserved; //13 bytes reserved for number editing functions
+    int8_t status;             // 1 byte
+    uint8_t currentValue;      // 1 byte
+    TuneItem item;             // 3 bytes
+} _menu_tune_data_t;
+
+static_assert(sizeof(_menu_tune_data_t) == 18);
+static_assert(sizeof(menu_data)>= sizeof(_menu_tune_data_t),"_menu_tune_data_t doesn't fit into menu_data");
+
 void tuneIdlerStallguardThresholdMenu() {
-    constexpr uint8_t maxStallguardThreshold = 7;
-    constexpr uint8_t minStallguardThreshold = 4;
+    static constexpr _menu_tune_data_t * const _md = (_menu_tune_data_t*)&(menu_data[0]);
+    if (_md->status == 0)
+    {
+        _md->status = 1; // Menu entered for the first time
+        lcd_timeoutToStatus.stop(); // Do not timeout the screen
+
+        // Fetch the TuneItem from PROGMEM
+        const uint8_t offset = (mmu2.MMUCurrentErrorCode() == ErrorCode::HOMING_IDLER_FAILED) ? 1 : 0;
+        memcpy_P(&(_md->item), &TuneItems[offset], sizeof(TuneItem));
+
+        // Fetch the value which is currently in MMU EEPROM
+        mmu2.ReadRegisterInner((uint8_t)_md->item.address);
+        _md->currentValue = mmu2.GetLastReadRegisterValue();
+    }
+
     MENU_BEGIN();
     ON_MENU_LEAVE(
         tuningDone = true;
-        mmu2.WriteRegister(0x19, (uint16_t)stallGuardValue);
+        mmu2.WriteRegister(_md->item.address, (uint16_t)_md->currentValue);
     );
     MENU_ITEM_BACK_P(_i("Done"));
     MENU_ITEM_EDIT_int3_P(
-        _i("Idler"),
-        &stallGuardValue,
-        minStallguardThreshold,
-        maxStallguardThreshold
+        _i("Sensitivity"),
+        &_md->currentValue,
+        _md->item.minValue,
+        _md->item.maxValue
     );
     MENU_END();
 }

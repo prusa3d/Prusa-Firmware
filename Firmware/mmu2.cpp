@@ -80,6 +80,7 @@ void MMU2::StopKeepPowered() {
 
 void MMU2::Tune() {
     switch (lastErrorCode) {
+    case ErrorCode::HOMING_SELECTOR_FAILED:
     case ErrorCode::HOMING_IDLER_FAILED:
     {
         // Prompt a menu for different values
@@ -147,6 +148,29 @@ bool MMU2::ReadRegister(uint8_t address) {
         logic.ReadRegister(address); // we may signal the accepted/rejected status of the response as return value of this function
     } while (!manage_response(false, false));
 
+    // Update cached value
+    lastReadRegisterValue = logic.rsp.paramValue;
+    return true;
+}
+
+bool MMU2::ReadRegisterInner(uint8_t address) {
+    if (!WaitForMMUReady())
+        return false;
+
+    // Plan a request for the register value at address
+    logic.ReadRegister(address);
+    
+    do {
+        // Maintain MMU communications
+        marlin_manage_inactivity(true);
+        mmu_loop_inner(false);
+    } while (
+        logicStepLastStatus != StepStatus::Finished
+        && logic.rsp.request.value == address // If the MMU protocol is busy decoding another request, we must wait
+    );
+
+    // Update cached value
+    lastReadRegisterValue = logic.rsp.paramValue;
     return true;
 }
 
