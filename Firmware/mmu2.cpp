@@ -174,7 +174,7 @@ bool MMU2::ReadRegisterInner(uint8_t address) {
     return true;
 }
 
-bool MMU2::WriteRegister(uint8_t address, uint16_t data) {
+bool __attribute__((noinline)) MMU2::WriteRegister(uint8_t address, uint16_t data) {
     if (!WaitForMMUReady())
         return false;
 
