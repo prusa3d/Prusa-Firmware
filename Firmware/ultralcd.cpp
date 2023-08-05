@@ -5054,6 +5054,10 @@ static void lcd_rename_sheet_menu()
         lcd_putc(menuData->name[i]);
     }
     lcd_putc_at(menuData->selected, 1, '^');
+    if (menuData->selected > 0)
+    {
+        lcd_putc_at(menuData->selected-1, 1, ' ');
+    }
     if (lcd_clicked())
     {
         if ((menuData->selected + 1u) < sizeof(Sheet::name))
