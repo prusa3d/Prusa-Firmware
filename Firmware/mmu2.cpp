@@ -156,10 +156,10 @@ bool MMU2::WriteRegister(uint8_t address, uint16_t data) {
 
     // special cases - intercept requests of registers which influence the printer's behaviour too + perform the change even on the printer's side
     switch (address) {
-    case 0x0b:
+    case (uint8_t)Register::Extra_Load_Distance:
         logic.PlanExtraLoadDistance(data);
         break;
-    case 0x14:
+    case (uint8_t)Register::Pulley_Slow_Feedrate:
         logic.PlanPulleySlowFeedRate(data);
         break;
     default:
