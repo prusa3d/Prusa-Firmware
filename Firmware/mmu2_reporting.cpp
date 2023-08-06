@@ -410,7 +410,7 @@ void tuneIdlerStallguardThresholdMenu() {
         memcpy_P(&(_md->item), &TuneItems[offset], sizeof(TuneItem));
 
         // Fetch the value which is currently in MMU EEPROM
-        mmu2.ReadRegister((uint8_t)_md->item.address);
+        mmu2.ReadRegister(_md->item.address);
         _md->currentValue = mmu2.GetLastReadRegisterValue();
     }
 
