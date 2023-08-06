@@ -88,12 +88,6 @@ public:
     /// @returns true upon success
     bool ReadRegister(uint8_t address);
 
-    /// Variant of ReadRegister which runs in blocking context such as manage_response()
-    /// Be careful of using this as it is not recursion protected!
-    /// @param address Address of register in hexidecimal
-    /// @return true upon success
-    bool ReadRegisterInner(uint8_t address);
-
     /// Write from a MMU register (See gcode M708)
     /// @param address Address of register in hexidecimal
     /// @param data Data to write to register
