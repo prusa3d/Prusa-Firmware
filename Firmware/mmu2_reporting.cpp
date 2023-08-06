@@ -218,11 +218,22 @@ enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_
 // Helper variable to monitor knob in MMU error screen in blocking functions e.g. manage_response
 static bool is_mmu_error_monitor_active;
 
+// Helper variable to stop rendering the error screen when the firmware is rendering complementary
+// UI to resolve the error screen, for example tuning Idler Stallguard Threshold
+// Set to false to allow the error screen to render again.
+static bool putErrorScreenToSleep;
+
 bool isErrorScreenRunning() {
     return is_mmu_error_monitor_active;
 }
 
+bool isErrorScreenSleeping() {
+    return putErrorScreenToSleep;
+}
+
 void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
+    if (putErrorScreenToSleep) return;
+    
     if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
         // If the error code suddenly changes to OK, that means
         // a button was pushed on the MMU and the LCD should
@@ -361,8 +372,6 @@ void ScreenClear(){
     lcd_clear();
 }
 
-bool tuningDone = false;
-
 struct TuneItem {
     uint8_t address;
     uint8_t minValue;
@@ -389,24 +398,28 @@ static_assert(sizeof(menu_data)>= sizeof(_menu_tune_data_t),"_menu_tune_data_t d
 
 void tuneIdlerStallguardThresholdMenu() {
     static constexpr _menu_tune_data_t * const _md = (_menu_tune_data_t*)&(menu_data[0]);
+
+    // Do not timeout the screen, otherwise there will be FW crash (menu recursion)
+    lcd_timeoutToStatus.stop();
     if (_md->status == 0)
     {
         _md->status = 1; // Menu entered for the first time
-        lcd_timeoutToStatus.stop(); // Do not timeout the screen
 
         // Fetch the TuneItem from PROGMEM
         const uint8_t offset = (mmu2.MMUCurrentErrorCode() == ErrorCode::HOMING_IDLER_FAILED) ? 1 : 0;
         memcpy_P(&(_md->item), &TuneItems[offset], sizeof(TuneItem));
 
         // Fetch the value which is currently in MMU EEPROM
-        mmu2.ReadRegisterInner((uint8_t)_md->item.address);
+        mmu2.ReadRegister((uint8_t)_md->item.address);
         _md->currentValue = mmu2.GetLastReadRegisterValue();
     }
 
     MENU_BEGIN();
     ON_MENU_LEAVE(
-        tuningDone = true;
         mmu2.WriteRegister(_md->item.address, (uint16_t)_md->currentValue);
+        putErrorScreenToSleep = false;
+        lcd_return_to_status();
+        return;
     );
     MENU_ITEM_BACK_P(_i("Done"));
     MENU_ITEM_EDIT_int3_P(
@@ -419,12 +432,8 @@ void tuneIdlerStallguardThresholdMenu() {
 }
 
 void tuneIdlerStallguardThreshold() {
-    tuningDone = false;
-    menu_goto(tuneIdlerStallguardThresholdMenu, 0, 0, 0);
-    while(!tuningDone) {
-        delay_keep_alive(0);
-    }
-    lcd_return_to_status();
+    putErrorScreenToSleep = true;
+    menu_submenu(tuneIdlerStallguardThresholdMenu);
 }
 
 } // namespace MMU2

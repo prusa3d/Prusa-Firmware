@@ -153,27 +153,6 @@ bool MMU2::ReadRegister(uint8_t address) {
     return true;
 }
 
-bool MMU2::ReadRegisterInner(uint8_t address) {
-    if (!WaitForMMUReady())
-        return false;
-
-    // Plan a request for the register value at address
-    logic.ReadRegister(address);
-    
-    do {
-        // Maintain MMU communications
-        marlin_manage_inactivity(true);
-        mmu_loop_inner(false);
-    } while (
-        logicStepLastStatus != StepStatus::Finished
-        && logic.rsp.request.value == address // If the MMU protocol is busy decoding another request, we must wait
-    );
-
-    // Update cached value
-    lastReadRegisterValue = logic.rsp.paramValue;
-    return true;
-}
-
 bool __attribute__((noinline)) MMU2::WriteRegister(uint8_t address, uint16_t data) {
     if (!WaitForMMUReady())
         return false;
@@ -840,7 +819,14 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             // the E may have some more moves to finish - wait for them
             ResumeHotendTemp();
             ResumeUnpark();             // We can now travel back to the tower or wherever we were when we saved.
-            logic.ResetRetryAttempts(); // Reset the retry counter.
+            if (!isErrorScreenSleeping())
+            {
+                // If the error screen is sleeping (running 'Tune' menu)
+                // then don't reset retry attempts because we this will trigger
+                // an automatic retry attempt when 'Tune' button is selected. We want the
+                // error screen to appear once more so the user can hit 'Retry' button manually.
+                logic.ResetRetryAttempts(); // Reset the retry counter.
+            }
             planner_synchronize();
             return true;
         case Interrupted:
