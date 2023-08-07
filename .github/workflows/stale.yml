@@ -16,14 +16,14 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         # Don't ever mark PRs as stale.
         days-before-pr-stale: -1
-        stale-issue-message: 'This issue is stale because it has been open for 60 days with no activity. The issue will be closed in 7 days unless you remove the "stale" label or add a comment.'
-        close-issue-message: 'This issue has been closed due to lack of activity.' 
+        stale-issue-message: 'This issue has been flagged as stale because it has been open for 60 days with no activity. The issue will be closed in 7 days unless someone removes the "stale" label or adds a comment.'
+        close-issue-message: 'This issue has been closed due to lack of recent activity.' 
         # Don't act on things assigned to a milestone or assigned to someone. 
         exempt-all-milestones: true
         exempt-all-assignees: true
         enable-statistics: true
         # Disable this and change the operations per run back to 30 when this goes live.
-        debug-only: true
-        operations-per-run: 1000
+        debug-only: false
+        operations-per-run: 30
         stale-issue-label: 'stale-issue'
         stale-pr-label: 'stale-pr'
