@@ -28,7 +28,6 @@ const uint16_t FW_VERSION_NR[4] PROGMEM = {
 #   endif
 #endif
 };
-static const uint32_t FW_VERSION_HASH PROGMEM = (uint32_t)FW_COMMIT_HASH;
 
 const char* FW_VERSION_STR_P()
 {
