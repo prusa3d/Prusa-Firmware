@@ -115,7 +115,7 @@ class FirmwareBuildConfiguration(BuildConfiguration):
             ('CMAKE_TOOLCHAIN_FILE', 'FILEPATH', str(self.toolchain)),
             ('AVR_TOOLCHAIN_DIR', 'DIRPATH', str(get_dependency('avr-gcc'))),
             ('CMAKE_BUILD_TYPE', 'STRING', self.build_type.value.title()),
-            ('PROJECT_VERSION_SUFFIX', 'STRING', self.version_suffix or ''),
+            ('PROJECT_VERSION_HASH', 'STRING', self.version_suffix or ''),
             ('PROJECT_VERSION_SUFFIX_SHORT', 'STRING',
              self.version_suffix_short or ''),
         ])

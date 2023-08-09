@@ -5,15 +5,26 @@ include(cmake/ReproducibleBuild.cmake)
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
-set(PROJECT_VERSION_SUFFIX
+set(PROJECT_VERSION_HASH
     "<auto>"
     CACHE
       STRING
-      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_SUFFIX>). Overrides git hash if set."
+      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_HASH>). Overrides git hash if set."
     )
-if(PROJECT_VERSION_SUFFIX STREQUAL "<auto>")
-  set(PROJECT_VERSION_SUFFIX "${FW_COMMIT_HASH}")
+if(PROJECT_VERSION_HASH STREQUAL "<auto>")
+  set(PROJECT_VERSION_HASH "${FW_COMMIT_HASH}")
 endif()
+
+set(PROJECT_VERSION_COMMIT_NR
+    "<auto>"
+    CACHE
+      STRING
+      "Version commit number to be appended to the final filename (<ver+PROJECT_VERSION_COMMIT_NR>). Overrides git commit number if set."
+    )
+if(PROJECT_VERSION_COMMIT_NR STREQUAL "<auto>")
+  set(PROJECT_VERSION_COMMIT_NR "${FW_COMMIT_NR}")
+endif()
+
 set(PROJECT_VERSION_FULL
     "<auto>"
     CACHE
@@ -27,12 +38,19 @@ set(PROJECT_REPOSITORY
     "Unknown"
     CACHE STRING "Repository string to be shown on the info screen in settings."
     )
-set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
+if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
+  set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+else()
+  set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+endif()
 
 # Inform user about the resolved settings
 message(STATUS "Project version ...........: ${PROJECT_VERSION}")
-message(STATUS "Project version suffix ....: ${PROJECT_VERSION_SUFFIX}")
+message(STATUS "Project version falvor.....: ${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}")
+message(STATUS "Project version build_nr...: ${PROJECT_VERSION_COMMIT_NR}")
+message(STATUS "Project version hash ......: ${PROJECT_VERSION_HASH}")
 message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
+message(STATUS "Project file: ${FN_PREFIX}")
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -307,7 +325,9 @@ function(add_base_binary variant_name)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
-            FW_VERSION_FULL="${PROJECT_VERSION_FULL}" FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+        FW_VERSION_FULL="${PROJECT_VERSION_FULL}"
+        FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+        FW_COMMIT_NR=${FW_COMMIT_NR}
     )
 endfunction()
 
