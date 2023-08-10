@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v3
+    - uses: actions/stale@v8
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         # Don't ever mark PRs as stale.
@@ -27,3 +27,4 @@ jobs:
         operations-per-run: 30
         stale-issue-label: 'stale-issue'
         stale-pr-label: 'stale-pr'
+        ascending: true
