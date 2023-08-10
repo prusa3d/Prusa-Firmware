@@ -7448,15 +7448,32 @@ Sigma_Exit:
 	break;
 
 #ifdef FILAMENT_SENSOR
+    /*!
+    ### M405 - Filament Sensor on <a href="https://reprap.org/wiki/G-code#M405:_Filament_Sensor_on">M405: Filament Sensor on</a>
+    Turn on Filament Sensor extrusion control.
+    #### Usage
+
+        M405
+
+    */
+
     case 405: // M405 Enable Filament Sensor
     {
-        fsensor_enable();
+        fsensor.setEnabled(1);
     }
     break;
+    /*!
+    ### M406 - Filament Sensor off <a href="https://reprap.org/wiki/G-code#M406:_Filament_Sensor_off">M406: Filament Sensor off</a>
+    Turn off Filament Sensor extrusion control.
+    #### Usage
+
+        M406
+
+    */
 
     case 406: // M406 Disable Filament Sensor
     {
-        fsensor_disable();
+        fsensor.setEnabled(0);
     }
 	break;
 #endif
