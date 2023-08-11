@@ -25,6 +25,16 @@ if(PROJECT_VERSION_COMMIT_NR STREQUAL "<auto>")
   set(PROJECT_VERSION_COMMIT_NR "${FW_COMMIT_NR}")
 endif()
 
+set(PROJECT_DEV_VERSION
+    "<auto>"
+    CACHE
+      STRING
+      "Development version to check sliced gcode match firmware."
+    )
+if(PROJECT_DEV_VERSION STREQUAL "<auto>")
+  set(PROJECT_DEV_VERSION "${FW_DEV_VERSION}")
+endif()
+
 set(PROJECT_VERSION_FULL
     "<auto>"
     CACHE
@@ -34,10 +44,12 @@ set(PROJECT_VERSION_FULL
 if(PROJECT_VERSION_FULL STREQUAL "<auto>")
   set(PROJECT_VERSION_FULL "${FW_COMMIT_DSC}")
 endif()
+
 set(PROJECT_REPOSITORY
     "Unknown"
     CACHE STRING "Repository string to be shown on the info screen in settings."
     )
+
 if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
   set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
 else()
@@ -46,10 +58,13 @@ endif()
 
 # Inform user about the resolved settings
 message(STATUS "Project version ...........: ${PROJECT_VERSION}")
-message(STATUS "Project version falvor.....: ${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}")
+message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}")
+message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}")
 message(STATUS "Project version build_nr...: ${PROJECT_VERSION_COMMIT_NR}")
 message(STATUS "Project version hash ......: ${PROJECT_VERSION_HASH}")
 message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
+message(STATUS "Project dev version .......: ${PROJECT_DEV_VERSION}")
+message(STATUS "Project repository ........: ${PROJECT_REPOSITORY}")
 message(STATUS "Project file: ${FN_PREFIX}")
 
 # Language configuration
@@ -328,6 +343,7 @@ function(add_base_binary variant_name)
         FW_VERSION_FULL="${PROJECT_VERSION_FULL}"
         FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
         FW_COMMIT_NR=${FW_COMMIT_NR}
+        FW_DEV_VERSION=${PROJECT_DEV_VERSION}
     )
 endfunction()
 

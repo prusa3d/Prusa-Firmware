@@ -24,18 +24,19 @@ extern const char _sPrinterMmuName[] PROGMEM;
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
 #endif
 
-// FW_VERSION_UNKNOWN means this is an unofficial build.
-// The firmware should only be checked into github with this symbol.
-#ifndef FW_FLAVERSION
-#define FW_FLAVERSION 0
-#endif
-
 // The full version string and repository source are set via cmake
 #ifndef CMAKE_CONTROL
 #define FW_COMMIT_NR 6853
 #define FW_COMMIT_HASH 0
 #define FW_REPOSITORY "Unknown"
 #define FW_VERSION_FULL FW_VERSION "-unknown"
+#define FW_DEV_VERSION FW_VERSION_UNKNOWN
+#endif
+
+// FW_VERSION_UNKNOWN means this is an unofficial build.
+// The firmware should only be checked into github with this symbol.
+#ifndef FW_FLAVERSION
+#define FW_FLAVERSION 0
 #endif
 
 // G-code language level
@@ -59,20 +60,6 @@ extern const char _sPrinterMmuName[] PROGMEM;
 // This is an unofficial build. The firmware should only be checked into github with this symbol,
 // the build server shall never produce builds with this build type.
 #define FW_VERSION_UNKNOWN  0
-
-#ifdef FW_FLAVOR
-#if FW_FLAVOR == RC
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#elif FW_FLAVOR == BETA
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#elif FW_FLAVOR == ALPHA
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#elif FW_FLAVOR == DEV
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#else
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#endif
-#endif
 
 #if FW_DEV_VERSION == FW_VERSION_DEBUG
 #define DEBUG_BUILD

@@ -997,7 +997,7 @@ check_branch_changed()
 {
 if [ "$CLEAN_PF_FW_BUILD" == "1" ]; then
     read -t 10 -p "Branch changed, cleaning Prusa-Firmware-build folder"
-    rm -r *
+    rm -r -f $BUILD_PATH/* || failures 13
 else
     echo "Nothing to clean up"
 fi
