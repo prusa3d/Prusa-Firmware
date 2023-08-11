@@ -3941,7 +3941,6 @@ extern uint8_t st_backlash_y;
 //!@n M404 - N<dia in mm> Enter the nominal filament width (3mm, 1.75mm ) or will display nominal filament width without parameters
 //!@n M405 - Turn on Filament Sensor extrusion control.  Optional D<delay in cm> to set delay in centimeters between sensor and extruder
 //!@n M406 - Turn off Filament Sensor extrusion control
-//!@n M407 - Displays measured filament diameter
 //!@n M500 - stores parameters in EEPROM
 //!@n M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 //!@n M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
