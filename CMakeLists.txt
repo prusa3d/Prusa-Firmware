@@ -46,9 +46,14 @@ if(PROJECT_VERSION_FULL STREQUAL "<auto>")
 endif()
 
 set(PROJECT_REPOSITORY
-    "Unknown"
-    CACHE STRING "Repository string to be shown on the info screen in settings."
+    "<auto>"
+    CACHE
+      STRING
+      "Repository string to be shown on the info screen in settings."
     )
+if(PROJECT_REPOSITORY STREQUAL "<auto>")
+  set(PROJECT_REPOSITORY "${FW_REPOSITORY}")
+endif()
 
 if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
   set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
@@ -339,7 +344,8 @@ function(add_base_binary variant_name)
 
   target_compile_definitions(
     ${variant_name}
-    PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
+    PRIVATE CMAKE_CONTROL
+        FW_REPOSITORY="${PROJECT_REPOSITORY}"
         FW_VERSION_FULL="${PROJECT_VERSION_FULL}"
         FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
         FW_COMMIT_NR=${FW_COMMIT_NR}
