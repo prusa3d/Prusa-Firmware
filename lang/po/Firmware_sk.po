@@ -2506,10 +2506,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:331
 msgid ""
-"MMU FW version is incompatible with printer FW.Update to version 3.0.0."
+"MMU FW version is incompatible with printer FW.Update to version 3.0.1."
 msgstr ""
 "Verzia firmvéru MMU nie je kompatibilná s FW tlačiarne. Aktualizácia na "
-"verziu 3.0.0."
+"verziu 3.0.1."
 
 #. MSG_PRELOAD_TO_MMU c=17
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5231
