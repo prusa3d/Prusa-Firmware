@@ -819,7 +819,7 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             // the E may have some more moves to finish - wait for them
             ResumeHotendTemp();
             ResumeUnpark();             // We can now travel back to the tower or wherever we were when we saved.
-            if (!isErrorScreenSleeping())
+            if (!TuneMenuEntered())
             {
                 // If the error screen is sleeping (running 'Tune' menu)
                 // then don't reset retry attempts because we this will trigger

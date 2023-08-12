@@ -28,7 +28,7 @@ bool isErrorScreenRunning();
 /// Return true if the error screen is sleeping in the background
 /// Error screen sleeps when the firmware is rendering complementary
 /// UI to resolve the error screen, for example tuning Idler Stallguard Threshold
-bool isErrorScreenSleeping();
+bool TuneMenuEntered();
 
 /// @brief Called when the MMU or MK3S sends operation error (even repeatedly).
 /// Render MMU error screen on the LCD. This must be non-blocking

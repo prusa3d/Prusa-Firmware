@@ -227,7 +227,7 @@ bool isErrorScreenRunning() {
     return is_mmu_error_monitor_active;
 }
 
-bool isErrorScreenSleeping() {
+bool TuneMenuEntered() {
     return putErrorScreenToSleep;
 }
 
