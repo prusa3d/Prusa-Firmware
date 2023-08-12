@@ -385,13 +385,13 @@ static const TuneItem TuneItems[] PROGMEM = {
 
 static_assert(sizeof(TuneItems)/sizeof(TuneItem) == 2);
 
-typedef struct
+struct _menu_tune_data_t
 {
     menu_data_edit_t reserved; //13 bytes reserved for number editing functions
     int8_t status;             // 1 byte
     uint8_t currentValue;      // 1 byte
     TuneItem item;             // 3 bytes
-} _menu_tune_data_t;
+};
 
 static_assert(sizeof(_menu_tune_data_t) == 18);
 static_assert(sizeof(menu_data)>= sizeof(_menu_tune_data_t),"_menu_tune_data_t doesn't fit into menu_data");
