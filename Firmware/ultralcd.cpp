@@ -3412,7 +3412,7 @@ static void lcd_silent_mode_set() {
 #endif //TMC2130
 
 #ifdef TMC2130
-  if (lcd_crash_detect_enabled() && (SilentModeMenu != SILENT_MODE_NORMAL))
+  if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET) && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
 #endif //TMC2130
 }
@@ -3420,8 +3420,8 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
 static void crash_mode_switch()
 {
-    if (lcd_crash_detect_enabled()) lcd_crash_detect_disable();
-    else lcd_crash_detect_enable();
+    eeprom_toggle((uint8_t*)EEPROM_CRASH_DET);
+    crashdet_use_eeprom_setting();
 }
 #endif //TMC2130
 
@@ -4114,7 +4114,7 @@ static void SETTINGS_SILENT_MODE()
             {
                 MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
             }
-            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), lcd_crash_detect_enabled() ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET) ? _T(MSG_ON) : _T(MSG_OFF), crash_mode_switch);
         }
         else
         {
@@ -6204,7 +6204,7 @@ static void reset_crash_det(uint8_t axis) {
 	current_position[axis] += 10;
 	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();
-	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
+	crashdet_use_eeprom_setting();
 }
 
 static bool lcd_selfcheck_axis_sg(uint8_t axis) {
@@ -7347,30 +7347,6 @@ void menu_lcd_lcdupdate_func(void)
 	prusa_statistics_update_from_lcd_update();
 	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();
 }
-
-#ifdef TMC2130
-//! @brief Is crash detection enabled?
-//!
-//! @retval true crash detection enabled
-//! @retval false crash detection disabled
-bool lcd_crash_detect_enabled()
-{
-    return eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
-}
-
-void lcd_crash_detect_enable()
-{
-    tmc2130_sg_stop_on_crash = true;
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF);
-}
-
-void lcd_crash_detect_disable()
-{
-    tmc2130_sg_stop_on_crash = false;
-    tmc2130_sg_crash = 0;
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00);
-}
-#endif
 
 #ifdef TMC2130
 void UserECool_toggle(){

@@ -390,6 +390,9 @@ void tmc2130_st_isr()
 	}
 }
 
+void crashdet_use_eeprom_setting() {
+	tmc2130_sg_stop_on_crash = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
+}
 
 bool tmc2130_update_sg()
 {

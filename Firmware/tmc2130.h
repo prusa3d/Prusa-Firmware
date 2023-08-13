@@ -162,6 +162,9 @@ extern void tmc2130_sg_measure_start(uint8_t axis);
 //stop current stallguard measuring and report result
 extern uint16_t tmc2130_sg_measure_stop();
 
+// Enable or Disable crash detection according to EEPROM
+void crashdet_use_eeprom_setting();
+
 extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres);
 
 //set holding current for any axis (M911)

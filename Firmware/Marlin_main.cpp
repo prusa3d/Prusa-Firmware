@@ -631,12 +631,16 @@ void crashdet_detected(uint8_t mask)
 
 void crashdet_recover()
 {
-  if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
-  if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
+	if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
+	crashdet_use_eeprom_setting();
 }
 
 /// Crash detection cancels the print
 void crashdet_cancel() {
+    // Restore crash detection
+    crashdet_use_eeprom_setting();
+
+    // Abort the print
     print_stop();
 }
 
@@ -1269,14 +1273,11 @@ void setup()
 	if (silentMode == 0xff) silentMode = 0;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 
-	if (lcd_crash_detect_enabled() && !farm_mode)
-	{
-		lcd_crash_detect_enable();
-	    puts_P(_N("CrashDetect ENABLED!"));
-	}
-	else
-	{
-	    lcd_crash_detect_disable();
+  tmc2130_sg_stop_on_crash = eeprom_init_default_byte((uint8_t*)EEPROM_CRASH_DET, farm_mode ? false : true);
+
+	if (tmc2130_sg_stop_on_crash) {
+    puts_P(_N("CrashDetect ENABLED!"));
+	} else {
 	    puts_P(_N("CrashDetect DISABLED"));
 	}
 

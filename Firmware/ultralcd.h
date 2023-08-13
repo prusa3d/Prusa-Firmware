@@ -71,12 +71,6 @@ void lcd_status_screen();                         // NOT static due to using ins
 void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 void lcd_menu_show_sensors_state();               // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
-#ifdef TMC2130
-bool lcd_crash_detect_enabled();
-void lcd_crash_detect_enable();
-void lcd_crash_detect_disable();
-#endif
-
 enum LCDButtonChoice : uint_fast8_t {
     LCD_LEFT_BUTTON_CHOICE = 0,
     LCD_MIDDLE_BUTTON_CHOICE = 1,
