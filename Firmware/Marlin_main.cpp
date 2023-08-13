@@ -9685,12 +9685,6 @@ void UnconditionalStop()
     cmdqueue_reset();
     cmdqueue_serial_disabled = false;
 
-    // Reset the sd status
-    if (card.sdprinting) {
-        card.sdprinting = false;
-        card.closefile();
-    }
-
     st_reset_timer();
     CRITICAL_SECTION_END;
 }

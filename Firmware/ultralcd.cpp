@@ -5646,7 +5646,11 @@ void print_stop(bool interactive)
     // called by the main loop one iteration later.
     UnconditionalStop();
 
-    if (!card.sdprinting) {
+    if (card.sdprinting) {
+        // Reset the sd status
+        card.sdprinting = false;
+        card.closefile();
+    } else {
         SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
     }
 
