@@ -128,7 +128,7 @@ void Filament_sensor::triggerFilamentRemoved() {
     if (runoutEnabled
         && (eFilamentAction == FilamentAction::None)
         && (
-            moves_planned() != 0
+            e_active()
             || printJobOngoing()
         )
         && !(
