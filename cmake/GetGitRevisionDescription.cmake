@@ -227,7 +227,8 @@ function(git_describe_working_tree _var)
     endif()
 
     execute_process(
-        COMMAND "${GIT_EXECUTABLE}" describe --abbrev=0 --dirty=-D --broken=-B ${ARGN}
+        #COMMAND "${GIT_EXECUTABLE}" describe --abbrev=0 --dirty=-D --broken=-B ${ARGN} #--broken not working with older git
+        COMMAND "${GIT_EXECUTABLE}" describe --abbrev=0 --dirty=-D ${ARGN}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         RESULT_VARIABLE res
         OUTPUT_VARIABLE out
