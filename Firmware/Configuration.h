@@ -31,6 +31,10 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_REPOSITORY "Unknown"
 #define FW_VERSION_FULL FW_VERSION "-unknown"
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
+// User-specified version info of this build to display in [Pronterface, etc] terminal window during
+// startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
+// build by the user have been successfully uploaded into firmware.
+#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 #endif
 
 // FW_VERSION_UNKNOWN means this is an unofficial build.

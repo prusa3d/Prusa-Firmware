@@ -1118,7 +1118,11 @@ void setup()
 #endif
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM(CUSTOM_MENDEL_NAME);
-	puts_P(PSTR(" " FW_VERSION_FULL));
+	SERIAL_ECHOLNRPGM(FW_VERSION_STR_P());
+  SERIAL_ECHOPGM("build nr:");
+	SERIAL_ECHOLNPGM(STR(FW_COMMIT_NR));
+  SERIAL_ECHOPGM("build hash:");
+	SERIAL_ECHOLNPGM(STR(FW_COMMIT_HASH));
 	puts_P(PSTR(" repo " FW_REPOSITORY));
 	puts_P(PSTR(" date " SOURCE_DATE_EPOCH));
 #ifdef STRING_CONFIG_H_AUTHOR
@@ -6421,6 +6425,8 @@ Sigma_Exit:
       } else {
           SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
           SERIAL_ECHORPGM(FW_VERSION_STR_P());
+          SERIAL_ECHOPGM("-");
+          SERIAL_ECHOPGM(STR(FW_COMMIT_NR));
           SERIAL_ECHOPGM("-");
           SERIAL_ECHOPGM(STR(FW_COMMIT_HASH));
           SERIAL_ECHOPGM(" based on Marlin FIRMWARE_URL:https://github.com/prusa3d/Prusa-Firmware PROTOCOL_VERSION:");

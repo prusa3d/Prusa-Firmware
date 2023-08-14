@@ -62,13 +62,13 @@ else()
 endif()
 
 # Inform user about the resolved settings
-message(STATUS "Project version ...........: ${PROJECT_VERSION}")
-message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}")
-message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}")
+message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
+#message(STATUS "Project version ...........: ${PROJECT_VERSION}") #For debuging
+#message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}") #For debuging
+#message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}") #For debuging
 message(STATUS "Project version build_nr...: ${PROJECT_VERSION_COMMIT_NR}")
 message(STATUS "Project version hash ......: ${PROJECT_VERSION_HASH}")
-message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
-message(STATUS "Project dev version .......: ${PROJECT_DEV_VERSION}")
+#message(STATUS "Project dev version .......: ${PROJECT_DEV_VERSION}") #For debuging
 message(STATUS "Project repository ........: ${PROJECT_REPOSITORY}")
 message(STATUS "Project file: ${FN_PREFIX}")
 
@@ -347,8 +347,8 @@ function(add_base_binary variant_name)
     PRIVATE CMAKE_CONTROL
         FW_REPOSITORY="${PROJECT_REPOSITORY}"
         FW_VERSION_FULL="${PROJECT_VERSION_FULL}"
-        FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
-        FW_COMMIT_NR=${FW_COMMIT_NR}
+        FW_COMMIT_HASH=${PROJECT_VERSION_HASH}
+        FW_COMMIT_NR=${PROJECT_VERSION_COMMIT_NR}
         FW_DEV_VERSION=${PROJECT_DEV_VERSION}
     )
 endfunction()

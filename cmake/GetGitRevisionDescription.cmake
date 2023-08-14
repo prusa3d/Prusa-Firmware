@@ -350,11 +350,18 @@ function(git_get_repository _var)
         RESULT_VARIABLE res
         OUTPUT_VARIABLE out
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT res EQUAL 0)
+    if(NOT out EQUAL 0)
         set(out "${out}-${res}-NOTFOUND")
     endif()
-
-    set(${_var}
-        "${out}"
+    string(REGEX REPLACE "https://github.com/" "" out ${out})
+    string(REGEX REPLACE "/Prusa-Firmware.git" "" out ${out})
+    if("${out}" STREQUAL "prusa3d")
+        set(${_var}
+            "prusa3d"
+            PARENT_SCOPE)
+    else()
+        set(${_var}
+        "Unknown"
         PARENT_SCOPE)
+    endif()
 endfunction()

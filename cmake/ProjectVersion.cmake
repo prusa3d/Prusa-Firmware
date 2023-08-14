@@ -54,7 +54,7 @@ endif()
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}")
 set(PROJECT_VERSION_COMMIT_NR ${FW_COMMIT_NR})
 set(FW_DEV_VERSION ${PROJECT_DEV_VERSION})
-set(PROJECT_REPOSITORY ${FW_REPOSITORY}) 
+#set(PROJECT_REPOSITORY ${FW_REPOSITORY}) 
 
 function(resolve_version_variables)
   if(FW_COMMIT_DSC)
@@ -70,6 +70,7 @@ function(resolve_version_variables)
     set(FW_COMMIT_HASH "UNKNOWN")
     set(FW_COMMIT_DSC "v${PROJECT_VERSION}")
     string(TIMESTAMP FW_COMMIT_DATE "%s")
+    set(FW_REPOSITORY "Unknown")
   else()
     git_describe_working_tree(FW_COMMIT_DSC)
     git_head_commit_data(FW_COMMIT_DATE "%ct")
@@ -94,6 +95,6 @@ function(resolve_version_variables)
       )
   set(FW_REPOSITORY
       "${FW_REPOSITORY}"
-      PARENT-SCOPE
+      PARENT_SCOPE
       )
 endfunction()

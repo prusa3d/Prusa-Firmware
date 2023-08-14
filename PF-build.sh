@@ -1182,7 +1182,7 @@ prepare_variant_for_compiling()
         sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_.*/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
 
         # set FW_REPOSITORY
-        sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
+        #sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
         #Prepare English only or multi-language version to be build
         if [ $LANGUAGES == "EN_FARM" ]; then
