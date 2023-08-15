@@ -3111,6 +3111,7 @@ exit:
     // is a submenu lcd_update_enable(true) will cause another call to the submenu immediately
     // and so won't allow the user to exit the submenu
     lcd_update_enabled = true;
+    lcd_draw_update = 2;
     return current_selection;
 }
 
