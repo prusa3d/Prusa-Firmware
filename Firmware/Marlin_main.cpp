@@ -7724,14 +7724,15 @@ Sigma_Exit:
   
   case 850: {
 	//! ### M850 - set sheet parameters
-	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP]
-	bool bHasZ = false, bHasLabel = false, bHasBed = false, bHasPinda = false;
+	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP] A[IS_ACTIVE]
+	bool bHasZ = false, bHasLabel = false, bHasBed = false, bHasPinda = false, bHasIsActive = false;
 	uint8_t iSel = 0;
 	int16_t zraw = 0;
 	float z_val = 0;
 	char strLabel[8];
 	uint8_t iBedC = 0;
 	uint8_t iPindaC = 0;
+	bool bIsActive=false;
 	strLabel[7] = '\0'; // null terminate.
 	size_t max_sheets = sizeof(EEPROM_Sheets_base->s)/sizeof(EEPROM_Sheets_base->s[0]);
 	
@@ -7795,6 +7796,13 @@ Sigma_Exit:
 	}
 	else
 		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
+	if (code_seen('A'))
+	{
+		bHasIsActive = true;
+		bIsActive = code_value_uint8() || (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
+	}
+	else
+		bIsActive = (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 	{
 	}
 	
@@ -7819,6 +7827,10 @@ Sigma_Exit:
 	{
 		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
 	}
+	if (bHasIsActive)
+	{
+		if(bIsActive) eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
+	}
 		
 	SERIAL_PROTOCOLPGM(" Z");
 	SERIAL_PROTOCOL_F(z_val,4);
@@ -7830,7 +7842,8 @@ Sigma_Exit:
 	SERIAL_PROTOCOL((int)iBedC);
 	SERIAL_PROTOCOLPGM(" P");
 	SERIAL_PROTOCOLLN((int)iPindaC);
-
+	SERIAL_PROTOCOLPGM(" A");
+	SERIAL_PROTOCOLLN((int)bIsActive);
 	break;
 }
 
