@@ -2552,7 +2552,7 @@ msgstr "Zaviest"
 #. MSG_DESC_FILAMENT_CHANGE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
 msgid "M600 Filament Change. Load a new filament or eject the old one."
-msgstr "Výmena vlákna M600. Vložte nové vlákno alebo vysuňte staré."
+msgstr "Výmena filamentu M600. Vložte nový filament alebo vysuňte starý."
 
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
