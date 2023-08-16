@@ -7795,15 +7795,17 @@ Sigma_Exit:
 		iPindaC = code_value_uint8();
 	}
 	else
+	{
 		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
+	}
 	if (code_seen('A'))
 	{
 		bHasIsActive = true;
 		bIsActive = code_value_uint8() || (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 	}
 	else
-		bIsActive = (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 	{
+		bIsActive = (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 	}
 	
 	SERIAL_PROTOCOLPGM("Sheet ");
