@@ -7748,6 +7748,7 @@ Sigma_Exit:
 	} else {
 		break;
 	}
+	
 	if (code_seen('Z')){
 		z_val = code_value();
 		zraw = z_val*cs.axis_steps_per_mm[Z_AXIS];
@@ -7798,6 +7799,7 @@ Sigma_Exit:
 	{
 		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
 	}
+	
 	if (code_seen('A'))
 	{
 		bHasIsActive = true;
