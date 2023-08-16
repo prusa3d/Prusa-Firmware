@@ -7,6 +7,7 @@
 # PROJECT_VERSION_FULL (4.0.3-BETA+1035.PR111.B4)
 # PROJECT_VERSION_SUFFIX (-BETA+1035.PR111.B4)
 # PROJECT_VERSION_SUFFIX_SHORT (+1035)
+# PROJECT_VERSION_TIMESTAMP (unix timestamp)
 #
 # The `PROJECT_VERSION` variable is set as soon as the file is included.
 # To set the rest, the function `resolve_version_variables` has to be called.
@@ -67,4 +68,14 @@ function(resolve_version_variables)
       "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}"
       PARENT_SCOPE
       )
+
+  # PROJECT_VERSION_TIMESTAMP
+  if(NOT PROJECT_VERSION_TIMESTAMP)
+    git_head_commit_timestamp(timestamp)
+    set(PROJECT_VERSION_TIMESTAMP
+        "${timestamp}"
+        PARENT_SCOPE
+        )
+  endif()
+
 endfunction()

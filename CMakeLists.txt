@@ -19,6 +19,10 @@ set(BUILD_NUMBER
     ""
     CACHE STRING "Build number of the firmware. Resolved automatically if not specified."
     )
+set(PROJECT_VERSION_TIMESTAMP
+    ""
+    CACHE STRING "Timestamp for the build. Resolved automatically if not specified."
+    )
 
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
@@ -229,8 +233,8 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 # Target configuration
 #
 if(CMAKE_CROSSCOMPILING)
-  # TODO: get date from the last git commit to set as epoch
-  set_source_epoch(0)
+  # set source epoch
+  set_source_epoch(${PROJECT_VERSION_TIMESTAMP})
 
   # default optimization flags
   set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")

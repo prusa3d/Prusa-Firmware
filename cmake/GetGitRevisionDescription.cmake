@@ -29,6 +29,10 @@
 # I don't know if get_git_head_revision() must be called internally or not, as reason of calling it
 # is not clear for me also in git_local_changes().
 #
+# git_head_commit_timestamp(<var>)
+#
+# Returns the timestamp of the HEAD commit.
+#
 # Requires CMake 2.6 or newer (uses the 'function' command)
 #
 # Original Author: 2009-2010 Ryan Pavlik <rpavlik@iastate.edu> <abiryan@ryand.net>
@@ -229,4 +233,52 @@ function(git_count_parent_commits _var)
         )
   endif()
 
+endfunction()
+
+function(git_get_commit_timestamp _var hash)
+  execute_process(
+    COMMAND "${GIT_EXECUTABLE}" show -s "--format=%ct" "${hash}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    RESULT_VARIABLE res
+    OUTPUT_VARIABLE out
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  if(res EQUAL 0)
+    set(${_var}
+        "${out}"
+        PARENT_SCOPE
+        )
+  else()
+    set(${_var}
+        "0"
+        PARENT_SCOPE
+        )
+  endif()
+
+endfunction()
+
+function(git_head_commit_timestamp _var)
+  if(NOT GIT_FOUND)
+    find_package(Git QUIET)
+  endif()
+  get_git_head_revision(refspec hash)
+  if(NOT GIT_FOUND)
+    set(${_var}
+        "GIT-NOTFOUND"
+        PARENT_SCOPE
+        )
+    return()
+  endif()
+  if(NOT hash)
+    set(${_var}
+        "HEAD-HASH-NOTFOUND"
+        PARENT_SCOPE
+        )
+    return()
+  endif()
+  git_get_commit_timestamp(timestamp ${hash})
+  set(${_var}
+      "${timestamp}"
+      PARENT_SCOPE
+      )
 endfunction()
