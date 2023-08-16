@@ -7800,14 +7800,11 @@ Sigma_Exit:
 		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
 	}
 	
+	bIsActive = (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 	if (code_seen('A'))
 	{
 		bHasIsActive = true;
-		bIsActive = code_value_uint8() || (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
-	}
-	else
-	{
-		bIsActive = (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
+		bIsActive |= code_value_uint8();
 	}
 	
 	SERIAL_PROTOCOLPGM("Sheet ");
@@ -7831,9 +7828,9 @@ Sigma_Exit:
 	{
 		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
 	}
-	if (bHasIsActive)
+	if (bHasIsActive && bIsActive)
 	{
-		if(bIsActive) eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
+		eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
 	}
 		
 	SERIAL_PROTOCOLPGM(" Z");
