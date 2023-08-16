@@ -228,6 +228,10 @@ uint8_t newFanSpeed = 0;
   float retract_recover_length_swap = RETRACT_RECOVER_LENGTH_SWAP;
 #endif
 
+#ifndef PINDA_THERMISTOR
+static bool temp_compensation_retracted = false;
+#endif // !PINDA_THERMISTOR
+
   #ifdef PS_DEFAULT_OFF
     bool powersupply = false;
   #else
@@ -3159,11 +3163,14 @@ static void gcode_G80()
     //		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
     go_home_with_z_lift();
     //		SERIAL_ECHOLNPGM("Go home finished");
+#ifndef PINDA_THERMISTOR
     //unretract (after PINDA preheat retraction)
-    if (((int)degHotend(active_extruder) > extrude_min_temp) && eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() && (target_temperature_bed >= 50)) {
+    if (temp_compensation_retracted) {
+        temp_compensation_retracted = false;
         current_position[E_AXIS] += default_retraction;
         plan_buffer_line_curposXYZE(400);
     }
+#endif // !PINDA_THERMISTOR
     KEEPALIVE_STATE(NOT_BUSY);
     // Restore custom message state
     lcd_setstatuspgm(MSG_WELCOME);
@@ -10237,11 +10244,11 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 #ifndef PINDA_THERMISTOR
 static void temp_compensation_start() {
-	
 	custom_message_type = CustomMsg::TempCompPreheat;
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
-	if ((int)degHotend(active_extruder) > extrude_min_temp) {
+	if (!temp_compensation_retracted && (int)degHotend(active_extruder) > extrude_min_temp) {
+		temp_compensation_retracted = true;
 		current_position[E_AXIS] -= default_retraction;
 	}
 	plan_buffer_line_curposXYZE(400);
