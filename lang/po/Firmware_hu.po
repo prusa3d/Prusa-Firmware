@@ -2553,22 +2553,22 @@ msgstr "Váratlan hiba történt."
 #. MSG_BTN_EJECT c=8
 #: ../../Firmware/mmu2/errors_list.h:357 ../../Firmware/mmu2/errors_list.h:369
 msgid "Eject"
-msgstr "Kidobás"
+msgstr "Kiadás"
 
 #. MSG_TITLE_FILAMENT_CHANGE c=20
 #: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
 msgid "FILAMENT CHANGE"
-msgstr "FILAMENT CSERÉJE"
+msgstr "FILAMENT CSERE"
 
 #. MSG_BTN_LOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
 msgid "Load"
-msgstr "Betolt."
+msgstr "Betöltés"
 
 #. MSG_DESC_FILAMENT_CHANGE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
 msgid "M600 Filament Change. Load a new filament or eject the old one."
-msgstr "M600 Izzószálcsere. Helyezzen be egy új izzószálat, vagy vegye ki a régit."
+msgstr "M600 Filamentcsere. Helyezz be egy új filamentet, vagy vedd ki a régit."
 
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH inicializal"

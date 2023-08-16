@@ -2564,7 +2564,7 @@ msgstr "Napunite"
 #. MSG_DESC_FILAMENT_CHANGE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
 msgid "M600 Filament Change. Load a new filament or eject the old one."
-msgstr "Promjena žarne niti M600. Stavite novu nit ili izbacite staru."
+msgstr "Promjena filamenta M600. Stavite novu nit ili izbacite staru."
 
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH  validacija"

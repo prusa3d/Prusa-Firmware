@@ -2559,7 +2559,7 @@ msgstr "Scoateți"
 #. MSG_TITLE_FILAMENT_CHANGE c=20
 #: ../../Firmware/mmu2/errors_list.h:188 ../../Firmware/mmu2/errors_list.h:235
 msgid "FILAMENT CHANGE"
-msgstr "SCHIMBAREA FILAMENT."
+msgstr "SCHIMBARE FILAMENT"
 
 #. MSG_BTN_LOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
@@ -2569,7 +2569,7 @@ msgstr "Incarca"
 #. MSG_DESC_FILAMENT_CHANGE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
 msgid "M600 Filament Change. Load a new filament or eject the old one."
-msgstr "Schimbarea filamentului M600. Încărcați un filament nou sau scoateți cel vechi."
+msgstr "M600: Schimbare filament. Încarcă un filament nou sau scoate-l pe cel vechi."
 
 #~ msgid "XFLASH init"
 #~ msgstr "Init XFLASH"
