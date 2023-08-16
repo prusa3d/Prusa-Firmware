@@ -528,6 +528,8 @@ bool check_fsensor() {
     return printJobOngoing()
         && mcode_in_progress != 600
         && !saved_printing
+        && !mesh_bed_leveling_flag
+        && !homing_flag
         && e_active();
 }
 
