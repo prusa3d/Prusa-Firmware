@@ -2541,7 +2541,7 @@ msgstr "ENDRING AV FILAMENT"
 #. MSG_BTN_LOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:356 ../../Firmware/mmu2/errors_list.h:368
 msgid "Load"
-msgstr "Laste"
+msgstr "Last"
 
 #. MSG_DESC_FILAMENT_CHANGE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:340
