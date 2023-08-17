@@ -1872,7 +1872,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
     // the current temperature is within +-TEMP_HYSTERESIS of the target
     // then continue with the filament action if any is set
-    if (bFilamentSkipPreheat || abs((int)current_temperature[0] - nTemp) < TEMP_HYSTERESIS)
+    if (bFilamentSkipPreheat || abs((int)current_temperature[0] - (int)nTemp) < TEMP_HYSTERESIS)
     {
         menu_func_t filamentActionMenu = nullptr;
         switch (eFilamentAction)
