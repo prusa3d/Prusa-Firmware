@@ -23,6 +23,10 @@ set(PROJECT_VERSION_TIMESTAMP
     ""
     CACHE STRING "Timestamp for the build. Resolved automatically if not specified."
     )
+set(CUSTOM_COMPILE_OPTIONS
+    ""
+    CACHE STRING "Allows adding custom C/C++ flags"
+    )
 
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
