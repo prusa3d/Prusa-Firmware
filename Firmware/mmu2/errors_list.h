@@ -355,9 +355,9 @@ static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_LOAD[] PROGMEM_I1 = ISTR("Load"); ////MSG_BTN_LOAD c=8
 static const char MSG_BTN_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_BTN_EJECT c=8
+static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); ////MSG_BTN_TUNE_MMU c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
-static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); ////MSG_BTN_TUNE_MMU c=8
 static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 
 // Used to parse the buttons from Btns().
@@ -368,9 +368,9 @@ static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_UNLOAD),
     _R(MSG_BTN_LOAD),
     _R(MSG_BTN_EJECT),
+    _R(MSG_BTN_TUNE_MMU),
     _R(MSG_BTN_STOP),
     _R(MSG_BTN_DISABLE_MMU),
-    _R(MSG_BTN_TUNE_MMU),
 };
 
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
