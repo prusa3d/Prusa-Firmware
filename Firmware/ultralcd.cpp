@@ -4810,15 +4810,22 @@ static inline void lcd_mmu_load_to_nozzle_wrapper(uint8_t index){
     clearFilamentAction();
 }
 
-static void mmu_load_to_nozzle_menu() {
+// Helper function to save code size by reducing duplicated code
+// These menus are not time critical
+static void mmu_common_choose_filament_menu(const char * label, void (*menuAction)(uint8_t))
+{
     MENU_BEGIN();
     ON_MENU_LEAVE(
         clearFilamentAction();
     );
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle_wrapper, i);
+        MENU_ITEM_FUNCTION_NR_P(_T(label), i + '1', menuAction, i);
     MENU_END();
+}
+
+static void mmu_load_to_nozzle_menu() {
+    mmu_common_choose_filament_menu(MSG_LOAD_FILAMENT, lcd_mmu_load_to_nozzle_wrapper);
 }
 
 static void mmu_eject_filament(uint8_t filament) {
@@ -4830,14 +4837,7 @@ static void mmu_eject_filament(uint8_t filament) {
 }
 
 static void mmu_fil_eject_menu() {
-    MENU_BEGIN();
-    ON_MENU_LEAVE(
-        clearFilamentAction();
-    );
-    MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FROM_MMU), i + '1', mmu_eject_filament, i);
-    MENU_END();
+    mmu_common_choose_filament_menu(MSG_EJECT_FROM_MMU, mmu_eject_filament);
 }
 
 #ifdef MMU_HAS_CUTTER
@@ -4846,14 +4846,7 @@ static inline void mmu_cut_filament_wrapper(uint8_t index){
 }
 
 static void mmu_cut_filament_menu() {
-    MENU_BEGIN();
-    ON_MENU_LEAVE(
-        clearFilamentAction();
-    );
-    MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament_wrapper, i);
-    MENU_END();
+    mmu_common_choose_filament_menu(MSG_CUT_FILAMENT, mmu_cut_filament_wrapper);
 }
 #endif //MMU_HAS_CUTTER
 
