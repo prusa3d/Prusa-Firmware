@@ -1771,8 +1771,6 @@ void lcd_print_target_temps_first_line(){
 
 static void mFilamentPrompt()
 {
-uint8_t nLevel;
-
 lcd_print_target_temps_first_line();
 lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
 lcd_set_cursor(0,2);
@@ -1801,11 +1799,7 @@ switch(eFilamentAction)
         || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
 #endif //FILAMENT_SENSOR
     ) {
-     nLevel=2;
-     if(!bFilamentPreheatState) {
-        nLevel++;
-     }
-     menu_back(nLevel);
+     menu_back(bFilamentPreheatState ? 2 : 3);
      switch(eFilamentAction)
           {
           case FilamentAction::AutoLoad:
@@ -1831,17 +1825,19 @@ switch(eFilamentAction)
      }
 }
 
-void mFilamentBack()
+static void setFilamentAction(FilamentAction action) {
+    eFilamentAction = action;
+}
+
+static void __attribute__((noinline)) clearFilamentAction()
 {
-    // filament action has been cancelled
-    eFilamentAction = FilamentAction::None;
+    // filament action has been cancelled or completed
+    setFilamentAction(FilamentAction::None);
 }
 
 /// Reset the menu stack and clear the planned filament action flag
-static void mFilamentDone()
-{
+static void __attribute__((noinline)) mFilamentResetMenuStack() {
     menu_back(bFilamentPreheatState ? 1 : 2);
-    mFilamentBack();
 }
 
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
@@ -1883,7 +1879,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             if (bFilamentWaitingFlag) menu_submenu(mFilamentPrompt, true);
             else
             {
-                mFilamentDone();
+                mFilamentResetMenuStack();
                 if (eFilamentAction == FilamentAction::AutoLoad) {
                     // loading no longer cancellable
                     eFilamentAction = FilamentAction::Load;
@@ -1902,8 +1898,13 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             filamentActionMenu = mmu_loading_test_menu;
             break;
         case FilamentAction::MmuUnLoad:
-            mFilamentDone();
+            mFilamentResetMenuStack();
             MMU2::mmu2.unload();
+
+            // Clear the filament action. MMU Unload is currently a special edge
+            // case in that it does not call a submenu. So we must clear the action
+            // flag here for now
+            clearFilamentAction();
             break;
         case FilamentAction::MmuEject:
             filamentActionMenu = mmu_fil_eject_menu;
@@ -1926,7 +1927,10 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
         if (filamentActionMenu) {
             // Reset the menu stack and filament action before entering action menu
-            mFilamentDone();
+            mFilamentResetMenuStack();
+
+            // The menu should clear eFilamentAction when the
+            // 'action' is done
             menu_submenu(filamentActionMenu, true);
         }
     }
@@ -1984,6 +1988,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
         if (lcd_clicked())
         {
+            // Filament action canceled while preheating
             bFilamentWaitingFlag = false;
             if (!bFilamentPreheatState)
             {
@@ -1992,7 +1997,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 menu_back();
             }
             menu_back();
-            mFilamentBack();
+            clearFilamentAction();
         }
     }
 }
@@ -2074,7 +2079,7 @@ void lcd_generic_preheat_menu()
     if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
     {
         ON_MENU_LEAVE(
-            mFilamentBack();
+            clearFilamentAction();
         );
         MENU_ITEM_BACK_P(_T(eFilamentAction == FilamentAction::Lay1Cal ? MSG_BACK : MSG_MAIN));
     }
@@ -2247,7 +2252,8 @@ static void lcd_menu_AutoLoadFilament()
 #endif //FILAMENT_SENSOR
 
 static void preheat_or_continue(FilamentAction action) {
-    eFilamentAction = action;
+
+    setFilamentAction(action);
 
     // For MMU: If FINDA doesn't detect filament on Cut or Eject action,
     // then preheating is unnecessary
@@ -4800,10 +4806,16 @@ static inline void lcd_mmu_load_to_nozzle_wrapper(uint8_t index){
     lcd_load_filament_color_check();
     lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
+
+    // Clear the filament action
+    clearFilamentAction();
 }
 
 static void mmu_load_to_nozzle_menu() {
     MENU_BEGIN();
+    ON_MENU_LEAVE(
+        clearFilamentAction();
+    );
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
         MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle_wrapper, i);
@@ -4813,10 +4825,16 @@ static void mmu_load_to_nozzle_menu() {
 static void mmu_eject_filament(uint8_t filament) {
     menu_back();
     MMU2::mmu2.eject_filament(filament, true);
+
+    // Clear the filament action
+    clearFilamentAction();
 }
 
 static void mmu_fil_eject_menu() {
     MENU_BEGIN();
+    ON_MENU_LEAVE(
+        clearFilamentAction();
+    );
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
         MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FROM_MMU), i + '1', mmu_eject_filament, i);
@@ -4830,6 +4848,9 @@ static inline void mmu_cut_filament_wrapper(uint8_t index){
 
 static void mmu_cut_filament_menu() {
     MENU_BEGIN();
+    ON_MENU_LEAVE(
+        clearFilamentAction();
+    );
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
         MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament_wrapper, i);
@@ -4841,14 +4862,23 @@ static inline void loading_test_all_wrapper(){
     for(uint8_t i = 0; i < 5; ++i){
         MMU2::mmu2.loading_test(i);
     }
+
+    // Clear the filament action
+    clearFilamentAction();
 }
 
 static inline void loading_test_wrapper(uint8_t i){
     MMU2::mmu2.loading_test(i);
+
+    // Clear the filament action
+    clearFilamentAction();
 }
 
 static void mmu_loading_test_menu() {
     MENU_BEGIN();
+    ON_MENU_LEAVE(
+        clearFilamentAction();
+    );
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), loading_test_all_wrapper);
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
@@ -4921,7 +4951,7 @@ void unload_filament(float unloadLength)
 
 	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
-	eFilamentAction = FilamentAction::None;
+	clearFilamentAction();
 }
 
 /// @brief Set print fan speed
