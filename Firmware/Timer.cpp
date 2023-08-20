@@ -7,17 +7,6 @@
 #include "system_timer.h"
 
 /**
- * @brief construct Timer
- *
- * It is guaranteed, that construction is equivalent with zeroing all members.
- * This property can be exploited in menu_data.
- */
-template<typename T>
-Timer<T>::Timer() : m_isRunning(false), m_started()
-{
-}
-
-/**
  * @brief Start timer
  */
 template<typename T>
