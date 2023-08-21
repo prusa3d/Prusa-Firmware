@@ -108,6 +108,7 @@ extern const char MSG_TOTAL[];
 extern const char MSG_MATERIAL_CHANGES[];
 extern const char MSG_TOTAL_FAILURES[];
 extern const char MSG_HW_SETUP[];
+extern const char MSG_TUNE[];
 extern const char MSG_MODE[];
 extern const char MSG_HIGH_POWER[];
 extern const char MSG_AUTO_POWER[];

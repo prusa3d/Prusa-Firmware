@@ -350,7 +350,7 @@ static const char * const errorDescs[] PROGMEM = {
 // Beware - we only have space for 2 buttons on the LCD while the MMU has 3 buttons
 // -> the left button on the MMU is not used/rendered on the LCD (it is also almost unused on the MMU side)
 static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY c=8
-static const char MSG_BTN_CONTINUE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_CONTINUE c=8
+static const char MSG_BTN_DONE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_DONE c=8
 static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN_RESET_MMU c=8
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_LOAD[] PROGMEM_I1 = ISTR("Load"); ////MSG_BTN_LOAD c=8
@@ -363,7 +363,7 @@ static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_RETRY),
-    _R(MSG_BTN_CONTINUE),
+    _R(MSG_BTN_DONE),
     _R(MSG_BTN_RESET_MMU),
     _R(MSG_BTN_UNLOAD),
     _R(MSG_BTN_LOAD),
