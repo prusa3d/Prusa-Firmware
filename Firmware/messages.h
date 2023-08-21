@@ -32,6 +32,7 @@ extern const char MSG_COOLDOWN[];
 extern const char MSG_CRASH[];
 extern const char MSG_CRASH_DETECTED[];
 extern const char MSG_CRASHDETECT[];
+extern const char MSG_DONE[];
 extern const char MSG_ERROR[];
 extern const char MSG_EXTRUDER[];
 extern const char MSG_FANS_CHECK[];

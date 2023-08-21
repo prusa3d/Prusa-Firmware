@@ -26,6 +26,7 @@ const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////MSG_COOLDOWN c=18
 const char MSG_CRASH[] PROGMEM_I1 = ISTR("Crash"); ////MSG_CRASH c=7
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////MSG_CRASH_DETECTED c=20
 const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////MSG_CRASHDETECT c=13
+const char MSG_DONE[] PROGMEM_I1 = ISTR("Done"); ////MSG_DONE c=8
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////MSG_ERROR c=10
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////MSG_EXTRUDER c=17
 const char MSG_FANS_CHECK[] PROGMEM_I1 = ISTR("Fans check"); ////MSG_FANS_CHECK c=13

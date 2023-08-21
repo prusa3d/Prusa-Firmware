@@ -350,12 +350,12 @@ static const char * const errorDescs[] PROGMEM = {
 // Beware - we only have space for 2 buttons on the LCD while the MMU has 3 buttons
 // -> the left button on the MMU is not used/rendered on the LCD (it is also almost unused on the MMU side)
 static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY c=8
-static const char MSG_BTN_DONE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_DONE c=8
+//static const char MSG_BTN_DONE[] PROGMEM_I1 = ISTR("Done"); //Reuse MSG_DONE c=8
 static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN_RESET_MMU c=8
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_LOAD[] PROGMEM_I1 = ISTR("Load"); ////MSG_BTN_LOAD c=8
 static const char MSG_BTN_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_BTN_EJECT c=8
-static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); ////MSG_BTN_TUNE_MMU c=8
+//static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); //Reuse MSG_TUNE c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
 static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
@@ -363,12 +363,12 @@ static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_RETRY),
-    _R(MSG_BTN_DONE),
+    _R(MSG_DONE),
     _R(MSG_BTN_RESET_MMU),
     _R(MSG_BTN_UNLOAD),
     _R(MSG_BTN_LOAD),
     _R(MSG_BTN_EJECT),
-    _R(MSG_BTN_TUNE_MMU),
+    _R(MSG_TUNE),
     _R(MSG_BTN_STOP),
     _R(MSG_BTN_DISABLE_MMU),
 };

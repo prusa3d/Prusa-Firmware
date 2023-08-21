@@ -421,7 +421,7 @@ void tuneIdlerStallguardThresholdMenu() {
         lcd_return_to_status();
         return;
     );
-    MENU_ITEM_BACK_P(_i("Done")); //@Todo same as MSG_BTN_DONE c=8
+    MENU_ITEM_BACK_P(_T(MSG_DONE));
     MENU_ITEM_EDIT_int3_P(
         _i("Sensitivity"), ////MSG_MMU_SENSITIVITY c=18
         &_md->currentValue,
