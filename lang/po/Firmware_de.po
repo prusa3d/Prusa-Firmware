@@ -2008,7 +2008,7 @@ msgstr "Ton"
 #. MSG_SPEED c=15
 #: ../../Firmware/ultralcd.cpp:5436
 msgid "Speed"
-msgstr "Geschwindigkeit"
+msgstr "Tempo"
 
 #. MSG_SELFTEST_FAN_YES c=19
 #: ../../Firmware/messages.cpp:93 ../../Firmware/ultralcd.cpp:6748
