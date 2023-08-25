@@ -3,7 +3,7 @@ name: Mark stale issues
 on:
   schedule:
   # 1:30 AM on MON/THU
-  - cron: "30 1 * * 1,4"
+  - cron: "30 1 * * 1,2,3,4"
 
 jobs:
   stale:
@@ -24,7 +24,7 @@ jobs:
         enable-statistics: true
         # Disable this and change the operations per run back to 30 when this goes live.
         debug-only: false
-        operations-per-run: 30
+        operations-per-run: 200
         stale-issue-label: 'stale-issue'
         stale-pr-label: 'stale-pr'
         ascending: true
