@@ -7992,7 +7992,7 @@ Sigma_Exit:
       - M862.3 { P"<model_name>" | Q }
       - M862.4 { P<fw_version> | Q }
       - M862.5 { P<gcode_level> | Q }
-      - M862.6 { P<active_sheet> | Q }
+      - M862.7 { P<active_sheet> | Q }
     
     When run with P<> argument, the check is performed against the input value.
     When run with Q argument, the current value is shown.
@@ -8075,7 +8075,7 @@ Sigma_Exit:
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN(GCODE_LEVEL);
                     break;
-               case ClPrintChecking::_ActiveSheet:      // ~ .6
+               case ClPrintChecking::_ActiveSheet:      // ~ .7
                     if(code_seen('P')) {
                       uint8_t sheetIdx = code_value_uint8();
                       active_sheet_check(sheetIdx);
