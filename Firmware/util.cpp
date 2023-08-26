@@ -406,8 +406,8 @@ void active_sheet_check(uint8_t sheetIdx) {
     // SERIAL_ECHOLN(sheetIdx);
         
     render_M862_warnings(
-        _i("Printer active sheet differs from the G-code. Continue?") ////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
-        ,_i("Printer active sheet differs from the G-code. Please check the value in settings. Print cancelled.") ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+        _T(MSG_GCODE_DIFF_SHEET_CONTINUE)
+        ,_T(MSG_GCODE_DIFF_SHEET_CANCELLED)
         ,(uint8_t)oCheckMode
     );
 }

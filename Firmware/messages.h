@@ -146,6 +146,8 @@ extern const char MSG_GCODE_NEWER_FIRMWARE_CONTINUE[];
 extern const char MSG_GCODE_NEWER_FIRMWARE_CANCELLED[];
 extern const char MSG_GCODE_DIFF_CONTINUE[];
 extern const char MSG_GCODE_DIFF_CANCELLED[];
+extern const char MSG_GCODE_DIFF_SHEET_CONTINUE[];
+extern const char MSG_GCODE_DIFF_SHEET_CANCELLED[];
 extern const char MSG_NOZZLE_DIFFERS_CONTINUE[];
 extern const char MSG_NOZZLE_DIFFERS_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];
