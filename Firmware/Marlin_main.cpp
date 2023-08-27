@@ -9409,7 +9409,7 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
-void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
+void manage_inactivity(const bool no_stepper_sleep/*=false*/)
 {
 #ifdef FILAMENT_SENSOR
     if (fsensor.update()) {
@@ -9430,16 +9430,33 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
         get_command();
     }
 
-  if(max_inactive_time && previous_millis_cmd.expired(max_inactive_time))
-    kill(PSTR("Inactivity Shutdown"));
-  if(stepper_inactive_time && previous_millis_cmd.expired(stepper_inactive_time)) {
-    if(blocks_queued() == false && ignore_stepper_queue == false) {
-      disable_x();
-      disable_y();
-      disable_z();
-      disable_e0();
+    // Prevent steppers timing-out
+    const bool do_reset_timeout = no_stepper_sleep || isPrintPaused;
+
+    if (do_reset_timeout) previous_millis_cmd.start();
+
+    if(max_inactive_time && previous_millis_cmd.expired(max_inactive_time)) {
+        kill(PSTR("Inactivity Shutdown"));
     }
-  }
+
+    // M18 / M84 : Handle steppers inactive time timeout
+    if(stepper_inactive_time) {
+
+        static bool already_shutdown_steppers; // = false
+
+        if(!blocks_queued() && !do_reset_timeout && previous_millis_cmd.expired(stepper_inactive_time)) {
+            if (!already_shutdown_steppers) {
+                SERIAL_ECHO_START;
+                SERIAL_ECHOLNPGM("Stepper inactivity timeout");
+                disable_x();
+                disable_y();
+                disable_z();
+                disable_e0();
+            }
+        } else {
+            already_shutdown_steppers = false;
+        }
+    }
   
   #ifdef CHDK //Check if pin should be set to LOW after M240 set it to HIGH
     if (chdkActive && (_millis() - chdkHigh > CHDK_DELAY))

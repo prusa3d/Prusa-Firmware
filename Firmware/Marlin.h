@@ -123,7 +123,7 @@ bool is_buffer_empty();
 void process_commands();
 void ramming();
 
-void manage_inactivity(bool ignore_stepper_queue=false);
+void manage_inactivity(const bool no_stepper_sleep=false);
 
 #if defined(X_ENABLE_PIN) && X_ENABLE_PIN > -1
   #define  enable_x() WRITE(X_ENABLE_PIN, X_ENABLE_ON)
