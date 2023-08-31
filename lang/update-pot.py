@@ -67,7 +67,7 @@ def main():
     try:
         subprocess.check_call(
             [
-                "python",
+                sys.executable,
                 SCRIPT_PATH,
                 "--no-missing",
                 "-s",
