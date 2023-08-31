@@ -2790,16 +2790,22 @@ canceled:
 #endif //NEW_XYZCAL
 
 bool sample_z() {
-	bool sampled = true;
-	//make space
-	raise_z(150);
-	lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
+    bool sampled = true;
+    // make some space for the sheet
+    // Avoid calling raise_z(), because a false triggering stallguard may prevent the Z from moving.
+    // The extruder then may ram the sheet hard if not going down from some ~150mm height
+    current_position[Z_AXIS] = 0.F;
+    destination[Z_AXIS] = 150.F;
+    plan_buffer_line_destinationXYZE(homing_feedrate[Z_AXIS] / 60);
 
-	// Sample Z heights for the mesh bed leveling.
-	// In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
-	if (!sample_mesh_and_store_reference()) sampled = false;
+    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 
-	return sampled;
+    // Sample Z heights for the mesh bed leveling.
+    // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
+    if (!sample_mesh_and_store_reference())
+        sampled = false;
+
+    return sampled;
 }
 
 void go_home_with_z_lift()
