@@ -5299,7 +5299,7 @@ static void lcd_main_menu()
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
     MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
-    if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
+    if(!isPrintPaused && (custom_message_type != CustomMsg::Resuming)) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
     if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
