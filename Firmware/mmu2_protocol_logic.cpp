@@ -532,7 +532,7 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance, uint8_
     , uart(uart)
     , errorCode(ErrorCode::OK)
     , progressCode(ProgressCode::OK)
-    , buttonCode(NoButton)
+    , buttonCode(Buttons::NoButton)
     , lastFSensor((uint8_t)WhereIsFilament())
     , regIndex(0)
     , retryAttempts(MAX_RETRIES)

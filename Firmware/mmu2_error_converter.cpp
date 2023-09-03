@@ -186,7 +186,7 @@ struct ResetOnExit {
 
 Buttons ButtonPressed(uint16_t ec) {
     if (buttonSelectedOperation == ButtonOperations::NoOperation) {
-        return NoButton; // no button
+        return Buttons::NoButton; // no button
     }
     
     ResetOnExit ros; // clear buttonSelectedOperation on exit from this call
@@ -214,7 +214,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         // may be allow move selector right and left in the future
         case ButtonOperations::Retry: // "Repeat action"
-            return Middle;
+            return Buttons::Middle;
         default:
             break;
         }
@@ -224,9 +224,9 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         // may be allow move selector right and left in the future
         case ButtonOperations::Tune: // Tune Stallguard threshold
-            return TuneMMU;
+            return Buttons::TuneMMU;
         case ButtonOperations::Retry: // "Repeat action"
-            return Middle;
+            return Buttons::Middle;
         default:
             break;
         }
@@ -235,7 +235,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FILAMENT_EJECTED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // User solved the serious mechanical problem by hand - there is no other way around
-            return Middle;
+            return Buttons::Middle;
         default:
             break;
         }
@@ -243,9 +243,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FILAMENT_CHANGE:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Load:
-            return Load;
+            return Buttons::Load;
         case ButtonOperations::Eject:
-            return Eject;
+            return Buttons::Eject;
         default:
             break;
         }
@@ -255,9 +255,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_TEMPERATURE_WARNING_TMC_IDLER_TOO_HOT:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // "Continue"
-            return Left;
+            return Buttons::Left;
         case ButtonOperations::ResetMMU: // "Reset MMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -292,7 +292,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_ELECTRICAL_MMU_MCU_ERROR:
         switch (buttonSelectedOperation) {
         case ButtonOperations::ResetMMU: // "Reset MMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -302,9 +302,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FW_UPDATE_NEEDED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::DisableMMU: // "Disable"
-            return DisableMMU;
+            return Buttons::DisableMMU;
         case ButtonOperations::ResetMMU: // "ResetMMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -312,9 +312,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FILAMENT_ALREADY_LOADED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Unload: // "Unload"
-            return Left;
+            return Buttons::Left;
         case ButtonOperations::Continue: // "Proceed/Continue"
-            return Right;
+            return Buttons::Right;
         default:
             break;
         }
@@ -323,9 +323,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_INVALID_TOOL:
         switch (buttonSelectedOperation) {
         case ButtonOperations::StopPrint: // "Stop print"
-            return StopPrint;
+            return Buttons::StopPrint;
         case ButtonOperations::ResetMMU: // "Reset MMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -335,7 +335,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         break;
     }
     
-    return NoButton;
+    return Buttons::NoButton;
 }
 
 void SetButtonResponse(ButtonOperations rsp){
