@@ -27,6 +27,12 @@ set(PROJECT_REPOSITORY
     "Unknown"
     CACHE STRING "Repository string to be shown on the info screen in settings."
     )
+
+set(CUSTOM_COMPILE_OPTIONS
+    ""
+    CACHE STRING "Allows adding custom C/C++ flags"
+    )
+
 set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
 
 # Inform user about the resolved settings
@@ -214,7 +220,7 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 # Target configuration
 #
 if(CMAKE_CROSSCOMPILING)
-  set_source_epoch(${FW_COMMIT_DATE})
+  set_source_epoch(${PROJECT_VERSION_TIMESTAMP})
 
   # default optimization flags
   set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
