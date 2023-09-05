@@ -5360,7 +5360,11 @@ void process_commands()
       starttime=_millis();
       if (MMU2::mmu2.Enabled())
       {
+#ifdef FILAMENT_SENSOR
         if (MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent())
+#else
+        if (MMU2::mmu2.FindaDetectsFilament())
+#endif
         { // Filament only half way into the PTFE. Unload the filament.
           MMU2::mmu2.unload();
           // Tx and Tc gcodes take care of loading the filament to the nozzle.

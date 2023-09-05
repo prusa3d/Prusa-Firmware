@@ -36,8 +36,9 @@ void EndReport(CommandInProgress /*cip*/, uint16_t /*ec*/) {
 extern void ReportErrorHookDynamicRender(void){
     // beware - this optimization abuses the fact, that FindaDetectsFilament returns 0 or 1 and '0' is followed by '1' in the ASCII table
     lcd_putc_at(3, 2, mmu2.FindaDetectsFilament() + '0');
+#ifdef FILAMENT_SENSOR
     lcd_putc_at(8, 2, fsensor.getFilamentPresent() + '0');
-
+#endif
     // print active/changing filament slot
     lcd_set_cursor(10, 2);
     lcdui_print_extruder();
