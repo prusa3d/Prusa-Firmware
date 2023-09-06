@@ -5,24 +5,24 @@ include(cmake/ReproducibleBuild.cmake)
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
-set(PROJECT_VERSION_MAJOR
+set(PROJECT_VERSION_MAJ
     "<auto>"
     CACHE
       STRING
       "Version major. Overrides major if set."
     )
-if(PROJECT_VERSION_MAJOR STREQUAL "<auto>")
-  set(PROJECT_VERSION_MAJOR "${FW_MAJOR}")
+if(PROJECT_VERSION_MAJ STREQUAL "<auto>")
+  set(PROJECT_VERSION_MAJ ${FW_MAJOR})
 endif()
 
-set(PROJECT_VERSION_MINOR
+set(PROJECT_VERSION_MINO
     "<auto>"
     CACHE
       STRING
       "Version minor. Overrides minor if set."
     )
-if(PROJECT_VERSION_MINOR STREQUAL "<auto>")
-  set(PROJECT_VERSION_MINOR "${FW_MINOR}")
+if(PROJECT_VERSION_MINO STREQUAL "<auto>")
+  set(PROJECT_VERSION_MINO ${FW_MINOR})
 endif()
 
 set(PROJECT_VERSION_REV
@@ -32,7 +32,7 @@ set(PROJECT_VERSION_REV
       "Version revision. Overrides revision if set."
     )
 if(PROJECT_VERSION_REV STREQUAL "<auto>")
-  set(PROJECT_VERSION_REV "${FW_REVISION}")
+  set(PROJECT_VERSION_REV ${FW_REVISION})
 endif()
 
 set(PROJECT_VERSION_FLAVOR
@@ -85,14 +85,14 @@ if(PROJECT_DEV_VERSION STREQUAL "<auto>")
   set(PROJECT_DEV_VERSION "${FW_DEV_VERSION}")
 endif()
 
-set(PROJECT_VERSION
+set(PROJECT_FW_VERSION
     "<auto>"
     CACHE
       STRING
       "Full version string to be shown on the info screen in settings. Overrides git version if set."
     )
-if(PROJECT_VERSION STREQUAL "<auto>")
-  set(PROJECT_VERSION "${FW_COMMIT_DSC}")
+if(PROJECT_FW_VERSION STREQUAL "<auto>")
+  set(PROJECT_FW_VERSION "${FW_COMMIT_DSC}")
 endif()
 set(PROJECT_VERSION_FULL
     "<auto>"
@@ -116,17 +116,17 @@ set(CUSTOM_COMPILE_OPTIONS
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
-  set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
-else()
-  set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
-endif()
+#if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
+#  set(FN_PREFIX "FW${PROJECT_FW_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+#else()
+  set(FN_PREFIX "FW${PROJECT_FW_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+#endif()
 
 # Inform user about the resolved settings
 message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
-message(STATUS "Project version ...........: ${PROJECT_VERSION}") #For debuging
-message(STATUS "Project version major......: ${PROJECT_VERSION_MAJOR}") #For debuging
-message(STATUS "Project version minor......: ${PROJECT_VERSION_MINOR}") #For debuging
+message(STATUS "Project version ...........: ${PROJECT_FW_VERSION}") #For debuging
+message(STATUS "Project version major......: ${PROJECT_VERSION_MAJ}") #For debuging
+message(STATUS "Project version minor......: ${PROJECT_VERSION_MINO}") #For debuging
 message(STATUS "Project version revision...: ${PROJECT_VERSION_REV}") #For debuging
 message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}") #For debuging
 message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}") #For debuging
@@ -409,8 +409,8 @@ function(add_base_binary variant_name)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL
-        FW_MAJOR=${PROJECT_VERSION_MAJOR}
-        FW_MINOR=${PROJECT_VERSION_MINOR}
+        FW_MAJOR=${PROJECT_VERSION_MAJ}
+        FW_MINOR=${PROJECT_VERSION_MINO}
         FW_REVISION=${PROJECT_VERSION_REV}
         FW_FLAVOR=${PROJECT_VERSION_FLAVOR}
         FW_FLAVERSION=${PROJECT_VERSION_FLAVERSION}
@@ -418,7 +418,7 @@ function(add_base_binary variant_name)
         FW_COMMIT_HASH=${PROJECT_VERSION_HASH}
         FW_REPOSITORY="${PROJECT_REPOSITORY}"
         FW_DEV_VERSION=${PROJECT_DEV_VERSION}
-        FW_VERSION="${PROJECT_VERSION}"
+        FW_VERSION="${PROJECT_FW_VERSION}"
         FW_VERSION_FULL="${PROJECT_VERSION_FULL}"
     )
 endfunction()
