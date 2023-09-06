@@ -2,60 +2,43 @@ cmake_minimum_required(VERSION 3.19)
 include(cmake/Utilities.cmake)
 include(cmake/GetGitRevisionDescription.cmake)
 include(cmake/ReproducibleBuild.cmake)
+include(cmake/ProjectVersion.cmake)
+resolve_version_variables()
 
 set(PROJECT_VERSION_SUFFIX
     "<auto>"
     CACHE
       STRING
-      "Full version suffix to be shown on the info screen in settings (e.g. full_version=4.0.3-BETA+1035.PR111.B4, suffix=-BETA+1035.PR111.B4). Defaults to '+<commit sha>.<dirty?>.<debug?>' if set to '<auto>'."
+      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_SUFFIX>). Overrides git hash if set."
     )
-set(PROJECT_VERSION_SUFFIX_SHORT
+if(PROJECT_VERSION_SUFFIX STREQUAL "<auto>")
+  set(PROJECT_VERSION_SUFFIX "${FW_COMMIT_HASH}")
+endif()
+set(PROJECT_VERSION_FULL
     "<auto>"
     CACHE
       STRING
-      "Short version suffix to be shown on splash screen. Defaults to '+<BUILD_NUMBER>' if set to '<auto>'."
+      "Full version string to be shown on the info screen in settings. Overrides git version if set."
     )
-set(BUILD_NUMBER
-    ""
-    CACHE STRING "Build number of the firmware. Resolved automatically if not specified."
+if(PROJECT_VERSION_FULL STREQUAL "<auto>")
+  set(PROJECT_VERSION_FULL "${FW_COMMIT_DSC}")
+endif()
+set(PROJECT_REPOSITORY
+    "Unknown"
+    CACHE STRING "Repository string to be shown on the info screen in settings."
     )
-set(PROJECT_VERSION_TIMESTAMP
-    ""
-    CACHE STRING "Timestamp for the build. Resolved automatically if not specified."
-    )
+
 set(CUSTOM_COMPILE_OPTIONS
     ""
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-include(cmake/ProjectVersion.cmake)
-resolve_version_variables()
-
-set(PROJECT_VERSION_FLAVOUR
-    ""
-    CACHE STRING "Firmware flavour to build - DEBUG, DEVEL, APLHA, BETA or RC"
-    )
-set(PROJECT_VERSION_FLAVOUR_REVISION
-    ""
-    CACHE STRING "Firmware flavour version, e.g. 1 for RC1, etc"
-    )
-
-if(NOT PROJECT_VERSION_FLAVOUR STREQUAL "")
-  set(PROJECT_VERSION "${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOUR}")
-  add_compile_definitions(FW_FLAVOR=${PROJECT_VERSION_FLAVOUR})
-  if(NOT PROJECT_VERSION_FLAVOUR_REVISION STREQUAL "")
-    set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_FLAVOUR_REVISION}")
-    add_compile_definitions(FW_FLAVERSION=${PROJECT_VERSION_FLAVOUR_REVISION})
-  endif()
-endif()
+set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
 
 # Inform user about the resolved settings
-message(STATUS "Project version: ${PROJECT_VERSION}")
-message(
-  STATUS "Project version with short suffix: ${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}"
-  )
-
-set(FN_PREFIX "FW${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}")
+message(STATUS "Project version ...........: ${PROJECT_VERSION}")
+message(STATUS "Project version suffix ....: ${PROJECT_VERSION_SUFFIX}")
+message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -237,7 +220,6 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 # Target configuration
 #
 if(CMAKE_CROSSCOMPILING)
-  # set source epoch
   set_source_epoch(${PROJECT_VERSION_TIMESTAMP})
 
   # default optimization flags
@@ -328,7 +310,11 @@ function(add_base_binary variant_name)
     ${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map
     )
 
-  target_compile_definitions(${variant_name} PRIVATE CMAKE_CONTROL)
+  target_compile_definitions(
+    ${variant_name}
+    PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
+            FW_VERSION_FULL="${PROJECT_VERSION_FULL}" FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+    )
 endfunction()
 
 function(fw_add_variant variant_name)
