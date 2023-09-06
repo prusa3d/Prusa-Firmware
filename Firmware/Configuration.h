@@ -12,23 +12,60 @@ extern const char _sPrinterName[] PROGMEM;
 extern const uint16_t _nPrinterMmuType;
 extern const char _sPrinterMmuName[] PROGMEM;
 
+// The full version string and repository source are set via cmake
+#ifndef CMAKE_CONTROL
 // Firmware version
 #define FW_MAJOR 3
 #define FW_MINOR 13
-#define FW_REVISION 1
+#define FW_REVISION 2
 #define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
-#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
+#define FW_FLAVERSION 2     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
+#define FW_COMMIT_NR 6853
+#define FW_COMMIT_HASH 0
+#define FW_REPOSITORY "Unknown"
+#define FW_DEV_VERSION FW_VERSION_UNKNOWN
+
+#ifndef FW_FLAVERSION
+#define FW_FLAVERSION 0
+#endif //End NOT FW_FLAVERSION
 #ifndef FW_FLAVOR
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
 #else
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
-#endif
-
-// The full version string and repository source are set via cmake
-#ifndef CMAKE_CONTROL
-#define FW_COMMIT_HASH 0
-#define FW_REPOSITORY "Unknown"
+#endif //End NOT FW_FLAVOR
 #define FW_VERSION_FULL FW_VERSION "-unknown"
+// FW_VERSION_UNKNOWN means this is an unofficial build.
+// The firmware should only be checked into github with this symbol.
+
+// User-specified version info of this build to display in [Pronterface, etc] terminal window during
+// startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
+// build by the user have been successfully uploaded into firmware.
+#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#endif //End CMAKE_CONTROL
+
+// Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
+// The debug build may be a bit slower than the non-debug build, therefore the debug build should
+// not be shipped to a customer.
+#define FW_VERSION_DEBUG    6
+// This is a development build. A development build is either built from an unofficial git repository,
+// or from an unofficial branch, or it does not have a label set. Only the build server should set this build type.
+#define FW_VERSION_DEVEL    5
+// This is an alpha release. Only the build server should set this build type.
+#define FW_VERSION_ALPHA    4
+// This is a beta release. Only the build server should set this build type.
+#define FW_VERSION_BETA     3
+// This is a release candidate build. Only the build server should set this build type.
+#define FW_VERSION_RC       2
+// This is a final release. Only the build server should set this build type.
+#define FW_VERSION_GOLD     1
+// This is an unofficial build. The firmware should only be checked into github with this symbol,
+// the build server shall never produce builds with this build type.
+#define FW_VERSION_UNKNOWN  0
+
+#if FW_DEV_VERSION == FW_VERSION_DEBUG
+#define DEBUG_BUILD
+#else
+#undef DEBUG_BUILD
 #endif
 
 // G-code language level

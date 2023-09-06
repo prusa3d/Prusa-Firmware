@@ -2,11 +2,11 @@
 # This file is responsible for setting the following variables:
 #
 # ~~~
-# PROJECT_VERSION_MAJOR (4)
-# PROJECT_VERSION_MINOR (0)
-# PROJECT_VERSION_REV (3)
-# PROJECT_VERSION (4.0.3)
-# FW_COMMIT_DSC ("v4.0.3-deadbeef")
+# PROJECT_VERSION_MAJOR (3)
+# PROJECT_VERSION_MINOR (13)
+# PROJECT_VERSION_REV (2)
+# PROJECT_VERSION (3.13.2)
+# FW_COMMIT_DSC ("v3.13.2-deadbeef")
 # FW_COMMIT_HASH (deadbeef)
 # FW_COMMIT_DATE (1665051856)
 #
@@ -14,24 +14,6 @@
 # To set the rest, the function `resolve_version_variables` has to be called.
 # ~~~
 #]]
-
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/Configuration.h CFG_VER_DATA
-     REGEX "#define FW_[A-Z]+ ([0-9]+)"
-     )
-list(GET CFG_VER_DATA 0 PROJECT_VERSION_MAJOR)
-list(GET CFG_VER_DATA 1 PROJECT_VERSION_MINOR)
-list(GET CFG_VER_DATA 2 PROJECT_VERSION_REV)
-
-string(REGEX MATCH "FW_MAJOR ([0-9]+)" PROJECT_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(PROJECT_VERSION_MAJOR "${CMAKE_MATCH_1}")
-
-string(REGEX MATCH "FW_MINOR ([0-9]+)" PROJECT_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-set(PROJECT_VERSION_MINOR ${CMAKE_MATCH_1})
-
-string(REGEX MATCH "FW_REVISION +([0-9]+)" PROJECT_VERSION_REV "${PROJECT_VERSION_REV}")
-set(PROJECT_VERSION_REV ${CMAKE_MATCH_1})
-
-set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}")
 
 function(resolve_version_variables)
   if(FW_COMMIT_DSC)
@@ -43,27 +25,129 @@ function(resolve_version_variables)
   git_head_commit_data(FW_COMMIT_HASH "%h")
   set(ERRORS "GIT-NOTFOUND" "HEAD-FORMAT-NOTFOUND")
   if(FW_COMMIT_HASH IN_LIST ERRORS)
-    # git not available, set fallback values
+    message(STATUS "FW_COMMIT_HASH IN_LIST ERRORS")
+    # git not available, set fallback values reading Firmware/Configuration.h file
+    file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/Configuration.h CFG_VER_DATA
+    REGEX "^#define FW_[A-Z_]+ ([A-Z0-9]+)"
+    )
+    list(GET CFG_VER_DATA 0 PROJECT_VERSION_MAJOR)
+    list(GET CFG_VER_DATA 1 PROJECT_VERSION_MINOR)
+    list(GET CFG_VER_DATA 2 PROJECT_VERSION_REV)
+    list(GET CFG_VER_DATA 3 PROJECT_VERSION_FLAVOR)
+    list(GET CFG_VER_DATA 4 PROJECT_VERSION_FLAVERSION)
+    string(REGEX MATCH "FW_MAJOR ([0-9]+)" PROJECT_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+    set(PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1})
+    string(REGEX MATCH "FW_MINOR ([0-9]+)" PROJECT_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+    set(PROJECT_VERSION_MINOR ${CMAKE_MATCH_1})
+    string(REGEX MATCH "FW_REVISION +([0-9]+)" PROJECT_VERSION_REV "${PROJECT_VERSION_REV}")
+    set(PROJECT_VERSION_REV ${CMAKE_MATCH_1})
+    string(REGEX MATCH "^#define FW_FLAVOR +([A-Z]+)" PROJECT_VERSION_FLAVOR "${PROJECT_VERSION_FLAVOR}")
+    set(PROJECT_VERSION_FLAVOR ${CMAKE_MATCH_1})
+    string(REGEX MATCH "^#define FW_FLAVERSION +([0-9]+)" PROJECT_VERSION_FLAVERSION "${PROJECT_VERSION_FLAVERSION}")
+    set(PROJECT_VERSION_FLAVERSION ${CMAKE_MATCH_1})
+    set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}")
+    set(PROJECT_VERSION_COMMIT_NR ${FW_COMMIT_NR})
+    set(FW_DEV_VERSION "${PROJECT_DEV_VERSION}")
     set(FW_COMMIT_HASH "UNKNOWN")
-    set(FW_COMMIT_DSC "v${PROJECT_VERSION}-${FW_COMMIT_HASH}")
+    set(FW_COMMIT_DSC "${PROJECT_VERSION}")
     string(TIMESTAMP FW_COMMIT_DATE "%s")
+    set(FW_REPOSITORY "Unknown")
   else()
-    git_describe_working_tree(FW_COMMIT_DSC)
+    message(STATUS "FW_COMMIT_HASH FOUND")
+    #git_describe_working_tree(FW_COMMIT_DSC)
+    set(FW_COMMIT_DSC "v3.13.2-RC1")
     git_head_commit_data(FW_COMMIT_DATE "%ct")
+    git_head_commit_number(FW_COMMIT_NR)
+    git_get_repository(FW_REPOSITORY)
   endif()
+  
+  message(STATUS "1: ${FW_COMMIT_DSC}") 
+  string(REPLACE "v" "" FW_COMMIT_DSC ${FW_COMMIT_DSC}) 
+  message(STATUS "2: ${FW_COMMIT_DSC}") 
+  string(FIND ${FW_COMMIT_DSC} "-" HAS_FALVOR)
+  message(STATUS "has falvor: ${HAS_FALVOR}")
+  if(${HAS_FALVOR} GREATER_EQUAL 5)
+    string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)-([A-Z0-9]+)"
+           PROJECT_VERSION_LIST "${FW_COMMIT_DSC}")
+  else()
+    string(REGEX MATCH "([0-9]+).([0-9]+).([0-9])"
+           PROJECT_VERSION_LIST "${FW_COMMIT_DSC}")
+  endif()
+  message(STATUS "3: ${PROJECT_VERSION_LIST}") 
+  set(PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1})
+  set(PROJECT_VERSION_MINOR ${CMAKE_MATCH_2})
+  set(PROJECT_VERSION_REV ${CMAKE_MATCH_3})
+  if(${HAS_FALVOR} GREATER_EQUAL 5)
+    set(PROJECT_VERSION_FLAVOR ${CMAKE_MATCH_4})
+    set(PROJECT_VERSION_FLAVERSION ${CMAKE_MATCH_4})
+    string(REGEX REPLACE "[0-9]" "" PROJECT_VERSION_FLAVOR ${PROJECT_VERSION_FLAVOR})
+    string(REGEX REPLACE "[A-Z]" "" PROJECT_VERSION_FLAVERSION ${PROJECT_VERSION_FLAVERSION})
+    set(PROJECT_VERSION_FLAVOR ${PROJECT_VERSION_FLAVOR})
+    set(PROJECT_VERSION_FLAVERSION ${PROJECT_VERSION_FLAVERSION})
+  endif()
+
+  if("${PROJECT_VERSION_FLAVOR}" STREQUAL "")
+    set(PROJECT_DEV_VERSION "FW_VERSION_GOLD")
+  elseif("${PROJECT_VERSION_FLAVOR}" STREQUAL "RC")
+    set(PROJECT_DEV_VERSION "FW_VERSION_RC")
+  elseif("${PROJECT_VERSION_FLAVOR}" STREQUAL "BETA")
+    set(PROJECT_DEV_VERSION "FW_VERSION_BETA")
+  elseif("${PROJECT_VERSION_FLAVOR}" STREQUAL "ALPHA")
+    set(PROJECT_DEV_VERSION "FW_VERSION_ALPHA")
+  else()
+    set(PROJECT_DEV_VERSION "FW_VERSION_UNKNOWN")
+  endif()
+
+  message(STATUS "3.1: -${PROJECT_VERSION_MAJOR}-") 
+  message(STATUS "3.2: -${PROJECT_VERSION_MINOR}-") 
+  message(STATUS "3.3: -${PROJECT_VERSION_REV}-") 
+  message(STATUS "3.4: -${PROJECT_VERSION_FLAVOR}-") 
+  message(STATUS "3.5: -${PROJECT_VERSION_FLAVERSION}-")
+
+  set(FW_MAJOR
+      "${PROJECT_VERSION_MAJOR}"
+      PARENT_SCOPE
+     )
+  set(FW_MINOR
+      "${PROJECT_VERSION_MINOR}"
+      PARENT_SCOPE
+     )
+  set(FW_REVISION
+      "${PROJECT_VERSION_REV}"
+      PARENT_SCOPE
+     )
+  set(FW_FLAVOR
+      "${PROJECT_VERSION_FLAVOR}"
+      PARENT_SCOPE
+     )
+  set(FW_FLAVERSION
+      "${PROJECT_VERSION_FLAVERSION}"
+      PARENT_SCOPE
+     )
+  set(FW_VERSION
+      "${PROJECT_VERSION}"
+      PARENT_SCOPE
+     )
   set(FW_COMMIT_DSC
       "${FW_COMMIT_DSC}"
       PARENT_SCOPE
-      )
+     )
   set(FW_COMMIT_HASH
       "${FW_COMMIT_HASH}"
       PARENT_SCOPE
-      )
+     )
+  set(FW_COMMIT_NR
+      "${FW_COMMIT_NR}"
+      PARENT_SCOPE
+     )
   set(FW_COMMIT_DATE
       "${FW_COMMIT_DATE}"
       PARENT_SCOPE
-      )
-
+     )
+  set(FW_DEV_VERSION
+      "${PROJECT_DEV_VERSION}"
+      PARENT_SCOPE
+     )
   # PROJECT_VERSION_TIMESTAMP
   if(NOT PROJECT_VERSION_TIMESTAMP)
     git_head_commit_timestamp(timestamp)
@@ -72,5 +156,10 @@ function(resolve_version_variables)
         PARENT_SCOPE
         )
   endif()
+
+  set(FW_REPOSITORY
+      "${FW_REPOSITORY}"
+      PARENT_SCOPE
+      )
 
 endfunction()

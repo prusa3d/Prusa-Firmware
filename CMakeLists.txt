@@ -5,14 +5,94 @@ include(cmake/ReproducibleBuild.cmake)
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
-set(PROJECT_VERSION_SUFFIX
+set(PROJECT_VERSION_MAJOR
     "<auto>"
     CACHE
       STRING
-      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_SUFFIX>). Overrides git hash if set."
+      "Version major. Overrides major if set."
     )
-if(PROJECT_VERSION_SUFFIX STREQUAL "<auto>")
-  set(PROJECT_VERSION_SUFFIX "${FW_COMMIT_HASH}")
+if(PROJECT_VERSION_MAJOR STREQUAL "<auto>")
+  set(PROJECT_VERSION_MAJOR "${FW_MAJOR}")
+endif()
+
+set(PROJECT_VERSION_MINOR
+    "<auto>"
+    CACHE
+      STRING
+      "Version minor. Overrides minor if set."
+    )
+if(PROJECT_VERSION_MINOR STREQUAL "<auto>")
+  set(PROJECT_VERSION_MINOR "${FW_MINOR}")
+endif()
+
+set(PROJECT_VERSION_REV
+    "<auto>"
+    CACHE
+      STRING
+      "Version revision. Overrides revision if set."
+    )
+if(PROJECT_VERSION_REV STREQUAL "<auto>")
+  set(PROJECT_VERSION_REV "${FW_REVISION}")
+endif()
+
+set(PROJECT_VERSION_FLAVOR
+    "<auto>"
+    CACHE
+      STRING
+      "Version flavor. Overrides flavor if set."
+    )
+if(PROJECT_VERSION_FLAVOR STREQUAL "<auto>")
+  set(PROJECT_VERSION_FLAVOR "${FW_FLAVOR}")
+endif()
+
+set(PROJECT_VERSION_FLAVERSION
+    "<auto>"
+    CACHE
+      STRING
+      "Version flavor version. Overrides flavor version if set."
+    )
+if(PROJECT_VERSION_FLAVERSION STREQUAL "<auto>")
+  set(PROJECT_VERSION_FLAVERSION "${FW_FLAVERSION}")
+endif()
+
+set(PROJECT_VERSION_HASH
+    "<auto>"
+    CACHE
+      STRING
+      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_HASH>). Overrides git hash if set."
+    )
+if(PROJECT_VERSION_HASH STREQUAL "<auto>")
+  set(PROJECT_VERSION_HASH "${FW_COMMIT_HASH}")
+endif()
+
+set(PROJECT_VERSION_COMMIT_NR
+    "<auto>"
+    CACHE
+      STRING
+      "Version commit number to be appended to the final filename (<ver+PROJECT_VERSION_COMMIT_NR>). Overrides git commit number if set."
+    )
+if(PROJECT_VERSION_COMMIT_NR STREQUAL "<auto>")
+  set(PROJECT_VERSION_COMMIT_NR "${FW_COMMIT_NR}")
+endif()
+
+set(PROJECT_DEV_VERSION
+    "<auto>"
+    CACHE
+      STRING
+      "Development version to check sliced gcode match firmware."
+    )
+if(PROJECT_DEV_VERSION STREQUAL "<auto>")
+  set(PROJECT_DEV_VERSION "${FW_DEV_VERSION}")
+endif()
+
+set(PROJECT_VERSION
+    "<auto>"
+    CACHE
+      STRING
+      "Full version string to be shown on the info screen in settings. Overrides git version if set."
+    )
+if(PROJECT_VERSION STREQUAL "<auto>")
+  set(PROJECT_VERSION "${FW_COMMIT_DSC}")
 endif()
 set(PROJECT_VERSION_FULL
     "<auto>"
@@ -27,18 +107,34 @@ set(PROJECT_REPOSITORY
     "Unknown"
     CACHE STRING "Repository string to be shown on the info screen in settings."
     )
+if(PROJECT_REPOSITORY STREQUAL "<auto>")
+  set(PROJECT_REPOSITORY "${FW_REPOSITORY}")
+endif()
 
 set(CUSTOM_COMPILE_OPTIONS
     ""
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
+if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
+  set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+else()
+  set(FN_PREFIX "FW${PROJECT_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+endif()
 
 # Inform user about the resolved settings
-message(STATUS "Project version ...........: ${PROJECT_VERSION}")
-message(STATUS "Project version suffix ....: ${PROJECT_VERSION_SUFFIX}")
 message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
+message(STATUS "Project version ...........: ${PROJECT_VERSION}") #For debuging
+message(STATUS "Project version major......: ${PROJECT_VERSION_MAJOR}") #For debuging
+message(STATUS "Project version minor......: ${PROJECT_VERSION_MINOR}") #For debuging
+message(STATUS "Project version revision...: ${PROJECT_VERSION_REV}") #For debuging
+message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}") #For debuging
+message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}") #For debuging
+message(STATUS "Project version build_nr...: ${PROJECT_VERSION_COMMIT_NR}")
+message(STATUS "Project version hash ......: ${PROJECT_VERSION_HASH}")
+message(STATUS "Project dev version .......: ${PROJECT_DEV_VERSION}") #For debuging
+message(STATUS "Project repository ........: ${PROJECT_REPOSITORY}")
+message(STATUS "Project file: ${FN_PREFIX}")
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -312,8 +408,18 @@ function(add_base_binary variant_name)
 
   target_compile_definitions(
     ${variant_name}
-    PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
-            FW_VERSION_FULL="${PROJECT_VERSION_FULL}" FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+    PRIVATE CMAKE_CONTROL
+        FW_MAJOR=${PROJECT_VERSION_MAJOR}
+        FW_MINOR=${PROJECT_VERSION_MINOR}
+        FW_REVISION=${PROJECT_VERSION_REV}
+        FW_FLAVOR=${PROJECT_VERSION_FLAVOR}
+        FW_FLAVERSION=${PROJECT_VERSION_FLAVERSION}
+        FW_COMMIT_NR=${PROJECT_VERSION_COMMIT_NR}
+        FW_COMMIT_HASH=${PROJECT_VERSION_HASH}
+        FW_REPOSITORY="${PROJECT_REPOSITORY}"
+        FW_DEV_VERSION=${PROJECT_DEV_VERSION}
+        FW_VERSION="${PROJECT_VERSION}"
+        FW_VERSION_FULL="${PROJECT_VERSION_FULL}"
     )
 endfunction()
 
