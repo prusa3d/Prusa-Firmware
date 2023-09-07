@@ -323,7 +323,7 @@ function(git_head_commit_timestamp _var)
   endif()
   if(NOT hash)
     set(${_var}
-        "HEAD-HASH-NOTFOUND"
+        "0" #without git needs to be an integer
         PARENT_SCOPE
         )
     return()

@@ -116,7 +116,11 @@ set(CUSTOM_COMPILE_OPTIONS
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-set(FN_PREFIX "FW${PROJECT_FW_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
+if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
+  set(FN_PREFIX "FW${PROJECT_VERSION_MAJO}_${PROJECT_VERSION_MINO}_${PROJECT_VERSION_REV}_${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}_${PROJECT_VERSION_COMMIT_NR}_${PROJECT_VERSION_HASH}")
+else()
+  set(FN_PREFIX "FW${PROJECT_VERSION_MAJO}_${PROJECT_VERSION_MINO}_${PROJECT_VERSION_REV}_${PROJECT_VERSION_COMMIT_NR}_${PROJECT_VERSION_HASH}")
+endif()
 
 # Inform user about the resolved settings
 message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
@@ -500,7 +504,7 @@ function(fw_add_variant variant_name)
   if(${HAS_XFLASH} GREATER_EQUAL 0)
     # X-Flash based build (catalogs appended to patched binary)
     set(FW_LANG_FINAL "${variant_name}_MULTILANG")
-    set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
+    set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}_${FW_LANG_FINAL}.hex)
     set(LANG_CATBIN ${LANG_TMP_DIR}/${variant_name}_cat.bin)
     set(LANG_CATHEX ${LANG_TMP_DIR}/${variant_name}_cat.hex)
 

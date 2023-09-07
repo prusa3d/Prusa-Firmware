@@ -19,7 +19,7 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_MINOR 13
 #define FW_REVISION 2
 #define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
-#define FW_FLAVERSION 2     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
+#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
 #define FW_COMMIT_NR 6853
 #define FW_COMMIT_HASH 0
 #define FW_REPOSITORY "Unknown"
