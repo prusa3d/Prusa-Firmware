@@ -208,7 +208,7 @@ function(git_count_parent_commits _var)
   endif()
   if(NOT hash)
     set(${_var}
-        "HEAD-HASH-NOTFOUND"
+        "0"
         PARENT_SCOPE
         )
     return()
