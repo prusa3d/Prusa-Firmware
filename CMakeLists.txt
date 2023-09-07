@@ -36,9 +36,27 @@ set(CUSTOM_COMPILE_OPTIONS
 set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
 
 # Inform user about the resolved settings
-message(STATUS "Project version ...........: ${PROJECT_VERSION}")
-message(STATUS "Project version suffix ....: ${PROJECT_VERSION_SUFFIX}")
-message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
+message(STATUS "Project version (Configuration.h): ${PROJECT_VERSION}")
+message(STATUS "Project version suffix ..........: ${PROJECT_VERSION_SUFFIX}")
+message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
+message(STATUS "PROJECT() VERSION argument.......: ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}")
+
+
+string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
+
+if(NOT ${CMAKE_MATCH_1} STREQUAL ${PROJECT_VERSION_MAJOR})
+    message(FATAL_ERROR "Major version of current tag disagrees with Configuration.h ${CMAKE_MATCH_1}!=${PROJECT_VERSION_MAJOR}")
+endif()
+
+if(NOT ${CMAKE_MATCH_2} STREQUAL ${PROJECT_VERSION_MINOR})
+    message(FATAL_ERROR "Minor version of current tag disagrees with Configuration.h ${CMAKE_MATCH_2}!=${PROJECT_VERSION_MINOR}")
+endif()
+
+if(NOT ${CMAKE_MATCH_3} STREQUAL ${PROJECT_VERSION_REV})
+    message(FATAL_ERROR "Rev version of current tag disagrees with Configuration.h ${CMAKE_MATCH_3}!=${PROJECT_VERSION_REV}")
+endif()
+
+MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3})")
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -58,7 +76,7 @@ set(COMMUNITY_LANGUAGES
 set(SELECTED_LANGUAGES ${MAIN_LANGUAGES} ${COMMUNITY_LANGUAGES})
 
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
-project(Prusa-Firmware)
+project(Prusa-Firmware VERSION ${PROJECT_VERSION})
 add_subdirectory(lib)
 
 # Get LANG_MAX_SIZE from sources
@@ -314,6 +332,9 @@ function(add_base_binary variant_name)
     ${variant_name}
     PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
             FW_VERSION_FULL="${PROJECT_VERSION_FULL}" FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+            FW_MAJOR=${PROJECT_VERSION_MAJOR}
+            FW_MINOR=${PROJECT_VERSION_MINOR}
+            FW_REVISION=${PROJECT_VERSION_REV}
     )
 endfunction()
 
@@ -500,7 +521,7 @@ if(CMAKE_CROSSCOMPILING)
     set(DIR_NAME ${THIS_VAR})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt
-         "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})"
+         "project(${DIR_NAME} VERSION ${PROJECT_VERSION})\nfw_add_variant(${THIS_VAR})"
          )
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
   endforeach(THIS_VAR IN LISTS FW_VARIANTS)

@@ -189,7 +189,7 @@ function(git_describe _var)
     endif()
     if(NOT hash)
         set(${_var}
-            "HEAD-HASH-NOTFOUND"
+            "0" # This is an integer in the code...
             PARENT_SCOPE)
         return()
     endif()
