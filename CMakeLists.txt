@@ -39,10 +39,10 @@ set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
 message(STATUS "Project version (Configuration.h): ${PROJECT_VERSION}")
 message(STATUS "Project version suffix ..........: ${PROJECT_VERSION_SUFFIX}")
 message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
-message(STATUS "PROJECT() VERSION argument.......: ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}")
 
 
-string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
+if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN") # No commit hash is known... likely no git.
+string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-.+-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
 
 if(NOT ${CMAKE_MATCH_1} STREQUAL ${PROJECT_VERSION_MAJOR})
     message(FATAL_ERROR "Major version of current tag disagrees with Configuration.h ${CMAKE_MATCH_1}!=${PROJECT_VERSION_MAJOR}")
@@ -56,7 +56,19 @@ if(NOT ${CMAKE_MATCH_3} STREQUAL ${PROJECT_VERSION_REV})
     message(FATAL_ERROR "Rev version of current tag disagrees with Configuration.h ${CMAKE_MATCH_3}!=${PROJECT_VERSION_REV}")
 endif()
 
+# Note - we don't check the commit counter, that'd be too much of a headache. Maybe it
+# should be an error only on a tagged build?
+
 MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3})")
+MESSAGE(STATUS "Commit nr: Configuration.h: ${PROJECT_VERSION_TWEAK} Tag: ${CMAKE_MATCH_4}")
+MESSAGE(STATUS "These tag values will override Configuration.h")
+SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${CMAKE_MATCH_4})
+else(GIT_FOUND)
+
+MESSAGE(STATUS "Git was not found. Falling back to Configuration.h values (${PROJECT_VERSION}).")
+set(FW_COMMIT_HASH "0") # Clear it, the code expects a binary...
+
+endif()
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -335,6 +347,7 @@ function(add_base_binary variant_name)
             FW_MAJOR=${PROJECT_VERSION_MAJOR}
             FW_MINOR=${PROJECT_VERSION_MINOR}
             FW_REVISION=${PROJECT_VERSION_REV}
+            FW_COMMITNR=${PROJECT_VERSION_TWEAK}
     )
 endfunction()
 

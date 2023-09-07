@@ -14,8 +14,7 @@ const uint16_t FW_VERSION_NR[4] PROGMEM = {
     FW_MAJOR,
     FW_MINOR,
     FW_REVISION,
-(uint16_t)(FW_COMMIT_HASH) // explicitly truncate the hash to fit
-#warning "^^^ this is wrong and needs fixing. Should it be build nr or the flavour?"
+    FW_COMMITNR
 };
 
 const uint32_t FW_VERSION_HASH PROGMEM = FW_COMMIT_HASH;

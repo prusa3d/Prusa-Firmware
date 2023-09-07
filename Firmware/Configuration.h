@@ -19,12 +19,13 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_MAJOR 3
 #define FW_MINOR 13
 #define FW_REVISION 0
+#define FW_COMMITNR 6853
 #warning "** Not sure why I had to touch this, but it seems like v3.13.1 is not in the linear history of this branch yet?"
 #endif
 
 #define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
 #define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
-#warning "^^^These are temporary and need to be provided by cmake"
+#warning "^^^These are temporary and still need to be provided by cmake"
 
 #ifndef FW_FLAVOR
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
