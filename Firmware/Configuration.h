@@ -40,7 +40,6 @@ extern const char _sPrinterMmuName[] PROGMEM;
 // User-specified version info of this build to display in [Pronterface, etc] terminal window during
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 #endif //End CMAKE_CONTROL
 
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).

@@ -8,12 +8,12 @@
 # FW_FLAVOR (RC) RC|BETA|ALPHA|DEV
 # FW_FLAVERSION (1)
 # FW_COMMIT (7569)
-# PROJECT_FW_VERSION (3.13.2)
+# FW_VERSION (3.13.2)
 # FW_COMMIT_DSC ("v3.13.2-RC1-deadbeef")
 # FW_COMMIT_HASH (deadbeef)
 # FW_COMMIT_DATE (1665051856)
 #
-# The `PROJECT_FW_VERSION` variable is set as soon as the file is included.
+# The `FW_VERSION` variable is set as soon as the file is included.
 # To set the rest, the function `resolve_version_variables` has to be called.
 # ~~~
 #]]
@@ -28,7 +28,6 @@ function(resolve_version_variables)
   git_head_commit_data(FW_COMMIT_HASH "%h")
   set(ERRORS "GIT-NOTFOUND" "HEAD-FORMAT-NOTFOUND")
   if(FW_COMMIT_HASH IN_LIST ERRORS)
-    message(STATUS "FW_COMMIT_HASH IN_LIST ERRORS")
     # git not available, set fallback values reading Firmware/Configuration.h file
     file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/Configuration.h CFG_VER_DATA
     REGEX "^#define FW_[A-Z_]+ ([A-Z0-9]+)"
@@ -56,19 +55,15 @@ function(resolve_version_variables)
     string(TIMESTAMP FW_COMMIT_DATE "%s")
     set(FW_REPOSITORY "Unknown")
   else()
-    message(STATUS "FW_COMMIT_HASH FOUND")
     git_describe_working_tree(FW_COMMIT_DSC)
-    #set(FW_COMMIT_DSC "v3.13.2-RC1")
+    #set(FW_COMMIT_DSC "v3.13.2-RC1") #for debugging
     git_head_commit_data(FW_COMMIT_DATE "%ct")
     git_head_commit_number(FW_COMMIT_NR)
     git_get_repository(FW_REPOSITORY)
   endif()
-  
-  message(STATUS "1: ${FW_COMMIT_DSC}") 
-  string(REPLACE "v" "" FW_COMMIT_DSC ${FW_COMMIT_DSC}) 
-  message(STATUS "2: ${FW_COMMIT_DSC}") 
-  string(FIND ${FW_COMMIT_DSC} "-" HAS_FALVOR)
-  message(STATUS "has falvor: ${HAS_FALVOR}")
+
+  string(REPLACE "v" "" FW_COMMIT_DSC ${FW_COMMIT_DSC}) #remove git tag "v"
+  string(FIND ${FW_COMMIT_DSC} "-" HAS_FALVOR) #if "-" is found in git tag assume there is a FALVOR
   if(${HAS_FALVOR} GREATER_EQUAL 5)
     string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)-([A-Z0-9]+)"
            PROJECT_VERSION_LIST "${FW_COMMIT_DSC}")
@@ -76,7 +71,6 @@ function(resolve_version_variables)
     string(REGEX MATCH "([0-9]+).([0-9]+).([0-9])"
            PROJECT_VERSION_LIST "${FW_COMMIT_DSC}")
   endif()
-  message(STATUS "3: ${PROJECT_VERSION_LIST}")
   set(FW_MAJOR ${CMAKE_MATCH_1})
   set(FW_MINOR ${CMAKE_MATCH_2})
   set(FW_REVISION ${CMAKE_MATCH_3})
@@ -89,6 +83,7 @@ function(resolve_version_variables)
     set(FW_FLAVERSION ${FW_FLAVERSION})
   endif()
 
+  #need these for M862.4 working correctly
   if("${FW_FLAVOR}" STREQUAL "")
     set(FW_DEV_VERSION "FW_VERSION_GOLD")
   elseif("${FW_FLAVOR}" STREQUAL "RC")
@@ -101,56 +96,50 @@ function(resolve_version_variables)
     set(FW_DEV_VERSION "FW_VERSION_UNKNOWN")
   endif()
 
-  message(STATUS "3.1: -${FW_MAJOR}-")
-  message(STATUS "3.2: -${FW_MINOR}-")
-  message(STATUS "3.3: -${FW_REVISION}-")
-  message(STATUS "3.4: -${FW_FLAVOR}-")
-  message(STATUS "3.5: -${FW_FLAVERSION}-")
-
   set(FW_MAJOR
       ${FW_MAJOR}
       PARENT_SCOPE
-     )
+      )
   set(FW_MINOR
       ${FW_MINOR}
       PARENT_SCOPE
-     )
+      )
   set(FW_REVISION
       ${FW_REVISION}
       PARENT_SCOPE
-     )
+      )
   set(FW_FLAVOR
       "${FW_FLAVOR}"
       PARENT_SCOPE
-     )
+      )
   set(FW_FLAVERSION
       ${FW_FLAVERSION}
       PARENT_SCOPE
-     )
+      )
   set(FW_VERSION
       "${FW_VERSION}"
       PARENT_SCOPE
-     )
+      )
   set(FW_COMMIT_DSC
       "${FW_COMMIT_DSC}"
       PARENT_SCOPE
-     )
+      )
   set(FW_COMMIT_HASH
       "${FW_COMMIT_HASH}"
       PARENT_SCOPE
-     )
+      )
   set(FW_COMMIT_NR
       ${FW_COMMIT_NR}
       PARENT_SCOPE
-     )
+      )
   set(FW_COMMIT_DATE
       "${FW_COMMIT_DATE}"
       PARENT_SCOPE
-     )
+      )
   set(FW_DEV_VERSION
       "${FW_DEV_VERSION}"
       PARENT_SCOPE
-     )
+      )
   # PROJECT_VERSION_TIMESTAMP
   if(NOT PROJECT_VERSION_TIMESTAMP)
     git_head_commit_timestamp(timestamp)
@@ -159,10 +148,8 @@ function(resolve_version_variables)
         PARENT_SCOPE
         )
   endif()
-
   set(FW_REPOSITORY
       "${FW_REPOSITORY}"
       PARENT_SCOPE
       )
-
 endfunction()

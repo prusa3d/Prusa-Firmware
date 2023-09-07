@@ -1123,7 +1123,17 @@ void setup()
 		SERIAL_PROTOCOLLNPGM("start");
 #endif
 	SERIAL_ECHO_START;
-	puts_P(PSTR(" " FW_VERSION_FULL));
+	SERIAL_ECHOLNPGM(CUSTOM_MENDEL_NAME);
+	SERIAL_ECHOLNRPGM(FW_VERSION_STR_P());
+  SERIAL_ECHOPGM("build nr:");
+	SERIAL_ECHOLNPGM(STR(FW_COMMIT_NR));
+  SERIAL_ECHOPGM("build hash:");
+	SERIAL_ECHOLNPGM(STR(FW_COMMIT_HASH));
+	puts_P(PSTR(" repo " FW_REPOSITORY));
+	puts_P(PSTR(" date " SOURCE_DATE_EPOCH));
+#ifdef STRING_CONFIG_H_AUTHOR
+	puts_P(PSTR(" author " STRING_CONFIG_H_AUTHOR));
+#endif
 
 	// by default the MMU shall remain disabled - PFW-1418
 	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {

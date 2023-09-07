@@ -402,8 +402,8 @@ function(git_get_repository _var)
         RESULT_VARIABLE res
         OUTPUT_VARIABLE out
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT out EQUAL 0)
-        set(out "${out}-${res}-NOTFOUND")
+    if(NOT res EQUAL 0)
+        set(out "REPO-NOTFOUND")
     endif()
     string(REGEX REPLACE "https://github.com/" "" out ${out})
     string(REGEX REPLACE "/Prusa-Firmware.git" "" out ${out})
@@ -413,7 +413,8 @@ function(git_get_repository _var)
             PARENT_SCOPE)
     else()
         set(${_var}
-        "Unknown"
-        PARENT_SCOPE)
+           #"${out}" #outputs the github repo user name
+           "Unknown" #All other repos shown as unknown
+           PARENT_SCOPE)
     endif()
 endfunction()

@@ -5,14 +5,14 @@ include(cmake/ReproducibleBuild.cmake)
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
-set(PROJECT_VERSION_MAJ
+set(PROJECT_VERSION_MAJO
     "<auto>"
     CACHE
       STRING
       "Version major. Overrides major if set."
     )
-if(PROJECT_VERSION_MAJ STREQUAL "<auto>")
-  set(PROJECT_VERSION_MAJ ${FW_MAJOR})
+if(PROJECT_VERSION_MAJO STREQUAL "<auto>")
+  set(PROJECT_VERSION_MAJO ${FW_MAJOR})
 endif()
 
 set(PROJECT_VERSION_MINO
@@ -107,7 +107,7 @@ set(PROJECT_REPOSITORY
     "Unknown"
     CACHE STRING "Repository string to be shown on the info screen in settings."
     )
-if(PROJECT_REPOSITORY STREQUAL "<auto>")
+if(PROJECT_REPOSITORY STREQUAL "Unknown")
   set(PROJECT_REPOSITORY "${FW_REPOSITORY}")
 endif()
 
@@ -116,23 +116,19 @@ set(CUSTOM_COMPILE_OPTIONS
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-#if(PROJECT_VERSION_FLAVOR AND PROJECT_VERSION_FLAVERSION)
-#  set(FN_PREFIX "FW${PROJECT_FW_VERSION}-${PROJECT_VERSION_FLAVOR}${PROJECT_VERSION_FLAVERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
-#else()
-  set(FN_PREFIX "FW${PROJECT_FW_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
-#endif()
+set(FN_PREFIX "FW${PROJECT_FW_VERSION}-${PROJECT_VERSION_COMMIT_NR}+${PROJECT_VERSION_HASH}")
 
 # Inform user about the resolved settings
 message(STATUS "Project version description: ${PROJECT_VERSION_FULL}")
-message(STATUS "Project version ...........: ${PROJECT_FW_VERSION}") #For debuging
-message(STATUS "Project version major......: ${PROJECT_VERSION_MAJ}") #For debuging
-message(STATUS "Project version minor......: ${PROJECT_VERSION_MINO}") #For debuging
-message(STATUS "Project version revision...: ${PROJECT_VERSION_REV}") #For debuging
-message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}") #For debuging
-message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}") #For debuging
+#message(STATUS "Project version ...........: ${PROJECT_FW_VERSION}") #For debuging
+#message(STATUS "Project version major......: ${PROJECT_VERSION_MAJO}") #For debuging
+#message(STATUS "Project version minor......: ${PROJECT_VERSION_MINO}") #For debuging
+#message(STATUS "Project version revision...: ${PROJECT_VERSION_REV}") #For debuging
+#message(STATUS "Project version flavor.....: ${PROJECT_VERSION_FLAVOR}") #For debuging
+#message(STATUS "Project version fla-revison: ${PROJECT_VERSION_FLAVERSION}") #For debuging
 message(STATUS "Project version build_nr...: ${PROJECT_VERSION_COMMIT_NR}")
 message(STATUS "Project version hash ......: ${PROJECT_VERSION_HASH}")
-message(STATUS "Project dev version .......: ${PROJECT_DEV_VERSION}") #For debuging
+#message(STATUS "Project dev version .......: ${PROJECT_DEV_VERSION}") #For debuging
 message(STATUS "Project repository ........: ${PROJECT_REPOSITORY}")
 message(STATUS "Project file: ${FN_PREFIX}")
 
@@ -409,7 +405,7 @@ function(add_base_binary variant_name)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL
-        FW_MAJOR=${PROJECT_VERSION_MAJ}
+        FW_MAJOR=${PROJECT_VERSION_MAJO}
         FW_MINOR=${PROJECT_VERSION_MINO}
         FW_REVISION=${PROJECT_VERSION_REV}
         FW_FLAVOR=${PROJECT_VERSION_FLAVOR}
