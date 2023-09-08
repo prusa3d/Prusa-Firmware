@@ -238,7 +238,7 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 #
 if(CMAKE_CROSSCOMPILING)
   # set source epoch
-  set_source_epoch(${PROJECT_VERSION_TIMESTAMP})
+  set_source_epoch(1456063320)
 
   # default optimization flags
   set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
