@@ -23,7 +23,7 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_REVISION 0
 #warning "** Not sure why I had to touch this, but it seems like v3.13.1 is not in the linear history of this branch yet?"
 #define FW_COMMITNR 6853
-#define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
+#define FW_FLAVOR RC      //uncomment if DEV, ALPHA, BETA or RC
 #define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
 #endif
 
