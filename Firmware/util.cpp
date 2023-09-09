@@ -14,7 +14,7 @@ const uint16_t FW_VERSION_NR[4] PROGMEM = {
     FW_MAJOR,
     FW_MINOR,
     FW_REVISION,
-    FW_COMMITNR
+    FW_TWEAK,
 };
 
 const uint32_t FW_VERSION_HASH PROGMEM = FW_COMMIT_HASH;

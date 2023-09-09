@@ -40,9 +40,11 @@ message(STATUS "Project version (Configuration.h): ${PROJECT_VERSION}")
 message(STATUS "Project version suffix ..........: ${PROJECT_VERSION_SUFFIX}")
 message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
 
+# testing
+# SET(FW_COMMIT_DSC "v3.13.0-1234")
 
-if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN") # No commit hash is known... likely no git.
-string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-.+-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
+if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN") # else -> no commit hash is known... likely no git.
+string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-?(${DEV_TAG_REGEX})?([0-9]+)?-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
 
 if(NOT ${CMAKE_MATCH_1} STREQUAL ${PROJECT_VERSION_MAJOR})
     message(FATAL_ERROR "Major version of current tag disagrees with Configuration.h ${CMAKE_MATCH_1}!=${PROJECT_VERSION_MAJOR}")
@@ -56,13 +58,24 @@ if(NOT ${CMAKE_MATCH_3} STREQUAL ${PROJECT_VERSION_REV})
     message(FATAL_ERROR "Rev version of current tag disagrees with Configuration.h ${CMAKE_MATCH_3}!=${PROJECT_VERSION_REV}")
 endif()
 
+if (CMAKE_MATCH_4) # Do we have a build type?
+    decode_flavor_code(PROJECT_VER_TAG_FLV "${CMAKE_MATCH_4}" "${CMAKE_MATCH_5}")
+else()
+    # No dev status found, it must be a final tag.
+    decode_flavor_code(PROJECT_VER_TAG_FLV "RELEASED" "0")
+endif()
+
+if(NOT ${PROJECT_VER_TAG_FLV} STREQUAL ${PROJECT_VERSION_TWEAK})
+    message(FATAL_ERROR "Dev status of current tag disagrees with Configuration.h ${PROJECT_VER_TAG_FLV}!=${PROJECT_VERSION_TWEAK}")
+endif()
 # Note - we don't check the commit counter, that'd be too much of a headache. Maybe it
 # should be an error only on a tagged build?
 
-MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3})")
-MESSAGE(STATUS "Commit nr: Configuration.h: ${PROJECT_VERSION_TWEAK} Tag: ${CMAKE_MATCH_4}")
+
+MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})")
+MESSAGE(STATUS "Commit Nr: Configuration.h: ${PROJECT_VERSION_COMMIT} Tag: ${CMAKE_MATCH_6}")
 MESSAGE(STATUS "These tag values will override Configuration.h")
-SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${CMAKE_MATCH_4})
+SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})
 else(GIT_FOUND)
 
 MESSAGE(STATUS "Git was not found. Falling back to Configuration.h values (${PROJECT_VERSION}).")
@@ -339,7 +352,7 @@ function(add_base_binary variant_name)
   target_link_options(
     ${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map
     )
-
+  decode_tweak_version(PROJECT_VERSION_FLV PROJECT_VERSION_FLV_VER)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
@@ -347,8 +360,16 @@ function(add_base_binary variant_name)
             FW_MAJOR=${PROJECT_VERSION_MAJOR}
             FW_MINOR=${PROJECT_VERSION_MINOR}
             FW_REVISION=${PROJECT_VERSION_REV}
-            FW_COMMITNR=${PROJECT_VERSION_TWEAK}
+            FW_COMMITNR=${PROJECT_VERSION_COMMIT}
     )
+    if(NOT PROJECT_VERSION_FLV STREQUAL "RELEASED")
+        target_compile_definitions(
+        ${variant_name}
+        PRIVATE
+        FW_FLAVERSION=${PROJECT_VERSION_FLV_VER}
+        FW_FLAVOR=${PROJECT_VERSION_FLV}
+        )
+    endif()
 endfunction()
 
 function(fw_add_variant variant_name)

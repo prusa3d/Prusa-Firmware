@@ -5,6 +5,8 @@
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
+#define _CONCAT(x,y) x##y
+#define CONCAT(x,y) _CONCAT(x,y)
 
 #include <avr/pgmspace.h>
 extern const uint16_t _nPrinterType;
@@ -19,17 +21,18 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_MAJOR 3
 #define FW_MINOR 13
 #define FW_REVISION 0
-#define FW_COMMITNR 6853
 #warning "** Not sure why I had to touch this, but it seems like v3.13.1 is not in the linear history of this branch yet?"
-#endif
-
+#define FW_COMMITNR 6853
 #define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
 #define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
-#warning "^^^These are temporary and still need to be provided by cmake"
+#endif
 
 #ifndef FW_FLAVOR
+    #define FW_TWEAK (FIRMWARE_REVISION_RELEASED)
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
 #else
+    // Construct the TWEAK value as it is expected from the enum.
+    #define FW_TWEAK (CONCAT(FIRMWARE_REVISION_,FW_FLAVOR) + FW_FLAVERSION)
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
 #endif
 
