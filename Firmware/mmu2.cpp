@@ -237,7 +237,7 @@ bool MMU2::WaitForMMUReady() {
     }
 }
 
-bool MMU2::RetryIfPossible(uint16_t ec) {
+bool MMU2::RetryIfPossible(ErrorCode ec) {
     if (logic.RetryAttempts()) {
         SetButtonResponse(ButtonOperations::Retry);
         // check, that Retry is actually allowed on that operation
@@ -713,7 +713,7 @@ void MMU2::ResumeUnpark() {
 }
 
 void MMU2::CheckUserInput() {
-    auto btn = ButtonPressed((uint16_t)lastErrorCode);
+    auto btn = ButtonPressed(lastErrorCode);
 
     // Was a button pressed on the MMU itself instead of the LCD?
     if (btn == Buttons::NoButton && lastButton != Buttons::NoButton) {
@@ -976,7 +976,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     if (ec != lastErrorCode) { // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
         lastErrorSource = res;
-        LogErrorEvent_P(_O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))));
+        LogErrorEvent_P(_O(PrusaErrorTitle(PrusaErrorCodeIndex(ec))));
 
         if (ec != ErrorCode::OK && ec != ErrorCode::FILAMENT_EJECTED && ec != ErrorCode::FILAMENT_CHANGE) {
             IncrementMMUFails();
@@ -999,7 +999,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
         }
     }
 
-    if (!mmu2.RetryIfPossible((uint16_t)ec)) {
+    if (!mmu2.RetryIfPossible(ec)) {
         // If retry attempts are all used up
         // or if 'Retry' operation is not available
         // raise the MMU error sceen and wait for user input

@@ -241,7 +241,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
         ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
     }
 
-    const uint8_t ei = PrusaErrorCodeIndex(ec);
+    const uint8_t ei = PrusaErrorCodeIndex((ErrorCode)ec);
 
     switch ((uint8_t)ReportErrorHookState) {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:

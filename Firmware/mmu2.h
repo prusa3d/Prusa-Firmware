@@ -182,7 +182,7 @@ public:
     /// Automagically "press" a Retry button if we have any retry attempts left
     /// @param ec ErrorCode enum value
     /// @returns true if auto-retry is ongoing, false when retry is unavailable or retry attempts are all used up
-    bool RetryIfPossible(uint16_t ec);
+    bool RetryIfPossible(ErrorCode ec);
 
     /// @return count for toolchange in current print
     inline uint16_t ToolChangeCounter() const { return toolchange_counter; };
