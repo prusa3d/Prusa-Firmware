@@ -3,6 +3,7 @@
 #include "mmu2_log.h"
 #include "mmu2_reporting.h"
 #include "mmu2_error_converter.h"
+#include "mmu2_progress_converter.h"
 #include "mmu2/error_codes.h"
 #include "mmu2/buttons.h"
 #include "menu.h"
@@ -14,14 +15,12 @@
 
 namespace MMU2 {
 
-const char * ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
-
-void BeginReport(CommandInProgress /*cip*/, uint16_t ec) {
+void BeginReport(CommandInProgress /*cip*/, ProgressCode ec) {
     custom_message_type = CustomMsg::MMUProgress;
     lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
 }
 
-void EndReport(CommandInProgress /*cip*/, uint16_t /*ec*/) {
+void EndReport(CommandInProgress /*cip*/, ProgressCode /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
     if (!printJobOngoing()) {
         lcd_setstatuspgm(MSG_WELCOME);
@@ -231,7 +230,7 @@ bool TuneMenuEntered() {
     return putErrorScreenToSleep;
 }
 
-void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
+void ReportErrorHook(CommandInProgress /*cip*/, ErrorCode ec, uint8_t /*es*/) {
     if (putErrorScreenToSleep) return;
     
     if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
@@ -289,7 +288,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
     }
 }
 
-void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
+void ReportProgressHook(CommandInProgress cip, ProgressCode ec) {
     if (cip != CommandInProgress::NoCommand) {
         custom_message_type = CustomMsg::MMUProgress;
         lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );

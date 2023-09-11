@@ -196,7 +196,7 @@ void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors) {
     if (isErrorScreenRunning()) {
         // Call this every iteration to keep the knob rotation responsive
         // This includes when mmu_loop is called within manage_response
-        ReportErrorHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)lastErrorCode, uint8_t(lastErrorSource));
+        ReportErrorHook((CommandInProgress)logic.CommandInProgress(), lastErrorCode, uint8_t(lastErrorSource));
     }
 }
 
@@ -218,10 +218,10 @@ struct ReportingRAII {
     CommandInProgress cip;
     explicit inline __attribute__((always_inline)) ReportingRAII(CommandInProgress cip)
         : cip(cip) {
-        BeginReport(cip, (uint16_t)ProgressCode::EngagingIdler);
+        BeginReport(cip, ProgressCode::EngagingIdler);
     }
     inline __attribute__((always_inline)) ~ReportingRAII() {
-        EndReport(cip, (uint16_t)ProgressCode::OK);
+        EndReport(cip, ProgressCode::OK);
     }
 };
 
@@ -1001,7 +1001,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
         // If retry attempts are all used up
         // or if 'Retry' operation is not available
         // raise the MMU error sceen and wait for user input
-        ReportErrorHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)ec, uint8_t(lastErrorSource));
+        ReportErrorHook((CommandInProgress)logic.CommandInProgress(), ec, uint8_t(lastErrorSource));
     }
 
     static_assert(mmu2Magic[0] == 'M'
@@ -1014,8 +1014,8 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
 }
 
 void MMU2::ReportProgress(ProgressCode pc) {
-    ReportProgressHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)pc);
-    LogEchoEvent_P(_O(ProgressCodeToText((uint16_t)pc)));
+    ReportProgressHook((CommandInProgress)logic.CommandInProgress(), pc);
+    LogEchoEvent_P(_O(ProgressCodeToText(pc)));
 }
 
 void MMU2::OnMMUProgressMsg(ProgressCode pc) {
