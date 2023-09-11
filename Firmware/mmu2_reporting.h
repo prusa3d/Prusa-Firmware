@@ -47,19 +47,24 @@ void ReportErrorHook(CommandInProgress cip, ErrorCode ec, uint8_t es);
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, ProgressCode ec);
 
-/// @brief Clear the status line and setup the LCD cursor
-void TryLoadUnloadProgressbarInit();
+struct TryLoadUnloadReporter {
+    TryLoadUnloadReporter(float delta_mm);
+    void Progress(bool sensorState);
 
-/// @brief Clear the status line and setup the LCD cursor
-void TryLoadUnloadProgressbarDeinit();
+private:
+    /// @brief Add one block to the progress bar
+    /// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
+    /// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
+    void Render(uint8_t col, bool sensorState);
 
-/// @brief Report the results to serial
-void TryLoadUnloadProgressbarEcho();
-
-/// @brief Add one block to the progress bar
-/// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
-/// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
-void TryLoadUnloadProgressbar(uint8_t col, bool sensorState);
+    uint8_t dpixel1;
+    uint8_t dpixel0;
+    // The total length is twice delta_mm. Divide that length by number of pixels
+    // available to get length per pixel.
+    // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
+    float pixel_per_mm;
+    uint8_t lcd_cursor_col;
+};
 
 /// Remders the sensor status line. Also used by the "resume temperature" screen.
 void ReportErrorHookDynamicRender();
