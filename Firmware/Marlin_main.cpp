@@ -7757,14 +7757,14 @@ Sigma_Exit:
   
   case 850: {
 	//! ### M850 - set sheet parameters
-	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP] A[IS_ACTIVE]
+	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP]
+	bool bHasZ = false, bHasLabel = false, bHasBed = false, bHasPinda = false;
 	uint8_t iSel = 0;
 	int16_t zraw = 0;
 	float z_val = 0;
 	char strLabel[8];
 	uint8_t iBedC = 0;
 	uint8_t iPindaC = 0;
-	bool bIsActive=false;
 	strLabel[7] = '\0'; // null terminate.
 	size_t max_sheets = sizeof(EEPROM_Sheets_base->s)/sizeof(EEPROM_Sheets_base->s[0]);
 	
@@ -7780,7 +7780,6 @@ Sigma_Exit:
 	} else {
 		break;
 	}
-	
 	if (code_seen('Z')){
 		z_val = code_value();
 		zraw = z_val*cs.axis_steps_per_mm[Z_AXIS];
@@ -7789,7 +7788,7 @@ Sigma_Exit:
 			SERIAL_PROTOCOLLNPGM(" Z VALUE OUT OF RANGE");
 			break;
 		}	
-		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)),zraw);
+		bHasZ = true;
 	}
 	else
 	{
@@ -7799,13 +7798,13 @@ Sigma_Exit:
 	
 	if (code_seen('L'))
 	{
+		bHasLabel = true;
 		char *src = strchr_pointer + 1;
 		while (*src == ' ') ++src;
 		if (*src != '\0')
 		{
 			strncpy(strLabel,src,7);	
 		}
-		eeprom_update_block(strLabel,EEPROM_Sheets_base->s[iSel].name,sizeof(Sheet::name));
 	}
 	else
 	{
@@ -7814,8 +7813,8 @@ Sigma_Exit:
 	
 	if (code_seen('B'))
 	{
+		bHasBed = true;
 		iBedC = code_value_uint8();
-		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].bed_temp, iBedC);
 	}
 	else
 	{
@@ -7824,22 +7823,12 @@ Sigma_Exit:
 	
 	if (code_seen('P'))
 	{
+		bHasPinda = true;
 		iPindaC = code_value_uint8();
-		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
 	}
 	else
-	{
 		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
-	}
-	
-	if (code_seen('A'))
 	{
-		bIsActive |= code_value_uint8() || (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
-		if(bIsActive) eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
-	}
-	else
-	{
-		bIsActive = (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 	}
 	
 	SERIAL_PROTOCOLPGM("Sheet ");
@@ -7847,6 +7836,22 @@ Sigma_Exit:
 	if (!eeprom_is_sheet_initialized(iSel))
 		SERIAL_PROTOCOLLNPGM(" NOT INITIALIZED");
 	
+	if (bHasZ)
+	{
+		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)),zraw);
+	}
+	if (bHasLabel)
+	{
+		eeprom_update_block(strLabel,EEPROM_Sheets_base->s[iSel].name,sizeof(Sheet::name));
+	}
+	if (bHasBed)
+	{
+		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].bed_temp, iBedC);
+	}
+	if (bHasPinda)
+	{
+		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
+	}
 		
 	SERIAL_PROTOCOLPGM(" Z");
 	SERIAL_PROTOCOL_F(z_val,4);
@@ -7858,8 +7863,7 @@ Sigma_Exit:
 	SERIAL_PROTOCOL((int)iBedC);
 	SERIAL_PROTOCOLPGM(" P");
 	SERIAL_PROTOCOLLN((int)iPindaC);
-	SERIAL_PROTOCOLPGM(" A");
-	SERIAL_PROTOCOLLN((int)bIsActive);
+
 	break;
 }
 
