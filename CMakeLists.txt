@@ -6,6 +6,7 @@ include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
 OPTION(ENFORCE_VERSION_MATCH "Enforce checking that configuration.h matches any parsed git tags" OFF)
+OPTION(NO_TAG_IS_FATAL "If tag parsing fails, issue a fatal error" OFF)
 
 set(PROJECT_VERSION_SUFFIX
     "<auto>"
@@ -45,7 +46,7 @@ message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
 # testing
 # SET(FW_COMMIT_DSC "v3.13.0-1234")
 
-if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN") # else -> no commit hash is known... likely no git.
+if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN" AND NOT "${FW_COMMIT_DSC}" MATCHES ".+NOTFOUND\$") # else -> no commit hash is known... likely no git.
 string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-?(${DEV_TAG_REGEX})?([0-9]+)?-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
 
 if (CMAKE_MATCH_4) # Do we have a build type?
@@ -83,8 +84,11 @@ MESSAGE(STATUS "These tag values will override Configuration.h")
 SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})
 SET(PROJECT_VERSION_COMMIT ${CMAKE_MATCH_6})
 else(GIT_FOUND)
-
-MESSAGE(STATUS "Git was not found. Falling back to Configuration.h values (${PROJECT_VERSION}).")
+if (NO_TAG_IS_FATAL)
+    MESSAGE(FATAL_ERROR "Git was not found or an error occurred parsing the tag. This is a fatal error according to the settings.")
+else()
+    MESSAGE(STATUS "Git was not found or an error occurred parsing the tag. Falling back to Configuration.h values (${PROJECT_VERSION}).")
+endif()
 set(FW_COMMIT_HASH "0") # Clear it, the code expects a binary...
 
 endif()
