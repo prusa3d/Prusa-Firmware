@@ -295,30 +295,32 @@ void ReportProgressHook(CommandInProgress cip, ProgressCode ec) {
     }
 }
 
-void TryLoadUnloadProgressbarInit() {
-    lcd_clearstatus();
+TryLoadUnloadReporter::TryLoadUnloadReporter(float delta_mm)
+: dpixel0(0)
+, dpixel1(0)
+, lcd_cursor_col(0)
+, pixel_per_mm(0.5F * float(LCD_WIDTH) / (delta_mm))
+{
+    // Clear the status line
+    lcd_set_cursor(0, 3);
+    lcd_space(LCD_WIDTH);
 }
 
-void TryLoadUnloadProgressbarDeinit() {
-    // Delay the next status message just so
-    // the user can see the results clearly
+void TryLoadUnloadReporter::Render(uint8_t col, bool sensorState) {
+    // Set the cursor position each time in case some other
+    // part of the firmware changes the cursor position
+    lcd_putc_at(col, 3, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
     lcd_reset_status_message_timeout();
 }
 
-void TryLoadUnloadProgressbarEcho() {
-    char buf[LCD_WIDTH];
-    lcd_getstatus(buf);
-    for (uint8_t i = 0; i < sizeof(buf); i++) {
-        // 0xFF is -1 when converting from unsigned to signed char
-        // If the number is negative, that means filament is present
-        buf[i] = (buf[i] < 0) ? '1' : '0';
+void TryLoadUnloadReporter::Progress(bool sensorState){
+    // Always round up, you can only have 'whole' pixels. (floor is also an option)
+    dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) * pixel_per_mm);
+    if (dpixel1 - dpixel0) {
+        dpixel0 = dpixel1;
+        if (lcd_cursor_col > (LCD_WIDTH - 1)) lcd_cursor_col = LCD_WIDTH - 1;
+        Render(lcd_cursor_col++, sensorState);
     }
-    MMU2_ECHO_MSGLN(buf);
-}
-
-void TryLoadUnloadProgressbar(uint8_t col, bool sensorState) {
-    lcd_insert_char_into_status(col, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
-    if (!lcd_update_enabled) lcdui_print_status_line();
 }
 
 void IncrementLoadFails(){

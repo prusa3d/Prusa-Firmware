@@ -256,23 +256,14 @@ bool MMU2::RetryIfPossible(ErrorCode ec) {
 bool MMU2::VerifyFilamentEnteredPTFE() {
     planner_synchronize();
 
-    if (WhereIsFilament() == FilamentState::NOT_PRESENT)
+    if (WhereIsFilament() != FilamentState::AT_FSENSOR)
         return false;
 
-    uint8_t fsensorState = 0;
-    uint8_t fsensorStateLCD = 0;
-    uint8_t lcd_cursor_col = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
 
-    const float delta_mm = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
-
-    // The total length is twice delta_mm. Divide that length by number of pixels
-    // available to get length per pixel.
-    // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
-    const float pixel_per_mm =  0.5f * float(LCD_WIDTH) / (delta_mm);
-
-    TryLoadUnloadProgressbarInit();
+    const float tryload_length = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
+    TryLoadUnloadReporter tlur(tryload_length);
 
     /* The position is a triangle wave
     // current position is not zero, it is an offset
@@ -284,7 +275,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     // in the slope's sign or check the last machine position.
     //              y(x)
     //              ▲
-    //              │     ^◄────────── delta_mm + current_position
+    //              │     ^◄────────── tryload_length + current_position
     //   machine    │    / \
     //   position   │   /   \◄────────── stepper_position_mm + current_position
     //    (mm)      │  /     \
@@ -295,42 +286,23 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     //                 pixel #
     */
 
+    bool filament_inserted = true; // expect success
     // Pixel index will go from 0 to 10, then back from 10 to 0
     // The change in this number is used to indicate a new pixel
     // should be drawn on the display
-    uint8_t dpixel1 = 0;
-    uint8_t dpixel0 = 0;
     for (uint8_t move = 0; move < 2; move++) {
-        extruder_move(move == 0 ? delta_mm : -delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+        extruder_move(move == 0 ? tryload_length : -tryload_length, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
         while (planner_any_moves()) {
-            // Wait for move to finish and monitor the fsensor the entire time
-            // A single 0 reading will set the bit.
-            fsensorStateLCD |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
-            fsensorState |= fsensorStateLCD; // No need to do the above comparison twice, just bitwise OR
-
-            // Always round up, you can only have 'whole' pixels. (floor is also an option)
-            dpixel1 = ceil((stepper_get_machine_position_E_mm() - planner_get_current_position_E()) * pixel_per_mm);
-            if (dpixel1 - dpixel0) {
-                dpixel0 = dpixel1;
-                if (lcd_cursor_col > (LCD_WIDTH - 1)) lcd_cursor_col = LCD_WIDTH - 1;
-                TryLoadUnloadProgressbar(lcd_cursor_col++, fsensorStateLCD);
-                fsensorStateLCD = 0;      // Clear temporary bit
-            }
+            filament_inserted = filament_inserted && (WhereIsFilament() == FilamentState::AT_FSENSOR);
+            tlur.Progress(filament_inserted);
             safe_delay_keep_alive(0);
         }
     }
-
-    Disable_E0();
-    TryLoadUnloadProgressbarEcho();
-    TryLoadUnloadProgressbarDeinit();
-
-    if (fsensorState) {
+    if (!filament_inserted) {
         IncrementLoadFails();
-        return false;
-    } else {
-        // else, happy printing! :)
-        return true;
     }
+
+    return filament_inserted;
 }
 
 bool MMU2::ToolChangeCommonOnce(uint8_t slot) {
