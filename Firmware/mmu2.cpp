@@ -761,7 +761,7 @@ void MMU2::CheckUserInput() {
     case Buttons::Load:
     case Buttons::Eject:
         // High level operation
-        setPrinterButtonOperation(btn);
+        SetPrinterButtonOperation(btn);
         break;
     case Buttons::ResetMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
