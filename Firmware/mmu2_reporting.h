@@ -74,6 +74,9 @@ void IncrementLoadFails();
 /// Increments EEPROM cell - number of MMU errors
 void IncrementMMUFails();
 
+/// @returns true when Cutter is enabled in the menus
+bool cutter_enabled();
+
 // Beware: enum values intentionally chosen to match the 8bit FW to save code size
 enum SoundType {
     Prompt = 2,
