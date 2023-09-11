@@ -231,7 +231,7 @@ function(git_describe_working_tree _var)
     endif()
     git_head_commit_number(COMMIT_COUNT) #Bake the commit count into the full DSC
     execute_process(
-        COMMAND "${GIT_EXECUTABLE}" describe --abbrev=0 --dirty=-${COMMIT_COUNT}-D --broken=-B ${ARGN}
+        COMMAND "${GIT_EXECUTABLE}" describe --abbrev=0 --dirty=-D --broken=-B ${ARGN}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         RESULT_VARIABLE res
         OUTPUT_VARIABLE out
@@ -239,7 +239,11 @@ function(git_describe_working_tree _var)
     if(NOT res EQUAL 0)
         set(out "${out}-${res}-NOTFOUND")
     endif()
-
+    if( "${out}" MATCHES "-D\$")
+        STRING(REPLACE "-D" "-${COMMIT_COUNT}-D" out "${out}")
+    else()
+        set(out "${out}-${COMMIT_COUNT}")
+    endif()
     set(${_var}
         "${out}"
         PARENT_SCOPE)

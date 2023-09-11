@@ -46,7 +46,7 @@ message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
 # testing
 # SET(FW_COMMIT_DSC "v3.13.0-1234")
 
-if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN" AND NOT "${FW_COMMIT_DSC}" MATCHES ".+NOTFOUND\$") # else -> no commit hash is known... likely no git.
+if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN" AND NOT "${FW_COMMIT_DSC}" MATCHES ".+NOTFOUND.+") # else -> no commit hash is known... likely no git.
 string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-?(${DEV_TAG_REGEX})?([0-9]+)?-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
 
 if (CMAKE_MATCH_4) # Do we have a build type?
