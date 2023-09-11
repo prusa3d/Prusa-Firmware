@@ -204,7 +204,7 @@ void MMU2::CheckFINDARunout() {
     // Check for FINDA filament runout
     if (!FindaDetectsFilament() && check_fsensor()) {
         SERIAL_ECHOLNPGM("FINDA filament runout!");
-        stop_and_save_print_to_ram(0, 0);
+        marlin_stop_and_save_print_to_ram();
         restore_print_from_ram_and_continue(0);
         if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN){ // Can't auto if F=?
             enquecommand_front_P(PSTR("M600 AUTO")); // save print and run M600 command
@@ -261,7 +261,6 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
 
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
-
     const float tryload_length = MMU2_CHECK_FILAMENT_PRESENCE_EXTRUSION_LENGTH - logic.ExtraLoadDistance();
     TryLoadUnloadReporter tlur(tryload_length);
 
@@ -617,7 +616,7 @@ void MMU2::SaveAndPark(bool move_axes) {
 
         // In case a power panic happens while waiting for the user
         // take a partial back up of print state into RAM (current position, etc.)
-        refresh_print_state_in_ram();
+        marlin_refresh_print_state_in_ram();
 
         if (move_axes) {
             mmu_print_saved |= SavedState::ParkExtruder;
@@ -676,7 +675,7 @@ void MMU2::ResumeUnpark() {
         // From this point forward, power panic should not use
         // the partial backup in RAM since the extruder is no
         // longer in parking position
-        clear_print_state_in_ram();
+        marlin_clear_print_state_in_ram();
 
         mmu_print_saved &= ~(SavedState::ParkExtruder);
     }
@@ -707,12 +706,12 @@ void MMU2::CheckUserInput() {
     case Buttons::Middle:
     case Buttons::Right:
         SERIAL_ECHOPGM("CheckUserInput-btnLMR ");
-        SERIAL_ECHOLN(btn);
+        SERIAL_ECHOLN(buttons_to_uint8t(btn));
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
 
         if (mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
             // Do not send a button to the MMU unless the MMU is in error state
-            Button(btn);
+            Button(buttons_to_uint8t(btn));
         }
 
         // A quick hack: for specific error codes move the E-motor every time.

@@ -44,6 +44,9 @@ bool marlin_printingIsActive();
 void marlin_manage_heater();
 void marlin_manage_inactivity(bool b);
 void marlin_idle(bool b);
+void marlin_refresh_print_state_in_ram();
+void marlin_clear_print_state_in_ram();
+void marlin_stop_and_save_print_to_ram();
 
 int16_t thermal_degTargetHotend();
 int16_t thermal_degHotend();

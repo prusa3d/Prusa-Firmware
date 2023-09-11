@@ -101,6 +101,18 @@ void marlin_idle(bool b){
     manage_inactivity(b);
 }
 
+void marlin_refresh_print_state_in_ram(){
+    refresh_print_state_in_ram();
+}
+
+void marlin_clear_print_state_in_ram(){
+    clear_print_state_in_ram();
+}
+
+void marlin_stop_and_save_print_to_ram(){
+    stop_and_save_print_to_ram(0,0);
+}
+
 int16_t thermal_degTargetHotend() {
     return degTargetHotend(0);
 }
