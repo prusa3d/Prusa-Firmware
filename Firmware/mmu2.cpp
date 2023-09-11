@@ -115,7 +115,7 @@ void MMU2::ResetX0() {
     logic.ResetMMU(); // Send soft reset
 }
 
-void MMU2::ResetX42(){
+void MMU2::ResetX42() {
     logic.ResetMMU(42);
 }
 
@@ -453,7 +453,7 @@ uint8_t MMU2::get_tool_change_tool() const {
 bool MMU2::set_filament_type(uint8_t /*slot*/, uint8_t /*type*/) {
     if (!WaitForMMUReady())
         return false;
-    
+
     // @@TODO - this is not supported in the new MMU yet
     //    slot = slot; // @@TODO
     //    type = type; // @@TODO
@@ -927,7 +927,7 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     planner_synchronize();
 
     const E_Step *step = sequence;
-    for (uint8_t i = steps; i ; --i) {
+    for (uint8_t i = steps; i > 0; --i) {
         extruder_move(pgm_read_float(&(step->extrude)), pgm_read_float(&(step->feedRate)));
         step++;
     }
@@ -980,6 +980,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
             IncrementMMUFails();
 
             // check if it is a "power" failure - we consider TMC-related errors as power failures
+            // clang-format off
             static constexpr uint16_t tmcMask =
                 ( (uint16_t)ErrorCode::TMC_IOIN_MISMATCH
                 | (uint16_t)ErrorCode::TMC_RESET
@@ -988,6 +989,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
                 | (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN
                 | (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR
                 | (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION ) & 0x7fffU; // skip the top bit
+            // clang-format on
             static_assert(tmcMask == 0x7e00); // just make sure we fail compilation if any of the TMC error codes change
 
             if ((uint16_t)ec & tmcMask) { // @@TODO can be optimized to uint8_t operation
@@ -1000,7 +1002,7 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     if (!mmu2.RetryIfPossible(ec)) {
         // If retry attempts are all used up
         // or if 'Retry' operation is not available
-        // raise the MMU error sceen and wait for user input
+        // raise the MMU error screen and wait for user input
         ReportErrorHook((CommandInProgress)logic.CommandInProgress(), ec, uint8_t(lastErrorSource));
     }
 
