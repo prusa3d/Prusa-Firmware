@@ -1,8 +1,10 @@
 #pragma once
 
+
+namespace MMU2 {
+
 // Register map for MMU
-enum class Register : uint8_t
-{
+enum class Register : uint8_t {
     Project_Major = 0x00,
     Project_Minor = 0x01,
     Project_Revision = 0x02,
@@ -38,3 +40,5 @@ enum class Register : uint8_t
     Set_Get_Idler_iRun = 0x20,
     Reserved = 0x21,
 };
+
+} // namespace MMU2
