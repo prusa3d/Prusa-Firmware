@@ -5,6 +5,8 @@ include(cmake/ReproducibleBuild.cmake)
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
+OPTION(ENFORCE_VERSION_MATCH "Enforce checking that configuration.h matches any parsed git tags" OFF)
+
 set(PROJECT_VERSION_SUFFIX
     "<auto>"
     CACHE
@@ -46,18 +48,6 @@ message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
 if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN") # else -> no commit hash is known... likely no git.
 string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-?(${DEV_TAG_REGEX})?([0-9]+)?-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
 
-if(NOT ${CMAKE_MATCH_1} STREQUAL ${PROJECT_VERSION_MAJOR})
-    message(FATAL_ERROR "Major version of current tag disagrees with Configuration.h ${CMAKE_MATCH_1}!=${PROJECT_VERSION_MAJOR}")
-endif()
-
-if(NOT ${CMAKE_MATCH_2} STREQUAL ${PROJECT_VERSION_MINOR})
-    message(FATAL_ERROR "Minor version of current tag disagrees with Configuration.h ${CMAKE_MATCH_2}!=${PROJECT_VERSION_MINOR}")
-endif()
-
-if(NOT ${CMAKE_MATCH_3} STREQUAL ${PROJECT_VERSION_REV})
-    message(FATAL_ERROR "Rev version of current tag disagrees with Configuration.h ${CMAKE_MATCH_3}!=${PROJECT_VERSION_REV}")
-endif()
-
 if (CMAKE_MATCH_4) # Do we have a build type?
     decode_flavor_code(PROJECT_VER_TAG_FLV "${CMAKE_MATCH_4}" "${CMAKE_MATCH_5}")
 else()
@@ -65,17 +55,33 @@ else()
     decode_flavor_code(PROJECT_VER_TAG_FLV "RELEASED" "0")
 endif()
 
-if(NOT ${PROJECT_VER_TAG_FLV} STREQUAL ${PROJECT_VERSION_TWEAK})
-    message(FATAL_ERROR "Dev status of current tag disagrees with Configuration.h ${PROJECT_VER_TAG_FLV}!=${PROJECT_VERSION_TWEAK}")
+if(ENFORCE_VERSION_MATCH)
+    if(NOT ${CMAKE_MATCH_1} STREQUAL ${PROJECT_VERSION_MAJOR})
+        message(FATAL_ERROR "Major version of current tag disagrees with Configuration.h ${CMAKE_MATCH_1}!=${PROJECT_VERSION_MAJOR}")
+    endif()
+
+    if(NOT ${CMAKE_MATCH_2} STREQUAL ${PROJECT_VERSION_MINOR})
+        message(FATAL_ERROR "Minor version of current tag disagrees with Configuration.h ${CMAKE_MATCH_2}!=${PROJECT_VERSION_MINOR}")
+    endif()
+
+    if(NOT ${CMAKE_MATCH_3} STREQUAL ${PROJECT_VERSION_REV})
+        message(FATAL_ERROR "Rev version of current tag disagrees with Configuration.h ${CMAKE_MATCH_3}!=${PROJECT_VERSION_REV}")
+    endif()
+
+    if(NOT ${PROJECT_VER_TAG_FLV} STREQUAL ${PROJECT_VERSION_TWEAK})
+        message(FATAL_ERROR "Dev status of current tag disagrees with Configuration.h ${PROJECT_VER_TAG_FLV}!=${PROJECT_VERSION_TWEAK}")
+    endif()
+    # Note - we don't check the commit counter, that'd be too much of a headache. Maybe it
+    # should be an error only on a tagged build?
+    MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})")
+else()
+    MESSAGE(STATUS "Configuration.h and tag (not enforced): (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})")
 endif()
-# Note - we don't check the commit counter, that'd be too much of a headache. Maybe it
-# should be an error only on a tagged build?
 
-
-MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})")
 MESSAGE(STATUS "Commit Nr: Configuration.h: ${PROJECT_VERSION_COMMIT} Tag: ${CMAKE_MATCH_6}")
 MESSAGE(STATUS "These tag values will override Configuration.h")
 SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})
+SET(PROJECT_VERSION_COMMIT ${CMAKE_MATCH_6})
 else(GIT_FOUND)
 
 MESSAGE(STATUS "Git was not found. Falling back to Configuration.h values (${PROJECT_VERSION}).")
