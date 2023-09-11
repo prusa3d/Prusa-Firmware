@@ -301,7 +301,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     uint8_t dpixel1 = 0;
     uint8_t dpixel0 = 0;
     for (uint8_t move = 0; move < 2; move++) {
-        MoveE(move == 0 ? delta_mm : -delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+        extruder_move(move == 0 ? delta_mm : -delta_mm, MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
         while (planner_any_moves()) {
             // Wait for move to finish and monitor the fsensor the entire time
             // A single 0 reading will set the bit.
@@ -355,8 +355,6 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot) {
             // but honestly - if the MMU restarts during every toolchange,
             // something else is seriously broken and stopping a print is probably our best option.
         }
-        // reset current position to whatever the planner thinks it is
-        planner_set_current_position_E(planner_get_current_position_E());
         if (VerifyFilamentEnteredPTFE()) {
             return true; // success
         } else {         // Prepare a retry attempt
@@ -654,7 +652,7 @@ void MMU2::SaveAndPark(bool move_axes) {
             resume_position = planner_current_position(); // save current pos
 
             // lift Z
-            MoveRaiseZ(MMU_ERR_Z_PAUSE_LIFT);
+            move_raise_z(MMU_ERR_Z_PAUSE_LIFT);
 
             // move XY aside
             if (all_axes_homed()) {
@@ -930,7 +928,7 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
 
     const E_Step *step = sequence;
     for (uint8_t i = steps; i ; --i) {
-        MoveE(pgm_read_float(&(step->extrude)), pgm_read_float(&(step->feedRate)));
+        extruder_move(pgm_read_float(&(step->extrude)), pgm_read_float(&(step->feedRate)));
         step++;
     }
     planner_synchronize(); // it looks like it's better to sync the moves at the end - smoother move (if the sequence is not too long).
@@ -1058,7 +1056,7 @@ void MMU2::OnMMUProgressMsgChanged(ProgressCode pc) {
 }
 
 void __attribute__((noinline)) MMU2::HelpUnloadToFinda() {
-    MoveE(-MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH, MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
+    extruder_move(-MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH, MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
 }
 
 void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
@@ -1089,7 +1087,7 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                 // 2. Disengage the idler and push another 2mm.
-                MoveE(logic.ExtraLoadDistance() + 2, logic.PulleySlowFeedRate());
+                extruder_move(logic.ExtraLoadDistance() + 2, logic.PulleySlowFeedRate());
                 break;
             case FilamentState::NOT_PRESENT:
                 // fsensor not triggered, continue moving extruder
@@ -1099,7 +1097,7 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
                     // than 450mm because the firmware will ignore too long extrusions
                     // for safety reasons. See PREVENT_LENGTHY_EXTRUDE.
                     // Use 350mm to be safely away from the prevention threshold
-                    MoveE(350.0f, logic.PulleySlowFeedRate());
+                    extruder_move(350.0f, logic.PulleySlowFeedRate());
                 }
                 break;
             default:

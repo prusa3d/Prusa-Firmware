@@ -332,6 +332,10 @@ void IncrementMMUFails(){
     eeprom_increment_word((uint16_t *)EEPROM_MMU_FAIL_TOT);
 }
 
+bool cutter_enabled(){
+    return eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == EEPROM_MMU_CUTTER_ENABLED_enabled;
+}
+
 void MakeSound(SoundType s){
     Sound_MakeSound( (eSOUND_TYPE)s);
 }
