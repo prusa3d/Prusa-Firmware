@@ -3327,10 +3327,10 @@ static void mmu_M600_filament_change_screen(uint8_t eject_slot) {
         manage_heater();
         manage_inactivity(true);
 
-        btn = MMU2::mmu2.getPrinterButtonOperation();
+        btn = MMU2::mmu2.GetPrinterButtonOperation();
         if (btn != MMU2::Buttons::NoButton)
         {
-            MMU2::mmu2.clearPrinterButtonOperation();
+            MMU2::mmu2.ClearPrinterButtonOperation();
 
             if (btn == MMU2::Buttons::Eject) {
                 if (eject_slot != (uint8_t)MMU2::FILAMENT_UNKNOWN) {
