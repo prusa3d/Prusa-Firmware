@@ -2,12 +2,19 @@
 
 #pragma once
 #include <stdint.h>
+#ifdef __AVR__
+    #include "mmu2/error_codes.h"
+    #include "mmu2/progress_codes.h"
+#else
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/error_codes.h"
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/progress_codes.h"
+#endif
 
 namespace MMU2 {
 
 enum CommandInProgress : uint8_t {
     NoCommand = 0,
-    CutFilament = 'C',
+    CutFilament = 'K',
     EjectFilament = 'E',
     Homing = 'H',
     LoadFilament = 'L',
@@ -17,10 +24,10 @@ enum CommandInProgress : uint8_t {
 };
 
 /// Called at the begin of every MMU operation
-void BeginReport(CommandInProgress cip, uint16_t ec);
+void BeginReport(CommandInProgress cip, ProgressCode ec);
 
 /// Called at the end of every MMU operation
-void EndReport(CommandInProgress cip, uint16_t ec);
+void EndReport(CommandInProgress cip, ProgressCode ec);
 
 /// Return true if the printer's LCD is drawing the error screen
 bool isErrorScreenRunning();
@@ -35,10 +42,10 @@ bool TuneMenuEntered();
 /// and allow the MMU and printer to communicate with each other.
 /// @param[in] ec error code
 /// @param[in] es error source
-void ReportErrorHook(CommandInProgress cip, uint16_t ec, uint8_t es);
+void ReportErrorHook(CommandInProgress cip, ErrorCode ec, uint8_t es);
 
 /// Called when the MMU sends operation progress update
-void ReportProgressHook(CommandInProgress cip, uint16_t ec);
+void ReportProgressHook(CommandInProgress cip, ProgressCode ec);
 
 /// @brief Clear the status line and setup the LCD cursor
 void TryLoadUnloadProgressbarInit();
@@ -96,4 +103,4 @@ void ScreenClear();
 
 void tuneIdlerStallguardThreshold();
 
-} // namespace
+} // namespace MMU2
