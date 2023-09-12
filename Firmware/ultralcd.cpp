@@ -6188,7 +6188,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 	float max_error_mm = 5;
 	switch (axis) {
 	case 0: axis_length = X_MAX_POS; break;
-	case 1: axis_length = Y_MAX_POS + 8; break;
+	case 1: axis_length = Y_MAX_POS - Y_MIN_POS + 4; break;
 	default: axis_length = 210; break;
 	}
 
