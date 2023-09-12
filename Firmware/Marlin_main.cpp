@@ -9408,9 +9408,7 @@ static void handleSafetyTimer()
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-    if (fsensor.update()) {
-        lcd_draw_update = 1; //cause lcd update so that fsensor event polling can be done from the lcd draw routine.
-    }
+    fsensor.update();
 #endif
 
 #ifdef SAFETYTIMER
@@ -10943,12 +10941,13 @@ void M600_load_filament() {
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
+  fsensor.clearEvent(Filament_sensor::Events::autoload);
 	while(!lcd_clicked())
 	{
 		manage_heater();
 		manage_inactivity(true);
 #ifdef FILAMENT_SENSOR
-		if (fsensor.getFilamentLoadEvent()) {
+		if (fsensor.getEvent(Filament_sensor::Events::autoload)) {
 			Sound_MakeCustom(50,1000,false);
 			break;
 		}

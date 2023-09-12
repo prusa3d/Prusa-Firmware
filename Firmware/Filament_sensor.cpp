@@ -14,16 +14,13 @@
 
 #ifdef FILAMENT_SENSOR
 FSensorBlockRunout::FSensorBlockRunout() {
-    fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
-    fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
-#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-    fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
-#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+    oldSuppressionStatus = fsensor.getSuppressionStatus();
+    fsensor.setSuppressionStatus(true);
 //    SERIAL_ECHOLNPGM("FSBlockRunout");
 }
 
 FSensorBlockRunout::~FSensorBlockRunout() {
-    fsensor.settings_init(); // restore filament runout state.
+    fsensor.setSuppressionStatus(oldSuppressionStatus);
 //    SERIAL_ECHOLNPGM("FSUnBlockRunout");
 }
 
@@ -50,14 +47,12 @@ void Filament_sensor::setEnabled(bool enabled) {
 }
 
 void Filament_sensor::setAutoLoadEnabled(bool state, bool updateEEPROM) {
-    autoLoadEnabled = state;
     if (updateEEPROM) {
         eeprom_update_byte((uint8_t *)EEPROM_FSENS_AUTOLOAD_ENABLED, state);
     }
 }
 
 void Filament_sensor::setRunoutEnabled(bool state, bool updateEEPROM) {
-    runoutEnabled = state;
     if (updateEEPROM) {
         eeprom_update_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, state);
     }
@@ -76,20 +71,15 @@ void Filament_sensor::settings_init_common() {
         state = enabled ? State::initializing : State::disabled;
     }
 
-    autoLoadEnabled = eeprom_read_byte((uint8_t *)EEPROM_FSENS_AUTOLOAD_ENABLED);
-    runoutEnabled = eeprom_read_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED);
     sensorActionOnError = (SensorActionOnError)eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_ACTION_NA);
     if (sensorActionOnError == SensorActionOnError::_Undef) {
         sensorActionOnError = SensorActionOnError::_Continue;
     }
 }
 
-bool Filament_sensor::checkFilamentEvents() {
-    if (state != State::ready)
-        return false;
-    if (eventBlankingTimer.running() && !eventBlankingTimer.expired(100)) { // event blanking for 100ms
-        return false;
-    }
+void Filament_sensor::checkFilamentEvents() {
+    if ((state != State::ready) || !eventBlankingTimer.expired_cont(100))
+        return;
 
     bool newFilamentPresent = fsensor.getFilamentPresent();
     if (oldFilamentPresent != newFilamentPresent) {
@@ -97,19 +87,22 @@ bool Filament_sensor::checkFilamentEvents() {
         eventBlankingTimer.start();
         if (newFilamentPresent) { // filament insertion
 //            puts_P(PSTR("filament inserted"));
+            if (getAutoLoadEnabled()) {
+                setEvent(Events::autoload);
+            }
             triggerFilamentInserted();
-            postponedLoadEvent = true;
         } else { // filament removal
 //            puts_P(PSTR("filament removed"));
+            if (getRunoutEnabled()) {
+                setEvent(Events::runout);
+            }
             triggerFilamentRemoved();
         }
-        return true;
     }
-    return false;
 }
 
 void Filament_sensor::triggerFilamentInserted() {
-    if (autoLoadEnabled
+    if (!suppressed
         && (eFilamentAction == FilamentAction::None)
         && !(
             MMU2::mmu2.Enabled() // quick and dirty hack to prevent spurious runouts while the MMU is in charge
@@ -125,7 +118,7 @@ void Filament_sensor::triggerFilamentInserted() {
 
 void Filament_sensor::triggerFilamentRemoved() {
 //    SERIAL_ECHOLNPGM("triggerFilamentRemoved");
-    if (runoutEnabled
+    if (!suppressed
         && (eFilamentAction == FilamentAction::None)
         && (
             moves_planned() != 0
@@ -148,8 +141,6 @@ void Filament_sensor::triggerFilamentRemoved() {
 
 void Filament_sensor::filRunout() {
 //    SERIAL_ECHOLNPGM("filRunout");
-    runoutEnabled = false;
-    autoLoadEnabled = false;
     stop_and_save_print_to_ram(0, 0);
     restore_print_from_ram_and_continue(0);
     eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
@@ -182,7 +173,7 @@ void IR_sensor::deinit() {
     state = State::disabled;
 }
 
-bool IR_sensor::update() {
+void IR_sensor::update() {
     switch (state) {
     case State::initializing:
         state = State::ready; // the IR sensor gets ready instantly as it's just a gpio read operation.
@@ -190,15 +181,12 @@ bool IR_sensor::update() {
         oldFilamentPresent = fsensor.getFilamentPresent();
         [[fallthrough]];
     case State::ready: {
-        postponedLoadEvent = false;
-        return checkFilamentEvents();
+        checkFilamentEvents();
     } break;
     case State::disabled:
     case State::error:
-    default:
-        return false;
+        break;
     }
-    return false;
 }
 
 
@@ -216,8 +204,8 @@ void IR_sensor_analog::init() {
     sensorRevision = (SensorRevision)eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_PCB);
 }
 
-bool IR_sensor_analog::update() {
-    bool event = IR_sensor::update();
+void IR_sensor_analog::update() {
+    IR_sensor::update();
     if (state == State::ready) {
         if (getVoltReady()) {
             clearVoltReady();
@@ -259,8 +247,6 @@ bool IR_sensor_analog::update() {
     }
 
     ; //
-
-    return event;
 }
 
 void IR_sensor_analog::voltUpdate(uint16_t raw) { // to be called from the ADC ISR when a cycle is finished
@@ -400,7 +386,7 @@ void PAT9125_sensor::deinit() {
     filter = 0;
 }
 
-bool PAT9125_sensor::update() {
+void PAT9125_sensor::update() {
     switch (state) {
     case State::initializing:
         if (!updatePAT9125()) {
@@ -413,19 +399,12 @@ bool PAT9125_sensor::update() {
         break;
     case State::ready: {
         updatePAT9125();
-        postponedLoadEvent = false;
-        bool event = checkFilamentEvents();
-
-        ; //
-
-        return event;
+        checkFilamentEvents();
     } break;
     case State::disabled:
     case State::error:
-    default:
-        return false;
+        break;
     }
-    return false;
 }
 
 #ifdef FSENSOR_PROBING
@@ -441,7 +420,6 @@ bool PAT9125_sensor::probeOtherType() {
 #endif
 
 void PAT9125_sensor::setJamDetectionEnabled(bool state, bool updateEEPROM) {
-    jamDetection = state;
     oldPos = pat9125_y;
     resetStepCount();
     jamErrCnt = 0;
@@ -466,10 +444,25 @@ void PAT9125_sensor::resetStepCount() {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { stepCount = 0; }
 }
 
+void PAT9125_sensor::triggerFilamentJam() {
+//    SERIAL_ECHOLNPGM("triggerFilamentJam");
+    if (!suppressed
+        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts just before the toolchange
+        && (eFilamentAction == FilamentAction::None)
+        && !saved_printing
+        && (
+            moves_planned() != 0
+            || printJobOngoing()
+            || (lcd_commands_type == LcdCommands::Layer1Cal)
+            || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
+        )
+    ) {
+        filJam();
+    }
+}
+
 void PAT9125_sensor::filJam() {
-    runoutEnabled = false;
-    autoLoadEnabled = false;
-    jamDetection = false;
+    // puts_P(PSTR("filJam()"));
     stop_and_save_print_to_ram(0, 0);
     restore_print_from_ram_and_continue(0);
     eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
@@ -478,26 +471,28 @@ void PAT9125_sensor::filJam() {
 }
 
 bool PAT9125_sensor::updatePAT9125() {
-    if (jamDetection) {
-        int16_t _stepCount = getStepCount();
-        if (abs(_stepCount) >= chunkSteps) { // end of chunk. Check distance
-            resetStepCount();
-            if (!pat9125_update()) { // get up to date data. reinit on error.
-                init();              // try to reinit.
-            }
-            bool fsDir = (pat9125_y - oldPos) > 0;
-            bool stDir = _stepCount > 0;
-            if (fsDir != stDir) {
-                jamErrCnt++;
-            } else if (jamErrCnt) {
-                jamErrCnt--;
-            }
-            oldPos = pat9125_y;
+    
+    int16_t _stepCount = getStepCount();
+    if (abs(_stepCount) >= chunkSteps) { // end of chunk. Check distance
+        resetStepCount();
+        if (!pat9125_update()) { // get up to date data. reinit on error.
+            init();              // try to reinit.
         }
-        if (jamErrCnt > 10) {
-            jamErrCnt = 0;
-            filJam();
+        bool fsDir = (pat9125_y - oldPos) > 0;
+        bool stDir = _stepCount > 0;
+        if (fsDir != stDir) {
+            jamErrCnt++;
+        } else if (jamErrCnt) {
+            jamErrCnt--;
         }
+        oldPos = pat9125_y;
+    }
+    if (jamErrCnt > 10) {
+        jamErrCnt = 0;
+        if (getJamDetectionEnabled()) {
+            setEvent(Events::jam);
+        }
+        triggerFilamentJam();
     }
 
     if (pollingTimer.expired_cont(pollingPeriod)) {

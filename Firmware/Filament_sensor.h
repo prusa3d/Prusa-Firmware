@@ -18,6 +18,8 @@ class FSensorBlockRunout {
 public:
     FSensorBlockRunout();
     ~FSensorBlockRunout();
+private:
+    bool oldSuppressionStatus;
 };
 
 /// Base class Filament sensor
@@ -43,19 +45,30 @@ public:
         _Pause = 1,
         _Undef = EEPROM_EMPTY_VALUE
     };
+
+    enum class Events : uint8_t {
+        runout = 0,
+        autoload,
+        jam,
+    };
     
     static void setEnabled(bool enabled);
     
     void setAutoLoadEnabled(bool state, bool updateEEPROM = false);
-    bool getAutoLoadEnabled() const { return autoLoadEnabled; }
+    bool getAutoLoadEnabled() const { return eeprom_read_byte((uint8_t *)EEPROM_FSENS_AUTOLOAD_ENABLED); }
     
     void setRunoutEnabled(bool state, bool updateEEPROM = false);
-    bool getRunoutEnabled() const { return runoutEnabled; }
+    bool getRunoutEnabled() const { return eeprom_read_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED); }
     
     void setActionOnError(SensorActionOnError state, bool updateEEPROM = false);
     SensorActionOnError getActionOnError() const { return sensorActionOnError; }
     
-    bool getFilamentLoadEvent() const { return postponedLoadEvent; }
+    void setEvent(Events e) { eventFlags |= _BV((uint8_t)e); }
+    void clearEvent(Events e) { eventFlags &= ~_BV((uint8_t)e); }
+    bool getEvent(Events e) const { return eventFlags & _BV((uint8_t)e); }
+
+    bool getSuppressionStatus() const { return suppressed; }
+    void setSuppressionStatus(bool s) { suppressed = s; }
     
     bool isError() const { return state == State::error; }
     bool isReady() const { return state == State::ready; }
@@ -64,7 +77,7 @@ public:
 protected:
     void settings_init_common();
     
-    bool checkFilamentEvents();
+    void checkFilamentEvents();
     
     void triggerFilamentInserted();
     
@@ -75,10 +88,9 @@ protected:
     void triggerError();
     
     State state;
-    bool autoLoadEnabled;
-    bool runoutEnabled;
     bool oldFilamentPresent; //for creating filament presence switching events.
-    bool postponedLoadEvent; //this event lasts exactly one update cycle. It is long enough to be able to do polling for load event.
+    uint8_t eventFlags;
+    bool suppressed;
     ShortTimer eventBlankingTimer;
     SensorActionOnError sensorActionOnError;
 };
@@ -88,7 +100,7 @@ class IR_sensor: public Filament_sensor {
 public:
     void init();
     void deinit();
-    bool update();
+    void update();
     bool getFilamentPresent() const { return !READ(IR_SENSOR_PIN); }
 #ifdef FSENSOR_PROBING
     static bool probeOtherType(); //checks if the wrong fsensor type is detected.
@@ -107,7 +119,7 @@ constexpr static float Raw2Voltage(uint16_t raw) {
 class IR_sensor_analog: public IR_sensor {
 public:
     void init();
-    bool update();
+    void update();
     void voltUpdate(uint16_t raw);
     
     uint16_t __attribute__((noinline)) getVoltRaw();
@@ -160,14 +172,14 @@ class PAT9125_sensor: public Filament_sensor {
 public:
     void init();
     void deinit();
-    bool update();
+    void update();
     bool getFilamentPresent() const { return filterFilPresent; }
 #ifdef FSENSOR_PROBING
     bool probeOtherType(); //checks if the wrong fsensor type is detected.
 #endif
     
     void setJamDetectionEnabled(bool state, bool updateEEPROM = false);
-    bool getJamDetectionEnabled() const { return jamDetection; }
+    bool getJamDetectionEnabled() const { return eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_JAM_DETECTION); }
     
     void stStep(bool rev) { //from stepper isr
         stepCount += rev ? -1 : 1;
@@ -180,8 +192,7 @@ private:
     ShortTimer pollingTimer;
     uint8_t filter;
     uint8_t filterFilPresent;
-    
-    bool jamDetection;
+
     int16_t oldPos;
     int16_t stepCount;
     int16_t chunkSteps;
@@ -195,6 +206,8 @@ private:
     
     void resetStepCount();
     
+    void triggerFilamentJam();
+
     void filJam();
     
     bool updatePAT9125();

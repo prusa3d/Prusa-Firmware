@@ -1792,7 +1792,7 @@ switch(eFilamentAction)
     if(lcd_clicked()
 #ifdef FILAMENT_SENSOR
 /// @todo leptun - add this as a specific retest item
-        || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
+        || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getEvent(Filament_sensor::Events::autoload))
 #endif //FILAMENT_SENSOR
     ) {
      menu_back(bFilamentPreheatState ? 2 : 3);
@@ -1872,6 +1872,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         case FilamentAction::Load:
         case FilamentAction::AutoLoad:
         case FilamentAction::UnLoad:
+            fsensor.clearEvent(Filament_sensor::Events::autoload);
             if (bFilamentWaitingFlag) menu_submenu(mFilamentPrompt, true);
             else
             {
