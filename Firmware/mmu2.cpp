@@ -241,7 +241,7 @@ bool MMU2::RetryIfPossible(uint16_t ec) {
     if (logic.RetryAttempts()) {
         SetButtonResponse(ButtonOperations::Retry);
         // check, that Retry is actually allowed on that operation
-        if (ButtonAvailable(ec) != NoButton) {
+        if (ButtonAvailable(ec) != Buttons::NoButton) {
             logic.SetInAutoRetry(true);
             SERIAL_ECHOLNPGM("RetryButtonPressed");
             // We don't decrement until the button is acknowledged by the MMU.
@@ -733,9 +733,9 @@ void MMU2::CheckUserInput() {
     }
 
     switch (btn) {
-    case Left:
-    case Middle:
-    case Right:
+    case Buttons::Left:
+    case Buttons::Middle:
+    case Buttons::Right:
         SERIAL_ECHOPGM("CheckUserInput-btnLMR ");
         SERIAL_ECHOLN(btn);
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
@@ -757,22 +757,22 @@ void MMU2::CheckUserInput() {
             break;
         }
         break;
-    case TuneMMU:
+    case Buttons::TuneMMU:
         Tune();
         break;
-    case Load:
-    case Eject:
+    case Buttons::Load:
+    case Buttons::Eject:
         // High level operation
         setPrinterButtonOperation(btn);
         break;
-    case ResetMMU:
+    case Buttons::ResetMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
         // ... but mmu2_power.cpp knows this and triggers a soft-reset instead.
         break;
-    case DisableMMU:
+    case Buttons::DisableMMU:
         Stop(); // Poweroff handles updating the EEPROM shutoff.
         break;
-    case StopPrint:
+    case Buttons::StopPrint:
         // @@TODO not sure if we shall handle this high level operation at this spot
         break;
     default:
