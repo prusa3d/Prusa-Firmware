@@ -81,8 +81,7 @@ void MMU2::StopKeepPowered() {
 void MMU2::Tune() {
     switch (lastErrorCode) {
     case ErrorCode::HOMING_SELECTOR_FAILED:
-    case ErrorCode::HOMING_IDLER_FAILED:
-    {
+    case ErrorCode::HOMING_IDLER_FAILED: {
         // Prompt a menu for different values
         tuneIdlerStallguardThreshold();
         break;
@@ -465,9 +464,11 @@ bool MMU2::unload() {
 
     WaitForHotendTargetTempBeep();
 
-    ReportingRAII rep(CommandInProgress::UnloadFilament);
-    UnloadInner();
-
+    {
+        ReportingRAII rep(CommandInProgress::UnloadFilament);
+        UnloadInner();
+    }
+    ScreenUpdateEnable();
     return true;
 }
 
@@ -495,10 +496,10 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
 
         ReportingRAII rep(CommandInProgress::CutFilament);
         CutFilamentInner(slot);
+        extruder = MMU2_NO_TOOL;
+        tool_change_extruder = MMU2_NO_TOOL;
+        MakeSound(SoundType::Confirm);
     }
-    extruder = MMU2_NO_TOOL;
-    tool_change_extruder = MMU2_NO_TOOL;
-    MakeSound(SoundType::Confirm);
     ScreenUpdateEnable();
     return true;
 }
@@ -517,20 +518,18 @@ bool MMU2::load_filament(uint8_t slot) {
         return false;
 
     FullScreenMsgLoad(slot);
-
-    ReportingRAII rep(CommandInProgress::LoadFilament);
-    for (;;) {
-        Disable_E0();
-        logic.LoadFilament(slot);
-        if (manage_response(false, false))
-            break;
-        IncrementMMUFails();
+    {
+        ReportingRAII rep(CommandInProgress::LoadFilament);
+        for (;;) {
+            Disable_E0();
+            logic.LoadFilament(slot);
+            if (manage_response(false, false))
+                break;
+            IncrementMMUFails();
+        }
+        MakeSound(SoundType::Confirm);
     }
-
-    MakeSound(SoundType::Confirm);
-
     ScreenUpdateEnable();
-
     return true;
 }
 
@@ -580,10 +579,11 @@ bool MMU2::eject_filament(uint8_t slot, bool enableFullScreenMsg /* = true */) {
                 break;
             IncrementMMUFails();
         }
+        extruder = MMU2_NO_TOOL;
+        tool_change_extruder = MMU2_NO_TOOL;
+        MakeSound(Confirm);
     }
-    extruder = MMU2_NO_TOOL;
-    tool_change_extruder = MMU2_NO_TOOL;
-    MakeSound(Confirm);
+    ScreenUpdateEnable();
     return true;
 }
 
