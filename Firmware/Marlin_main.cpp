@@ -8129,43 +8129,53 @@ Sigma_Exit:
 	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#M914:_Set_TMC2130_normal_mode">M914: Set TMC2130 normal mode</a>
   Updates EEPROM only if "P" is given, otherwise temporary (lasts until reset or motor idle timeout)
       #### Usage
-    
-        M914 [ P | R ]
-    
+
+        M914 [ P | R | Q ]
+
     #### Parameters
     - `P` - Make the mode change permanent (write to EEPROM)
     - `R` - Revert to EEPROM value
+    - `Q` - Print effective silent/normal status. (Does not report override)
+
     */
 
     /*!
 	### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#M915:_Set_TMC2130_silent_mode">M915: Set TMC2130 silent mode</a>
     Updates EEPROM only if "P" is given, otherwise temporary (lasts until reset or motor idle timeout)
       #### Usage
-    
-        M915 [ P | R ]
-    
+
+        M915 [ P | R | Q]
+
     #### Parameters
     - `P` - Make the mode change permanent (write to EEPROM)
     - `R` - Revert to EEPROM value
+    - `Q` - Print effective silent/normal status. (Does not report override)
     */
 #ifdef TMC2130
     case 914:
     case 915:
     {
-      uint8_t newMode = (mcode_in_progress==914) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
-      //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
-      if (code_seen('R'))
-      {
-          newMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-      }
-      else if (code_seen('P'))
-      {
-          uint8_t newMenuMode = (mcode_in_progress==914) ? SILENT_MODE_NORMAL : SILENT_MODE_STEALTH;
-          eeprom_update_byte((unsigned char *)EEPROM_SILENT, newMenuMode);
-          SilentModeMenu = newMenuMode;
-          //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
-      }
-      
+    uint8_t newMode = (mcode_in_progress==914) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
+    //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
+    if (code_seen('R'))
+    {
+        newMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+    }
+    else if (code_seen('P'))
+    {
+        uint8_t newMenuMode = (mcode_in_progress==914) ? SILENT_MODE_NORMAL : SILENT_MODE_STEALTH;
+        eeprom_update_byte((unsigned char *)EEPROM_SILENT, newMenuMode);
+        SilentModeMenu = newMenuMode;
+        //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
+    }
+    else if (code_seen('Q'))
+    {
+        printf_P(PSTR("%S: %S\n"), _O(MSG_MODE),
+            tmc2130_mode == TMC2130_MODE_NORMAL ?
+            _O(MSG_NORMAL) : _O(MSG_SILENT)
+        );
+
+    }
       if (tmc2130_mode != newMode
 #ifdef PSU_Delta 
           || !bEnableForce_z 
