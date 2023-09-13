@@ -50,6 +50,7 @@ void ReportProgressHook(CommandInProgress cip, ProgressCode ec);
 struct TryLoadUnloadReporter {
     TryLoadUnloadReporter(float delta_mm);
     void Progress(bool sensorState);
+    void DumpToSerial();
 
 private:
     /// @brief Add one block to the progress bar
@@ -64,6 +65,17 @@ private:
     // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
     float pixel_per_mm;
     uint8_t lcd_cursor_col;
+
+    // Beware: needs to be a union to optimize for the 8bit better
+    union __attribute__((packed)) PU {
+        uint32_t dw;
+        uint8_t bytes[4];
+        constexpr PU()
+            : dw(0) {}
+        constexpr PU(uint32_t dw)
+            : dw(dw) {}
+    } progress;
+    static_assert(sizeof(PU) == 4);
 };
 
 /// Remders the sensor status line. Also used by the "resume temperature" screen.
