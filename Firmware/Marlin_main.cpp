@@ -2825,7 +2825,7 @@ static void gcode_G80()
         nMeasPoints = 3;
     }
 
-    uint8_t nProbeRetry = code_seen('R') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+    uint8_t nProbeRetry = code_seen('C') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
     if (nProbeRetry > 10) {
         nProbeRetry = 10;
     }
@@ -4882,11 +4882,11 @@ void process_commands()
     Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
     #### Usage
 	  
-          G80 [ N | R | L | R | F | B | X | Y | W | H ]
+          G80 [ N | C | O | L | R | F | B | X | Y | W | H ]
       
 	#### Parameters
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
-      - `R` - Probe retries. Default 3 max. 10
+      - `C` - Probe retries. Default 3 max. 10
       - `O` - Return to origin. Default 1 (true)
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
