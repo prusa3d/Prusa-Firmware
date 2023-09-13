@@ -279,40 +279,34 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* lon
 
 static void menu_item_sddir(const char* str_fn, char* str_fnl)
 {
-	if (menu_item == menu_line)
+	if (lcd_draw_update)
 	{
-		if (lcd_draw_update)
-		{
-			lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
-		}
-		if (menu_clicked && (lcd_encoder == menu_item))
-		{
-			lcd_update_enabled = false;
-			menu_action_sddirectory(str_fn);
-			lcd_update_enabled = true;
-			menu_item_ret();
-			return;
-		}
+		lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+	}
+	if (menu_clicked && (lcd_encoder == menu_item))
+	{
+		lcd_update_enabled = false;
+		menu_action_sddirectory(str_fn);
+		lcd_update_enabled = true;
+		menu_item_ret();
+		return;
 	}
 	menu_item++;
 }
 
 static void menu_item_sdfile(const char* str_fn, char* str_fnl)
 {
-	if (menu_item == menu_line)
+	if (lcd_draw_update)
 	{
-		if (lcd_draw_update)
-		{
-			lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
-		}
-		if (menu_clicked && (lcd_encoder == menu_item))
-		{
-			lcd_update_enabled = false;
-			menu_action_sdfile(str_fn);
-			lcd_update_enabled = true;
-			menu_item_ret();
-			return;
-		}
+		lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+	}
+	if (menu_clicked && (lcd_encoder == menu_item))
+	{
+		lcd_update_enabled = false;
+		menu_action_sdfile(str_fn);
+		lcd_update_enabled = true;
+		menu_item_ret();
+		return;
 	}
 	menu_item++;
 }
