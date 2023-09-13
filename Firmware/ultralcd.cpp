@@ -5484,7 +5484,7 @@ static void mbl_mesh_toggle() {
 }
 
 static void mbl_probe_nr_toggle() {
-	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+	uint8_t mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 	switch (mbl_z_probe_nr) {
 		case 1: mbl_z_probe_nr = 3; break;
 		case 3: mbl_z_probe_nr = 5; break;
@@ -5499,6 +5499,7 @@ static void lcd_mesh_bed_leveling_settings()
 
 	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 	uint8_t points_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    uint8_t mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 	char sToggle[4]; //enough for nxn format
 
 	MENU_BEGIN();
