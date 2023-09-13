@@ -2572,6 +2572,11 @@ msgstr ""
 msgid "Sensitivity"
 msgstr "Érzékenység"
 
+#. MSG_MBL_FAILED_Z_CAL c=20 r=4
+#: ../../Firmware/Marlin_main.cpp:2976
+msgid "Mesh bed leveling failed. Please run Z calibration."
+msgstr "Sikertelen asztal szintezes. Kérjük, futtassa a Z kalibrálást."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vedd ki a regi fil., majd nyomd meg a gombot az uj fil. betoltesehez."
 

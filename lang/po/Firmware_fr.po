@@ -2589,6 +2589,11 @@ msgstr ""
 msgid "Sensitivity"
 msgstr "Sensibilité"
 
+#. MSG_MBL_FAILED_Z_CAL c=20 r=4
+#: ../../Firmware/Marlin_main.cpp:2976
+msgid "Mesh bed leveling failed. Please run Z calibration."
+msgstr "Capt. non declenche pendant que je nivele le plateau. Veuillez exécuter l'étalonnage Z."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Retirez l'ancien fil. puis appuyez sur le bouton pour charger le nouveau."

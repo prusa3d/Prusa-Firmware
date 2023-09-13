@@ -2573,6 +2573,11 @@ msgstr ""
 msgid "Sensitivity"
 msgstr "Sensibilitate"
 
+#. MSG_MBL_FAILED_Z_CAL c=20 r=4
+#: ../../Firmware/Marlin_main.cpp:2976
+msgid "Mesh bed leveling failed. Please run Z calibration."
+msgstr "Nivelarea patului a esuat. Nivelarea patului a esuat."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateti fil. vechi si apasati butonul pentru a incarca nou."
 
