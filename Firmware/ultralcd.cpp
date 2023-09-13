@@ -5298,7 +5298,7 @@ static void lcd_main_menu()
     if(!isPrintPaused && (custom_message_type != CustomMsg::Resuming)) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
-    if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
+    if (!usb_timer.running()) {
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
     }
 
