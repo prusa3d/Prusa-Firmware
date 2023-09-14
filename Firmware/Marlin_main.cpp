@@ -4889,7 +4889,7 @@ void process_commands()
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
       - `C` - Probe retry counts. Default 3 max. 10
       - `O` - Return to origin. Default 1 (true)
-      - `M` - Use magnet compensation. Will only be used if number of mesh points is set to 7. Default is value stored in EEPROM. Vaild values are 0 (false) and 1 (ture).
+      - `M` - Use magnet compensation. Will only be used if number of mesh points is set to 7. Default is value stored in EEPROM. Valid values are 0 (false) and 1 (true).
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
     #### Additional Parameters
