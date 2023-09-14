@@ -2825,9 +2825,9 @@ static void gcode_G80()
         nMeasPoints = 3;
     }
 
-    uint8_t nProbeRetry = code_seen('R') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-    if (nProbeRetry > 10) {
-        nProbeRetry = 10;
+    uint8_t nProbeRetryCount  = code_seen('C') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+    if (nProbeRetryCount  > 10) {
+        nProbeRetryCount  = 10;
     }
 
     const float area_min_x = code_seen('X') ? code_value() - x_mesh_density - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
@@ -2933,7 +2933,7 @@ static void gcode_G80()
         }
 
         // Go down until endstop is hit
-        if (!find_bed_induction_sensor_point_z(has_z ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
+        if (!find_bed_induction_sensor_point_z(has_z ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetryCount )) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
             printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
             break;
         }
@@ -2942,7 +2942,7 @@ static void gcode_G80()
             plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
             st_synchronize();
 
-            if (!find_bed_induction_sensor_point_z(has_z ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
+            if (!find_bed_induction_sensor_point_z(has_z ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetryCount )) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point
                 printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
                 break;
             }
@@ -4882,11 +4882,11 @@ void process_commands()
     Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
     #### Usage
 	  
-          G80 [ N | R | L | R | F | B | X | Y | W | H ]
+          G80 [ N | C | O | L | R | F | B | X | Y | W | H ]
       
 	#### Parameters
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
-      - `R` - Probe retries. Default 3 max. 10
+      - `C` - Probe retry counts. Default 3 max. 10
       - `O` - Return to origin. Default 1 (true)
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
