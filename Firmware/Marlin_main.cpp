@@ -2821,13 +2821,11 @@ static void gcode_G80()
 #endif //PINDA_THERMISTOR
 
     uint8_t nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
-    bool bCodeSeen = code_seen('N');
-    if (uint8_t value = code_value_uint8(); bCodeSeen && (value == 7 || value == 3))
+    if (uint8_t codeSeen = code_seen('N'), value = code_value_uint8(); codeSeen && (value == 7 || value == 3))
       nMeasPoints = value;
 
     uint8_t nProbeRetryCount = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-    bCodeSeen = code_seen('C');
-    if (uint8_t value = code_value_uint8(); bCodeSeen && value >= 1 && value <= 10)
+    if (uint8_t codeSeen = code_seen('C'), value = code_value_uint8(); codeSeen && value >= 1 && value <= 10)
       nProbeRetryCount = value;
 
     const float area_min_x = code_seen('X') ? code_value() - x_mesh_density - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
