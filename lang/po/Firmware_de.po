@@ -2581,7 +2581,7 @@ msgstr "Sensitivität"
 #. MSG_MBL_FAILED_Z_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:2976
 msgid "Mesh bed leveling failed. Please run Z calibration."
-msgstr "MeshBett Ausgleich fehlgeschlagen. Führe Z Kalibrierung aus."
+msgstr "MeshBett Ausgleich fehlgeschlagen. Z Kalibrierung ausführen."
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Entferne das alte Fil. und drücke den Knopf, um das neue zu laden."
