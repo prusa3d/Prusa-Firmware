@@ -49,6 +49,7 @@ void ReportProgressHook(CommandInProgress cip, ProgressCode ec);
 
 struct TryLoadUnloadReporter {
     TryLoadUnloadReporter(float delta_mm);
+    ~TryLoadUnloadReporter();
     void Progress(bool sensorState);
     void DumpToSerial();
 
@@ -58,24 +59,13 @@ private:
     /// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
     void Render(uint8_t col, bool sensorState);
 
-    uint8_t dpixel1;
     uint8_t dpixel0;
+    uint8_t dpixel1;
+    uint8_t lcd_cursor_col;
     // The total length is twice delta_mm. Divide that length by number of pixels
     // available to get length per pixel.
     // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
     float pixel_per_mm;
-    uint8_t lcd_cursor_col;
-
-    // Beware: needs to be a union to optimize for the 8bit better
-    union __attribute__((packed)) PU {
-        uint32_t dw;
-        uint8_t bytes[4];
-        constexpr PU()
-            : dw(0) {}
-        constexpr PU(uint32_t dw)
-            : dw(dw) {}
-    } progress;
-    static_assert(sizeof(PU) == 4);
 };
 
 /// Remders the sensor status line. Also used by the "resume temperature" screen.

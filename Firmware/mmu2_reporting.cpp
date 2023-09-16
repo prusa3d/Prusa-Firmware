@@ -301,17 +301,20 @@ TryLoadUnloadReporter::TryLoadUnloadReporter(float delta_mm)
 , lcd_cursor_col(0)
 , pixel_per_mm(0.5F * float(LCD_WIDTH) / (delta_mm))
 {
-    // Clear the status line
-    lcd_set_cursor(0, 3);
-    lcd_space(LCD_WIDTH);
-    static_assert(LCD_WIDTH < 32); // for progress bits
+    lcd_clearstatus();
+}
+
+TryLoadUnloadReporter::~TryLoadUnloadReporter() {
+    // Delay the next status message just so
+    // the user can see the results clearly
+    lcd_reset_status_message_timeout();
 }
 
 void TryLoadUnloadReporter::Render(uint8_t col, bool sensorState) {
     // Set the cursor position each time in case some other
     // part of the firmware changes the cursor position
-    lcd_putc_at(col, 3, sensorState ? '-' : LCD_STR_SOLID_BLOCK[0]);
-    lcd_reset_status_message_timeout();
+    lcd_insert_char_into_status(col, sensorState ? LCD_STR_SOLID_BLOCK[0] : '-');
+    if (!lcd_update_enabled) lcdui_print_status_line();
 }
 
 void TryLoadUnloadReporter::Progress(bool sensorState){
@@ -321,22 +324,16 @@ void TryLoadUnloadReporter::Progress(bool sensorState){
         dpixel0 = dpixel1;
         if (lcd_cursor_col > (LCD_WIDTH - 1)) lcd_cursor_col = LCD_WIDTH - 1;
         Render(lcd_cursor_col++, sensorState);
-        progress.dw <<= 1;
-        if(sensorState){
-            progress.bytes[0] |= 1;
-        }
     }
 }
 
 void TryLoadUnloadReporter::DumpToSerial(){
     char buf[LCD_WIDTH + 1];
-    PU tmpProgress { progress.dw }; // avoid storing the shifted progress back into the memory - saves 4 instructions ;)
-
-    // fill the buffer from the back - the last recorded fs state shall be printed as the last character
-    // i < 0xff means we go from LCD_WIDTH-1 down to zero included (LCD_WIDTH-1 is less than 0xff)
-    for (uint8_t i = LCD_WIDTH - 1; i < 0xff; --i) {
-        buf[i] = (tmpProgress.bytes[0] & 1) + '0';
-        tmpProgress.dw >>= 1;
+    lcd_getstatus(buf);
+    for (uint8_t i = 0; i < sizeof(buf); i++) {
+        // 0xFF is -1 when converting from unsigned to signed char
+        // If the number is negative, that means filament is present
+        buf[i] = (buf[i] < 0) ? '1' : '0';
     }
     buf[LCD_WIDTH] = 0;
     MMU2_ECHO_MSGLN(buf);
