@@ -3085,7 +3085,7 @@ static void gcode_G80()
     mesh_bed_leveling_flag = false;
 }
 
-// G80_M420 Mesh bed leveling status
+// G81_M420 Mesh bed leveling status
 
 static void gcode_G81_M420()
 {
