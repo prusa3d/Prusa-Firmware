@@ -2820,15 +2820,13 @@ static void gcode_G80()
     run = false;
 #endif //PINDA_THERMISTOR
 
-    uint8_t nMeasPoints = code_seen('N') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
-    if (nMeasPoints != 7) {
-        nMeasPoints = 3;
-    }
+    uint8_t nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    if (uint8_t codeSeen = code_seen('N'), value = code_value_uint8(); codeSeen && (value == 7 || value == 3))
+      nMeasPoints = value;
 
-    uint8_t nProbeRetryCount = code_seen('C') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-    if (nProbeRetryCount > 10) {
-        nProbeRetryCount = 10;
-    }
+    uint8_t nProbeRetryCount = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+    if (uint8_t codeSeen = code_seen('C'), value = code_value_uint8(); codeSeen && value >= 1 && value <= 10)
+      nProbeRetryCount = value;
 
     const float area_min_x = code_seen('X') ? code_value() - x_mesh_density - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
     const float area_min_y = code_seen('Y') ? code_value() - y_mesh_density - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
@@ -2973,7 +2971,7 @@ static void gcode_G80()
     static uint8_t g80_fail_cnt = 0;
     if (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
         if (g80_fail_cnt++ >= 2) {
-            kill(PSTR("Mesh bed leveling failed. Please run Z calibration."));
+            kill(_i("Mesh bed leveling failed. Please run Z calibration.")); ////MSG_MBL_FAILED_Z_CAL c=20 r=4
         }
         Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
         bool bState;
@@ -3328,10 +3326,10 @@ static void mmu_M600_filament_change_screen(uint8_t eject_slot) {
         manage_heater();
         manage_inactivity(true);
 
-        btn = MMU2::mmu2.getPrinterButtonOperation();
+        btn = MMU2::mmu2.GetPrinterButtonOperation();
         if (btn != MMU2::Buttons::NoButton)
         {
-            MMU2::mmu2.clearPrinterButtonOperation();
+            MMU2::mmu2.ClearPrinterButtonOperation();
 
             if (btn == MMU2::Buttons::Eject) {
                 if (eject_slot != (uint8_t)MMU2::FILAMENT_UNKNOWN) {
@@ -4886,9 +4884,9 @@ void process_commands()
           G80 [ N | C | O | M | L | R | F | B | X | Y | W | H ]
       
 	#### Parameters
-      - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
-      - `C` - Probe retry counts. Default 3 max. 10
-      - `O` - Return to origin. Default 1 (true)
+      - `N` - Number of mesh points on x axis. Default is value stored in EEPROM. Valid values are 3 and 7.
+      - `C` - Probe retry counts. Default is value stored in EEPROM. Valid values are 1 to 10.
+      - `O` - Return to origin. Default is 1. Valid values are 0 (false) and 1 (true).
       - `M` - Use magnet compensation. Will only be used if number of mesh points is set to 7. Default is value stored in EEPROM. Valid values are 0 (false) and 1 (true).
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.

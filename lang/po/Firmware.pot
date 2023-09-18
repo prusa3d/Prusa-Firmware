@@ -1209,6 +1209,11 @@ msgstr ""
 msgid "Mesh Bed Leveling"
 msgstr ""
 
+#. MSG_MBL_FAILED_Z_CAL c=20 r=4
+#: ../../Firmware/Marlin_main.cpp:2976
+msgid "Mesh bed leveling failed. Please run Z calibration."
+msgstr ""
+
 #. MSG_MODE c=6
 #: ../../Firmware/messages.cpp:107 ../../Firmware/ultralcd.cpp:4122
 #: ../../Firmware/ultralcd.cpp:4126 ../../Firmware/ultralcd.cpp:4134

@@ -4,6 +4,9 @@
 
 namespace modules {
 
+// clang-format off
+// prevent silly indenting of the whole file
+
 /// Contains all the necessary functions for computation of CRC
 namespace crc {
 
@@ -39,5 +42,7 @@ public:
 };
 
 } // namespace crc
+
+// clang-format on
 
 } // namespace modules

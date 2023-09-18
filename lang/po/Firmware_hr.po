@@ -2567,6 +2567,11 @@ msgstr "Promjena filamenta M600. Stavite novu nit ili izbacite staru."
 msgid "Sensitivity"
 msgstr "Osjetljivost"
 
+#. MSG_MBL_FAILED_Z_CAL c=20 r=4
+#: ../../Firmware/Marlin_main.cpp:2976
+msgid "Mesh bed leveling failed. Please run Z calibration."
+msgstr "Niveliranje podloge nije uspijelo. Pokrenite Z kalibraciju."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
 
