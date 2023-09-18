@@ -3085,6 +3085,16 @@ static void gcode_G80()
     mesh_bed_leveling_flag = false;
 }
 
+// G80_M420 Mesh bed leveling status
+
+static void gcode_G81_M420()
+{
+    if (mbl.active) {
+        mbl.print();
+        } else SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
+    return;
+}
+
 //! @brief Calibrate XYZ
 //! @param onlyZ if true, calibrate only Z axis
 //! @param verbosity_level
@@ -3785,7 +3795,7 @@ extern uint8_t st_backlash_y;
 //!@n G31 - Dock sled (Z_PROBE_SLED only)
 //!@n G32 - Undock sled (Z_PROBE_SLED only)
 //!@n G80 - Automatic mesh bed leveling
-//!@n G81 - Print bed profile
+//!@n G81 - Mesh bed leveling status
 //!@n G90 - Use Absolute Coordinates
 //!@n G91 - Use Relative Coordinates
 //!@n G92 - Set current position to coordinates given
@@ -3875,6 +3885,7 @@ extern uint8_t st_backlash_y;
 //!@n M404 - N<dia in mm> Enter the nominal filament width (3mm, 1.75mm ) or will display nominal filament width without parameters
 //!@n M405 - Turn on Filament Sensor extrusion control.  Optional D<delay in cm> to set delay in centimeters between sensor and extruder
 //!@n M406 - Turn off Filament Sensor extrusion control
+//!@n M420 - Mesh bed leveling status
 //!@n M500 - stores parameters in EEPROM
 //!@n M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 //!@n M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
@@ -4912,14 +4923,10 @@ void process_commands()
 		### G81 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#G81:_Mesh_bed_leveling_status">G81: Mesh bed leveling status</a>
 		Prints mesh bed leveling status and bed profile if activated.
         */
-        case 81:
-            if (mbl.active) {
-                mbl.print();
-            }
-            else
-                SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
-            break;
-            
+        case 81: {
+            gcode_G81_M420();
+        }
+    break;
 #if 0
         /*!
         ### G82: Single Z probe at current location - Not active <a href="https://reprap.org/wiki/G-code#G82:_Single_Z_probe_at_current_location">G82: Single Z probe at current location</a>
@@ -7394,6 +7401,16 @@ Sigma_Exit:
     }
 	break;
 #endif
+
+    /*!
+    ### M420 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#M420:_Mesh_bed_leveling_status">M420: Mesh bed leveling status</a>
+		Prints mesh bed leveling status and bed profile if activated.
+        */
+    case 420: // M420 Mesh bed leveling status
+    {
+        gcode_G81_M420();
+    }
+    break;
 
     /*!
 	### M500 - Store settings in EEPROM <a href="https://reprap.org/wiki/G-code#M500:_Store_parameters_in_non-volatile_storage">M500: Store parameters in non-volatile storage</a>
