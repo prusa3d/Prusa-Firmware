@@ -2820,15 +2820,13 @@ static void gcode_G80()
     run = false;
 #endif //PINDA_THERMISTOR
 
-    uint8_t nMeasPoints = code_seen('N') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
-    if (nMeasPoints != 7) {
-        nMeasPoints = 3;
-    }
+    uint8_t nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    if (uint8_t codeSeen = code_seen('N'), value = code_value_uint8(); codeSeen && (value == 7 || value == 3))
+      nMeasPoints = value;
 
-    uint8_t nProbeRetryCount = code_seen('C') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-    if (nProbeRetryCount > 10) {
-        nProbeRetryCount = 10;
-    }
+    uint8_t nProbeRetryCount = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+    if (uint8_t codeSeen = code_seen('C'), value = code_value_uint8(); codeSeen && value >= 1 && value <= 10)
+      nProbeRetryCount = value;
 
     const float area_min_x = code_seen('X') ? code_value() - x_mesh_density - X_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
     const float area_min_y = code_seen('Y') ? code_value() - y_mesh_density - Y_PROBE_OFFSET_FROM_EXTRUDER : -INFINITY;
@@ -4885,9 +4883,9 @@ void process_commands()
           G80 [ N | C | O | L | R | F | B | X | Y | W | H ]
       
 	#### Parameters
-      - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
-      - `C` - Probe retry counts. Default 3 max. 10
-      - `O` - Return to origin. Default 1 (true)
+      - `N` - Number of mesh points on x axis. Default is value stored in EEPROM. Valid values are 3 and 7.
+      - `C` - Probe retry counts. Default is value stored in EEPROM. Valid values are 1 to 10.
+      - `O` - Return to origin. Default is 1. Valid values are 0 (false) and 1 (true).
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
     #### Additional Parameters
