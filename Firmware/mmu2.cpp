@@ -296,6 +296,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
             safe_delay_keep_alive(0);
         }
     }
+    Disable_E0();
     if (!filament_inserted) {
         IncrementLoadFails();
     }
