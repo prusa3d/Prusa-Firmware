@@ -29,8 +29,6 @@ namespace MMU2 {
 ///
 /// Currently, this is not possible to perform automatically at compile time with the existing languages/translations infrastructure.
 /// To save space a "dumb" solution was chosen + a few static_assert checks in errors_list.h preventing the code from compiling when the string doesn't match.
-/// -----
-/// On Buddy FW we should improve the error screen to be able to print formatted strings
 static constexpr uint8_t supportedMmuFWVersion[3] PROGMEM = { mmuVersionMajor, mmuVersionMinor, mmuVersionPatch };
 
 const Register ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
