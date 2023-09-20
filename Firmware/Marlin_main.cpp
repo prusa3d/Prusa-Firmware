@@ -200,6 +200,8 @@ float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
 
+float pause_position[3] = { X_PAUSE_POS, Y_PAUSE_POS, Z_PAUSE_LIFT };
+
 uint8_t fanSpeed = 0;
 uint8_t newFanSpeed = 0;
 
@@ -7671,16 +7673,50 @@ Sigma_Exit:
 
     /*!
     ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#M601:_Pause_print">M601: Pause print</a>
+    Without any parameters it will park the extruder to default.
+    #### Usage
+
+         M601 [ X | Y | Z | S ]
+
+    #### Parameters
+     - `X` - X position to park at (otherwise X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (otherwise Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (otherwise Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set default | S1 = set values only without pausing]
     */
     /*!
-    ### M125 - Pause print (TODO: not implemented)
+
+    ### M125 - Pause print <a href="https://reprap.org/wiki/G-code#M125:_Pause_print">M125: Pause print</a>
+    Without any parameters it will park the extruderthe extruder to default.
+    #### Usage
+
+         M125 [ X | Y | Z | S ]
+
+    #### Parameters
+     - `X` - X position to park at (otherwise X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (otherwise Y_PAUSE_POS 190 these are saved until change or reset.
+     - `Z` - Z raise before park (otherwise Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = sset values only without pausing]
     */
     /*!
     ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
     */
     case 25:
+    case 125:
     case 601:
     {
+        if (code_seen('X')) pause_position[1] = code_value_uint8();
+        if (code_seen('Y')) pause_position[2] = code_value_uint8();
+        if (code_seen('Z')) pause_position[3] = code_value_uint8();
+        if (code_seen('S')) {
+            if ( code_value_uint8() == 0 ) {
+                pause_position[1] = X_PAUSE_POS;
+                pause_position[2] = Y_PAUSE_POS;
+                pause_position[3] = Z_PAUSE_LIFT;
+            } else {
+                break;
+            }
+        }
         if (!isPrintPaused) {
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
@@ -10405,12 +10441,12 @@ void long_pause() //long pause print
     setTargetHotend(0);
 
     // Lift z
-    raise_z(Z_PAUSE_LIFT);
+    raise_z(pause_position[3]);
 
     // Move XY to side
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
-        current_position[X_AXIS] = X_PAUSE_POS;
-        current_position[Y_AXIS] = Y_PAUSE_POS;
+        current_position[X_AXIS] = pause_position[1];
+        current_position[Y_AXIS] = pause_position[2];
         plan_buffer_line_curposXYZE(50);
     }
 
