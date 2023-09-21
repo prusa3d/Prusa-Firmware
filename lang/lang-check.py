@@ -40,9 +40,18 @@ import os
 
 from lib import charset as cs
 from lib.io import load_map
+from enum import Enum
 
 COLORIZE = (stdout.isatty() and os.getenv("TERM", "dumb") != "dumb") or os.getenv('NO_COLOR') == "0"
 LCD_WIDTH = 20
+
+GH_ANNOTATIONS = os.getenv('GH_ANNOTATIONS') == "1"
+CURRENT_PO="Unknown file"
+
+class AN_TYPE(Enum):
+    ERROR = "error"
+    WARNING = "warning"
+    NOTICE = "notice"
 
 def color_maybe(color_attr, text):
     if COLORIZE:
@@ -118,6 +127,17 @@ def ign_char_first(c):
 
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
+
+def gh_annotate(type, start_line, message, end_line = None ):
+    if not GH_ANNOTATIONS:
+        return
+    if end_line is not None:
+        line_info = "line={},endLine={}".format(start_line,end_line)
+    else:
+        line_info = "line={}".format(start_line)
+
+    print("::{} file={},{}::{}".format(type.value, CURRENT_PO, line_info, message))
+
 
 def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information, shorter):
     """Check strings to display definition."""
@@ -220,6 +240,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
             print_ruler(6, cols);
             print_wrapped(wrapped_source, rows, cols)
             print()
+            gh_annotate(AN_TYPE.WARNING, line, "Empty translation", line + rows )
 
     # Check for translation length too long
     if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
@@ -350,6 +371,8 @@ def main():
     # check each translation in turn
     status = True
     for translation in polib.pofile(args.po):
+        global CURRENT_PO
+        CURRENT_PO=args.po
         status &= check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
                                     args.warn_empty, args.warn_same, args.information, args.shorter)
     return 0 if status else 1
