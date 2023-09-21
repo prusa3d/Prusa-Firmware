@@ -7,6 +7,9 @@ on:
   push:
     branches: [ MK3, MK3_* ]
 
+env:
+  GH_ANNOTATIONS: 1
+
 jobs:
   build:
     runs-on: ubuntu-latest
