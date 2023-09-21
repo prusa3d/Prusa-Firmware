@@ -50,7 +50,7 @@ def generateLineInTable(index, chars):
     line = "{{"
     for r in rows:
         line += f"0x{r:02X}, "
-    line += f"}}, '{fontTable[index].alternate}'}}, // '{fontTable[index].utf}'"
+    line += f"}}, '{fontTable[index].alternate}'}}, // '{fontTable[index].utf}', \\x{fontTable[index].default:02X}"
     return line
 
 def generateFont():
