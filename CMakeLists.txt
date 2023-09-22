@@ -83,6 +83,7 @@ MESSAGE(STATUS "Commit Nr: Configuration.h: ${PROJECT_VERSION_COMMIT} Tag: ${CMA
 MESSAGE(STATUS "These tag values will override Configuration.h")
 SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})
 SET(PROJECT_VERSION_COMMIT ${CMAKE_MATCH_6})
+git_get_repository(PROJECT_REPOSITORY)
 else(GIT_FOUND)
 if (NO_TAG_IS_FATAL)
     MESSAGE(FATAL_ERROR "Git was not found or an error occurred parsing the tag. This is a fatal error according to the settings.")

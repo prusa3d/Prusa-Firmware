@@ -388,3 +388,34 @@ function(git_head_commit_number _var)
         "${out}"
         PARENT_SCOPE)
 endfunction()
+
+function(git_get_repository _var)
+    if(NOT GIT_FOUND)
+        find_package(Git QUIET)
+    endif()
+    if(NOT GIT_FOUND)
+        set(${_var}
+            "Unknown"
+            PARENT_SCOPE)
+        return()
+    endif()
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" ls-remote --get-url
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        RESULT_VARIABLE res
+        OUTPUT_VARIABLE out
+        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX MATCH "([A-z0-9\-]+)/Prusa-Firmware.git" out "${out}")
+    if("${CMAKE_MATCH_COUNT}" EQUAL 1)
+        message("Found repository name ${CMAKE_MATCH_1}")
+        set(${_var}
+            "${CMAKE_MATCH_1}"
+            PARENT_SCOPE)
+    else()
+        message("Failed to get repository information")
+        set(${_var}
+           #"${out}" #outputs the github repo user name
+           "Unknown" #All other repos shown as unknown
+           PARENT_SCOPE)
+    endif()
+endfunction()
