@@ -110,8 +110,10 @@ TRANS_CHARS = {
     'Ś': 's', #pl
     'š': 's', #cz,hr,sk
     'Š': 'S', #cz,hr,sk
-    'ș': 's', #ro
-    'Ș': 'S', #ro
+    'ș': 's', #ro - s-comma
+    'Ș': 'S', #ro - S-comma
+    'ş': 's', #ro - s-cedilla
+    'Ş': 'S', #ro - S-cedilla
     'ß': 'ss',#de
     'ť': 't', #cz,sk
     'Ť': 'T', #cz,sk
