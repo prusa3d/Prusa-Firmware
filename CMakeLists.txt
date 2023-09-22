@@ -90,7 +90,7 @@ else()
     MESSAGE(STATUS "Git was not found or an error occurred parsing the tag. Falling back to Configuration.h values (${PROJECT_VERSION}).")
 endif()
 set(FW_COMMIT_HASH "0") # Clear it, the code expects a binary...
-
+set(PROJECT_VERSION_FULL "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}-${PROJECT_VERSION_FLV}${PROJECT_VERSION_FLV_VER}-${PROJECT_VERSION_COMMIT}")
 endif()
 
 # Language configuration
