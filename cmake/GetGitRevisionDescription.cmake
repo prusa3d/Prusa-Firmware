@@ -406,7 +406,7 @@ function(git_get_repository _var)
         OUTPUT_VARIABLE out
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
         message("remote URL is ${out}")
-    string(REGEX MATCH "([A-z0-9\-]+)/Prusa-Firmware.git" out "${out}")
+    string(REGEX MATCH "([A-z0-9-]+)/Prusa-Firmware.?g?i?t?" out "${out}")
     if("${CMAKE_MATCH_COUNT}" EQUAL 1)
         message("Found repository name ${CMAKE_MATCH_1}")
         set(${_var}
