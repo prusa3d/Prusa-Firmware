@@ -1,12 +1,25 @@
 # Mapping from LCD source encoding to unicode characters
 CUSTOM_CHARS = {
-    '\x06': '⏬',
-    '\x04': '🔃',
-    '\xdf': '°',
+    # Dynamic characters
+    '\x80': '🄷',
+    '\x81': '°',
+    '\x82': '🌡',
+    '\x83': '⬏',
+    '\x84': '🔃',
+    '\x85': '🗀',
+    '\x86': '»',
+    '\x87': '🕑',
+    '\x88': '⏬',
+    '\x89': '✔',
+
+    # HD44780 A00 font:
+    '\x7e': '→',
+    '\x7f': '←',
     '\xe1': 'ä',
     '\xe4': 'µ', #on keyboard AltGr+m it is \xC2\xB5
     '\xef': 'ö',
     '\xf5': 'ü',
+    '\xff': '█',
 }
 
 # Charaters to be remapped prior to source-encoding transformation

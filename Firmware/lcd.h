@@ -172,6 +172,7 @@ private:
 
 //Custom characters defined in the first 8 characters of the LCD
 #define LCD_STR_ARROW_RIGHT  "\x7E" //from the default character set
+#define LCD_STR_ARROW_LEFT   "\x7F" //from the default character set
 #define LCD_STR_BEDTEMP      "\x80"
 #define LCD_STR_DEGREE       "\x81"
 #define LCD_STR_THERMOMETER  "\x82"
