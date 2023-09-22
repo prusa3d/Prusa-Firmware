@@ -18,7 +18,7 @@ jobs:
     # setup base required dependencies
     - name: Setup dependencies
       run: |
-          sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib
+          sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib git
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout ${{ github.event.pull_request.head.ref }}
