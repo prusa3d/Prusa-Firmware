@@ -4,6 +4,9 @@
 //this is because we need CUSTOM_MENDEL_NAME
 #include "Configuration_var.h"
 
+// For the custom characters
+#include "lcd.h"
+
 //internationalized messages
 const char MSG_ALWAYS[] PROGMEM_I1 = ISTR("Always"); ////MSG_ALWAYS c=6
 const char MSG_AUTO_HOME[] PROGMEM_I1 = ISTR("Auto home"); ////MSG_AUTO_HOME c=18
@@ -81,7 +84,7 @@ const char MSG_PRESS_TO_UNLOAD[] PROGMEM_I1 = ISTR("Please press the knob to unl
 const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////MSG_PRINT_ABORTED c=20
 const char MSG_PULL_OUT_FILAMENT[] PROGMEM_I1 = ISTR("Please pull out filament immediately"); ////MSG_PULL_OUT_FILAMENT c=20 r=4
 const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover print?"); ////MSG_RECOVER_PRINT c=20 r=3
-const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\x04Refresh"); ////MSG_REFRESH c=18
+const char MSG_REFRESH[] PROGMEM_I1 = ISTR(LCD_STR_REFRESH "Refresh"); ////MSG_REFRESH c=18
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////MSG_REMOVE_STEEL_SHEET c=20 r=4
 const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////MSG_RESET c=14
 const char MSG_RESUME_PRINT[] PROGMEM_I1 = ISTR("Resume print"); ////MSG_RESUME_PRINT c=18
