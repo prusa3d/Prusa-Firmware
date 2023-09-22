@@ -3051,7 +3051,8 @@ static void gcode_G80()
 
     mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 
-    if (nMeasPoints == 7 && eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION)) {
+    uint8_t useMagnetCompensation = code_seen('M') ? code_value_uint8() : eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION);
+    if (nMeasPoints == 7 && useMagnetCompensation) {
         mbl_magnet_elimination();
     }
 
@@ -4880,12 +4881,13 @@ void process_commands()
     Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
     #### Usage
 	  
-          G80 [ N | C | O | L | R | F | B | X | Y | W | H ]
+          G80 [ N | C | O | M | L | R | F | B | X | Y | W | H ]
       
 	#### Parameters
       - `N` - Number of mesh points on x axis. Default is value stored in EEPROM. Valid values are 3 and 7.
       - `C` - Probe retry counts. Default is value stored in EEPROM. Valid values are 1 to 10.
       - `O` - Return to origin. Default is 1. Valid values are 0 (false) and 1 (true).
+      - `M` - Use magnet compensation. Will only be used if number of mesh points is set to 7. Default is value stored in EEPROM. Valid values are 0 (false) and 1 (true).
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
     #### Additional Parameters
