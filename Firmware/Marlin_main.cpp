@@ -267,7 +267,7 @@ const char axis_codes[NUM_AXIS] = {'X', 'Y', 'Z', 'E'};
 float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
 // For tracing an arc
-static float offset[3] = {0.0, 0.0, 0.0};
+static float offset[2] = {0.0, 0.0};
 
 // Current feedrate
 float feedrate = 1500.0;
