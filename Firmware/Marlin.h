@@ -22,7 +22,6 @@
 #include "pins.h"
 #include "Timer.h"
 #include "mmu2.h"
-extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -236,7 +235,7 @@ enum class HeatingStatus : uint8_t
 extern HeatingStatus heating_status;
 
 extern bool fans_check_enabled;
-extern float homing_feedrate[];
+constexpr float homing_feedrate[] = HOMING_FEEDRATE;
 extern uint8_t axis_relative_modes;
 extern float feedrate;
 extern int feedmultiply;

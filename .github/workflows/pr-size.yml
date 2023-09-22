@@ -24,9 +24,19 @@ jobs:
     - name: Checkout base
       uses: actions/checkout@v3
 
+    - name: Cache Dependencies
+      uses: actions/cache@v3.0.11
+      id: cache-pkgs
+      with:
+          path: ".dependencies"
+          key: "build-deps-1_0_0-linux"
+
     - name: Setup build dependencies
       run: |
           ./utils/bootstrap.py
+
+    - name: Cache permissions
+      run: sudo chmod -R 744 .dependencies
 
     - name: Build base
       run: |

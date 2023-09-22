@@ -9,6 +9,11 @@
     // irrelevant on Buddy FW, just keep "_millis" as "millis"
     #include <wiring_time.h>
     #define _millis millis
+    #ifdef UNITTEST
+        #define strncmp_P strncmp
+    #else
+        #include <Marlin/src/core/serial.h>
+    #endif
 #endif
 
 #include <string.h>
@@ -16,7 +21,7 @@
 
 namespace MMU2 {
 
-/// Beware:
+/// Beware - on AVR/MK3S:
 /// Changing the supportedMmuVersion numbers requires patching MSG_DESC_FW_UPDATE_NEEDED and all its related translations by hand.
 ///
 /// The message reads:
@@ -27,18 +32,18 @@ namespace MMU2 {
 static constexpr uint8_t supportedMmuFWVersion[3] PROGMEM = { mmuVersionMajor, mmuVersionMinor, mmuVersionPatch };
 
 const Register ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
-    Register::FINDA_State,    // FINDA state
+    Register::FINDA_State,           // FINDA state
     Register::Set_Get_Selector_Slot, // Selector slot
-    Register::Set_Get_Idler_Slot, // Idler slot
+    Register::Set_Get_Idler_Slot,    // Idler slot
 };
 
 const Register ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
-    Register::MMU_Errors,    // MMU errors - aka statistics
+    Register::MMU_Errors,          // MMU errors - aka statistics
     Register::Get_Pulley_Position, // Pulley position [mm]
 };
 
 const Register ProtocolLogic::initRegs8Addrs[ProtocolLogic::initRegs8Count] PROGMEM = {
-    Register::Extra_Load_Distance, // extra load distance [mm]
+    Register::Extra_Load_Distance,  // extra load distance [mm]
     Register::Pulley_Slow_Feedrate, // pulley slow feedrate [mm/s]
 };
 
@@ -181,7 +186,7 @@ StepStatus ProtocolLogic::ExpectingMessage() {
                 break;
             }
         }
-            [[fallthrough]]; // otherwise
+            [[fallthrough]];      // otherwise
         default:
             RecordUARTActivity(); // something has happened on the UART, update the timeout record
             return ProtocolError;
@@ -197,7 +202,11 @@ StepStatus ProtocolLogic::ExpectingMessage() {
 }
 
 void ProtocolLogic::SendMsg(RequestMsg rq) {
+#ifdef __AVR__
+    // Buddy FW cannot use stack-allocated txbuff - DMA doesn't work with CCMRAM
+    // No restrictions on MK3/S/+ though
     uint8_t txbuff[Protocol::MaxRequestSize()];
+#endif
     uint8_t len = Protocol::EncodeRequest(rq, txbuff);
     uart->write(txbuff, len);
     LogRequestMsg(txbuff, len);
@@ -205,7 +214,11 @@ void ProtocolLogic::SendMsg(RequestMsg rq) {
 }
 
 void ProtocolLogic::SendWriteMsg(RequestMsg rq) {
+#ifdef __AVR__
+    // Buddy FW cannot use stack-allocated txbuff - DMA doesn't work with CCMRAM
+    // No restrictions on MK3/S/+ though
     uint8_t txbuff[Protocol::MaxRequestSize()];
+#endif
     uint8_t len = Protocol::EncodeWriteRequest(rq.value, rq.value2, txbuff);
     uart->write(txbuff, len);
     LogRequestMsg(txbuff, len);
@@ -275,9 +288,9 @@ StepStatus ProtocolLogic::ScopeStep() {
         case Scope::StartSeq:
             return StartSeqStep(); // ~270B
         case Scope::Idle:
-            return IdleStep(); // ~300B
+            return IdleStep();     // ~300B
         case Scope::Command:
-            return CommandStep(); // ~430B
+            return CommandStep();  // ~430B
         case Scope::Stopped:
             return StoppedStep();
         default:
@@ -322,7 +335,7 @@ StepStatus ProtocolLogic::StartSeqStep() {
 StepStatus ProtocolLogic::DelayedRestartWait() {
     if (Elapsed(heartBeatPeriod)) { // this basically means, that we are waiting until there is some traffic on
         while (uart->read() != -1)
-            ; // clear the input buffer
+            ;                       // clear the input buffer
         // switch to StartSeq
         Start();
     }
@@ -349,6 +362,7 @@ StepStatus ProtocolLogic::ProcessCommandQueryResponse() {
         return Processing;
     case ResponseMsgParamCodes::Error:
         // in case of an error the progress code remains as it has been before
+        progressCode = ProgressCode::ERRWaitingForUser;
         errorCode = static_cast<ErrorCode>(rsp.paramValue);
         // keep on reporting the state of fsensor regularly even in command error state
         // - the MMU checks FINDA and fsensor even while recovering from errors
@@ -469,9 +483,11 @@ StepStatus ProtocolLogic::IdleStep() {
             case ResponseMsgParamCodes::Processing:
                 // @@TODO we may actually use this branch to report progress of manual operation on the MMU
                 // The MMU sends e.g. X0 P27 after its restart when the user presses an MMU button to move the Selector
+                progressCode = static_cast<ProgressCode>(rsp.paramValue);
                 errorCode = ErrorCode::OK;
                 break;
             default:
+                progressCode = ProgressCode::ERRWaitingForUser;
                 errorCode = static_cast<ErrorCode>(rsp.paramValue);
                 StartReading8bitRegisters(); // continue Idle state without restarting the communication
                 return CommandError;
@@ -532,7 +548,7 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance, uint8_
     , uart(uart)
     , errorCode(ErrorCode::OK)
     , progressCode(ProgressCode::OK)
-    , buttonCode(NoButton)
+    , buttonCode(Buttons::NoButton)
     , lastFSensor((uint8_t)WhereIsFilament())
     , regIndex(0)
     , retryAttempts(MAX_RETRIES)
@@ -758,6 +774,7 @@ void ProtocolLogic::LogResponse() {
 StepStatus ProtocolLogic::SuppressShortDropOuts(const char *msg_P, StepStatus ss) {
     if (dataTO.Record(ss)) {
         LogError(msg_P);
+        dataTO.Reset(); // prepare for another run of consecutive retries before firing an error
         return dataTO.InitialCause();
     } else {
         return Processing; // suppress short drop outs of communication

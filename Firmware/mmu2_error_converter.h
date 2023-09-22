@@ -1,13 +1,20 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include "mmu2/buttons.h"
+#ifdef __AVR__
+    #include "mmu2/buttons.h"
+    #include "mmu2/error_codes.h"
+#else
+    #include "buttons.h"
+    #include "../../../../../../Prusa-Error-Codes/04_MMU/button_operations.h"
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/error_codes.h"
+#endif
 
 namespace MMU2 {
 
 /// Translates MMU2::ErrorCode into an index of Prusa-Error-Codes
 /// Basically this is the way to obtain an index into all other functions in this API
-uint8_t PrusaErrorCodeIndex(uint16_t ec);
+uint8_t PrusaErrorCodeIndex(ErrorCode ec);
 
 /// @returns pointer to a PROGMEM string representing the Title of the Prusa-Error-Codes error
 /// @param i index of the error - obtained by calling ErrorCodeIndex
@@ -38,11 +45,11 @@ void SetButtonResponse(ButtonOperations rsp);
 
 /// @returns button index/code based on currently processed error/screen
 /// Clears the "pressed" button upon exit
-Buttons ButtonPressed(uint16_t ec);
+Buttons ButtonPressed(ErrorCode ec);
 
 /// @returns button index/code based on currently processed error/screen
 /// Used as a subfunction of ButtonPressed.
 /// Does not clear the "pressed" button upon exit
-Buttons ButtonAvailable(uint16_t ec);
+Buttons ButtonAvailable(ErrorCode ec);
 
 } // namespace MMU2

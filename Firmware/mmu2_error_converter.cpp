@@ -35,116 +35,125 @@ static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_FILAMENT_STUCK) == 1);
 static_assert( FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER) == 2);
 static_assert( FindErrorIndex(ERR_MECHANICAL_FSENSOR_FILAMENT_STUCK) == 3);
 
-uint8_t PrusaErrorCodeIndex(uint16_t ec) {
+constexpr ErrorCode operator&(ErrorCode a, ErrorCode b){
+    return (ErrorCode)((uint16_t)a & (uint16_t)b);
+}
+
+constexpr bool ContainsBit(ErrorCode ec, ErrorCode mask){
+    return (uint16_t)ec & (uint16_t)mask;
+}
+
+uint8_t PrusaErrorCodeIndex(ErrorCode ec) {
     switch (ec) {
-    case (uint16_t)ErrorCode::FINDA_DIDNT_SWITCH_ON:
+    case ErrorCode::FINDA_DIDNT_SWITCH_ON:
         return FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_TRIGGER);
-    case (uint16_t)ErrorCode::FINDA_DIDNT_SWITCH_OFF:
+    case ErrorCode::FINDA_DIDNT_SWITCH_OFF:
         return FindErrorIndex(ERR_MECHANICAL_FINDA_FILAMENT_STUCK);
-    case (uint16_t)ErrorCode::FSENSOR_DIDNT_SWITCH_ON:
+    case ErrorCode::FSENSOR_DIDNT_SWITCH_ON:
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER);
-    case (uint16_t)ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
+    case ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_FILAMENT_STUCK);
-    case (uint16_t)ErrorCode::FSENSOR_TOO_EARLY:
+    case ErrorCode::FSENSOR_TOO_EARLY:
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_TOO_EARLY);
-    case (uint16_t)ErrorCode::FINDA_FLICKERS:
+    case ErrorCode::FINDA_FLICKERS:
         return FindErrorIndex(ERR_MECHANICAL_INSPECT_FINDA);
-    case (uint16_t)ErrorCode::LOAD_TO_EXTRUDER_FAILED:
+    case ErrorCode::LOAD_TO_EXTRUDER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_LOAD_TO_EXTRUDER_FAILED);
-    case (uint16_t)ErrorCode::FILAMENT_EJECTED:
+    case ErrorCode::FILAMENT_EJECTED:
         return FindErrorIndex(ERR_SYSTEM_FILAMENT_EJECTED);
-    case (uint16_t)ErrorCode::FILAMENT_CHANGE:
+    case ErrorCode::FILAMENT_CHANGE:
         return FindErrorIndex(ERR_SYSTEM_FILAMENT_CHANGE);
 
-    case (uint16_t)ErrorCode::STALLED_PULLEY:
-    case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
+    case ErrorCode::STALLED_PULLEY:
+    case ErrorCode::MOVE_PULLEY_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_PULLEY_CANNOT_MOVE);
         
-    case (uint16_t)ErrorCode::HOMING_SELECTOR_FAILED:
+    case ErrorCode::HOMING_SELECTOR_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_SELECTOR_CANNOT_HOME);
-    case (uint16_t)ErrorCode::MOVE_SELECTOR_FAILED:
+    case ErrorCode::MOVE_SELECTOR_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_SELECTOR_CANNOT_MOVE);
         
-    case (uint16_t)ErrorCode::HOMING_IDLER_FAILED:
+    case ErrorCode::HOMING_IDLER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_IDLER_CANNOT_HOME);
-    case (uint16_t)ErrorCode::MOVE_IDLER_FAILED:
+    case ErrorCode::MOVE_IDLER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_IDLER_CANNOT_MOVE);
         
-    case (uint16_t)ErrorCode::MMU_NOT_RESPONDING:
+    case ErrorCode::MMU_NOT_RESPONDING:
         return FindErrorIndex(ERR_CONNECT_MMU_NOT_RESPONDING);
-    case (uint16_t)ErrorCode::PROTOCOL_ERROR:
+    case ErrorCode::PROTOCOL_ERROR:
         return FindErrorIndex(ERR_CONNECT_COMMUNICATION_ERROR);
-    case (uint16_t)ErrorCode::FILAMENT_ALREADY_LOADED:
+    case ErrorCode::FILAMENT_ALREADY_LOADED:
         return FindErrorIndex(ERR_SYSTEM_FILAMENT_ALREADY_LOADED);
-    case (uint16_t)ErrorCode::INVALID_TOOL:
+    case ErrorCode::INVALID_TOOL:
         return FindErrorIndex(ERR_SYSTEM_INVALID_TOOL);
-    case (uint16_t)ErrorCode::QUEUE_FULL:
+    case ErrorCode::QUEUE_FULL:
         return FindErrorIndex(ERR_SYSTEM_QUEUE_FULL);
-    case (uint16_t)ErrorCode::VERSION_MISMATCH:
+    case ErrorCode::VERSION_MISMATCH:
         return FindErrorIndex(ERR_SYSTEM_FW_UPDATE_NEEDED);
-    case (uint16_t)ErrorCode::INTERNAL:
+    case ErrorCode::INTERNAL:
         return FindErrorIndex(ERR_SYSTEM_FW_RUNTIME_ERROR);
-    case (uint16_t)ErrorCode::FINDA_VS_EEPROM_DISREPANCY:
+    case ErrorCode::FINDA_VS_EEPROM_DISREPANCY:
         return FindErrorIndex(ERR_SYSTEM_UNLOAD_MANUALLY);
-    case (uint16_t)ErrorCode::MCU_UNDERVOLTAGE_VCC:
+    case ErrorCode::MCU_UNDERVOLTAGE_VCC:
         return FindErrorIndex(ERR_ELECTRICAL_MMU_MCU_ERROR);
+    default: break;
     }
     
     // Electrical issues which can be detected somehow.
     // Need to be placed before TMC-related errors in order to process couples of error bits between single ones
     // and to keep the code size down.
-    if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
-        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+    if (ContainsBit(ec, ErrorCode::TMC_PULLEY_BIT)) {
+        if ((ec & ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
             return FindErrorIndex(ERR_ELECTRICAL_MMU_PULLEY_SELFTEST_FAILED);
-    } else if (ec & (uint16_t)ErrorCode::TMC_SELECTOR_BIT) {
-        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+    } else if (ContainsBit(ec, ErrorCode::TMC_SELECTOR_BIT)) {
+        if ((ec & ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
             return FindErrorIndex(ERR_ELECTRICAL_MMU_SELECTOR_SELFTEST_FAILED);
-    } else if (ec & (uint16_t)ErrorCode::TMC_IDLER_BIT) {
-        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+    } else if (ContainsBit(ec, ErrorCode::TMC_IDLER_BIT)) {
+        if ((ec & ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
             return FindErrorIndex(ERR_ELECTRICAL_MMU_IDLER_SELFTEST_FAILED);
     }
 
     // TMC-related errors - multiple of these can occur at once
     // - in such a case we report the first which gets found/converted into Prusa-Error-Codes (usually the fact, that one TMC has an issue is serious enough)
     // By carefully ordering the checks here we can prioritize the errors being reported to the user.
-    if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
-        if (ec & (uint16_t)ErrorCode::TMC_IOIN_MISMATCH)
+    if (ContainsBit(ec, ErrorCode::TMC_PULLEY_BIT)) {
+        if (ContainsBit(ec, ErrorCode::TMC_IOIN_MISMATCH))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_PULLEY_DRIVER_ERROR);
-        if (ec & (uint16_t)ErrorCode::TMC_RESET)
+        if (ContainsBit(ec, ErrorCode::TMC_RESET))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_PULLEY_DRIVER_RESET);
-        if (ec & (uint16_t)ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP)
+        if (ContainsBit(ec, ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_PULLEY_UNDERVOLTAGE_ERROR);
-        if (ec & (uint16_t)ErrorCode::TMC_SHORT_TO_GROUND)
+        if (ContainsBit(ec, ErrorCode::TMC_SHORT_TO_GROUND))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_PULLEY_DRIVER_SHORTED);
-        if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN)
+        if (ContainsBit(ec, ErrorCode::TMC_OVER_TEMPERATURE_WARN))
             return FindErrorIndex(ERR_TEMPERATURE_WARNING_TMC_PULLEY_TOO_HOT);
-        if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR)
+        if (ContainsBit(ec, ErrorCode::TMC_OVER_TEMPERATURE_ERROR))
             return FindErrorIndex(ERR_TEMPERATURE_TMC_PULLEY_OVERHEAT_ERROR);
-    } else if (ec & (uint16_t)ErrorCode::TMC_SELECTOR_BIT) {
-        if (ec & (uint16_t)ErrorCode::TMC_IOIN_MISMATCH)
+    } else if (ContainsBit(ec, ErrorCode::TMC_SELECTOR_BIT)) {
+        if (ContainsBit(ec, ErrorCode::TMC_IOIN_MISMATCH))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_ERROR);
-        if (ec & (uint16_t)ErrorCode::TMC_RESET)
+        if (ContainsBit(ec, ErrorCode::TMC_RESET))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_RESET);
-        if (ec & (uint16_t)ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP)
+        if (ContainsBit(ec, ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_SELECTOR_UNDERVOLTAGE_ERROR);
-        if (ec & (uint16_t)ErrorCode::TMC_SHORT_TO_GROUND)
+        if (ContainsBit(ec, ErrorCode::TMC_SHORT_TO_GROUND))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_SHORTED);
-        if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN)
+        if (ContainsBit(ec, ErrorCode::TMC_OVER_TEMPERATURE_WARN))
             return FindErrorIndex(ERR_TEMPERATURE_WARNING_TMC_SELECTOR_TOO_HOT);
-        if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR)
+        if (ContainsBit(ec, ErrorCode::TMC_OVER_TEMPERATURE_ERROR))
             return FindErrorIndex(ERR_TEMPERATURE_TMC_SELECTOR_OVERHEAT_ERROR);
-    } else if (ec & (uint16_t)ErrorCode::TMC_IDLER_BIT) {
-        if (ec & (uint16_t)ErrorCode::TMC_IOIN_MISMATCH)
+    } else if (ContainsBit(ec, ErrorCode::TMC_IDLER_BIT)) {
+        if (ContainsBit(ec, ErrorCode::TMC_IOIN_MISMATCH))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_IDLER_DRIVER_ERROR);
-        if (ec & (uint16_t)ErrorCode::TMC_RESET)
+        if (ContainsBit(ec, ErrorCode::TMC_RESET))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_IDLER_DRIVER_RESET);
-        if (ec & (uint16_t)ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP)
+        if (ContainsBit(ec, ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_IDLER_UNDERVOLTAGE_ERROR);
-        if (ec & (uint16_t)ErrorCode::TMC_SHORT_TO_GROUND)
+        if (ContainsBit(ec, ErrorCode::TMC_SHORT_TO_GROUND))
             return FindErrorIndex(ERR_ELECTRICAL_TMC_IDLER_DRIVER_SHORTED);
-        if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN)
+        if (ContainsBit(ec, ErrorCode::TMC_OVER_TEMPERATURE_WARN))
             return FindErrorIndex(ERR_TEMPERATURE_WARNING_TMC_IDLER_TOO_HOT);
-        if (ec & (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR)
+        if (ContainsBit(ec, ErrorCode::TMC_OVER_TEMPERATURE_ERROR))
             return FindErrorIndex(ERR_TEMPERATURE_TMC_IDLER_OVERHEAT_ERROR);
     }
 
@@ -184,16 +193,16 @@ struct ResetOnExit {
     }
 };
 
-Buttons ButtonPressed(uint16_t ec) {
+Buttons ButtonPressed(ErrorCode ec) {
     if (buttonSelectedOperation == ButtonOperations::NoOperation) {
-        return NoButton; // no button
+        return Buttons::NoButton; // no button
     }
     
     ResetOnExit ros; // clear buttonSelectedOperation on exit from this call
     return ButtonAvailable(ec);
 }
 
-Buttons ButtonAvailable(uint16_t ec) {
+Buttons ButtonAvailable(ErrorCode ec) {
     uint8_t ei = PrusaErrorCodeIndex(ec);
     
     // The list of responses which occur in mmu error dialogs
@@ -214,7 +223,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         // may be allow move selector right and left in the future
         case ButtonOperations::Retry: // "Repeat action"
-            return Middle;
+            return Buttons::Middle;
         default:
             break;
         }
@@ -224,9 +233,9 @@ Buttons ButtonAvailable(uint16_t ec) {
         switch (buttonSelectedOperation) {
         // may be allow move selector right and left in the future
         case ButtonOperations::Tune: // Tune Stallguard threshold
-            return TuneMMU;
+            return Buttons::TuneMMU;
         case ButtonOperations::Retry: // "Repeat action"
-            return Middle;
+            return Buttons::Middle;
         default:
             break;
         }
@@ -235,7 +244,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FILAMENT_EJECTED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // User solved the serious mechanical problem by hand - there is no other way around
-            return Middle;
+            return Buttons::Middle;
         default:
             break;
         }
@@ -243,9 +252,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FILAMENT_CHANGE:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Load:
-            return Load;
+            return Buttons::Load;
         case ButtonOperations::Eject:
-            return Eject;
+            return Buttons::Eject;
         default:
             break;
         }
@@ -255,9 +264,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_TEMPERATURE_WARNING_TMC_IDLER_TOO_HOT:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // "Continue"
-            return Left;
+            return Buttons::Left;
         case ButtonOperations::ResetMMU: // "Reset MMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -292,7 +301,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_ELECTRICAL_MMU_MCU_ERROR:
         switch (buttonSelectedOperation) {
         case ButtonOperations::ResetMMU: // "Reset MMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -302,9 +311,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FW_UPDATE_NEEDED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::DisableMMU: // "Disable"
-            return DisableMMU;
+            return Buttons::DisableMMU;
         case ButtonOperations::ResetMMU: // "ResetMMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -312,9 +321,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_FILAMENT_ALREADY_LOADED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Unload: // "Unload"
-            return Left;
+            return Buttons::Left;
         case ButtonOperations::Continue: // "Proceed/Continue"
-            return Right;
+            return Buttons::Right;
         default:
             break;
         }
@@ -323,9 +332,9 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_SYSTEM_INVALID_TOOL:
         switch (buttonSelectedOperation) {
         case ButtonOperations::StopPrint: // "Stop print"
-            return StopPrint;
+            return Buttons::StopPrint;
         case ButtonOperations::ResetMMU: // "Reset MMU"
-            return ResetMMU;
+            return Buttons::ResetMMU;
         default:
             break;
         }
@@ -335,7 +344,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         break;
     }
     
-    return NoButton;
+    return Buttons::NoButton;
 }
 
 void SetButtonResponse(ButtonOperations rsp){

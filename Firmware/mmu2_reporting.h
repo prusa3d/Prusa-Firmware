@@ -2,12 +2,19 @@
 
 #pragma once
 #include <stdint.h>
+#ifdef __AVR__
+    #include "mmu2/error_codes.h"
+    #include "mmu2/progress_codes.h"
+#else
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/error_codes.h"
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/progress_codes.h"
+#endif
 
 namespace MMU2 {
 
 enum CommandInProgress : uint8_t {
     NoCommand = 0,
-    CutFilament = 'C',
+    CutFilament = 'K',
     EjectFilament = 'E',
     Homing = 'H',
     LoadFilament = 'L',
@@ -17,10 +24,10 @@ enum CommandInProgress : uint8_t {
 };
 
 /// Called at the begin of every MMU operation
-void BeginReport(CommandInProgress cip, uint16_t ec);
+void BeginReport(CommandInProgress cip, ProgressCode ec);
 
 /// Called at the end of every MMU operation
-void EndReport(CommandInProgress cip, uint16_t ec);
+void EndReport(CommandInProgress cip, ProgressCode ec);
 
 /// Return true if the printer's LCD is drawing the error screen
 bool isErrorScreenRunning();
@@ -35,24 +42,31 @@ bool TuneMenuEntered();
 /// and allow the MMU and printer to communicate with each other.
 /// @param[in] ec error code
 /// @param[in] es error source
-void ReportErrorHook(CommandInProgress cip, uint16_t ec, uint8_t es);
+void ReportErrorHook(CommandInProgress cip, ErrorCode ec, uint8_t es);
 
 /// Called when the MMU sends operation progress update
-void ReportProgressHook(CommandInProgress cip, uint16_t ec);
+void ReportProgressHook(CommandInProgress cip, ProgressCode ec);
 
-/// @brief Clear the status line and setup the LCD cursor
-void TryLoadUnloadProgressbarInit();
+struct TryLoadUnloadReporter {
+    TryLoadUnloadReporter(float delta_mm);
+    ~TryLoadUnloadReporter();
+    void Progress(bool sensorState);
+    void DumpToSerial();
 
-/// @brief Clear the status line and setup the LCD cursor
-void TryLoadUnloadProgressbarDeinit();
+private:
+    /// @brief Add one block to the progress bar
+    /// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
+    /// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
+    void Render(uint8_t col, bool sensorState);
 
-/// @brief Report the results to serial
-void TryLoadUnloadProgressbarEcho();
-
-/// @brief Add one block to the progress bar
-/// @param col pixel position on the LCD status line, should range from 0 to (LCD_WIDTH - 1)
-/// @param sensorState if true, filament is not present, else filament is present. This controls which character to render
-void TryLoadUnloadProgressbar(uint8_t col, bool sensorState);
+    uint8_t dpixel0;
+    uint8_t dpixel1;
+    uint8_t lcd_cursor_col;
+    // The total length is twice delta_mm. Divide that length by number of pixels
+    // available to get length per pixel.
+    // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
+    float pixel_per_mm;
+};
 
 /// Remders the sensor status line. Also used by the "resume temperature" screen.
 void ReportErrorHookDynamicRender();
@@ -74,6 +88,9 @@ void IncrementLoadFails();
 /// Increments EEPROM cell - number of MMU errors
 void IncrementMMUFails();
 
+/// @returns true when Cutter is enabled in the menus
+bool cutter_enabled();
+
 // Beware: enum values intentionally chosen to match the 8bit FW to save code size
 enum SoundType {
     Prompt = 2,
@@ -93,4 +110,4 @@ void ScreenClear();
 
 void tuneIdlerStallguardThreshold();
 
-} // namespace
+} // namespace MMU2

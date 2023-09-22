@@ -17,7 +17,10 @@ template <class T>
 class Timer
 {
 public:
-    Timer();
+    inline constexpr Timer()
+    : m_isRunning(false)
+    , m_started(0) {};
+
     void start();
     void stop(){m_isRunning = false;}
     bool running()const {return m_isRunning;}

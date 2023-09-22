@@ -3,37 +3,39 @@
 #include <avr/pgmspace.h>
 
 #ifdef __AVR__
-#include "mmu2/error_codes.h"
-#include "mmu2/progress_codes.h"
-#include "mmu2/buttons.h"
-#include "mmu2/registers.h"
-#include "mmu2_protocol.h"
+    #include "mmu2/error_codes.h"
+    #include "mmu2/progress_codes.h"
+    #include "mmu2/buttons.h"
+    #include "mmu2/registers.h"
+    #include "mmu2_protocol.h"
 
 // #include <array> std array is not available on AVR ... we need to "fake" it
 namespace std {
-template<typename T, uint8_t N>
+template <typename T, uint8_t N>
 class array {
     T data[N];
+
 public:
     array() = default;
-    inline constexpr T* begin()const { return data; }
-    inline constexpr T* end()const { return data + N; }
+    inline constexpr T *begin() const { return data; }
+    inline constexpr T *end() const { return data + N; }
     static constexpr uint8_t size() { return N; }
-    inline T &operator[](uint8_t i){
+    inline T &operator[](uint8_t i) {
         return data[i];
     }
 };
-}
+} // namespace std
 #else
 
-#include <array>
-#include "../../../../../../Prusa-Firmware-MMU/src/logic/error_codes.h"
-#include "../../../../../../Prusa-Firmware-MMU/src/logic/progress_codes.h"
+    #include <array>
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/error_codes.h"
+    #include "../../../../../../Prusa-Firmware-MMU/src/logic/progress_codes.h"
 
-// prevent ARM HAL macros from breaking our code
-#undef CRC
-#include "../../../../../../Prusa-Firmware-MMU/src/modules/protocol.h"
-#include "buttons.h"
+    // prevent ARM HAL macros from breaking our code
+    #undef CRC
+    #include "../../../../../../Prusa-Firmware-MMU/src/modules/protocol.h"
+    #include "buttons.h"
+    #include "registers.h"
 #endif
 
 #include "mmu2_serial.h"
@@ -50,9 +52,9 @@ class ProtocolLogic;
 /// ProtocolLogic stepping statuses
 enum StepStatus : uint_fast8_t {
     Processing = 0,
-    MessageReady, ///< a message has been successfully decoded from the received bytes
-    Finished, ///< Scope finished successfully
-    Interrupted, ///< received "Finished" message related to a different command than originally issued (most likely the MMU restarted while doing something)
+    MessageReady,         ///< a message has been successfully decoded from the received bytes
+    Finished,             ///< Scope finished successfully
+    Interrupted,          ///< received "Finished" message related to a different command than originally issued (most likely the MMU restarted while doing something)
     CommunicationTimeout, ///< the MMU failed to respond to a request within a specified time frame
     ProtocolError,        ///< bytes read from the MMU didn't form a valid response
     CommandRejected,      ///< the MMU rejected the command due to some other command in progress, may be the user is operating the MMU locally (button commands)
@@ -60,19 +62,17 @@ enum StepStatus : uint_fast8_t {
     VersionMismatch,      ///< the MMU reports its firmware version incompatible with our implementation
     PrinterError,         ///< printer's explicit error - MMU is fine, but the printer was unable to complete the requested operation
     CommunicationRecovered,
-    ButtonPushed, ///< The MMU reported the user pushed one of its three buttons.
+    ButtonPushed,         ///< The MMU reported the user pushed one of its three buttons.
 };
 
-static constexpr uint32_t linkLayerTimeout = 2000;                 ///< default link layer communication timeout
-static constexpr uint32_t dataLayerTimeout = linkLayerTimeout * 3; ///< data layer communication timeout
-static constexpr uint32_t heartBeatPeriod = linkLayerTimeout / 2;  ///< period of heart beat messages (Q0)
+inline constexpr uint32_t linkLayerTimeout = 2000;                 ///< default link layer communication timeout
+inline constexpr uint32_t dataLayerTimeout = linkLayerTimeout * 3; ///< data layer communication timeout
+inline constexpr uint32_t heartBeatPeriod = linkLayerTimeout / 2;  ///< period of heart beat messages (Q0)
 
 static_assert(heartBeatPeriod < linkLayerTimeout && linkLayerTimeout < dataLayerTimeout, "Incorrect ordering of timeouts");
 
 ///< Filter of short consecutive drop outs which are recovered instantly
 class DropOutFilter {
-    StepStatus cause;
-    uint8_t occurrences;
 public:
     static constexpr uint8_t maxOccurrences = 10; // ideally set this to >8 seconds -> 12x heartBeatPeriod
     static_assert(maxOccurrences > 1, "we should really silently ignore at least 1 comm drop out if recovered immediately afterwards");
@@ -86,6 +86,10 @@ public:
 
     /// Rearms the object for further processing - basically call this once the MMU responds with something meaningful (e.g. S0 A2)
     inline void Reset() { occurrences = maxOccurrences; }
+
+private:
+    StepStatus cause;
+    uint8_t occurrences = maxOccurrences;
 };
 
 /// Logic layer of the MMU vs. printer communication protocol
@@ -115,11 +119,11 @@ public:
     /// Sets the extra load distance to be reported to the MMU.
     /// Beware - this call doesn't send anything to the MMU.
     /// The MMU gets the newly set value either by a communication restart or via an explicit WriteRegister call
-    inline void PlanExtraLoadDistance(uint8_t eld_mm){
+    inline void PlanExtraLoadDistance(uint8_t eld_mm) {
         initRegs8[0] = eld_mm;
     }
     /// @returns the currently preset extra load distance
-    inline uint8_t ExtraLoadDistance()const {
+    inline uint8_t ExtraLoadDistance() const {
         return initRegs8[0];
     }
 
@@ -187,13 +191,13 @@ public:
         inAutoRetry = iar;
     }
 
-    inline void SetPrinterError(ErrorCode ec){
+    inline void SetPrinterError(ErrorCode ec) {
         explicitPrinterError = ec;
     }
-    inline void ClearPrinterError(){
+    inline void ClearPrinterError() {
         explicitPrinterError = ErrorCode::OK;
     }
-    inline bool IsPrinterError()const {
+    inline bool IsPrinterError() const {
         return explicitPrinterError != ErrorCode::OK;
     }
     inline ErrorCode PrinterError() const {
@@ -228,15 +232,6 @@ private:
         Running       ///< normal operation - Idle + Command processing
     };
 
-    // individual sub-state machines - may be they can be combined into a union since only one is active at once
-    // or we can blend them into ProtocolLogic at the cost of a less nice code (but hopefully shorter)
-//    Stopped stopped;
-//    StartSeq startSeq;
-//    DelayedRestart delayedRestart;
-//    Idle idle;
-//    Command command;
-//    ProtocolLogicPartBase *currentState; ///< command currently being processed
-    
     enum class Scope : uint_fast8_t {
         Stopped,
         StartSeq,
@@ -350,25 +345,30 @@ private:
     /// Activate the planned state once the immediate response to a sent request arrived
     bool ActivatePlannedRequest();
 
-    uint32_t lastUARTActivityMs; ///< timestamp - last ms when something occurred on the UART
-    DropOutFilter dataTO;        ///< Filter of short consecutive drop outs which are recovered instantly
+    uint32_t lastUARTActivityMs;               ///< timestamp - last ms when something occurred on the UART
+    DropOutFilter dataTO;                      ///< Filter of short consecutive drop outs which are recovered instantly
 
-    ResponseMsg rsp; ///< decoded response message from the MMU protocol
+    ResponseMsg rsp;                           ///< decoded response message from the MMU protocol
 
-    State state; ///< internal state of ProtocolLogic
+    State state;                               ///< internal state of ProtocolLogic
 
-    Protocol protocol; ///< protocol codec
+    Protocol protocol;                         ///< protocol codec
 
     std::array<uint8_t, 16> lastReceivedBytes; ///< remembers the last few bytes of incoming communication for diagnostic purposes
     uint8_t lrb;
 
-    MMU2Serial *uart; ///< UART interface
+    MMU2Serial *uart;          ///< UART interface
 
     ErrorCode errorCode;       ///< last received error code from the MMU
     ProgressCode progressCode; ///< last received progress code from the MMU
     Buttons buttonCode;        ///< Last received button from the MMU.
 
-    uint8_t lastFSensor; ///< last state of filament sensor
+    uint8_t lastFSensor;       ///< last state of filament sensor
+
+#ifndef __AVR__
+    uint8_t txbuff[Protocol::MaxRequestSize()]; ///< In Buddy FW - a static transmit buffer needs to exist as DMA cannot be used from CCMRAM.
+                                                ///< On MK3/S/+ the transmit buffer is allocated on the stack without restrictions
+#endif
 
     // 8bit registers
     static constexpr uint8_t regs8Count = 3;

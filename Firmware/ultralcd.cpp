@@ -241,6 +241,8 @@ static void lcd_sheet_menu();
 static void menu_action_sdfile(const char* filename);
 static void menu_action_sddirectory(const char* filename);
 
+static void lcd_rehome_xy();
+
 #define ENCODER_FEEDRATE_DEADZONE 10
 
 #define STATE_NA 255
@@ -277,40 +279,34 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* lon
 
 static void menu_item_sddir(const char* str_fn, char* str_fnl)
 {
-	if (menu_item == menu_line)
+	if (lcd_draw_update)
 	{
-		if (lcd_draw_update)
-		{
-			lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
-		}
-		if (menu_clicked && (lcd_encoder == menu_item))
-		{
-			lcd_update_enabled = false;
-			menu_action_sddirectory(str_fn);
-			lcd_update_enabled = true;
-			menu_item_ret();
-			return;
-		}
+		lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+	}
+	if (menu_clicked && (lcd_encoder == menu_item))
+	{
+		lcd_update_enabled = false;
+		menu_action_sddirectory(str_fn);
+		lcd_update_enabled = true;
+		menu_item_ret();
+		return;
 	}
 	menu_item++;
 }
 
 static void menu_item_sdfile(const char* str_fn, char* str_fnl)
 {
-	if (menu_item == menu_line)
+	if (lcd_draw_update)
 	{
-		if (lcd_draw_update)
-		{
-			lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
-		}
-		if (menu_clicked && (lcd_encoder == menu_item))
-		{
-			lcd_update_enabled = false;
-			menu_action_sdfile(str_fn);
-			lcd_update_enabled = true;
-			menu_item_ret();
-			return;
-		}
+		lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+	}
+	if (menu_clicked && (lcd_encoder == menu_item))
+	{
+		lcd_update_enabled = false;
+		menu_action_sdfile(str_fn);
+		lcd_update_enabled = true;
+		menu_item_ret();
+		return;
 	}
 	menu_item++;
 }
@@ -5298,7 +5294,7 @@ static void lcd_main_menu()
     if(!isPrintPaused && (custom_message_type != CustomMsg::Resuming)) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
-    if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
+    if (!usb_timer.running()) {
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
     }
 
@@ -5334,6 +5330,15 @@ void stepper_timer_overflow() {
   WRITE(BEEPER, LOW);
 }
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
+
+static void lcd_rehome_xy() {
+	// Do home directly, G28 X Y resets MBL, which could be bad.
+	homeaxis(X_AXIS);
+	homeaxis(Y_AXIS);
+	lcd_setstatuspgm(_T(MSG_AUTO_HOME));
+	lcd_return_to_status();
+	lcd_draw_update = 3;
+}
 
 
 static void lcd_colorprint_change() {
@@ -5441,7 +5446,9 @@ static void lcd_tune_menu()
     if (!farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);
 #endif
-
+    if (isPrintPaused) {// Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
+        MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_HOME), lcd_rehome_xy);
+    }
 #ifdef FILAMENT_SENSOR
     MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
@@ -5477,7 +5484,7 @@ static void mbl_mesh_toggle() {
 }
 
 static void mbl_probe_nr_toggle() {
-	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+	uint8_t mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 	switch (mbl_z_probe_nr) {
 		case 1: mbl_z_probe_nr = 3; break;
 		case 3: mbl_z_probe_nr = 5; break;
@@ -5492,6 +5499,7 @@ static void lcd_mesh_bed_leveling_settings()
 
 	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 	uint8_t points_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+    uint8_t mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 	char sToggle[4]; //enough for nxn format
 
 	MENU_BEGIN();
@@ -6188,7 +6196,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 	float max_error_mm = 5;
 	switch (axis) {
 	case 0: axis_length = X_MAX_POS; break;
-	case 1: axis_length = Y_MAX_POS + 8; break;
+	case 1: axis_length = Y_MAX_POS - Y_MIN_POS + 4; break;
 	default: axis_length = 210; break;
 	}
 
