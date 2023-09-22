@@ -186,8 +186,9 @@ private:
 #define LCD_STR_SOLID_BLOCK  "\xFF"  //from the default character set
 
 struct CustomCharacter {
-    const uint8_t data[8];
-    const char alternate;
+    uint8_t colByte;
+    uint8_t rowData[4];
+    char alternate;
 };
 
 extern void lcd_frame_start();

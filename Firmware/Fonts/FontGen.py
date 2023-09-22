@@ -42,13 +42,25 @@ fontTable = [
 
 def generateLineInTable(index, chars):
     pixels = chars[index]["PIXELS"].split(',')
+    
+    # Generate the rows binary data
     rows = []
     for i in range(8):
         rows.append(0)
         for j in range(5):
             rows[i] |= (1 << (5 - j - 1)) if pixels[j * 8 + i] == "0" else 0
-    line = "{{"
-    for r in rows:
+    
+    # compress the rows data
+    colByte = 0
+    compressedRows = []
+    for i in range(4):
+        rowByte = ((rows[i * 2 + 1] >> 1) & 0xF) | (((rows[i * 2 + 0] >> 1) & 0xF) << 4)
+        colByte |= (1 << i * 2 + 0) if (rows[i * 2 + 0] & 0x1) else 0
+        colByte |= (1 << i * 2 + 1) if (rows[i * 2 + 1] & 0x1) else 0
+        compressedRows.append(rowByte)
+
+    line = f"{{0x{colByte:02X}, {{"
+    for r in compressedRows:
         line += f"0x{r:02X}, "
     line += f"}}, '{fontTable[index].alternate}'}}, // '{fontTable[index].utf}', \\x{fontTable[index].default:02X}"
     return line

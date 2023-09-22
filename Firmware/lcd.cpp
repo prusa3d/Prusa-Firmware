@@ -376,13 +376,42 @@ void lcd_set_cursor_column(uint8_t col)
 
 // Allows us to fill the first 8 CGRAM locations
 // with custom characters
-void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
+void lcd_createChar_P(uint8_t location, const CustomCharacter *char_p)
 {
-  location &= 0x7; // we only have 8 locations 0-7
-  lcd_command(LCD_SETCGRAMADDR | (location << 3));
-  for (uint8_t i = 0; i < 8; i++)
-    lcd_send(pgm_read_byte(&charmap[i]), HIGH);
-  lcd_command(LCD_SETDDRAMADDR | lcd_ddram_address); // no need for masking the address
+	uint8_t charmap[8];
+
+	uint8_t temp;
+	uint8_t colByte;
+	__asm__ __volatile__ (
+		// load colByte
+		"lpm %1, Z+" "\n\t"
+		
+		// begin for loop
+		"ldi %0, 8" "\n\t"
+		"mov __zero_reg__, %0" "\n\t"		// use zero_reg as loop counter
+		"forBegin_%=: " "\n\t"
+			"sbrs __zero_reg__, 0" "\n\t"	// test LSB of counter. Fetch new data if counter is even
+			"lpm __tmp_reg__, Z+" "\n\t"	// load next data byte from progmem, increment
+			"swap __tmp_reg__" "\n\t"		// swap the nibbles
+			"mov %0, __tmp_reg__" "\n\t"	// copy row data to temp
+
+			"andi %0, 0xF" "\n\t"			// mask lower nibble
+			"ror %1" "\n\t" 				// consume LSB of colByte and push it to the carry
+			"rol %0" "\n\t"					// insert the column LSB from carry
+			"st %a3+, %0" "\n\t"			// push the generated row data to the output
+		// end for loop
+		"dec __zero_reg__" "\n\t"
+		"brne forBegin_%=" "\n\t"
+		
+		: "=&d" (temp), "=&r" (colByte)
+		: "z" (char_p), "e" (charmap)
+	);
+
+	lcd_command(LCD_SETCGRAMADDR | (location << 3));
+	for (uint8_t i = 0; i < 8; i++) {
+		lcd_send(charmap[i], HIGH);
+	}
+	lcd_command(LCD_SETDDRAMADDR | lcd_ddram_address); // no need for masking the address
 }
 
 #ifdef VT100
@@ -854,7 +883,7 @@ static void lcd_print_custom(uint8_t c) {
 	// try to find a slot where it could be placed
 	for (uint8_t i = 0; i < 8; i++) {
 		if (lcd_custom_characters[i] == 0x7F) { //found an empty slot. create a new custom character and send it
-			lcd_createChar_P(i, Font[c - 0x80].data);
+			lcd_createChar_P(i, &Font[c - 0x80]);
 			lcd_custom_characters[i] = c; // mark the custom character as used
 #ifdef DEBUG_CUSTOM_CHARACTERS
 			printf_P(PSTR("created char %02x at slot %u\n"), c, i);
