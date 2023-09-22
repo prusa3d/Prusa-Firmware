@@ -1,0 +1,154 @@
+name: ci-build
+
+on:
+  pull_request:
+    branches:
+    - '*'
+  push:
+    branches: [ MK3, MK3_* ]
+
+env:
+  GH_ANNOTATIONS: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    # setup base required dependencies
+    - name: Setup dependencies
+      run: |
+          sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout ${{ github.event.pull_request.head.ref }}
+      uses: actions/checkout@v3
+      if: ${{ github.event.pull_request }}
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        submodules: true
+
+    - name: Checkout ${{ github.event.ref }}
+      uses: actions/checkout@v3
+      if: ${{ !github.event.pull_request }}
+      with:
+        ref: ${{ github.event.ref }}
+        submodules: true
+
+    - name: Cache Dependencies
+      uses: actions/cache@v3.0.11
+      id: cache-pkgs
+      with:
+          path: ".dependencies"
+          key: "build-deps-1_0_0-linux"
+
+    - name: Setup build dependencies
+      run: |
+          ./utils/bootstrap.py
+
+    - name: Cache permissions
+      run: sudo chmod -R 744 .dependencies
+
+    - name: Build
+      run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja
+          ninja
+
+    - name: Upload artifacts
+      if: ${{ !github.event.pull_request }}
+      uses: actions/upload-artifact@v3.1.1
+      with:
+        name: Firmware
+        path: build/*.hex
+
+  check-lang:
+    runs-on: ubuntu-latest
+
+    steps:
+    # setup base required dependencies
+    - name: Setup dependencies
+      run: |
+          sudo apt-get install gcc-11 g++11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout ${{ github.event.pull_request.head.ref }}
+      uses: actions/checkout@v3
+      if: ${{ github.event.pull_request }}
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        submodules: true
+
+    - name: Checkout ${{ github.event.ref }}
+      uses: actions/checkout@v3
+      if: ${{ !github.event.pull_request }}
+      with:
+        ref: ${{ github.event.ref }}
+        submodules: true
+
+    - name: Cache Dependencies
+      uses: actions/cache@v3.0.11
+      id: cache-pkgs
+      with:
+          path: ".dependencies"
+          key: "build-deps-1_0_0-linux"
+
+    - name: Setup build dependencies
+      run: |
+          ./utils/bootstrap.py
+
+    - name: Cache permissions
+      run: sudo chmod -R 744 .dependencies
+
+    - name: Run check
+      run: |
+          mkdir build
+          cd build
+          cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja
+          ninja check_lang
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # setup base required dependencies
+    - name: Setup dependencies
+      run: |
+          sudo apt-get install gcc-11 g++11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout ${{ github.event.pull_request.head.ref }}
+      uses: actions/checkout@v3
+      if: ${{ github.event.pull_request }}
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        submodules: true
+
+    - name: Checkout ${{ github.event.ref }}
+      uses: actions/checkout@v3
+      if: ${{ !github.event.pull_request }}
+      with:
+        ref: ${{ github.event.ref }}
+        submodules: true
+
+    - name: Cache Dependencies
+      uses: actions/cache@v3.0.11
+      id: cache-pkgs
+      with:
+          path: ".dependencies"
+          key: "build-deps-1_0_0-linux"
+
+    - name: Setup build dependencies
+      run: |
+          ./utils/bootstrap.py
+
+    - name: Cache permissions
+      run: sudo chmod -R 744 .dependencies
+
+    - name: Run check
+      run: |
+          mkdir build
+          cd build
+          cmake .. -G Ninja
+          ninja test_run_all

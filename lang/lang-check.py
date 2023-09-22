@@ -40,9 +40,29 @@ import os
 
 from lib import charset as cs
 from lib.io import load_map
+import enum
 
 COLORIZE = (stdout.isatty() and os.getenv("TERM", "dumb") != "dumb") or os.getenv('NO_COLOR') == "0"
 LCD_WIDTH = 20
+
+GH_ANNOTATIONS = os.getenv('GH_ANNOTATIONS') == "1"
+CURRENT_PO = "Unknown file"
+GH_ERR_COUNT = 0
+
+class AN_TYPE(enum.Enum):
+
+    def __new__(cls, *args, **kwds):
+        value = len(cls.__members__) + 1
+        obj = object.__new__(cls)
+        obj._value_ = value
+        return obj
+    def __init__(self, a, b):
+        self.prefix = a
+        self.print_fmt = b
+
+    ERROR = "error", "[E]"
+    WARNING = "warning", "[W]"
+    NOTICE = "notice", "[S]"
 
 def color_maybe(color_attr, text):
     if COLORIZE:
@@ -119,6 +139,33 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
+# Print_anyway is used to reduce code copypasta.
+# specifically, if we have all the info here to construct the "normal" message as well, it's done here
+
+def gh_annotate(an_type, start_line, message, end_line = None, print_anyway = False):
+    if not GH_ANNOTATIONS:
+        if print_anyway:
+            if end_line is not None:
+                line_text = "lines {}-{}".format(start_line, end_line)
+            else:
+                line_text = "line {}".format(start_line)
+            message_simple = "{} on {}".format(message, line_text)
+            if an_type == AN_TYPE.ERROR:
+                print(red("{}: {}".format(an_type.print_fmt, message_simple)))
+            else:
+                print(yellow("{}: {}".format(an_type.print_fmt, message_simple)))
+        return
+    if end_line is not None:
+        line_info = "line={},endLine={}".format(start_line,end_line)
+    else:
+        line_info = "line={}".format(start_line)
+
+    print("::{} file={},{}::{}".format(an_type.prefix, CURRENT_PO, line_info, message))
+    if an_type == AN_TYPE.ERROR:
+        global GH_ERR_COUNT
+        GH_ERR_COUNT += 1
+
+
 def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information, shorter):
     """Check strings to display definition."""
 
@@ -137,10 +184,10 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     # Check comment syntax (non-empty and include a MSG id)
     if known_msgid or warn_empty:
         if len(meta) == 0:
-            print(red("[E]: Translation doesn't contain any comment metadata on line %d" % line))
+            gh_annotate(AN_TYPE.ERROR, line, "Translation missing comment metadata", None, True)
             return False
         if not meta.startswith('MSG'):
-            print(red("[E]: Critical syntax error: comment doesn't start with MSG on line %d" % line))
+            gh_annotate(AN_TYPE.ERROR, line, "Critical Syntax Error: comment doesn't start with MSG", None, True)
             print(red(" comment: " + meta))
             return False
 
@@ -158,29 +205,29 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
             else:
                 raise ValueError
         except ValueError:
-            print(red("[E]: Invalid display definition on line %d" % line))
+            gh_annotate(AN_TYPE.ERROR, line, "Invalid display definition", None, True)
             print(red(" definition: " + meta))
             return False
 
     if not cols:
         if not no_warning and known_msgid and not rows:
             errors += 1
-            print(yellow("[W]: No usable display definition on line %d" % line))
+            gh_annotate(AN_TYPE.WARNING, line, "No usable display definition", None, True)
         # probably fullscreen, guess from the message length to continue checking
         cols = LCD_WIDTH
     if cols > LCD_WIDTH:
         errors += 1
-        print(yellow("[W]: Invalid column count on line %d" % line))
+        gh_annotate(AN_TYPE.WARNING, line, "Invalid column count", None, True)
     if not rows:
         rows = 1
     elif rows > 1 and cols != LCD_WIDTH:
         errors += 1
-        print(yellow("[W]: Multiple rows with odd number of columns on line %d" % line))
+        gh_annotate(AN_TYPE.WARNING, line, "Multiple rows with odd number of columns", None, True)
 
     # Check if translation contains unsupported characters
     invalid_char = cs.translation_check(cs.unicode_to_source(translation))
     if invalid_char is not None:
-        print(red('[E]: Critical syntax: Unhandled char %s found on line %d' % (repr(invalid_char), line)))
+        gh_annotate(AN_TYPE.ERROR, line, "Critical syntax: Unhandled char %s found".format(repr(invalid_char)), None, True )
         print(red(' translation: ' + translation))
         return False
 
@@ -195,13 +242,13 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     # Incorrect number of rows/cols on the definition
     if rows == 1 and (len(source) > cols or rows_count_source > rows):
         errors += 1
-        print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, line)))
+        gh_annotate(AN_TYPE.WARNING, line, "Source text longer than %d cols as defined".format(cols), None, True)
         print_ruler(4, cols);
         print_truncated(source, cols)
         print()
     elif rows_count_source > rows:
         errors += 1
-        print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, line)))
+        gh_annotate(AN_TYPE.WARNING, line, "Source text longer than %d rows as defined".format(rows), None, True)
         print_ruler(6, cols);
         print_wrapped(wrapped_source, rows, cols)
         print()
@@ -214,9 +261,9 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     if len(translation) == 0 and (warn_empty or (not no_warning and known_msgid)):
         errors += 1
         if rows == 1:
-            print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
+            gh_annotate(AN_TYPE.WARNING, line, "Empty translation for \"{}\"".format(source), line + rows, True )
         else:
-            print(yellow("[W]: Empty translation on line %d" % line))
+            gh_annotate(AN_TYPE.WARNING, line, "Empty translation", line + rows, True )
             print_ruler(6, cols);
             print_wrapped(wrapped_source, rows, cols)
             print()
@@ -224,6 +271,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     # Check for translation length too long
     if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
         errors += 1
+        gh_annotate(AN_TYPE.ERROR, line, "Text is longer than definition", line + rows)
         print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
                 % (line, cols, rows, rows_count_translation-rows)))
         print_source_translation(source, translation,
@@ -232,6 +280,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
 
     # Check for translation length shorter
     if shorter and (rows_count_translation < rows-1):
+        gh_annotate(AN_TYPE.NOTICE, line, "Text is shorter than definition", line + rows)
         print(yellow('[S]: Text is shorter than definition on line %d: cols=%d rows=%d (rows diff=%d)'
                 % (line, cols, rows, rows_count_translation-rows)))
         print_source_translation(source, translation,
@@ -241,7 +290,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     # Different count of % sequences
     if source.count('%') != translation.count('%') and len(translation) > 0:
         errors += 1
-        print(red('[E]: Unequal count of %% escapes on line %d:' % (line)))
+        gh_annotate(AN_TYPE.ERROR, line, "Unequal count of %% escapes", None, True)
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
@@ -254,14 +303,14 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
         end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
         if start_diff or end_diff:
             if start_diff:
-                print(yellow('[S]: Differing first punctuation character (%s => %s) on line %d:' % (source[0], translation[0], line)))
+                gh_annotate(AN_TYPE.NOTICE, line, "Differing first punctuation character: ({} => {})".format(source[0],translation[0]), None, True)
             if end_diff:
-                print(yellow('[S]: Differing last punctuation character (%s => %s) on line %d:' % (source[-1], translation[-1], line)))
+                gh_annotate(AN_TYPE.NOTICE, line, "Differing last punctuation character: ({} => {})".format(source[-1],translation[-1]), None, True)
             print_source_translation(source, translation,
                                     wrapped_source, wrapped_translation,
                                     rows, cols)
     if not no_suggest and source == translation and (warn_same or len(source.split(' ', 1)) > 1):
-        print(yellow('[S]: Translation same as original on line %d:' %line))
+        gh_annotate(AN_TYPE.NOTICE, line, "Translation same as original text", None, True)
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
@@ -269,7 +318,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     # Short translation
     if not no_suggest and len(source) > 0 and len(translation) > 0:
         if len(translation.rstrip()) < len(source.rstrip()) / 2:
-            print(yellow('[S]: Short translation on line %d:' % (line)))
+            gh_annotate(AN_TYPE.NOTICE, line, "Short translation", None, True)
             print_source_translation(source, translation,
                                     wrapped_source, wrapped_translation,
                                     rows, cols)
@@ -280,7 +329,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
      translation.rstrip() != translation and \
      (rows > 1 or len(translation) != len(source)):
         errors += 1
-        print(yellow('[W]: Incorrect trailing whitespace for translation on line %d:' % (line)))
+        gh_annotate(AN_TYPE.WARNING, line, "Incorrect trailing whitespace for translation", None, True)
         source = highlight_trailing_white(source)
         translation = highlight_trailing_white(translation)
         wrapped_translation = highlight_trailing_white(wrapped_translation)
@@ -350,9 +399,14 @@ def main():
     # check each translation in turn
     status = True
     for translation in polib.pofile(args.po):
+        global CURRENT_PO
+        CURRENT_PO=args.po
         status &= check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
                                     args.warn_empty, args.warn_same, args.information, args.shorter)
-    return 0 if status else 1
+    if GH_ANNOTATIONS:
+        return GH_ERR_COUNT > 0 # Do not cause a failure if only warnings or notices.
+    else:
+        return 0 if status else 1
 
 if __name__ == "__main__":
     exit(main())
