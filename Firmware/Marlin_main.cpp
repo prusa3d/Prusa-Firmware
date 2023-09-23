@@ -1579,35 +1579,33 @@ void setup()
     fw_crash_init();
 
 #ifdef UVLO_SUPPORT
-  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != NO_PENDING_RECOVERY) { //previous print was terminated by UVLO
-      manage_heater(); // Update temperatures 
-#ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
-		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
-#endif
-     if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
-          #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
-        puts_P(_N("Automatic recovery!")); 
-          #endif
-         recover_print(1); 
-      } 
-      else{ 
-          #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
-        puts_P(_N("Normal recovery!")); 
-          #endif
-          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE) {
-              recover_print(0); 
-          } else { 
-              eeprom_update_byte((uint8_t*)EEPROM_UVLO, NO_PENDING_RECOVERY); 
-              lcd_update_enable(true); 
-              lcd_update(2); 
-              lcd_setstatuspgm(MSG_WELCOME); 
-          } 
-      }
-  }
+    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != NO_PENDING_RECOVERY)
+    {
+        // previous print was terminated by UVLO
+        manage_heater(); // Update temperatures
+        if (degBed() > ((float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET))
+        {
+             recover_print(1);
+        }
+        else
+        {
+            if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE)
+            {
+                recover_print(0);
+            }
+            else
+            {
+                eeprom_update_byte((uint8_t*)EEPROM_UVLO, NO_PENDING_RECOVERY); 
+                lcd_update_enable(true);
+                lcd_update(2);
+                lcd_setstatuspgm(MSG_WELCOME);
+            }
+        }
+    }
 
-  // Only arm the uvlo interrupt _after_ a recovering print has been initialized and
-  // the entire state machine initialized.
-  setup_uvlo_interrupt();
+    // Only arm the uvlo interrupt _after_ a recovering print has been initialized and
+    // the entire state machine initialized.
+    setup_uvlo_interrupt();
 #endif //UVLO_SUPPORT
 
   fCheckModeInit();
