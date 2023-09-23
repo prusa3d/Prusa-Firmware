@@ -395,7 +395,7 @@ void lcd_createChar_P(uint8_t location, const CustomCharacter *char_p)
 			"swap __tmp_reg__" "\n\t"		// swap the nibbles
 			"mov %0, __tmp_reg__" "\n\t"	// copy row data to temp
 
-			"andi %0, 0xF" "\n\t"			// mask lower nibble
+			// "andi %0, 0xF" "\n\t"			// mask lower nibble - Not needed since bits 7-5 of the CGRAM are don't care, so they can contain garbage
 			"ror %1" "\n\t" 				// consume LSB of colByte and push it to the carry
 			"rol %0" "\n\t"					// insert the column LSB from carry
 			"st %a3+, %0" "\n\t"			// push the generated row data to the output
