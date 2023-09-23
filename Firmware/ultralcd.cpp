@@ -5009,7 +5009,6 @@ void lcd_resume_print()
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
     custom_message_type = CustomMsg::Resuming;
-    isPrintPaused = false;
 
     // resume processing USB commands again and restore hotend fan state (in case the print was
     // stopped due to a thermal error)
@@ -5017,6 +5016,7 @@ void lcd_resume_print()
     Stopped = false;
 
     restore_print_from_ram_and_continue(default_retraction);
+    isPrintPaused = false;
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
