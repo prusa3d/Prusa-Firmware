@@ -372,7 +372,7 @@ msgstr "Kopírovať vybraný jazyk?"
 #: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:1208
 #: ../../Firmware/ultralcd.cpp:1237
 msgid "Crash"
-msgstr "Naraz"
+msgstr "Náraz"
 
 #. MSG_CRASHDETECT c=13
 #: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4128
@@ -383,7 +383,7 @@ msgstr "Det. nárazu"
 #. MSG_CRASH_DETECTED c=20
 #: ../../Firmware/Marlin_main.cpp:571 ../../Firmware/messages.cpp:27
 msgid "Crash detected."
-msgstr "Zistený naraz."
+msgstr "Zistený náraz."
 
 #. MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3363
@@ -904,7 +904,7 @@ msgstr "Návrat"
 #. MSG_NOZZLE_CNG_CHANGED c=20 r=6
 #: ../../Firmware/messages.cpp:185 ../../Firmware/ultralcd.cpp:983
 msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
-msgstr "Hotend ma 280C! Tryska je vymenená a utiahnutá podľa špecifikácie?"
+msgstr "Hotend má 280C! Tryska je vymenená a utiahnutá podľa špecifikácie?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1080
@@ -982,7 +982,7 @@ msgstr "Vložte filament (nezavadzajte) do extrúderu a stlačte tlačidlo"
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:337
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
-msgstr "Interna chyba. Skúste resetovať MMU alebo aktualizovať firmware."
+msgstr "Interná chyba. Skúste resetovať MMU alebo aktualizovať firmware."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3625
@@ -1679,7 +1679,7 @@ msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First"
 " steps, section Calibration flow."
 msgstr ""
-"Tlačiareň nebola ešte skalibrovaná. Postupujte prosím podla manuálu, "
+"Tlačiareň nebola ešte skalibrovaná. Postupujte prosím podľa manuálu, "
 "kapitola Začíname, odstavec Postup kalibrácie."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
@@ -1740,7 +1740,7 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"Požadovať nástroj filamentu nie je k dispozícií. Skontrolujte G-code pre "
+"Požadovaný nástroj filamentu nie je k dispozícií. Skontrolujte G-code pre "
 "nástroj mimo rozsah (T0-T4)."
 
 #. MSG_RESET c=14
@@ -1861,7 +1861,7 @@ msgstr "Vyberte teplotu predohrevu trysky ktorá zodpovedá vášmu materiálu."
 #. MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3732
 msgid "Select temperature which matches your material."
-msgstr "Zvoľte teplotu, ktorá odpovedá vášmu materiálu."
+msgstr "Zvoľte teplotu, ktorá zodpovedá vášmu materiálu."
 
 #. MSG_PROGRESS_SELECT_SLOT c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:21
@@ -2323,7 +2323,7 @@ msgstr "Detaily XYZ kal."
 #: ../../Firmware/ultralcd.cpp:3192
 msgid "XYZ calibration all right. Skew will be corrected automatically."
 msgstr ""
-"Kalibrácia XYZ v poriadku. Skosenie bude automaticky vyrovnane pri tlači."
+"Kalibrácia XYZ v poriadku. Skosenie bude automaticky vyrovnané pri tlači."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3189
@@ -2333,7 +2333,7 @@ msgstr "Kalibrácia XYZ v poriadku. X/Y osi mierne skosené. Dobrá práca!"
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3170
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr "Kalibrácia XYZ je nepresná. Predné kalibračné body sú nedostupne."
+msgstr "Kalibrácia XYZ je nepresná. Predné kalibračné body sú nedostupné."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3173
@@ -2349,7 +2349,7 @@ msgstr "Kalibrácia XYZ zlyhala. Kalibračný bod podložky nenájdený."
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3158
 msgid "XYZ calibration failed. Front calibration points not reachable."
-msgstr "Kalibrácia XYZ zlyhala. Predné kalibračné body sú nedostupne."
+msgstr "Kalibrácia XYZ zlyhala. Predné kalibračné body sú nedostupné."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3155
