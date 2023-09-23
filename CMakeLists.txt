@@ -94,9 +94,6 @@ set(FW_COMMIT_HASH "0") # Clear it, the code expects a binary...
 set(PROJECT_VERSION_TIMESTAMP "0")
 endif()
 
-#Rewrite to remove leading v, or set it entirely if the data came from Configuration.h
-set(PROJECT_VERSION_FULL "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}-${PROJECT_VERSION_FLV}${PROJECT_VERSION_FLV_VER}-${PROJECT_VERSION_COMMIT}")
-
 # Language configuration
 set(MAIN_LANGUAGES
     cs de es fr it pl
@@ -370,7 +367,7 @@ function(add_base_binary variant_name)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
-            FW_VERSION_FULL="${PROJECT_VERSION_FULL}" FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+            FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
             FW_MAJOR=${PROJECT_VERSION_MAJOR}
             FW_MINOR=${PROJECT_VERSION_MINOR}
             FW_REVISION=${PROJECT_VERSION_REV}
