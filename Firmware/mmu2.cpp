@@ -707,7 +707,7 @@ void MMU2::CheckUserInput() {
     case Buttons::Middle:
     case Buttons::Right:
         SERIAL_ECHOPGM("CheckUserInput-btnLMR ");
-        SERIAL_ECHOLN(buttons_to_uint8t(btn));
+        SERIAL_ECHOLN((int)buttons_to_uint8t(btn));
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
 
         if (mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
