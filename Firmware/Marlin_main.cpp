@@ -3385,7 +3385,7 @@ static void mmu_M600_unload_filament() {
 
 /// @brief load filament for mmu v2
 /// @par nozzle_temp nozzle temperature to load filament
-static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
+static void mmu_M600_load_filament(bool automatic) {
     uint8_t slot;
     if (automatic) {
         slot = SpoolJoin::spooljoin.nextSlot();
@@ -3394,7 +3394,7 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
         slot = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
     }
 
-    setTargetHotend(nozzle_temp);
+    setTargetHotend(saved_extruder_temperature);
 
     MMU2::mmu2.load_filament_to_nozzle(slot);
 
@@ -3404,7 +3404,6 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
 
 static void gcode_M600(const bool automatic, const float x_position, const float y_position, const float z_shift, const float e_shift, const float e_shift_late) {
     st_synchronize();
-    float lastpos[4];
 
     // When using an MMU, save the currently use slot number
     // so the firmware can know which slot to eject after the filament
@@ -3412,13 +3411,6 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     uint8_t eject_slot = 0;
 
     prusa_statistics(22);
-
-    //First backup current position and settings
-    int feedmultiplyBckp = feedmultiply;
-    float HotendTempBckp = saved_extruder_temperature;
-    uint8_t fanSpeedBckp = fanSpeed;
-
-    memcpy(lastpos, current_position, sizeof(lastpos));
 
     // Turn off the fan
     fanSpeed = 0;
@@ -3450,7 +3442,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         mmu_M600_unload_filament();
     } else {
         // Beep, manage nozzle heater and wait for user to start unload filament
-        M600_wait_for_user(HotendTempBckp);
+        M600_wait_for_user();
         unload_filament(e_shift_late);
     }
     st_synchronize();          // finish moves
@@ -3475,15 +3467,15 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         else // MMU is enabled
         {
             if (!automatic) mmu_M600_filament_change_screen(eject_slot);
-            mmu_M600_load_filament(automatic, HotendTempBckp);
+            mmu_M600_load_filament(automatic);
         }
         if (!automatic)
-            M600_check_state(HotendTempBckp);
+            M600_check_state();
     
         lcd_update_enable(true);
     
         // Not let's go back to print
-        fanSpeed = fanSpeedBckp;
+        fanSpeed = saved_fan_speed;
     
         // Feed a little of filament to stabilize pressure
         if (!automatic) {
@@ -3506,22 +3498,22 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         }
 
         // Move XY back
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED);
+        plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED);
         st_synchronize();
 
         // Move Z back
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED);
+        plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED);
         st_synchronize();
 
         // Set E position to original
-        plan_set_e_position(lastpos[E_AXIS]);
+        plan_set_e_position(saved_pos[E_AXIS]);
     
-        memcpy(current_position, lastpos, sizeof(lastpos));
+        memcpy(current_position, saved_pos, sizeof(saved_pos));
         set_destination_to_current();
     
         // Recover feed rate
-        feedmultiply = feedmultiplyBckp;
-        enquecommandf_P(MSG_M220, feedmultiplyBckp);
+        feedmultiply = saved_feedmultiply2;
+        enquecommandf_P(MSG_M220, saved_feedmultiply2);
     }
     if (isPrintPaused) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
     else lcd_setstatuspgm(MSG_WELCOME);
@@ -10832,8 +10824,7 @@ void load_filament_final_feed()
 }
 
 //! @brief Wait for user to check the state
-//! @par nozzle_temp nozzle temperature to load filament
-void M600_check_state(float nozzle_temp)
+void M600_check_state()
 {
     uint8_t lcd_change_filament_state = 0;
     while (lcd_change_filament_state != 1)
@@ -10855,7 +10846,7 @@ void M600_check_state(float nozzle_temp)
                 mmu_M600_filament_change_screen(eject_slot);
 
                 // After user clicks knob, MMU will load the filament
-                mmu_M600_load_filament(false, nozzle_temp);
+                mmu_M600_load_filament(false);
             } else {
                 M600_load_filament_movements();
             }
@@ -10881,9 +10872,7 @@ void M600_check_state(float nozzle_temp)
 //!
 //! Beep, manage nozzle heater and wait for user to start unload filament
 //! If times out, active extruder temperature is set to 0.
-//!
-//! @param HotendTempBckp Temperature to be restored for active extruder, after user resolves MMU problem.
-void M600_wait_for_user(float HotendTempBckp) {
+void M600_wait_for_user() {
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
@@ -10912,7 +10901,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				delay_keep_alive(4);
 		
 				if (lcd_clicked()) {
-					setTargetHotend(HotendTempBckp);
+					setTargetHotend(saved_extruder_temperature);
 					lcd_wait_for_heater();
 					wait_for_user_state = 2;
 				}
