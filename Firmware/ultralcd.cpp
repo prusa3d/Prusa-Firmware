@@ -810,7 +810,7 @@ void lcd_commands()
 			if (custom_message_type != CustomMsg::M117)
 			{
 				custom_message_type = CustomMsg::Status;
-				lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
+				lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
 			}
 			lcd_commands_type = LcdCommands::Idle;
 			lcd_commands_step = 0;
