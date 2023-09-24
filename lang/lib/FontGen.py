@@ -70,7 +70,7 @@ def generateFont():
     
     CharList = [Char.attrib for Char in root.iter("CHAR")]
     
-    f = open(os.path.join(sys.path[0], "FontTable.h"), "w", encoding='utf8')
+    f = open(os.path.join(sys.path[0], "../../Firmware/FontTable.h"), "w", encoding='utf8')
     for index in range(len(FONT_TABLE)):
         f.write(generateLineInTable(index, CharList) + '\n')
     f.close()
