@@ -858,7 +858,7 @@ void lcd_buttons_update(void)
 // Custom character data
 
 const CustomCharacter Font[] PROGMEM = {
-#include "Fonts/FontTable.h"
+#include "../lang/lib/FontTable.h"
 };
 
 // #define DEBUG_CUSTOM_CHARACTERS

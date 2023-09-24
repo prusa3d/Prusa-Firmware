@@ -1,26 +1,4 @@
-# Mapping from LCD source encoding to unicode characters
-CUSTOM_CHARS = {
-    # Dynamic characters
-    '\x80': '🄷',
-    '\x81': '°',
-    '\x82': '🌡',
-    '\x83': '⬏',
-    '\x84': '🔃',
-    '\x85': '🗀',
-    '\x86': '»',
-    '\x87': '🕑',
-    '\x88': '⏬',
-    '\x89': '✔',
-
-    # HD44780 A00 font:
-    '\x7e': '→',
-    '\x7f': '←',
-    '\xe1': 'ä',
-    '\xe4': 'µ', #on keyboard AltGr+m it is \xC2\xB5
-    '\xef': 'ö',
-    '\xf5': 'ü',
-    '\xff': '█',
-}
+from .FontGen import CUSTOM_CHARS
 
 # Charaters to be remapped prior to source-encoding transformation
 # This transformation is applied to the translation prior to being converted to the final encoding,
