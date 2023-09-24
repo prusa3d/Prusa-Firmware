@@ -117,8 +117,10 @@ TRANS_CHARS = {
     'ß': 'ss',#de
     'ť': 't', #cz,sk
     'Ť': 'T', #cz,sk
-    'ț': 't', #ro
-    'Ț': 'T', #ro
+    'ț': 't', #ro - t-comma
+    'Ț': 'T', #ro - T-comma
+    'ţ': 't', #ro - t-cedilla
+    'Ţ': 'T', #ro - T-cedilla
     'ú': 'u', #cz,es,hu,sk
     'Ú': 'U', #cz,hu,sk
     'ù': 'u', #it
