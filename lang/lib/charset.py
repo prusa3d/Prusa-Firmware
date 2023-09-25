@@ -21,19 +21,19 @@ from .FontGen import CUSTOM_CHARS
 
 TRANS_CHARS = {
     # 'á': 'a', #cz,fr,es,hu,sk
-    'Á': 'A', #cz,fr,hu,sk
-    'à': 'a', #fr,it
-    'À': 'A', #fr,it
-    'â': 'a', #fr,ro
-    'Â': 'A', #ro
-    'Ä': 'ä', #de,sv,no,sk
-    'å': 'a', #sv,no
-    'Å': 'A', #sv,no
-    'æ': 'ä', #sv,no
-    'ą': 'a', #pl
-    'Ą': 'A', #pl
-    'ă': 'a', #ro
-    'Ă': 'A', #ro
+    # 'Á': 'A', #cz,fr,hu,sk
+    # 'à': 'a', #fr,it
+    'À': 'à', #fr,it
+    # 'â': 'a', #fr,ro
+    'Â': 'â', #ro
+    # 'Ä': 'ä', #de,sv,no,sk
+    # 'å': 'a', #sv,no
+    # 'Å': 'A', #sv,no
+    # 'æ': 'ä', #sv,no
+    # 'ą': 'a', #pl
+    # 'Ą': 'A', #pl
+    # 'ă': 'a', #ro
+    # 'Ă': 'A', #ro
     'ć': 'c', #pl,hr
     'Ć': 'C', #pl,hr
     'ç': 'c', #fr,nl
