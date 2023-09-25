@@ -20,7 +20,7 @@ from .FontGen import CUSTOM_CHARS
 # https://en.wikipedia.org/wiki/Norwegian_orthography
 
 TRANS_CHARS = {
-    'á': 'a', #cz,fr,es,hu,sk
+    # 'á': 'a', #cz,fr,es,hu,sk
     'Á': 'A', #cz,fr,hu,sk
     'à': 'a', #fr,it
     'À': 'A', #fr,it
