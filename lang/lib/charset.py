@@ -34,90 +34,90 @@ TRANS_CHARS = {
     # 'Ą': 'A', #pl
     # 'ă': 'a', #ro
     # 'Ă': 'A', #ro
-    'ć': 'c', #pl,hr
-    'Ć': 'C', #pl,hr
+    # 'ć': 'c', #pl,hr
+    'Ć': 'ć', #pl,hr
     'ç': 'c', #fr,nl
-    'č': 'c', #cz,hr,sk
-    'Č': 'C', #cz,hr,sk
-    'ď': 'd', #cz,sk
-    'Ď': 'D', #cz,sk
+    # 'č': 'c', #cz,hr,sk
+    'Č': 'č', #cz,hr,sk
+    # 'ď': 'd', #cz,sk
+    'Ď': 'ď', #cz,sk
     'đ': 'd', #hr
     'Đ': 'D', #hr
-    'é': 'e', #cz,fr,es,it,nl,hu,sk
-    'É': 'E', #cz,fr,it,hu,sk
-    'è': 'e', #fr,it,nl
-    'È': 'E', #fr,it
+    # 'é': 'e', #cz,fr,es,it,nl,hu,sk
+    # 'É': 'E', #cz,fr,it,hu,sk
+    # 'è': 'e', #fr,it,nl
+    'È': 'è', #fr,it
     'ê': 'e', #fr,nl
-    'ě': 'e', #cz
+    # 'ě': 'e', #cz
+    'Ě': 'ě', #cz
     'ë': 'e', #fr
-    'Ě': 'E', #cz
-    'ę': 'e', #pl
-    'Ę': 'E', #pl
-    'í': 'i', #cz,es,it,sk
-    'Í': 'I', #cz,it,sk
-    'î': 'i', #fr,ro
-    'Î': 'I', #ro
-    'ĺ': 'l', #sk
-    'Ĺ': 'L', #sk
-    'ł': 'l', #pl
-    'Ł': 'L', #pl
-    'ľ': 'l', #sk
-    'Ľ': 'L', #sk
-    'ń': 'n', #pl
-    'Ń': 'N', #pl
-    'ň': 'n', #cz,sk
-    'Ň': 'N', #cz,sk
-    'ñ': 'n', #es,nl
-    'ó': 'o', #cz,es,pl,hu,sk
-    'Ó': 'O', #cz,pl,hu,sk
-    'ò': 'o', #it
-    'Ò': 'O', #it
-    'ô': 'o', #fr,nl,sk
-    'Ô': 'O', #sk
+    # 'ę': 'e', #pl
+    'Ę': 'ę', #pl
+    # 'í': 'i', #cz,es,it,sk
+    'Í': 'í', #cz,it,sk
+    # 'î': 'i', #fr,ro
+    # 'Î': 'I', #ro
+    # 'ĺ': 'l', #sk
+    'Ĺ': 'ĺ', #sk
+    # 'ł': 'l', #pl
+    # 'Ł': 'L', #pl
+    # 'ľ': 'l', #sk
+    # 'Ľ': 'L', #sk
+    # 'ń': 'n', #pl
+    'Ń': 'ń', #pl
+    # 'ň': 'n', #cz,sk
+    'Ň': 'ň', #cz,sk
+    # 'ñ': 'n', #es,nl
+    # 'ó': 'o', #cz,es,pl,hu,sk
+    'Ó': 'ó', #cz,pl,hu,sk
+    # 'ò': 'o', #it
+    'Ò': 'ò', #it
+    # 'ô': 'o', #fr,nl,sk
+    'Ô': 'ô', #sk
     'œ': 'o', #fr
-    'ø': 'ö', #sv,no
-    'Ø': 'ö', #sv,no
+    # 'ø': 'ö', #sv,no
+    'Ø': 'ø', #sv,no
     'Ö': 'ö', #de,sv,no,hu
-    'ő': 'o', #hu
-    'Ő': 'O', #hu
+    # 'ő': 'o', #hu
+    'Ő': 'ő', #hu
     'ŕ': 'r', #sk
     'Ŕ': 'R', #sk
-    'ř': 'r', #cz
-    'Ř': 'R', #cz
-    'ś': 's', #pl
-    'Ś': 's', #pl
-    'š': 's', #cz,hr,sk
-    'Š': 'S', #cz,hr,sk
-    'ș': 's', #ro - s-comma
-    'Ș': 'S', #ro - S-comma
-    'ş': 's', #ro - s-cedilla
-    'Ş': 'S', #ro - S-cedilla
-    'ß': 'ss',#de
-    'ť': 't', #cz,sk
-    'Ť': 'T', #cz,sk
-    'ț': 't', #ro - t-comma
-    'Ț': 'T', #ro - T-comma
-    'ţ': 't', #ro - t-cedilla
-    'Ţ': 'T', #ro - T-cedilla
-    'ú': 'u', #cz,es,hu,sk
-    'Ú': 'U', #cz,hu,sk
+    # 'ř': 'r', #cz
+    'Ř': 'ř', #cz
+    # 'ś': 's', #pl
+    'Ś': 'ś', #pl
+    # 'š': 's', #cz,hr,sk
+    'Š': 'š', #cz,hr,sk
+    # 'ș': 's', #ro - s-comma
+    'Ș': 'ș', #ro - S-comma
+    'ş': 'ș', #ro - s-cedilla
+    'Ş': 'ș', #ro - S-cedilla
+    # 'ß': 'ss',#de
+    # 'ť': 't', #cz,sk
+    'Ť': 'ť', #cz,sk
+    # 'ț': 't', #ro - t-comma
+    # 'Ț': 'T', #ro - T-comma
+    'ţ': 'ț', #ro - t-cedilla
+    'Ţ': 'Ț', #ro - T-cedilla
+    # 'ú': 'u', #cz,es,hu,sk
+    'Ú': 'ú', #cz,hu,sk
     'ù': 'u', #it
     'Ù': 'U', #it
     'û': 'u', #fr
     'Ü': 'ü', #de,hu
-    'ů': 'u', #cz
-    'Ů': 'U', #cz
-    'ű': 'u', #hu
-    'Ű': 'U', #hu
-    'ý': 'y', #cz,sk
-    'Ý': 'Y', #cz,sk
+    # 'ů': 'u', #cz
+    'Ů': 'ů', #cz
+    # 'ű': 'u', #hu
+    'Ű': 'ű', #hu
+    # 'ý': 'y', #cz,sk
+    'Ý': 'ý', #cz,sk
     'ÿ': 'y', #fr
-    'ź': 'z', #pl
-    'Ź': 'Z', #pl
-    'ž': 'z', #cz,hr,sk
-    'Ž': 'z', #cz,hr,sk
-    'ż': 'z', #pl
-    'Ż': 'Z', #pl
+    # 'ź': 'z', #pl
+    'Ź': 'ź', #pl
+    # 'ž': 'z', #cz,hr,sk
+    'Ž': 'ž', #cz,hr,sk
+    # 'ż': 'z', #pl
+    'Ż': 'ż', #pl
     '¿': '', #es
     '¡': '', #es
 }
