@@ -21,6 +21,7 @@ FONT_TABLE = [
     CustomCharacter('🕑', 7, '\\xe5'),
     CustomCharacter('⏬', 8, '\\x7e'),
     CustomCharacter('✔', 9, '\\x7e'),
+    CustomCharacter('á', 16, 'a'),
 ]
 
 BUILTIN_CHARS = {
