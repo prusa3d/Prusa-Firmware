@@ -418,7 +418,7 @@ msgstr "Data:"
 #. MSG_DIM c=6
 #: ../../Firmware/messages.cpp:168 ../../Firmware/ultralcd.cpp:5538
 msgid "Dim"
-msgstr "Ściemnij"
+msgstr "Ściemn"
 
 #. MSG_BTN_DISABLE_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:360 ../../Firmware/mmu2/errors_list.h:373
@@ -446,7 +446,7 @@ msgid ""
 "calibration."
 msgstr ""
 "Odległość dyszy od powierzchni druku nie jest skalibrowana. Postępuj zgodnie"
-" z podręcznikiem, rozdział Pierwsze kroki, sekcja Kalibracja pierwszej "
+" z podręcznikiem, rozdział Pierwsze kroki, sekcja Kalibracja pierwszej "
 "warstwy."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
@@ -577,9 +577,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA nie wyłączyła się podczas wyładowywania filamentu. Spróbuj "
-"wyładować ręcznie. Upewnij się, że filament może się poruszać i czy FINDA "
-"działa."
+"FINDA nie wyłączyła się podczas wyładowywania filamentu. Wyładuj ręcznie. "
+"Upewnij się, że filament może się poruszać i czy FINDA działa."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:241 ../../Firmware/mmu2/errors_list.h:297
@@ -663,13 +662,13 @@ msgstr "Podawanie do FINDY"
 #: ../../Firmware/mmu2_progress_converter.cpp:31
 #: ../../Firmware/mmu2_progress_converter.cpp:62
 msgid "Feeding to FSensor"
-msgstr "Podawanie do FSensora"
+msgstr "Podaję do FSensora"
 
 #. MSG_PROGRESS_FEED_EXTRUDER c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:14
 #: ../../Firmware/mmu2_progress_converter.cpp:40
 msgid "Feeding to extruder"
-msgstr "Podawanie do ekstrudera"
+msgstr "Podaję do ekstrudera"
 
 #. MSG_PROGRESS_FEED_NOZZLE c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:15
@@ -889,7 +888,7 @@ msgid ""
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
 "through the setup process?"
 msgstr ""
-"Cześć, jestem Twoją drukarką Original Prusa i3. Czy potrzebujesz pomocy z "
+"Cześć, jestem Twoją drukarką Original Prusa i3. Czy potrzebujesz pomocy z "
 "ustawieniami?"
 
 #. MSG_HIGH_POWER c=10
@@ -1033,7 +1032,7 @@ msgstr "Lewy went hotendu?"
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2685
 msgid "Left side [µm]"
-msgstr "Lewa strona [µm]"
+msgstr "Lewo [µm]"
 
 #. MSG_BL_HIGH c=12
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:5536
@@ -1131,7 +1130,7 @@ msgstr "MMU Ponawianie: Nagrzewanie..."
 #: ../../Firmware/mmu2/errors_list.h:174 ../../Firmware/mmu2/errors_list.h:222
 #: ../../Firmware/mmu2/errors_list.h:223 ../../Firmware/mmu2/errors_list.h:224
 msgid "MMU SELFTEST FAILED"
-msgstr "MMU SELFTEST NIEUDANY"
+msgstr "MMU SELFTEST NIEUD."
 
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1127
@@ -1619,12 +1618,12 @@ msgstr "Nagrzew. do cięcia"
 #. MSG_PREHEATING_TO_EJECT c=20
 #: ../../Firmware/ultralcd.cpp:1972
 msgid "Preheating to eject"
-msgstr "Nagrzew. celem wysuniecia"
+msgstr "Nagrzew. do wysun."
 
 #. MSG_PREHEATING_TO_LOAD c=20
 #: ../../Firmware/ultralcd.cpp:1963
 msgid "Preheating to load"
-msgstr "Nagrzewanie celem załadowania"
+msgstr "Grzanie do załad."
 
 #. MSG_PREHEATING_TO_UNLOAD c=20
 #: ../../Firmware/ultralcd.cpp:1968
@@ -1795,7 +1794,7 @@ msgstr "Prawa"
 #. MSG_BED_CORRECTION_RIGHT c=14
 #: ../../Firmware/ultralcd.cpp:2686
 msgid "Right side[µm]"
-msgstr "Prawa strona[µm]"
+msgstr "Prawo [µm]"
 
 #. MSG_WIZARD_RERUN c=20 r=7
 #: ../../Firmware/ultralcd.cpp:3653
@@ -1874,7 +1873,7 @@ msgstr "Wybierz temperaturę, która odpowiada Twojemu filamentowi."
 #: ../../Firmware/mmu2_progress_converter.cpp:21
 #: ../../Firmware/mmu2_progress_converter.cpp:52
 msgid "Selecting fil. slot"
-msgstr "Wybieranie kanału fil"
+msgstr "Wyb. kanału fil."
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6161
@@ -2236,7 +2235,7 @@ msgstr "Rozład. do FINDY"
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr "Rozładow. do koła pasowego"
+msgstr "Rozładow. do radełka"
 
 #. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:5917
@@ -2509,7 +2508,7 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in Selector and FINDA works properly."
 msgstr ""
-"Wybierak nie może się poruszyć, ponieważ czujnik FINDA wykrył filament. "
+"Wybierak nie może się poruszyć, bo czujnik FINDA wykrył filament. "
 "Upewnij się, że w selektorze nie ma filamentu i że FINDA działa prawidłowo."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
