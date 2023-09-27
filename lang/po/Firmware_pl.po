@@ -185,7 +185,7 @@ msgstr "Test pasków"
 #. MSG_RECOVER_PRINT c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:1601 ../../Firmware/messages.cpp:82
 msgid "Blackout occurred. Recover print?"
-msgstr "Wykryto zanik napięcia. Kontynuować?"
+msgstr "Wykryto zanik napięcia. Wznowić druk?"
 
 #. MSG_BRIGHT c=6
 #: ../../Firmware/messages.cpp:167 ../../Firmware/ultralcd.cpp:5538
@@ -220,7 +220,7 @@ msgid ""
 "stoppers. Click when done."
 msgstr ""
 "Kalibracja XYZ. Przekręć pokrętło, aby przesunąć oś Z do górnych "
-"krańcówek. Naciśnij, by potwierdzić."
+"krańcówek. Naciśnij pokrętło gdy gotowe."
 
 #. MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:2160 ../../Firmware/messages.cpp:19
@@ -235,7 +235,7 @@ msgid ""
 "stoppers. Click when done."
 msgstr ""
 "Kalibracja Z. Przekręć pokrętło, aby przesunąć oś Z do górnych "
-"krańcówek. Naciśnij gdy zakończysz."
+"krańcówek. Naciśnij gdy gotowe."
 
 #. MSG_CALIBRATING_HOME c=20
 #: ../../Firmware/ultralcd.cpp:6870
@@ -256,7 +256,7 @@ msgstr "Kalibracja OK"
 #: ../../Firmware/mmu2/errors_list.h:250 ../../Firmware/mmu2/errors_list.h:306
 #: ../../Firmware/mmu2/errors_list.h:308
 msgid "Can't move Selector or Idler."
-msgstr "Nie można poruszyć wybieraka lub docisku"
+msgstr "Nie można poruszyć wybieraka lub docisku."
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:279 ../../Firmware/mmu2/errors_list.h:333
@@ -284,12 +284,12 @@ msgstr "Wymiana filamentu"
 #. MSG_CHANGE_SUCCESS c=20
 #: ../../Firmware/ultralcd.cpp:2132
 msgid "Change success!"
-msgstr "Wymiana ok!"
+msgstr "Wymiana udana!"
 
 #. MSG_CORRECTLY c=20
 #: ../../Firmware/ultralcd.cpp:2179
 msgid "Changed correctly?"
-msgstr "Wymiana ok?"
+msgstr "Wymiana udała się?"
 
 #. MSG_CHECKING_X c=20
 #: ../../Firmware/messages.cpp:21 ../../Firmware/ultralcd.cpp:5838
@@ -347,7 +347,7 @@ msgstr "Wyczyść błąd TM"
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2182
 msgid "Color not correct"
-msgstr "Kolor zanieczysz."
+msgstr "Kolor nieprawidłowy"
 
 #. MSG_COMMUNITY_MADE c=18
 #: ../../Firmware/messages.cpp:23 ../../Firmware/ultralcd.cpp:3505
@@ -379,12 +379,12 @@ msgstr "Zderzeń"
 #: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4128
 #: ../../Firmware/ultralcd.cpp:4140
 msgid "Crash det."
-msgstr "Wykr.zderzeń"
+msgstr "Wykr.zderzeń."
 
 #. MSG_CRASH_DETECTED c=20
 #: ../../Firmware/Marlin_main.cpp:571 ../../Firmware/messages.cpp:27
 msgid "Crash detected."
-msgstr "Zderzenie wykryte"
+msgstr "Zderzenie wykryte."
 
 #. MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3363
@@ -491,7 +491,7 @@ msgstr "ERR błąd TMC"
 #: ../../Firmware/mmu2_progress_converter.cpp:17
 #: ../../Firmware/mmu2_progress_converter.cpp:46
 msgid "ERR Wait for User"
-msgstr "ERR czekam na użytk."
+msgstr "ERR Czekam na Użytk."
 
 #. MSG_ERROR c=10
 #: ../../Firmware/messages.cpp:29 ../../Firmware/ultralcd.cpp:2230
@@ -531,7 +531,7 @@ msgstr "Krańcówki"
 #: ../../Firmware/mmu2_progress_converter.cpp:35
 #: ../../Firmware/mmu2_progress_converter.cpp:45
 msgid "Engaging idler"
-msgstr "Urucham. docisku"
+msgstr "Uruchamianie docisku"
 
 #. MSG_EXTRUDER c=17
 #: ../../Firmware/messages.cpp:30 ../../Firmware/ultralcd.cpp:3337
@@ -650,13 +650,13 @@ msgstr "Test wentylatora"
 #. MSG_FANS_CHECK c=13
 #: ../../Firmware/messages.cpp:31 ../../Firmware/ultralcd.cpp:4173
 msgid "Fans check"
-msgstr "Sprawd.went."
+msgstr "Sprawdz.went."
 
 #. MSG_PROGRESS_FEED_FINDA c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:13
 #: ../../Firmware/mmu2_progress_converter.cpp:39
 msgid "Feeding to FINDA"
-msgstr "Podawanie do FINDY"
+msgstr "Podaję do FINDY"
 
 #. MSG_PROGRESS_FEED_FSENSOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:31
@@ -674,14 +674,14 @@ msgstr "Podaję do ekstrudera"
 #: ../../Firmware/mmu2_progress_converter.cpp:15
 #: ../../Firmware/mmu2_progress_converter.cpp:41
 msgid "Feeding to nozzle"
-msgstr "Podawanie do dyszy"
+msgstr "Podaję do dyszy"
 
 #. MSG_FIL_RUNOUTS c=15
 #: ../../Firmware/messages.cpp:32 ../../Firmware/ultralcd.cpp:1207
 #: ../../Firmware/ultralcd.cpp:1236 ../../Firmware/ultralcd.cpp:1290
 #: ../../Firmware/ultralcd.cpp:1292
 msgid "Fil. runouts"
-msgstr "Końc.filamentu"
+msgstr "Końc. filamentu"
 
 #. MSG_FSENSOR c=12
 #: ../../Firmware/messages.cpp:47 ../../Firmware/ultralcd.cpp:3298
@@ -763,7 +763,7 @@ msgstr "Kończenie druku"
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:4571
 #: ../../Firmware/ultralcd.cpp:5133
 msgid "First layer cal."
-msgstr "Kal. 1. warstwy"
+msgstr "Kalibr. 1. warstwy"
 
 #. MSG_WIZARD_SELFTEST c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3843
@@ -864,7 +864,7 @@ msgstr "Grzanie..."
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:9407
 msgid "Heating disabled by safety timer."
-msgstr "Grzanie wyłączone przez wył. czasowy"
+msgstr "Grzanie wyłączone przez wył. czasowy."
 
 #. MSG_HEATING_COMPLETE c=20
 #: ../../Firmware/Marlin_main.cpp:6112 ../../Firmware/messages.cpp:49
@@ -913,7 +913,7 @@ msgstr ""
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1080
 #: ../../Firmware/ultralcd.cpp:6876
 msgid "Hotend fan:"
-msgstr "Went. hotend:"
+msgstr "Went. hotendu:"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3848
@@ -1010,7 +1010,7 @@ msgstr "Iteracja"
 #: ../../Firmware/messages.cpp:53 ../../Firmware/ultralcd.cpp:1102
 #: ../../Firmware/ultralcd.cpp:1260
 msgid "Last print"
-msgstr "Ost. wydruk"
+msgstr "Ostatni wydruk"
 
 #. MSG_LAST_PRINT_FAILURES c=20
 #: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:1126
@@ -1027,7 +1027,7 @@ msgstr "Lewa"
 #: ../../Firmware/messages.cpp:89 ../../Firmware/ultralcd.cpp:6626
 #: ../../Firmware/ultralcd.cpp:6737 ../../Firmware/ultralcd.cpp:6742
 msgid "Left hotend fan?"
-msgstr "Lewy went hotendu?"
+msgstr "Lewy went. hotendu?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2685
@@ -1053,13 +1053,13 @@ msgstr "Korekcja liniowa"
 #: ../../Firmware/messages.cpp:10 ../../Firmware/ultralcd.cpp:4495
 #: ../../Firmware/ultralcd.cpp:5203
 msgid "Live adjust Z"
-msgstr "Ustaw. Live Z"
+msgstr "Ustawianie Live Z"
 
 #. MSG_LOAD_ALL c=18
 #: ../../Firmware/messages.cpp:182 ../../Firmware/ultralcd.cpp:4790
 #: ../../Firmware/ultralcd.cpp:4876
 msgid "Load All"
-msgstr "Załad. wszystkie"
+msgstr "Załaduj Wszystkie"
 
 #. MSG_LOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:4792
@@ -1109,7 +1109,7 @@ msgstr "MMU FW WYMAGA AKTUAL"
 #. MSG_DESC_QUEUE_FULL c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:335
 msgid "MMU Firmware internal error, please reset the MMU."
-msgstr "Błąd wewnętrzny MMU FW, zresetuj MMU."
+msgstr "Błąd wewnętrzny Firmware MMU. Proszę zresetuj MMU."
 
 #. MSG_MMU_MODE c=8
 #: ../../Firmware/messages.cpp:146 ../../Firmware/ultralcd.cpp:4093
@@ -1380,8 +1380,8 @@ msgstr "Wył"
 #: ../../Firmware/Marlin_main.cpp:1508
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr ""
-"Znaleziono stare ustawienia. Zostaną przywrócone domyślne ust. PID, Ekroki, "
-"itp."
+"Znaleziono stare ustawienia. Zostaną przywrócone domyślne ustawienia PID, "
+"Ekroków, itp."
 
 #. MSG_ON c=3
 #: ../../Firmware/SpoolJoin.cpp:23 ../../Firmware/messages.cpp:130
@@ -1655,7 +1655,7 @@ msgstr "Druk przerwany"
 #: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1080
 #: ../../Firmware/ultralcd.cpp:6879
 msgid "Print fan:"
-msgstr "WentDruku:"
+msgstr "Went. druku:"
 
 #. MSG_CARD_MENU c=18
 #: ../../Firmware/messages.cpp:20 ../../Firmware/ultralcd.cpp:5249
@@ -1773,7 +1773,7 @@ msgstr "Wznawianie druku"
 #: ../../Firmware/mmu2_progress_converter.cpp:28
 #: ../../Firmware/mmu2_progress_converter.cpp:59
 msgid "Retract from FINDA"
-msgstr "Wycof. z FINDY"
+msgstr "Wycofanie z FINDY"
 
 #. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:352 ../../Firmware/mmu2/errors_list.h:365
@@ -1977,13 +1977,13 @@ msgid ""
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is "
 "100."
 msgstr ""
-"Niektóre pliki nie zostaną posortowane. Maks. liczba plików w 1 katalogu = "
+"Niektóre pliki nie zostaną posortowane. Maks. liczba plików w 1 katalogu to "
 "100."
 
 #. MSG_ZLEVELING_ENFORCED c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3041
 msgid "Some problem encountered, Z-leveling enforced ..."
-msgstr "Wykryto problem, wymuszono poziomowanie osi Z."
+msgstr "Wykryto problem - wymuszono poziomowanie osi Z."
 
 #. MSG_SORT c=7
 #: ../../Firmware/messages.cpp:148 ../../Firmware/ultralcd.cpp:4508
@@ -2216,26 +2216,26 @@ msgstr "Wyładuj"
 #: ../../Firmware/messages.cpp:118 ../../Firmware/ultralcd.cpp:5282
 #: ../../Firmware/ultralcd.cpp:5299
 msgid "Unload filament"
-msgstr "Rozładowanie fil"
+msgstr "Wyładuj filament"
 
 #. MSG_UNLOADING_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:3466 ../../Firmware/messages.cpp:119
 #: ../../Firmware/mmu2_progress_converter.cpp:50
 #: ../../Firmware/ultralcd.cpp:4907
 msgid "Unloading filament"
-msgstr "Rozładowuję filament"
+msgstr "Wyładowuję filament"
 
 #. MSG_PROGRESS_UNLOAD_FINDA c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:11
 #: ../../Firmware/mmu2_progress_converter.cpp:37
 msgid "Unloading to FINDA"
-msgstr "Rozład. do FINDY"
+msgstr "Wyładowanie do FINDY"
 
 #. MSG_PROGRESS_UNLOAD_PULLEY c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr "Rozładow. do radełka"
+msgstr "Wyład. do radełka"
 
 #. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:5917
@@ -2300,12 +2300,12 @@ msgstr "Ostrzeżenie: płyta główna uległa zmianie."
 #. MSG_CHANGED_PRINTER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1496
 msgid "Warning: printer type changed."
-msgstr "Ostrzeżenie: rodzaj drukarki uległ zmianie"
+msgstr "Ostrzeżenie: rodzaj drukarki uległ zmianie."
 
 #. MSG_UNLOAD_SUCCESSFUL c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3546
 msgid "Was filament unload successful?"
-msgstr "Rozładowanie fil. ok?"
+msgstr "Wyładowanie fil. udane?"
 
 #. MSG_SELFTEST_WIRINGERROR c=18
 #: ../../Firmware/messages.cpp:98 ../../Firmware/ultralcd.cpp:6597
@@ -2479,7 +2479,7 @@ msgid ""
 "sensor calibration, if needed."
 msgstr ""
 "Ładowanie do ekstrudera nieudane. Sprawdź kształt końcówki "
-"filamentu. W razie potrzeby doprecyzuj kalibrację czujnika."
+"filamentu. W razie potrzeby dostrój kalibrację czujnika."
 
 #. MSG_TITLE_MMU_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:178 ../../Firmware/mmu2/errors_list.h:225
@@ -2565,7 +2565,7 @@ msgstr "Załaduj nowy filament lub wyładuj poprzedni."
 #. MSG_MMU_SENSITIVITY c=18
 #: ../../Firmware/mmu2_reporting.cpp:426
 msgid "Sensitivity"
-msgstr "Wrażliwość"
+msgstr "Czułość"
 
 #. MSG_MBL_FAILED_Z_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:2976
