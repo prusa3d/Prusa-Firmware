@@ -161,6 +161,8 @@ uint8_t optiboot_xflash_enter()
   lcd_clear();
   lcd_puts_at_P(0, 1, PSTR(" Upgrading xflash\n Do not disconnect!"));
 
+  boot_app_magic = 0; //disable the bootapp if a watchdog reset is going to be used
+
   /* Forever loop: exits by causing WDT reset */
   for (;;) {
     /* get character from UART */
