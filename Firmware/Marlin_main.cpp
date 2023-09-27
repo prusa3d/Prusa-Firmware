@@ -773,9 +773,8 @@ static void factory_reset(char level)
 	}
 }
 
-extern "C" {
-FILE _uartout; //= {0}; Global variable is always zero initialized. No need to explicitly state this.
-}
+static FILE _uartout;
+#define uartout (&_uartout)
 
 int uart_putchar(char c, FILE *)
 {
