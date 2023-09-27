@@ -379,7 +379,7 @@ msgstr "Zderzeń"
 #: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4128
 #: ../../Firmware/ultralcd.cpp:4140
 msgid "Crash det."
-msgstr "Wykr.zderzeń."
+msgstr "Wykr.zderzeń"
 
 #. MSG_CRASH_DETECTED c=20
 #: ../../Firmware/Marlin_main.cpp:571 ../../Firmware/messages.cpp:27
