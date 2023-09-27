@@ -920,7 +920,7 @@ void update_sec_lang_from_external_flash()
 			}
 		}
 	}
-	boot_app_flags &= ~BOOT_APP_FLG_USER0;
+	boot_app_magic = 0;
 }
 
 
@@ -4092,8 +4092,7 @@ void process_commands()
 		}
 		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
 #if defined(XFLASH) && defined(BOOTAPP)
-            boot_app_magic = BOOT_APP_MAGIC;
-            boot_app_flags = BOOT_APP_FLG_RUN;
+            boot_app_magic = 0;
 #endif //defined(XFLASH) && defined(BOOTAPP)
             softReset();
     }

@@ -17,11 +17,10 @@
 #define BOOT_APP_FLG_ERASE 0x01
 #define BOOT_APP_FLG_COPY  0x02
 #define BOOT_APP_FLG_FLASH 0x04
-#define BOOT_APP_FLG_RUN 0x08
 
 #define BOOT_APP_FLG_USER0 0x80
 
-#define BOOT_APP_MAGIC 0x55aa55aa
+#define BOOT_APP_MAGIC 0x55aa55aaUL
 
 
 #if defined(__cplusplus)
