@@ -514,7 +514,7 @@ msgstr "Wysuwanie filamentu"
 #. MSG_SELFTEST_ENDSTOP c=16
 #: ../../Firmware/ultralcd.cpp:6609
 msgid "Endstop"
-msgstr "Krancówka"
+msgstr "Krańcówka"
 
 #. MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ../../Firmware/ultralcd.cpp:6614
@@ -613,7 +613,7 @@ msgstr "FSENSOR ZBYT WCZEŚN."
 #. MSG_TITLE_FSENSOR_FILAMENT_STUCK c=20
 #: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:195
 msgid "FSENSOR FIL. STUCK"
-msgstr "FSENSOR FIL. ZABLOK"
+msgstr "FSENSOR FIL. UTKNĄŁ"
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:185 ../../Firmware/mmu2/errors_list.h:232
@@ -623,7 +623,7 @@ msgstr "BŁĄD DZIAŁANIA FW"
 #. MSG_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5310
 msgid "Fail stats"
-msgstr "Statystyki blędów"
+msgstr "Statystyki błędów"
 
 #. MSG_MMU_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5313
@@ -1152,7 +1152,7 @@ msgstr "MMU nie odpowiada prawidłowo. Sprawdź okablowanie i złącza."
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:277 ../../Firmware/mmu2/errors_list.h:331
 msgid "MMU not responding. Check the wiring and connectors."
-msgstr "MMU nie reaguje. Sprawdź okablowanie i zlącza."
+msgstr "MMU nie reaguje. Sprawdź okablowanie i złącza."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1633
@@ -1950,7 +1950,7 @@ msgid ""
 "%cContinue\n"
 "%cReset"
 msgstr ""
-"Plyta %.7s\n"
+"Płyta %.7s\n"
 "Z offset: %+1.3fmm\n"
 "%cKontynuować\n"
 "%cReset"
@@ -2097,7 +2097,7 @@ msgstr "PRZEGRZANIE TMC"
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:216
 #: ../../Firmware/mmu2/errors_list.h:217 ../../Firmware/mmu2/errors_list.h:218
 msgid "TMC UNDERVOLTAGE ERR"
-msgstr "ZA NIS. NAPIECIE TMC"
+msgstr "ZA NIS. NAPIĘCIE TMC"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3878
@@ -2133,7 +2133,7 @@ msgstr "Testowanie filamentu"
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
-"Docisk nie może się prawidłowo zbazowac. Sprawdź, czy nic nie blokuje jego "
+"Docisk nie może się prawidłowo zbazować. Sprawdź, czy nic nie blokuje jego "
 "ruchu."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
@@ -2141,7 +2141,7 @@ msgstr ""
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
-"Wybeirak nie może się prawidłowo zbazowac. Sprawdź, czy nic nie blokuje jego"
+"Wybierak nie może się prawidłowo zbazować. Sprawdź, czy nic nie blokuje jego"
 " ruchu."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
@@ -2161,7 +2161,7 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Należy przeprowadzić kalibrację Z. Kieruj się Podręcznikiem: rozdzial Pierwsze"
+"Należy przeprowadzić kalibrację Z. Kieruj się Podręcznikiem: rozdział Pierwsze"
 " Kroki."
 
 #. MSG_SORT_TIME c=8
@@ -2205,7 +2205,7 @@ msgstr "Dostrój"
 #. MSG_TITLE_UNLOAD_MANUALLY c=20
 #: ../../Firmware/mmu2/errors_list.h:186 ../../Firmware/mmu2/errors_list.h:233
 msgid "UNLOAD MANUALLY"
-msgstr "ROZLAD. RECZNIE"
+msgstr "WYŁADUJ RĘCZNIE"
 
 #. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:355 ../../Firmware/mmu2/errors_list.h:368
@@ -2430,7 +2430,7 @@ msgstr "aby załadow. fil."
 #. MSG_TO_UNLOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:1787
 msgid "to unload filament"
-msgstr "aby rozład. filament"
+msgstr "aby wyład. filament"
 
 #. MSG_UNKNOWN c=13
 #: ../../Firmware/ultralcd.cpp:1642
@@ -2601,7 +2601,7 @@ msgstr "Poziomowanie stołu nieudane. Proszę uruchomić kalibrację Z."
 #~ msgid ""
 #~ "Autoloading filament available only when filament sensor is turned on..."
 #~ msgstr ""
-#~ "Autoładowanie fil. dostępne tylko gdy czujnik filamentu jest wlączony..."
+#~ "Autoładowanie fil. dostępne tylko gdy czujnik filamentu jest włączony..."
 
 #~ msgid "Crash detected. Resume print?"
 #~ msgstr "Wykryto zderzenie. Wznowić druk?"
