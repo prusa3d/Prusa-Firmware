@@ -32,8 +32,10 @@ TRANS_CHARS = {
     # 'æ': 'ä', #sv,no
     # 'ą': 'a', #pl
     # 'Ą': 'A', #pl
-    # 'ă': 'a', #ro
-    # 'Ă': 'A', #ro
+    # 'ă': 'a', #ro - a-breve
+    # 'Ă': 'A', #ro - A-breve
+    'ǎ': 'ă', #ro - a-caron
+    'Ǎ': 'Ă', #ro - A-caron
     # 'ć': 'c', #pl,hr
     'Ć': 'ć', #pl,hr
     'ç': 'c', #fr,nl
