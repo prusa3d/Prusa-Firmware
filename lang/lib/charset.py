@@ -1,4 +1,4 @@
-from .FontGen import CUSTOM_CHARS
+from .FontGen import CUSTOM_CHARS, INVERSE_CUSTOM_CHARS
 
 # Charaters to be remapped prior to source-encoding transformation
 # This transformation is applied to the translation prior to being converted to the final encoding,
@@ -141,19 +141,22 @@ def translation_check(buf):
     valid_chars.add('\n')
     return _character_check(buf, valid_chars)
 
-
-def source_to_unicode(buf):
-    for src, dst in CUSTOM_CHARS.items():
-        buf = buf.replace(src, dst)
-    return buf
-
 def trans_replace(buf):
     for src, dst in TRANS_CHARS.items():
         buf = buf.replace(src, dst)
     return buf
 
+def source_to_unicode(buf):
+    buf = trans_replace(buf)
+    out = u''
+    for c in buf:
+        out += CUSTOM_CHARS.get(c, c)
+    return out
+
 def unicode_to_source(buf):
     buf = trans_replace(buf)
-    for dst, src in CUSTOM_CHARS.items():
-        buf = buf.replace(src, dst)
-    return buf
+    out = ''
+    for c in buf:
+        out += INVERSE_CUSTOM_CHARS.get(c, c)
+    return out
+    

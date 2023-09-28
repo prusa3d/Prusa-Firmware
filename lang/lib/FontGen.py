@@ -91,6 +91,8 @@ for index in range(len(FONT_TABLE)):
     CUSTOM_CHARS.update({chr(index + 0x80): FONT_TABLE[index].utf})
 CUSTOM_CHARS.update(BUILTIN_CHARS)
 
+INVERSE_CUSTOM_CHARS = {v: k for k, v in CUSTOM_CHARS.items()}
+
 def generateLineInTable(index, chars):
     pixels = chars[FONT_TABLE[index].charListIndex]["PIXELS"].split(',')
     
