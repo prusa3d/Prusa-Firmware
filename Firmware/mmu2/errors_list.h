@@ -4,6 +4,7 @@
 #pragma once
 #include "inttypes.h"
 #include "../language.h"
+#include "../lcd.h"
 #include <avr/pgmspace.h>
 #include "buttons.h"
 #include "../strlen_cx.h"
@@ -358,7 +359,7 @@ static const char MSG_BTN_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_BTN_EJECT 
 //static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); //Reuse MSG_TUNE c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
-static const char MSG_BTN_MORE[] PROGMEM_N1 = "\x06";
+static const char MSG_BTN_MORE[] PROGMEM_N1 = LCD_STR_ARROW_2_DOWN;
 
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {
