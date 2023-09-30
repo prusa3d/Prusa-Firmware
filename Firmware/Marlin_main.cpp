@@ -6039,6 +6039,12 @@ Sigma_Exit:
 
         while ( (!cancel_heatup) && (target_direction ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false))) )
         {
+          if (lcd_commands_type == LcdCommands::LongPause) {
+            // Print was suddenly paused, break out of the loop
+            // This can happen when the firmware report a fan error
+            break;
+          }
+
           if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
           {
 			  if (!farm_mode) {
@@ -9677,6 +9683,11 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 #else
 	while (target_direction ? (isHeatingHotend(tmp_extruder)) : (isCoolingHotend(tmp_extruder) && (CooldownNoWait == false))) {
 #endif //TEMP_RESIDENCY_TIME
+        if (lcd_commands_type == LcdCommands::LongPause) {
+            // Print was suddenly paused, break out of the loop
+            // This can happen when the firmware report a fan error
+            break;
+        }
 		if ((_millis() - codenum) > 1000UL)
 		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
 			if (!farm_mode) {
