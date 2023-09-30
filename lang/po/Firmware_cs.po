@@ -70,8 +70,8 @@ msgstr "Okoli"
 
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2826
-msgid "Are left and right Z~carriages all up?"
-msgstr "Dojely oba Z voziky k~hornimu dorazu?"
+msgid "Are left and right Z-carriages all up?"
+msgstr "Dojely oba Z voziky k-hornimu dorazu?"
 
 #. MSG_SOUND_BLIND c=7
 #: ../../Firmware/messages.cpp:155 ../../Firmware/ultralcd.cpp:4191
@@ -219,7 +219,7 @@ msgid ""
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibrace XYZ. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte"
+"Kalibrace XYZ. Otacenim tlacitka posunte Z osu az k hornimu dorazu. Potvrdte"
 " tlacitkem."
 
 #. MSG_CALIBRATE_Z_AUTO c=20 r=2
@@ -234,7 +234,7 @@ msgid ""
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibrace Z. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte "
+"Kalibrace Z. Otacenim tlacitka posunte Z osu az k hornimu dorazu. Potvrdte "
 "tlacitkem."
 
 #. MSG_CALIBRATING_HOME c=20

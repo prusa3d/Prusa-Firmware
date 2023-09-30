@@ -70,7 +70,7 @@ msgstr "Okolie"
 
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2826
-msgid "Are left and right Z~carriages all up?"
+msgid "Are left and right Z-carriages all up?"
 msgstr "Došli oba Z vozíky k hornému dorazu?"
 
 #. MSG_SOUND_BLIND c=7

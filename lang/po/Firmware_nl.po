@@ -70,7 +70,7 @@ msgstr "Kamertemp."
 
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2826
-msgid "Are left and right Z~carriages all up?"
+msgid "Are left and right Z-carriages all up?"
 msgstr "Zijn beide Z wagen heelemaal boven?"
 
 #. MSG_SOUND_BLIND c=7
