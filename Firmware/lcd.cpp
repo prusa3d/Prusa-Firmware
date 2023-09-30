@@ -81,6 +81,12 @@ static uint8_t lcd_ddram_address; // no need for preventing ddram overflow
 uint8_t lcd_escape[8];
 #endif
 
+struct CustomCharacter {
+    uint8_t colByte;
+    uint8_t rowData[4];
+    char alternate;
+};
+
 static uint8_t lcd_custom_characters[8] = {0};
 static const CustomCharacter Font[] PROGMEM = {
 #include "FontTable.h"

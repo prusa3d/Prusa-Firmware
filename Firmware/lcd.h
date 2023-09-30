@@ -185,12 +185,6 @@ private:
 #define LCD_STR_CONFIRM      "\x89"
 #define LCD_STR_SOLID_BLOCK  "\xFF"  //from the default character set
 
-struct CustomCharacter {
-    uint8_t colByte;
-    uint8_t rowData[4];
-    char alternate;
-};
-
 extern void lcd_frame_start();
 
 //! @brief Consume click and longpress event
