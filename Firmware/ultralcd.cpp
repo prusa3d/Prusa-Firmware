@@ -5038,7 +5038,7 @@ static void lcd_rename_sheet_menu()
     {
         bool initialized;
         uint8_t selected;
-        char name[sizeof(Sheet::name)];
+        unsigned char name[sizeof(Sheet::name)];
     };
     static_assert(sizeof(menu_data)>= sizeof(MenuData),"MenuData doesn't fit into menu_data");
     MenuData* menuData = (MenuData*)&(menu_data[0]);
