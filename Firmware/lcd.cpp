@@ -82,6 +82,11 @@ uint8_t lcd_escape[8];
 #endif
 
 static uint8_t lcd_custom_characters[8] = {0};
+static const CustomCharacter Font[] PROGMEM = {
+#include "FontTable.h"
+};
+
+#define CUSTOM_CHARACTERS_CNT (sizeof(Font) / sizeof(Font[0]))
 
 static void lcd_display(void);
 
@@ -154,7 +159,7 @@ static void lcd_write(uint8_t value)
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
 	}
-	else if ((value >= 0x80) && (value <= 0xDF)) {
+	else if ((value >= 0x80) && (value < (0x80 + CUSTOM_CHARACTERS_CNT))) {
 		lcd_print_custom(value);
 	}
 	#ifdef VT100
@@ -856,10 +861,6 @@ void lcd_buttons_update(void)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Custom character data
-
-const CustomCharacter Font[] PROGMEM = {
-#include "FontTable.h"
-};
 
 // #define DEBUG_CUSTOM_CHARACTERS
 
