@@ -864,9 +864,11 @@ const CustomCharacter Font[] PROGMEM = {
 // #define DEBUG_CUSTOM_CHARACTERS
 
 static void lcd_print_custom(uint8_t c) {
-	uint8_t charToSend;
-	// check if we already have the character in the lcd memory
+	uint8_t charToSend = pgm_read_byte(&Font[c - 0x80].alternate); // in case no empty slot is found, use the alternate character.
+	int8_t slotToUse = -1;
+
 	for (uint8_t i = 0; i < 8; i++) {
+		// first check if we already have the character in the lcd memory
 		if ((lcd_custom_characters[i] & 0x7F) == (c & 0x7F)) {
 			lcd_custom_characters[i] = c; // mark the custom character as used
 			charToSend = i; // send the found custom character id
@@ -874,24 +876,28 @@ static void lcd_print_custom(uint8_t c) {
 			printf_P(PSTR("found char %02x at slot %u\n"), c, i);
 #endif // DEBUG_CUSTOM_CHARACTERS
 			goto sendChar;
-		}
-	}
-
-	// in case no empty slot is found, use the alternate character.
-	charToSend = pgm_read_byte(&Font[c - 0x80].alternate);
-
-	// try to find a slot where it could be placed
-	for (uint8_t i = 0; i < 8; i++) {
-		if (lcd_custom_characters[i] == 0x7F) { //found an empty slot. create a new custom character and send it
-			lcd_createChar_P(i, &Font[c - 0x80]);
+		} else if (lcd_custom_characters[i] == 0x7F) { //found an empty slot. create a new custom character and send it
 			lcd_custom_characters[i] = c; // mark the custom character as used
-#ifdef DEBUG_CUSTOM_CHARACTERS
-			printf_P(PSTR("created char %02x at slot %u\n"), c, i);
-#endif // DEBUG_CUSTOM_CHARACTERS
+			slotToUse = i;
 			charToSend = i;
-			break;
+			goto createChar;
+		} else if (!(lcd_custom_characters[i] & 0x80)) { // found potentially unused slot. Remember it in case it's needed
+			slotToUse = i;
 		}
 	}
+
+	// If this point was reached, then there is no empty slot available.
+	// If there exists any potentially unused slot, then use that one instead.
+	// Otherwise, use the alternate form of the character.
+	if (slotToUse < 0) {
+		goto sendChar;
+	}
+
+createChar:
+	lcd_createChar_P(slotToUse, &Font[c - 0x80]);	
+#ifdef DEBUG_CUSTOM_CHARACTERS
+	printf_P(PSTR("created char %02x at slot %u\n"), c, slotToUse);
+#endif // DEBUG_CUSTOM_CHARACTERS
 
 sendChar:
 	lcd_send(charToSend, HIGH);
