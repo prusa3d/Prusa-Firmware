@@ -70,8 +70,8 @@ msgstr "Ambijent"
 
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2826
-msgid "Are left and right Z~carriages all up?"
-msgstr "Jesu lijevi i desni Z~nosaci podignuti?"
+msgid "Are left and right Z-carriages all up?"
+msgstr "Jesu lijevi i desni Z-nosaci podignuti?"
 
 #. MSG_SOUND_BLIND c=7
 #: ../../Firmware/messages.cpp:155 ../../Firmware/ultralcd.cpp:4191
@@ -877,7 +877,7 @@ msgid ""
 "ready to print."
 msgstr ""
 "Bok, ja sam vas Original Prusa i3 printer. Vodit cu vas kroz kratak proces "
-"postavljanja, u kojem ce se kalibrirati Z~os. Tada cete biti spremni za "
+"postavljanja, u kojem ce se kalibrirati Z-os. Tada cete biti spremni za "
 "printanje."
 
 #. MSG_WIZARD_WELCOME c=20 r=7

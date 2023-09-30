@@ -2813,7 +2813,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             }
         }
         // Let the user confirm, that the Z carriage is at the top end stoppers.
-        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
+        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z-carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
         if (result == LCD_BUTTON_TIMEOUT)
             goto canceled;
         else if (result == LCD_LEFT_BUTTON_CHOICE)
@@ -2894,9 +2894,7 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
         }
         for (; msg < msgend; ++ msg) {
             char c = char(pgm_read_byte(msg));
-            if (c == '~')
-                c = ' ';
-            else if (c == '\n') {
+            if (c == '\n') {
                 // Abort early if '\n' is encontered.
                 // This character is used to force the following words to be printed on the next line.
                 break;
