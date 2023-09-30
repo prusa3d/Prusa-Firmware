@@ -7280,6 +7280,7 @@ void menu_lcd_lcdupdate_func(void)
 	{
 		if (lcd_draw_update) {
 			lcd_timeoutToStatus.start();
+            lcd_frame_start();
 		}
 
 		(*menu_menu)();
