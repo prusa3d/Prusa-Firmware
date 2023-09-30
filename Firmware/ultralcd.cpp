@@ -5049,8 +5049,8 @@ static void lcd_rename_sheet_menu()
         lcd_encoder = menuData->name[0];
         menuData->initialized = true;
     }
-    if (lcd_encoder < '\x20') lcd_encoder = '\x20';
-    if (lcd_encoder > '\x7F') lcd_encoder = '\x7F';
+    if (lcd_encoder < 0x20) lcd_encoder = 0x20;
+    if (lcd_encoder > 0xFF) lcd_encoder = 0xFF;
 
     menuData->name[menuData->selected] = lcd_encoder;
     lcd_home();
