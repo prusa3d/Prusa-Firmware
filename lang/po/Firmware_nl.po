@@ -368,7 +368,7 @@ msgstr "Afkoelen"
 #. MSG_COPY_SEL_LANG c=20 r=3
 #: ../../Firmware/ultralcd.cpp:3447
 msgid "Copy selected language?"
-msgstr "Geselecteerde taal kopieren?"
+msgstr "Geselecteerde taal kopiëren?"
 
 #. MSG_CRASH c=7
 #: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:1208
