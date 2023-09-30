@@ -62,7 +62,7 @@ FONT_TABLE = [
     CustomCharacter('ś', 108, 's'),
     CustomCharacter('š', 109, 's'),
     CustomCharacter('ș', 110, 's'),
-    CustomCharacter('ß', 111, 's'),
+    CustomCharacter('ß', 111, '\\xe2'),
     CustomCharacter('ť', 116, 't'),
     CustomCharacter('ț', 117, 't'),
     CustomCharacter('Ț', 119, 'T'),
