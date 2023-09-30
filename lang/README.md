@@ -36,6 +36,8 @@ Lower-level tools:
 * ``lang-map.py``: Extract and patch the translation symbol map in the firmware.
 * ``lang-build.py``: Build a binary language catalog for a single po file.
 * ``lang-patchsec.py``: Embed a single secondary language catalog in the firmware.
+* ``lib/charset.py``: Tool for converting unicode strings to the lcd font and back.
+* ``lib/FontGen.py``: Tool for generating the font table used by the firmware.
 
 ### Building an internationalized firmware
 
@@ -123,6 +125,16 @@ To alleviate the problem when using git you can add the following snippet to you
 ```
 
 This requires ``gettext`` to be installed.
+
+## Diacritics
+
+The font used for all the diacritics is stored in `lib/Prusa.lcd`. This file was created using `GLCD font creator`. In order to edit an existing character or to create a new one, this tool must be used. Beware that the tool is old and is windows only. In order to be able to save the .lcd file, the program must be started with Windows XP SP3 compatibility mode.
+
+The .lcd file contains all diacritics and custom characters, but not all are used in the firmware. The ones which are used are defined in `lib/FontGen.py`. This script is used for generating the font table used inside the firmware and it must be executed whenever the .lcd file is changed to regenerate the font data.
+
+Since some of the diacritics are not going to be implemented at all, there is a preprocessing pass on the translated strings that replaces unimplemented characters with ones that are impelemented. This replacing is done in `lib/charset.py`.
+
+In terms of limitations, there can only be at most 96 custom characters defined in the firmware (0x80-0xDF) and at any moment, only 8 distinct custom characters can be displayed on the screen. This is a limitation of the hardware, not of the software. Since some translations might use more than 8 diacritics on the screen, an "alternate" form of each diacritic is implemented. This alternate form is the closest representation from the LCD's hardcoded font.
 
 ## Internal details
 
