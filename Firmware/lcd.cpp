@@ -886,7 +886,6 @@ static void lcd_print_custom(uint8_t c) {
 		} else if (lcd_custom_characters[i] == 0x7F) { //found an empty slot. create a new custom character and send it
 			lcd_custom_characters[i] = c; // mark the custom character as used
 			slotToUse = i;
-			charToSend = i;
 			goto createChar;
 		} else if (!(lcd_custom_characters[i] & 0x80)) { // found potentially unused slot. Remember it in case it's needed
 			slotToUse = i;
@@ -897,11 +896,19 @@ static void lcd_print_custom(uint8_t c) {
 	// If there exists any potentially unused slot, then use that one instead.
 	// Otherwise, use the alternate form of the character.
 	if (slotToUse < 0) {
+#ifdef DEBUG_CUSTOM_CHARACTERS
+		printf_P(PSTR("used alternate for char %02x\n"), c);
+#endif // DEBUG_CUSTOM_CHARACTERS
 		goto sendChar;
 	}
 
+#ifdef DEBUG_CUSTOM_CHARACTERS
+	printf_P(PSTR("replaced char %02x at slot %u\n"), lcd_custom_characters[slotToUse], slotToUse);
+#endif // DEBUG_CUSTOM_CHARACTERS
+
 createChar:
-	lcd_createChar_P(slotToUse, &Font[c - 0x80]);	
+	charToSend = slotToUse;
+	lcd_createChar_P(slotToUse, &Font[c - 0x80]);
 #ifdef DEBUG_CUSTOM_CHARACTERS
 	printf_P(PSTR("created char %02x at slot %u\n"), c, slotToUse);
 #endif // DEBUG_CUSTOM_CHARACTERS
