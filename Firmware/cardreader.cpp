@@ -230,29 +230,17 @@ void CardReader::initsd(bool doPresort/* = true*/)
     SERIAL_ECHO_START;
     SERIAL_ECHOLNRPGM(_n("SD card ok"));////MSG_SD_CARD_OK
   }
-  workDir=root;
-  curDir=&root;
-  workDirDepth = 0;
 
-  #ifdef SDCARD_SORT_ALPHA
-  if (doPresort)
-    presort();
-  #endif
-
-  /*
-  if(!workDir.openRoot(&volume))
+  if (cardOK)
   {
-    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+    setroot(doPresort);
   }
-  */
-  
 }
 
-void CardReader::setroot(bool doPresort)
+void __attribute__((noinline)) CardReader::setroot(bool doPresort)
 {
   workDir=root;
   workDirDepth = 0;
-  
   curDir=&workDir;
 #ifdef SDCARD_SORT_ALPHA
 	if (doPresort)
