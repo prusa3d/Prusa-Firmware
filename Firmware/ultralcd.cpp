@@ -5586,7 +5586,7 @@ static void lcd_control_temperature_menu()
 static void lcd_sd_refresh()
 {
 #if SDCARDDETECT == -1
-  card.initsd();
+  card.mount();
 #else
   card.presort();
 #endif
@@ -7309,7 +7309,7 @@ void menu_lcd_lcdupdate_func(void)
 		{
 			if (!card.cardOK)
 			{
-				card.initsd(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
+				card.mount(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
 				card.presort_flag = true; //force sorting of the SD menu
 			}
 			LCD_MESSAGERPGM(MSG_WELCOME);

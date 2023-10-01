@@ -1364,7 +1364,7 @@ void setup()
 
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
-	card.initsd();
+	card.mount();
 #ifdef DEBUG_SD_SPEED_TEST
 	if (card.cardOK)
 	{
@@ -5240,7 +5240,7 @@ void process_commands()
 	### M21 - Init SD card <a href="https://reprap.org/wiki/G-code#M21:_Initialize_SD_card">M21: Initialize SD card</a>
     */
     case 21:
-      card.initsd();
+      card.mount();
       break;
 
     /*!

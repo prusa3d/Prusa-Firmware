@@ -198,7 +198,7 @@ void CardReader::ls(ls_param params)
 }
 
 
-void CardReader::initsd(bool doPresort/* = true*/)
+void CardReader::mount(bool doPresort/* = true*/)
 {
   cardOK = false;
   if(root.isOpen())
@@ -616,7 +616,7 @@ void CardReader::checkautostart(bool force)
   autostart_stilltocheck = false;
   if(!cardOK)
   {
-    initsd();
+    mount();
     if(!cardOK) //fail
       return;
   }

@@ -27,7 +27,7 @@ public:
     inline ls_param(bool LFN, bool timestamp):LFN(LFN), timestamp(timestamp) { }
   } __attribute__((packed));
   
-  void initsd(bool doPresort = true);
+  void mount(bool doPresort = true);
   void write_command(char *buf);
   void write_command_no_newline(char *buf);
   //files auto[0-9].g on the sd card are performed in a row
