@@ -233,11 +233,11 @@ void CardReader::initsd(bool doPresort/* = true*/)
 
   if (cardOK)
   {
-    setroot(doPresort);
+    cdroot(doPresort);
   }
 }
 
-void __attribute__((noinline)) CardReader::setroot(bool doPresort)
+void __attribute__((noinline)) CardReader::cdroot(bool doPresort)
 {
   workDir=root;
   workDirDepth = 0;
@@ -334,7 +334,7 @@ bool CardReader::diveSubfolder (const char *&fileName)
     const char *dirname_start, *dirname_end;
     if (fileName[0] == '/') // absolute path
     {
-        setroot(false);
+        cdroot(false);
         dirname_start = fileName + 1;
         while (*dirname_start)
         {

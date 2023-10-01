@@ -59,7 +59,7 @@ public:
   void ls(ls_param params);
   bool chdir(const char * relpath, bool doPresort);
   void updir();
-  void setroot(bool doPresort);
+  void cdroot(bool doPresort);
 
   #ifdef SDCARD_SORT_ALPHA
      void presort();
