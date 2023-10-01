@@ -5194,7 +5194,7 @@ static void lcd_main_menu()
 
     // Menu item for reprint
     if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
-        if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.cardOK) {
+        if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.mounted) {
             MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_reprint_from_eeprom);
         } else if ((GetPrinterState() == PrinterState::HostPrintingFinished) && M79_timer_get_status()) {
             MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_send_action_start);
@@ -5259,7 +5259,7 @@ static void lcd_main_menu()
     )
     {
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
-        if (card.cardOK || lcd_commands_type != LcdCommands::Idle) {
+        if (card.mounted || lcd_commands_type != LcdCommands::Idle) {
             if (!card.isFileOpen()) {
                 if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
                     bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
@@ -7307,7 +7307,7 @@ void menu_lcd_lcdupdate_func(void)
 		backlight_wake();
 		if (lcd_oldcardstatus)
 		{
-			if (!card.cardOK)
+			if (!card.mounted)
 			{
 				card.mount(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
 				card.presort_flag = true; //force sorting of the SD menu

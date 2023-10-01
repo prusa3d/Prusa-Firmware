@@ -91,7 +91,7 @@ public:
   bool saving;
   bool logging;
   bool sdprinting ;  
-  bool cardOK ;
+  bool mounted;
   char filename[FILENAME_LENGTH];
   // There are scenarios when simple modification time is not enough (on MS Windows)
   // Therefore these timestamps hold the most recent one of creation/modification date/times
