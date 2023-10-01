@@ -189,6 +189,7 @@ void uvlo_() {
     eeprom_update_block(saved_start_position, (float *)EEPROM_UVLO_SAVED_START_POSITION, sizeof(saved_start_position));
 
     eeprom_update_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX, saved_segment_idx);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE, saved_printing_type);
 
 #ifdef LIN_ADVANCE
     eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
