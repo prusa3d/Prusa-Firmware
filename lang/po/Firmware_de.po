@@ -71,7 +71,7 @@ msgstr "Raumtemp."
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2826
 msgid "Are left and right Z-carriages all up?"
-msgstr "Sind linke+rechte Z- Schlitten ganz oben?"
+msgstr "Sind linker+rechter Z-Schlitten ganz oben?"
 
 #. MSG_SOUND_BLIND c=7
 #: ../../Firmware/messages.cpp:155 ../../Firmware/ultralcd.cpp:4191
@@ -207,12 +207,12 @@ msgstr "KOMMUNIKATIONSFEHLER"
 #. MSG_CALIBRATE_BED c=18
 #: ../../Firmware/ultralcd.cpp:4579
 msgid "Calibrate XYZ"
-msgstr "Kalibrierung XYZ"
+msgstr "XYZ Kalibrierung"
 
 #. MSG_HOMEYZ c=18
 #: ../../Firmware/messages.cpp:50 ../../Firmware/ultralcd.cpp:4581
 msgid "Calibrate Z"
-msgstr "Kalibrierung Z"
+msgstr "Z Kalibrierung"
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 #: ../../Firmware/ultralcd.cpp:2791
@@ -286,7 +286,7 @@ msgstr "Filament-Wechsel"
 #. MSG_CHANGE_SUCCESS c=20
 #: ../../Firmware/ultralcd.cpp:2132
 msgid "Change success!"
-msgstr "Wechsel erfolgr.!"
+msgstr "Wechsel erfolgreich!"
 
 #. MSG_CORRECTLY c=20
 #: ../../Firmware/ultralcd.cpp:2179
@@ -507,7 +507,7 @@ msgstr "Werfe Filament aus"
 #. MSG_SELFTEST_ENDSTOP c=16
 #: ../../Firmware/ultralcd.cpp:6609
 msgid "Endstop"
-msgstr "Endanschlag"
+msgstr "Endschalter"
 
 #. MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ../../Firmware/ultralcd.cpp:6614
@@ -570,8 +570,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA nicht ausgeschaltet beim Entladen. Fil. manuell entladen. Fil. bewegt "
-"sich? FINDA funktioniert?"
+"FINDA nicht ausgeschaltet beim Entladen. Entlade Fil. manuell. Bewegt sich"
+" Fil.? Funktioniert FINDA?"
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:241 ../../Firmware/mmu2/errors_list.h:297
@@ -626,7 +626,7 @@ msgstr "MMU-Fehler"
 #. MSG_FALSE_TRIGGERING c=20
 #: ../../Firmware/ultralcd.cpp:6655
 msgid "False triggering"
-msgstr "Falschtriggerung"
+msgstr "Fehlauslösung"
 
 #. MSG_FAN_SPEED c=14
 #: ../../Firmware/messages.cpp:34 ../../Firmware/ultralcd.cpp:4169
@@ -706,7 +706,7 @@ msgstr "Fil. nicht geladen"
 #: ../../Firmware/ultralcd.cpp:6654 ../../Firmware/ultralcd.cpp:6658
 #: ../../Firmware/ultralcd.cpp:6885
 msgid "Filament sensor"
-msgstr "Filamentsensor"
+msgstr "Filament-Sensor"
 
 #. MSG_DESC_FSENSOR_FILAMENT_STUCK c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:244 ../../Firmware/mmu2/errors_list.h:300
@@ -744,14 +744,14 @@ msgstr "Filament benutzt"
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/ultralcd.cpp:7014
 msgid "File incomplete. Continue anyway?"
-msgstr "Datei unvollständig Trotzdem fortfahren?"
+msgstr "Datei unvollständig. Trotzdem fortfahren?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
 #: ../../Firmware/messages.cpp:41
 #: ../../Firmware/mmu2_progress_converter.cpp:43
 #: ../../Firmware/ultralcd.cpp:5017 ../../Firmware/ultralcd.cpp:5348
 msgid "Finishing movements"
-msgstr "Bewegung beenden"
+msgstr "Bewegungen beenden"
 
 #. MSG_V2_CALIBRATION c=18
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:4571
@@ -784,7 +784,7 @@ msgstr ""
 #: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:6620
 #: ../../Firmware/ultralcd.cpp:6737 ../../Firmware/ultralcd.cpp:6742
 msgid "Front print fan?"
-msgstr "Drucklüfter?"
+msgstr "Vorderer Lüfter?"
 
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:2687
@@ -794,7 +794,7 @@ msgstr "Vorne [µm]"
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:6644
 msgid "Front/left fans"
-msgstr "Druck/Extr. Lüfter"
+msgstr "Druck/Hotend Lüfter"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:141 ../../Firmware/util.cpp:386
@@ -892,7 +892,7 @@ msgstr ""
 #: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:4146
 #: ../../Firmware/ultralcd.cpp:4155
 msgid "High power"
-msgstr "Hohe leist"
+msgstr "Hohe Leist"
 
 #. MSG_PROGRESS_HOMING c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:29
@@ -992,13 +992,13 @@ msgstr ""
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3625
 #: ../../Firmware/ultralcd.cpp:3887
 msgid "Is filament loaded?"
-msgstr "Ist das Filament geladen?"
+msgstr "Ist Filament geladen?"
 
 #. MSG_STEEL_SHEET_CHECK c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3265 ../../Firmware/Marlin_main.cpp:4746
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:3855
 msgid "Is steel sheet on heatbed?"
-msgstr "Liegt das Stahlblech auf dem Heizbett?"
+msgstr "Liegt Stahlblech auf dem Heizbett?"
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2258 ../../Firmware/messages.cpp:51
@@ -1026,7 +1026,7 @@ msgstr "Links"
 #: ../../Firmware/messages.cpp:89 ../../Firmware/ultralcd.cpp:6626
 #: ../../Firmware/ultralcd.cpp:6737 ../../Firmware/ultralcd.cpp:6742
 msgid "Left hotend fan?"
-msgstr "Extruderlüfter?"
+msgstr "Linker Lüfter?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2685
@@ -1123,7 +1123,7 @@ msgstr "MMU REAGIERT NICHT"
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
 #: ../../Firmware/mmu2_reporting.cpp:364
 msgid "MMU Retry: Restoring temperature..."
-msgstr "MMU-Neuversuch: Wiederherstelle die Temperatur..."
+msgstr "MMU-Neuversuch: Stelle die Tempera- tur wieder her..."
 
 #. MSG_TITLE_SELFTEST_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:174 ../../Firmware/mmu2/errors_list.h:222
@@ -1233,7 +1233,7 @@ msgstr "Modell"
 #: ../../Firmware/mmu2/errors_list.h:328 ../../Firmware/mmu2/errors_list.h:329
 #: ../../Firmware/mmu2/errors_list.h:330
 msgid "More details online."
-msgstr "Weiter Details online."
+msgstr "Weitere Details online."
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:96 ../../Firmware/ultralcd.cpp:6606
@@ -1336,7 +1336,7 @@ msgstr "Jetzt werde ich die Düse für PLA vorheizen."
 #. MSG_REMOVE_TEST_PRINT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3854
 msgid "Now remove the test print from steel sheet."
-msgstr "Testdruck jetzt von Stahlblech entfernen."
+msgstr "Testdruck jetzt vom Stahlblech entfernen."
 
 #. MSG_NOZZLE c=10
 #: ../../Firmware/messages.cpp:72 ../../Firmware/ultralcd.cpp:1364
@@ -1735,7 +1735,7 @@ msgstr "Hinten [µm]"
 #. MSG_RECOVERING_PRINT c=20
 #: ../../Firmware/power_panic.cpp:322
 msgid "Recovering print"
-msgstr "Druck wiederherst"
+msgstr "Druck wiederherstel."
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:5135
@@ -1918,7 +1918,7 @@ msgstr "Sensor Info"
 #. MSG_FS_VERIFIED c=20 r=3
 #: ../../Firmware/ultralcd.cpp:5914
 msgid "Sensor verified, remove the filament now."
-msgstr "Sensor überprüft, entladen Sie jetzt das Filament."
+msgstr "FSensor überprüft, entladen Sie jetzt das Filament."
 
 #. MSG_SET_TEMPERATURE c=20
 #: ../../Firmware/ultralcd.cpp:2706
@@ -2112,7 +2112,7 @@ msgstr ""
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1559 ../../Firmware/messages.cpp:179
 msgid "Thermal model not calibrated yet."
-msgstr "Thermomodell noch unkalibriert."
+msgstr "Thermomodell noch nicht kalibriert."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4449
@@ -2135,7 +2135,7 @@ msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
 "Die Spannrolle kann die Startposition nicht richtig erreichen. Prüfen Sie, "
-"ob irgendetwas seine Bewegung blockiert."
+"ob irgendetwas dessen Bewegung blockiert."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:249 ../../Firmware/mmu2/errors_list.h:305
@@ -2275,12 +2275,12 @@ msgstr "Warte auf Benutzer.."
 #. MSG_WAITING_TEMP_PINDA c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2730
 msgid "Waiting for PINDA probe cooling"
-msgstr "Warten, bis PINDA- Sonde abgekühlt ist"
+msgstr "Warte bis PINDA- Sonde abgekühlt ist"
 
 #. MSG_WAITING_TEMP c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2760
 msgid "Waiting for nozzle and bed cooling"
-msgstr "Warten bis Heizung und Bett abgekühlt sind"
+msgstr "Warte bis Heizung und Bett abgekühlt sind"
 
 #. MSG_WARN c=8
 #: ../../Firmware/messages.cpp:134 ../../Firmware/ultralcd.cpp:4227
@@ -2519,8 +2519,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in Selector and FINDA works properly."
 msgstr ""
-"Selektor kann sich nicht bewegen, da FINDA Fil. erkennt wird. Stelle sicher,"
-" dass sich kein Fil. im Selektor befindet und FINDA ricchtig funktioniert."
+"Selektor kann sich nicht bewegen, da FINDA Fil. erkannt hat. Stelle sicher,"
+" dass sich kein Fil. im Selektor befindet und FINDA richtig funktioniert."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:289 ../../Firmware/mmu2/errors_list.h:336
@@ -2596,7 +2596,7 @@ msgstr "MeshBett Ausgleich fehlgeschlagen. Z Kalibrierung ausführen."
 #~ msgstr "Reset MMU"
 
 #~ msgid "Select extruder:"
-#~ msgstr "Wähle extruder:"
+#~ msgstr "Wähle Extruder:"
 
 #~ msgid ""
 #~ "The MMU reports its FW version incompatible with the printer's firmware. "
