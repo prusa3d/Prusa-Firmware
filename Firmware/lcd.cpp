@@ -389,7 +389,25 @@ void lcd_set_cursor_column(uint8_t col)
 // with custom characters
 void lcd_createChar_P(uint8_t location, const CustomCharacter *char_p)
 {
-	uint8_t charmap[8];
+	uint8_t charmap[8]; // unpacked font data
+
+	// The LCD expects the CGRAM data to be sent as pixel data, row by row. Since there are 8 rows per character, 8 bytes need to be sent.
+	// However, storing the data in the flash as the LCD expects it is wasteful since 3 bits per row are don't care and are not used.
+	// Therefore, flash can be saved if the character data is packed. For the AVR to unpack efficiently and quickly, the following scheme was used:
+	// 
+	// colbyte data0 data1 data2 data3
+	//    a      b     c     d     e
+	// 
+	// ** ** ** b7 b6 b5 b4 a0
+	// ** ** ** b3 b2 b1 b0 a1
+	// ** ** ** c7 c6 c5 c4 a2
+	// ** ** ** c3 c2 c1 c0 a3
+	// ** ** ** d7 d6 d5 d4 a4
+	// ** ** ** d3 d2 d1 d0 a5
+	// ** ** ** e7 e6 e5 e4 a6
+	// ** ** ** e3 e2 e1 e0 a7
+	// 
+	// The bits marked as ** in the unpacked data are don't care and they will contain garbage.
 
 	uint8_t temp;
 	uint8_t colByte;
