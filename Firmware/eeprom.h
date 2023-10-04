@@ -135,8 +135,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F91 3985 | unint32 | EEPROM_FILE_POSITION                  | ???          | ff ff ff ffh          | Power Panic File Position                         | ???          | D3 Ax0f91 C4
 | 0x0F8D 3981 | float   | EEPROM_UVLO_CURRENT_POSITION_Z        | ???          | ff ff ff ffh          | Power Panic Z Position                            | ^            | D3 Ax0f8d C4
 | 0x0F8C 3980 | uint8   | EEPROM_UVLO_PRINT_TYPE                | 00h 0        | ffh 255               | Power Panic print type: SD                        | ???          | D3 Ax0f8c C1
-| ^           | ^       | ^                                     | 01h 1        | ffh 255               | Power Panic print type: USB                       | ^            | ^
-| ^           | ^       | ^                                     | 02h 2        | ffh 255               | Power Panic print type: None                      | ^            | ^
+| ^           | ^       | ^                                     | 01h 1        | ^                     | Power Panic print type: USB                       | ^            | ^
+| ^           | ^       | ^                                     | 02h 2        | ^                     | Power Panic print type: None                      | ^            | ^
 | 0x0F8B 3979 | uint8   | EEPROM_UVLO_TARGET_BED                | ???          | ffh 255               | Power Panic Bed temperature                       | ^            | D3 Ax0f8b C1
 | 0x0F89 3977 | uint16  | EEPROM_UVLO_FEEDRATE                  | ???          | ff ffh 65535          | Power Panic Feedrate                              | ^            | D3 Ax0f89 C2
 | 0x0F88 3976 | uint8   | EEPROM_UVLO_FAN_SPEED                 | ???          | ffh 255               | Power Panic Fan speed                             | ^            | D3 Ax0f88 C1
