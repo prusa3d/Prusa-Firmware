@@ -272,6 +272,7 @@ void CardReader::startFileprint()
   if(cardOK)
   {
     sdprinting = true;
+    printer_state = 2; //set printer state to hide LCD menu and report correctly M862.7 Q while SD printing
 	#ifdef SDCARD_SORT_ALPHA
 		//flush_presort();
 	#endif
@@ -1017,6 +1018,7 @@ void CardReader::printingHasFinished()
     else
     {
       sdprinting = false;
+      printer_state = 0; //set printer state to show LCD menu after finished SD print
       if(SD_FINISHED_STEPPERRELEASE)
       {
           finishAndDisableSteppers();

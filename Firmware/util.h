@@ -29,7 +29,9 @@ enum class ClPrintChecking:uint_least8_t
     _Model=2,
     _Smodel=3,
     _Version=4,
-    _Gcode=5
+    _Gcode=5,
+    _Features=6,
+    _PrinterState=7
 };
 
 enum class ClNozzleDiameter:uint_least8_t

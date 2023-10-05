@@ -519,6 +519,15 @@ bool __attribute__((noinline)) printer_active() {
         || mesh_bed_leveling_flag;
 }
 
+//!@brief printer_state
+//!printer state state
+//!0 = unknown or finished print
+//!1 = printer ready for next print
+//!2 = printer SD printing
+//!3 = printer USB printing
+//!@endcode
+uint8_t printer_state=0;
+
 // Currently only used in one place, allowed to be inlined
 bool check_fsensor() {
     return printJobOngoing()
@@ -1731,7 +1740,7 @@ void loop()
 		usb_timer.start();
 	}
 	else if (usb_timer.expired(10000)) { //just need to check if it expired. Nothing else is needed to be done.
-		;
+		printer_state = 0; //set printer state to show LCD menu after finished SD print and report correctly M862.7 Q when USB times out
 	}
     
 #ifdef PRUSA_M28
@@ -7875,6 +7884,8 @@ Sigma_Exit:
       - M862.3 { P"<model_name>" | Q }
       - M862.4 { P<fw_version> | Q }
       - M862.5 { P<gcode_level> | Q }
+      - M862.6 Not used but reserved
+      - M862.7 { P<0|1> | Q } 0 = Printer not ready for next print (default), 1 = Printer is ready for next print , 2 = Printer busy printing
     
     When run with P<> argument, the check is performed against the input value.
     When run with Q argument, the current value is shown.
@@ -7956,6 +7967,14 @@ Sigma_Exit:
                          }
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN(GCODE_LEVEL);
+                    break;
+               case ClPrintChecking::_Features:  // ~ .6
+                    break;
+               case ClPrintChecking::_PrinterState: // ~.7
+                    if(code_seen('P'))
+                         printer_state=code_value_uint8();
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLN((int)printer_state);
                     break;
                }
         break;
