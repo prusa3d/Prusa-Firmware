@@ -90,27 +90,6 @@ void sm4_set_dir(uint8_t axis, uint8_t dir)
 	asm("nop");
 }
 
-uint8_t sm4_get_dir_bits(void)
-{
-    register uint8_t dir_bits = 0;
-    register uint8_t portL = PORTL;
-	//TODO -optimize in asm
-#if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
-	if (portL & 2) dir_bits |= 1;
-	if (portL & 1) dir_bits |= 2;
-	if (portL & 4) dir_bits |= 4;
-	if (portL & 64) dir_bits |= 8;
-	dir_bits ^= dir_mask;
-#elif ((MOTHERBOARD == BOARD_EINSY_1_0a))
-	if (portL & 1) dir_bits |= 1;
-	if (portL & 2) dir_bits |= 2;
-	if (portL & 4) dir_bits |= 4;
-	if (portL & 64) dir_bits |= 8;
-	dir_bits ^= dir_mask; 
-#endif
-	return dir_bits;
-}
-
 void sm4_set_dir_bits(uint8_t dir_bits)
 {
     register uint8_t portL = PORTL;

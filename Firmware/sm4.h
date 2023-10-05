@@ -37,9 +37,6 @@ extern uint8_t sm4_get_dir(uint8_t axis);
 // set direction for single axis (0 - positive, 1 - negative)
 extern void sm4_set_dir(uint8_t axis, uint8_t dir);
 
-// returns direction of all axes as bitmask (0 - positive, 1 - negative)
-extern uint8_t sm4_get_dir_bits(void);
-
 // set direction for all axes as bitmask (0 - positive, 1 - negative)
 extern void sm4_set_dir_bits(uint8_t dir_bits);
 
@@ -49,8 +46,4 @@ extern void sm4_do_step(uint8_t axes_mask);
 // xyze linear-interpolated relative move, returns remaining diagonal steps (>0 means stoped)
 extern uint16_t sm4_line_xyz_ui(uint16_t dx, uint16_t dy, uint16_t dz);
 
-
-#if defined(__cplusplus)
-}
-#endif //defined(__cplusplus)
 #endif //_SM4_H
