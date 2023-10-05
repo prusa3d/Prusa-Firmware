@@ -229,9 +229,9 @@ function(git_describe_working_tree _var)
             PARENT_SCOPE)
         return()
     endif()
-
+    git_head_commit_number(COMMIT_COUNT) #Bake the commit count into the full DSC
     execute_process(
-        COMMAND "${GIT_EXECUTABLE}" describe --dirty ${ARGN}
+        COMMAND "${GIT_EXECUTABLE}" describe --abbrev=0 --dirty=-D --broken=-B ${ARGN}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         RESULT_VARIABLE res
         OUTPUT_VARIABLE out
@@ -239,7 +239,11 @@ function(git_describe_working_tree _var)
     if(NOT res EQUAL 0)
         set(out "${out}-${res}-NOTFOUND")
     endif()
-
+    if( "${out}" MATCHES "-D\$")
+        STRING(REPLACE "-D" "-${COMMIT_COUNT}-D" out "${out}")
+    else()
+        set(out "${out}-${COMMIT_COUNT}")
+    endif()
     set(${_var}
         "${out}"
         PARENT_SCOPE)
@@ -357,4 +361,62 @@ function(git_head_commit_data _var _format)
     set(${_var}
         ${out}
         PARENT_SCOPE)
+endfunction()
+
+function(git_head_commit_number _var)
+    if(NOT GIT_FOUND)
+        find_package(Git QUIET)
+    endif()
+    if(NOT GIT_FOUND)
+        set(${_var}
+            "GIT-NOTFOUND"
+            PARENT_SCOPE)
+        return()
+    endif()
+
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" rev-list --count HEAD
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        RESULT_VARIABLE res
+        OUTPUT_VARIABLE out
+        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT res EQUAL 0)
+        set(out "${out}-${res}-NOTFOUND")
+    endif()
+
+    set(${_var}
+        "${out}"
+        PARENT_SCOPE)
+endfunction()
+
+function(git_get_repository _var)
+    if(NOT GIT_FOUND)
+        find_package(Git QUIET)
+    endif()
+    if(NOT GIT_FOUND)
+        set(${_var}
+            "Unknown"
+            PARENT_SCOPE)
+        return()
+    endif()
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" ls-remote --get-url
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        RESULT_VARIABLE res
+        OUTPUT_VARIABLE out
+        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+        message("remote URL is ${out}")
+    string(REGEX MATCH "([A-z0-9-]+)/Prusa-Firmware.?g?i?t?" out "${out}")
+    if("${CMAKE_MATCH_COUNT}" EQUAL 1)
+        message("Found repository name ${CMAKE_MATCH_1}")
+        set(${_var}
+            "${CMAKE_MATCH_1}"
+            PARENT_SCOPE)
+    else()
+        message("Failed to get repository information")
+        set(${_var}
+           #"${out}" #outputs the github repo user name
+           "Unknown" #All other repos shown as unknown
+           PARENT_SCOPE)
+    endif()
 endfunction()
