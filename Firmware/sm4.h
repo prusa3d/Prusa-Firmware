@@ -30,10 +30,6 @@ extern sm4_update_pos_cb_t sm4_update_pos_cb;
 // callback pointer - calc_delay
 extern sm4_calc_delay_cb_t sm4_calc_delay_cb;
 
-
-// returns direction for single axis (0 - positive, 1 - negative)
-extern uint8_t sm4_get_dir(uint8_t axis);
-
 // set direction for single axis (0 - positive, 1 - negative)
 extern void sm4_set_dir(uint8_t axis, uint8_t dir);
 

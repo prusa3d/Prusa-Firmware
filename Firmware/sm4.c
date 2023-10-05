@@ -51,26 +51,6 @@ sm4_calc_delay_cb_t sm4_calc_delay_cb = 0;
 
 uint16_t sm4_cpu_time = 0;
 
-
-uint8_t sm4_get_dir(uint8_t axis)
-{
-	switch (axis)
-	{
-#if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
-	case 0: return (PORTL & 2)?XDIR;
-	case 1: return (PORTL & 1)?YDIR;
-	case 2: return (PORTL & 4)?ZDIR;
-	case 3: return (PORTL & 64)?EDIR;
-#elif ((MOTHERBOARD == BOARD_EINSY_1_0a))
-	case 0: return (PORTL & 1)?XDIR;
-	case 1: return (PORTL & 2)?YDIR;
-	case 2: return (PORTL & 4)?ZDIR;
-	case 3: return (PORTL & 64)?EDIR;
-#endif
-	}
-	return 0;
-}
-
 void sm4_set_dir(uint8_t axis, uint8_t dir)
 {
 	switch (axis)
