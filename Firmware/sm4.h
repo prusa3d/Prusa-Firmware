@@ -47,7 +47,6 @@ extern void sm4_set_dir_bits(uint8_t dir_bits);
 extern void sm4_do_step(uint8_t axes_mask);
 
 // xyze linear-interpolated relative move, returns remaining diagonal steps (>0 means stoped)
-extern uint16_t sm4_line_xyze_ui(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de);
 extern uint16_t sm4_line_xyz_ui(uint16_t dx, uint16_t dy, uint16_t dz);
 
 
