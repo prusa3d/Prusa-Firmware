@@ -2579,6 +2579,11 @@ msgstr "Sensibilidad"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Nivelacion fallada. Ejecute la calibración Z."
 
+#. MSG_SET_READY c=18
+#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
+msgid "Set Ready"
+msgstr "Listo"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Retira el fil. viejo y presione el dial para comenzar a cargar el nuevo."
