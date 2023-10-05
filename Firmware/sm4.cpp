@@ -1,5 +1,4 @@
-//sm4.c - simple 4-axis stepper control
-
+//sm4.cpp - simple 4-axis stepper control
 #include "sm4.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
@@ -70,7 +69,7 @@ void sm4_set_dir(uint8_t axis, uint8_t dir)
 
 void sm4_set_dir_bits(uint8_t dir_bits)
 {
-    register uint8_t portL = PORTL;
+	uint8_t portL = PORTL;
 	portL &= 0xb8; //set direction bits to zero
 	//TODO -optimize in asm
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
@@ -96,7 +95,7 @@ void sm4_do_step(uint8_t axes_mask)
 #ifdef TMC2130_DEDGE_STEPPING
 	PINC = (axes_mask & 0x0f); // toggle step signals by mask
 #else
-    register uint8_t portC = PORTC & 0xf0;
+	uint8_t portC = PORTC & 0xf0;
 	PORTC = portC | (axes_mask & 0x0f); //set step signals by mask
 	asm("nop");
 	PORTC = portC; //set step signals to zero

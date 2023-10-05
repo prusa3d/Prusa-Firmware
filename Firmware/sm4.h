@@ -5,12 +5,6 @@
 #include <inttypes.h>
 #include "config.h"
 
-
-#if defined(__cplusplus)
-extern "C" {
-#endif //defined(__cplusplus)
-
-
 // callback prototype for stop condition (return 0 - continue, return 1 - stop)
 typedef uint8_t (*sm4_stop_cb_t)();
 

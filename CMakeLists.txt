@@ -218,7 +218,7 @@ set(FW_SOURCES
     SdFile.cpp
     SdVolume.cpp
     Servo.cpp
-    sm4.c
+    sm4.cpp
     sound.cpp
     speed_lookuptable.cpp
     spi.c
