@@ -49,8 +49,6 @@ sm4_update_pos_cb_t sm4_update_pos_cb = 0;
 
 sm4_calc_delay_cb_t sm4_calc_delay_cb = 0;
 
-uint16_t sm4_cpu_time = 0;
-
 void sm4_set_dir(uint8_t axis, uint8_t dir)
 {
 	switch (axis)
