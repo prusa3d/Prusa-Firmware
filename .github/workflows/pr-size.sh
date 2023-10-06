@@ -24,9 +24,15 @@ avr_ram()
 }
 
 cat <<EOF > "$MESSAGE"
-| Target | ΔFlash (bytes) | ΔSRAM (bytes) |
-| ------ | -------------- | ------------- |
+All values in bytes. Δ Delta to base
+
+| Target| ΔFlash | ΔSRAM | Used Flash | Used SRAM | Free Flash | Free SRAM |
+| ------| ------ | ----- | -----------| --------- | ---------- | --------- |
 EOF
+
+einsy_max_upload_size=$(grep "prusa_einsy_rambo.upload.maximum_size" .dependencies/prusa3dboards-*/boards.txt | cut -d "=" -f2)
+einsy_max_upload_data_size=8192
+
 for TARGET in $@
 do
     # strip the multilang prefix
@@ -43,5 +49,8 @@ do
     flash_d=$(($pr_flash - $base_flash))
     ram_d=$(($pr_ram - $base_ram))
 
-    echo "| \`$TARGET\` | $flash_d | $ram_d |" >> "$MESSAGE"
+    flash_free=$(($einsy_max_upload_size - $pr_flash))
+    ram_free=$(($einsy_max_upload_data_size - $pr_ram))
+
+    echo "| \`$TARGET\` | $flash_d | $ram_d | $pr_flash | $pr_ram | $flash_free | $ram_free |" >> "$MESSAGE"
 done
