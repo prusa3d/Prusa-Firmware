@@ -1393,7 +1393,8 @@ void check_max_temp_raw()
 //! used to slow down text switching
 struct alert_automaton_mintemp {
 	const char *m2;
-	alert_automaton_mintemp(const char *m2):m2(m2){}
+	inline constexpr alert_automaton_mintemp(const char *m2)
+		: m2(m2) {}
 private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
 	enum class States : uint8_t { Init = 0, TempAboveMintemp, ShowPleaseRestart, ShowMintemp };
