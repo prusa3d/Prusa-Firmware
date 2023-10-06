@@ -288,9 +288,6 @@ extern bool mesh_bed_leveling_flag;
 extern bool saved_printing;
 extern uint32_t saved_sdpos;
 extern uint8_t saved_printing_type;
-#define PRINTING_TYPE_SD 0
-#define PRINTING_TYPE_USB 1
-#define PRINTING_TYPE_NONE 2
 
 extern uint16_t saved_extruder_temperature; //!< Active extruder temperature
 extern uint8_t saved_bed_temperature; //!< Bed temperature

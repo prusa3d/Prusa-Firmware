@@ -7,6 +7,7 @@
 #include "temperature.h"
 #include "language.h"
 #include "Prusa_farm.h"
+#include "power_panic.h"
 
 #ifdef SDSUPPORT
 
@@ -557,7 +558,7 @@ void CardReader::getStatus(bool arg_P)
 {
     if (isPrintPaused)
     {
-        if (saved_printing && (saved_printing_type == PRINTING_TYPE_SD))
+        if (saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD))
             SERIAL_PROTOCOLLNPGM("SD print paused");
         else
             SERIAL_PROTOCOLLNPGM("Print saved");

@@ -41,7 +41,7 @@ void uvlo_() {
     unsigned long time_start = _millis();
 
     // True if a print is already saved to RAM
-    bool sd_print_saved_in_ram = saved_printing && (saved_printing_type == PRINTING_TYPE_SD);
+    bool sd_print_saved_in_ram = saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD);
 
     // Flag to decide whether or not to set EEPROM_UVLO bit
     bool sd_print = card.sdprinting || sd_print_saved_in_ram;
@@ -189,6 +189,7 @@ void uvlo_() {
     eeprom_update_block(saved_start_position, (float *)EEPROM_UVLO_SAVED_START_POSITION, sizeof(saved_start_position));
 
     eeprom_update_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX, saved_segment_idx);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE, saved_printing_type);
 
 #ifdef LIN_ADVANCE
     eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
@@ -198,7 +199,7 @@ void uvlo_() {
     // Note: Recovering a print from EEPROM currently assumes the user
     // is printing from an SD card, this is why this EEPROM byte is only set
     // when SD card print is detected
-    if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, PENDING_RECOVERY);
+    if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY);
 
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
@@ -271,7 +272,7 @@ static void uvlo_tiny() {
     }
 
     // Update the the "power outage" flag.
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PENDING_RECOVERY_RETRY);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
 
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
@@ -293,7 +294,7 @@ void setup_uvlo_interrupt() {
     EIMSK |= (1 << 4);
 
     // check if power was lost before we armed the interrupt
-    if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO) != NO_PENDING_RECOVERY)
+    if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY)
     {
         SERIAL_ECHOLNRPGM(MSG_INT4);
         uvlo_drain_reset();
@@ -303,7 +304,7 @@ void setup_uvlo_interrupt() {
 ISR(INT4_vect) {
     EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once
     SERIAL_ECHOLNRPGM(MSG_INT4);
-    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == NO_PENDING_RECOVERY)
+    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::NO_PENDING_RECOVERY)
     {
         if(printer_active()) {
             uvlo_();
@@ -326,7 +327,7 @@ void recover_print(uint8_t automatic) {
 
     // Lift the print head 25mm, first to avoid collisions with oozed material with the print,
     // and second also so one may remove the excess priming material.
-    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PENDING_RECOVERY)
+    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY)
     {
         enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
     }
