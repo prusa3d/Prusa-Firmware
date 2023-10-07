@@ -439,7 +439,7 @@ function(fw_add_variant variant_name)
     add_custom_target(
       check_lang_${variant_name}_${LANG}
       COMMENT "Checking ${variant_name} language ${LANG}"
-      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
       DEPENDS ${LANG_MAP} ${PO_FILE}
       USES_TERMINAL
       )
@@ -511,7 +511,7 @@ function(fw_add_variant variant_name)
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.bin
         COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_FINAL}.bin
-        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
+        COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
                 ${FW_LANG_FINAL}.bin
         DEPENDS ${FW_LANG_BASE} ${LANG_BIN}
         COMMENT "Generating ${FW_LANG_FINAL}.bin"
