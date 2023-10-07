@@ -17,7 +17,13 @@ const uint16_t FW_VERSION_NR[4] PROGMEM = {
     FW_TWEAK,
 };
 
-const uint32_t FW_VERSION_HASH PROGMEM = FW_COMMIT_HASH;
+const char FW_VERSION_HASH[] PROGMEM = FW_COMMIT_HASH;
+static_assert(sizeof(FW_VERSION_HASH) == FW_COMMIT_HASH_LENGTH + 1);
+
+const char* FW_VERSION_HASH_P()
+{
+    return FW_VERSION_HASH;
+}
 
 const char* FW_VERSION_STR_P()
 {

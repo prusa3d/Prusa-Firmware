@@ -367,7 +367,8 @@ function(add_base_binary variant_name)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
-            FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+            FW_COMMIT_HASH="${FW_COMMIT_HASH}"
+            FW_COMMIT_HASH_LENGTH=${FW_COMMIT_HASH_LENGTH}
             FW_MAJOR=${PROJECT_VERSION_MAJOR}
             FW_MINOR=${PROJECT_VERSION_MINOR}
             FW_REVISION=${PROJECT_VERSION_REV}
