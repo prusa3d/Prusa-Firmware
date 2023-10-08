@@ -90,7 +90,7 @@ if (NO_TAG_IS_FATAL)
 else()
     MESSAGE(STATUS "Git was not found or an error occurred parsing the tag. Falling back to Configuration.h values (${PROJECT_VERSION}).")
 endif()
-set(FW_COMMIT_HASH "0") # Clear it, the code expects a binary...
+set(FW_COMMIT_HASH ${FW_COMMIT_HASH_UNKNOWN}) # Clear it, the code expects a binary...
 set(PROJECT_VERSION_TIMESTAMP "0")
 endif()
 
