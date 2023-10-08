@@ -380,7 +380,7 @@ FORCE_INLINE void stepper_next_block()
     acceleration_time = calc_timer(acc_step_rate, step_loops);
 
 #ifdef LIN_ADVANCE
-    if (current_block->use_advance_lead) {
+    if (current_block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
         target_adv_steps = current_block->max_adv_steps;
     }
     e_steps = 0;
@@ -841,7 +841,7 @@ FORCE_INLINE void isr() {
         _NEXT_ISR(timer);
         acceleration_time += timer;
 #ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead) {
+        if (current_block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
             if (step_events_completed.wide <= (unsigned long int)step_loops) {
                 la_state = ADV_INIT | ADV_ACC_VARY;
                 if (e_extruding && current_adv_steps > target_adv_steps)
@@ -870,7 +870,7 @@ FORCE_INLINE void isr() {
         deceleration_time += timer;
 
 #ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead) {
+        if (current_block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
             if (step_events_completed.wide <= current_block->decelerate_after + step_loops) {
                 target_adv_steps = current_block->final_adv_steps;
                 la_state = ADV_INIT | ADV_ACC_VARY;
@@ -888,7 +888,7 @@ FORCE_INLINE void isr() {
           step_loops_nominal = step_loops;
 
 #ifdef LIN_ADVANCE
-          if(current_block->use_advance_lead) {
+          if(current_block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
               // Due to E-jerk, there can be discontinuities in pressure state where an
               // acceleration or deceleration can be skipped or joined with the previous block.
               // If LA was not previously active, re-check the pressure level
