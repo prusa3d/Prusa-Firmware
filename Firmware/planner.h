@@ -46,6 +46,9 @@ enum BlockFlag {
     BLOCK_FLAG_DDA_LOWRES = 8,
     // Block starts with Zeroed E counter
     BLOCK_FLAG_E_RESET = 16,
+    // Block is being executed by the stepper ISR
+    BLOCK_FLAG_BUSY = 32,
+
 };
 
 union dda_isteps_t
@@ -104,7 +107,6 @@ typedef struct {
   uint32_t final_rate;                // The minimal rate at exit
   uint32_t acceleration_steps_per_s2; // acceleration steps/sec^2
   uint8_t fan_speed; // Print fan speed, ranges from 0 to 255
-  volatile char busy;
 
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
@@ -233,7 +235,7 @@ FORCE_INLINE block_t *plan_get_current_block()
     return(NULL); 
   }
   block_t *block = &block_buffer[block_buffer_tail];
-  block->busy = true;
+  block->flag |= BLOCK_FLAG_BUSY;
   return(block);
 }
 

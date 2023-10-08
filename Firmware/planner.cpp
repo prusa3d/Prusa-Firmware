@@ -295,7 +295,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   // which corresponds to a maximum repeat frequency of 228.57 kHz.
   // This blocking is safe in the context of a 10kHz stepper driver interrupt
   // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
-  if (! block->busy) { // Don't update variables if block is busy.
+  if (!(block->flag & BLOCK_FLAG_BUSY)) { // Don't update variables if block is busy.
     block->accelerate_until = accelerate_steps;
     block->decelerate_after = accelerate_steps+plateau_steps;
     block->initial_rate = initial_rate;
@@ -726,7 +726,8 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   block_t *block = &block_buffer[block_buffer_head];
 
   // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
-  block->busy = false;
+  // Also reset the block flag.
+  block->flag = 0;
 
   // Set sdlen for calculating sd position
   block->sdlen = 0;
@@ -1100,9 +1101,6 @@ Having the real displacement of the head, we can calculate the total movement le
           }
       }
   }
-
-  // Reset the block flag.
-  block->flag = 0;
 
   if (plan_reset_next_e_sched)
   {
