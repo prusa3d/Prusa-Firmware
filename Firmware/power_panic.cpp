@@ -423,23 +423,12 @@ bool recover_machine_state_after_power_panic() {
      return mbl_was_active;
 }
 
-void restore_print_from_eeprom(bool mbl_was_active) {
-    int feedrate_rec;
-    int feedmultiply_rec;
-    uint8_t fan_speed_rec;
+/// @brief Read saved filename from EEPROM and send g-code command: M23 <filename>
+void restore_file_from_sd()
+{
     char filename[FILENAME_LENGTH];
-    uint8_t depth = 0;
     char dir_name[9];
-
-    fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
-    feedrate_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDRATE);
-    feedmultiply_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY);
-    SERIAL_ECHOPGM("Feedrate:");
-    MYSERIAL.print(feedrate_rec);
-    SERIAL_ECHOPGM(", feedmultiply:");
-    MYSERIAL.println(feedmultiply_rec);
-
-    depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
+    uint8_t depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
     MYSERIAL.println(int(depth));
     for (uint8_t i = 0; i < depth; i++) {
@@ -459,6 +448,28 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     MYSERIAL.print(filename);
     strcat_P(filename, PSTR(".gco"));
     enquecommandf_P(MSG_M23, filename);
+}
+
+void restore_print_from_eeprom(bool mbl_was_active) {
+    int feedrate_rec;
+    int feedmultiply_rec;
+    uint8_t fan_speed_rec;
+
+    fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
+    feedrate_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDRATE);
+    feedmultiply_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY);
+    SERIAL_ECHOPGM("Feedrate:");
+    MYSERIAL.print(feedrate_rec);
+    SERIAL_ECHOPGM(", feedmultiply:");
+    MYSERIAL.println(feedmultiply_rec);
+
+    
+    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
+    { // M23
+        restore_file_from_sd();
+    }
+
+    // SD: Position in file, USB: g-code line number
     uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
     SERIAL_ECHOPGM("Position read from eeprom:");
     MYSERIAL.println(position);
