@@ -14,20 +14,16 @@ const uint16_t FW_VERSION_NR[4] PROGMEM = {
     FW_MAJOR,
     FW_MINOR,
     FW_REVISION,
-#ifndef FW_FLAVOR
-    FW_COMMIT_NR
-#else
-#   if FW_DEV_VERSION == FW_VERSION_ALPHA
-    FIRMWARE_REVISION_ALPHA + FW_FLAVERSION
-#   elif FW_DEV_VERSION == FW_VERSION_BETA
-    FIRMWARE_REVISION_BETA + FW_FLAVERSION
-#   elif FW_DEV_VERSION == FW_VERSION_RC
-    FIRMWARE_REVISION_RC + FW_FLAVERSION
-#   elif FW_DEV_VERSION == FW_VERSION_GOLD
-    0
-#   endif
-#endif
+    FW_TWEAK,
 };
+
+const char FW_VERSION_HASH[] PROGMEM = FW_COMMIT_HASH;
+static_assert(sizeof(FW_VERSION_HASH) == FW_COMMIT_HASH_LENGTH + 1);
+
+const char* FW_VERSION_HASH_P()
+{
+    return FW_VERSION_HASH;
+}
 
 const char* FW_VERSION_STR_P()
 {
@@ -159,7 +155,7 @@ inline bool strncmp_PP(const char *p1, const char *p2, uint8_t n)
 				return -1;
 			if (pgm_read_byte(p1) > pgm_read_byte(p2))
 				return 1;
-		}            
+		}
     }
     return 0;
 }
