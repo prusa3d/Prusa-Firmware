@@ -2,7 +2,10 @@
 #include <stdint.h>
 
 extern const uint16_t FW_VERSION_NR[4];
-extern const char* FW_VERSION_STR_P();
+const char* FW_VERSION_STR_P();
+
+extern const char FW_VERSION_HASH[];
+const char* FW_VERSION_HASH_P();
 
 // Definition of a firmware flavor numerical values.
 // To keep it short as possible

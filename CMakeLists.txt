@@ -2,60 +2,97 @@ cmake_minimum_required(VERSION 3.19)
 include(cmake/Utilities.cmake)
 include(cmake/GetGitRevisionDescription.cmake)
 include(cmake/ReproducibleBuild.cmake)
+include(cmake/ProjectVersion.cmake)
+resolve_version_variables()
+
+OPTION(ENFORCE_VERSION_MATCH "Enforce checking that configuration.h matches any parsed git tags" OFF)
+OPTION(NO_TAG_IS_FATAL "If tag parsing fails, issue a fatal error" OFF)
 
 set(PROJECT_VERSION_SUFFIX
     "<auto>"
     CACHE
       STRING
-      "Full version suffix to be shown on the info screen in settings (e.g. full_version=4.0.3-BETA+1035.PR111.B4, suffix=-BETA+1035.PR111.B4). Defaults to '+<commit sha>.<dirty?>.<debug?>' if set to '<auto>'."
+      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_SUFFIX>). Overrides git hash if set."
     )
-set(PROJECT_VERSION_SUFFIX_SHORT
+if(PROJECT_VERSION_SUFFIX STREQUAL "<auto>")
+  set(PROJECT_VERSION_SUFFIX "${FW_COMMIT_HASH}")
+endif()
+set(PROJECT_VERSION_FULL
     "<auto>"
     CACHE
       STRING
-      "Short version suffix to be shown on splash screen. Defaults to '+<BUILD_NUMBER>' if set to '<auto>'."
+      "Full version string to be shown on the info screen in settings. Overrides git version if set."
     )
-set(BUILD_NUMBER
-    ""
-    CACHE STRING "Build number of the firmware. Resolved automatically if not specified."
+if(PROJECT_VERSION_FULL STREQUAL "<auto>")
+  set(PROJECT_VERSION_FULL "${FW_COMMIT_DSC}")
+endif()
+set(PROJECT_REPOSITORY
+    "Unknown"
+    CACHE STRING "Repository string to be shown on the info screen in settings."
     )
-set(PROJECT_VERSION_TIMESTAMP
-    ""
-    CACHE STRING "Timestamp for the build. Resolved automatically if not specified."
-    )
+
 set(CUSTOM_COMPILE_OPTIONS
     ""
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-include(cmake/ProjectVersion.cmake)
-resolve_version_variables()
-
-set(PROJECT_VERSION_FLAVOUR
-    ""
-    CACHE STRING "Firmware flavour to build - DEBUG, DEVEL, APLHA, BETA or RC"
-    )
-set(PROJECT_VERSION_FLAVOUR_REVISION
-    ""
-    CACHE STRING "Firmware flavour version, e.g. 1 for RC1, etc"
-    )
-
-if(NOT PROJECT_VERSION_FLAVOUR STREQUAL "")
-  set(PROJECT_VERSION "${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOUR}")
-  add_compile_definitions(FW_FLAVOR=${PROJECT_VERSION_FLAVOUR})
-  if(NOT PROJECT_VERSION_FLAVOUR_REVISION STREQUAL "")
-    set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_FLAVOUR_REVISION}")
-    add_compile_definitions(FW_FLAVERSION=${PROJECT_VERSION_FLAVOUR_REVISION})
-  endif()
-endif()
+set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
 
 # Inform user about the resolved settings
-message(STATUS "Project version: ${PROJECT_VERSION}")
-message(
-  STATUS "Project version with short suffix: ${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}"
-  )
+message(STATUS "Project version (Configuration.h): ${PROJECT_VERSION}")
+message(STATUS "Project version suffix ..........: ${PROJECT_VERSION_SUFFIX}")
+message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
 
-set(FN_PREFIX "FW${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}")
+# testing
+# SET(FW_COMMIT_DSC "v3.13.0-1234")
+
+if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN" AND NOT "${FW_COMMIT_DSC}" MATCHES ".+NOTFOUND.+") # else -> no commit hash is known... likely no git.
+string(REGEX MATCH "v([0-9]+)\.([0-9]+)\.([0-9]+)-?(${DEV_TAG_REGEX})?([0-9]+)?-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
+
+if (CMAKE_MATCH_4) # Do we have a build type?
+    decode_flavor_code(PROJECT_VER_TAG_FLV "${CMAKE_MATCH_4}" "${CMAKE_MATCH_5}")
+else()
+    # No dev status found, it must be a final tag.
+    decode_flavor_code(PROJECT_VER_TAG_FLV "RELEASED" "0")
+endif()
+
+if(ENFORCE_VERSION_MATCH)
+    if(NOT ${CMAKE_MATCH_1} STREQUAL ${PROJECT_VERSION_MAJOR})
+        message(FATAL_ERROR "Major version of current tag disagrees with Configuration.h ${CMAKE_MATCH_1}!=${PROJECT_VERSION_MAJOR}")
+    endif()
+
+    if(NOT ${CMAKE_MATCH_2} STREQUAL ${PROJECT_VERSION_MINOR})
+        message(FATAL_ERROR "Minor version of current tag disagrees with Configuration.h ${CMAKE_MATCH_2}!=${PROJECT_VERSION_MINOR}")
+    endif()
+
+    if(NOT ${CMAKE_MATCH_3} STREQUAL ${PROJECT_VERSION_REV})
+        message(FATAL_ERROR "Rev version of current tag disagrees with Configuration.h ${CMAKE_MATCH_3}!=${PROJECT_VERSION_REV}")
+    endif()
+
+    if(NOT ${PROJECT_VER_TAG_FLV} STREQUAL ${PROJECT_VERSION_TWEAK})
+        message(FATAL_ERROR "Dev status of current tag disagrees with Configuration.h ${PROJECT_VER_TAG_FLV}!=${PROJECT_VERSION_TWEAK}")
+    endif()
+    # Note - we don't check the commit counter, that'd be too much of a headache. Maybe it
+    # should be an error only on a tagged build?
+    MESSAGE(STATUS "Configuration.h and tag match: OK (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})")
+else()
+    MESSAGE(STATUS "Configuration.h and tag (not enforced): (${PROJECT_VERSION}/${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})")
+endif()
+
+MESSAGE(STATUS "Commit Nr: Configuration.h: ${PROJECT_VERSION_COMMIT} Tag: ${CMAKE_MATCH_6}")
+MESSAGE(STATUS "These tag values will override Configuration.h")
+SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})
+SET(PROJECT_VERSION_COMMIT ${CMAKE_MATCH_6})
+git_get_repository(PROJECT_REPOSITORY)
+else(GIT_FOUND)
+if (NO_TAG_IS_FATAL)
+    MESSAGE(FATAL_ERROR "Git was not found or an error occurred parsing the tag. This is a fatal error according to the settings.")
+else()
+    MESSAGE(STATUS "Git was not found or an error occurred parsing the tag. Falling back to Configuration.h values (${PROJECT_VERSION}).")
+endif()
+set(FW_COMMIT_HASH ${FW_COMMIT_HASH_UNKNOWN}) # Clear it, the code expects a binary...
+set(PROJECT_VERSION_TIMESTAMP "0")
+endif()
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -75,7 +112,7 @@ set(COMMUNITY_LANGUAGES
 set(SELECTED_LANGUAGES ${MAIN_LANGUAGES} ${COMMUNITY_LANGUAGES})
 
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
-project(Prusa-Firmware)
+project(Prusa-Firmware VERSION ${PROJECT_VERSION})
 add_subdirectory(lib)
 
 # Get LANG_MAX_SIZE from sources
@@ -237,7 +274,6 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 # Target configuration
 #
 if(CMAKE_CROSSCOMPILING)
-  # set source epoch
   set_source_epoch(${PROJECT_VERSION_TIMESTAMP})
 
   # default optimization flags
@@ -327,8 +363,25 @@ function(add_base_binary variant_name)
   target_link_options(
     ${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map
     )
-
-  target_compile_definitions(${variant_name} PRIVATE CMAKE_CONTROL)
+  decode_tweak_version(PROJECT_VERSION_FLV PROJECT_VERSION_FLV_VER)
+  target_compile_definitions(
+    ${variant_name}
+    PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
+            FW_COMMIT_HASH="${FW_COMMIT_HASH}"
+            FW_COMMIT_HASH_LENGTH=${FW_COMMIT_HASH_LENGTH}
+            FW_MAJOR=${PROJECT_VERSION_MAJOR}
+            FW_MINOR=${PROJECT_VERSION_MINOR}
+            FW_REVISION=${PROJECT_VERSION_REV}
+            FW_COMMITNR=${PROJECT_VERSION_COMMIT}
+    )
+    if(NOT PROJECT_VERSION_FLV STREQUAL "RELEASED")
+        target_compile_definitions(
+        ${variant_name}
+        PRIVATE
+        FW_FLAVERSION=${PROJECT_VERSION_FLV_VER}
+        FW_FLAVOR=${PROJECT_VERSION_FLV}
+        )
+    endif()
 endfunction()
 
 function(fw_add_variant variant_name)
@@ -386,7 +439,7 @@ function(fw_add_variant variant_name)
     add_custom_target(
       check_lang_${variant_name}_${LANG}
       COMMENT "Checking ${variant_name} language ${LANG}"
-      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
       DEPENDS ${LANG_MAP} ${PO_FILE}
       USES_TERMINAL
       )
@@ -458,7 +511,7 @@ function(fw_add_variant variant_name)
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.bin
         COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_FINAL}.bin
-        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
+        COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
                 ${FW_LANG_FINAL}.bin
         DEPENDS ${FW_LANG_BASE} ${LANG_BIN}
         COMMENT "Generating ${FW_LANG_FINAL}.bin"
@@ -514,7 +567,7 @@ if(CMAKE_CROSSCOMPILING)
     set(DIR_NAME ${THIS_VAR})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt
-         "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})"
+         "project(${DIR_NAME} VERSION ${PROJECT_VERSION})\nfw_add_variant(${THIS_VAR})"
          )
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
   endforeach(THIS_VAR IN LISTS FW_VARIANTS)
