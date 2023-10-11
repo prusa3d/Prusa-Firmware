@@ -1605,8 +1605,8 @@ static void lcd_support_menu()
 
   MENU_ITEM_BACK_P(PSTR("Firmware:"));
   MENU_ITEM_BACK_P(PSTR(" " FW_VERSION_FULL));
-//  MENU_ITEM_BACK_P(PSTR(" repo " FW_REPOSITORY));
-
+  MENU_ITEM_BACK_P(PSTR(" Repo:" FW_REPOSITORY));
+  MENU_ITEM_BACK_P(PSTR(" Hash:" FW_COMMIT_HASH));
   MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
   MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
   MENU_ITEM_BACK_P(_n("help.prusa3d.com"));////MSG_PRUSA3D_HELP c=18
