@@ -87,6 +87,12 @@ ENDIF()
 
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}.${PROJECT_VERSION_TWEAK}")
 
+# Define a constant length for the commit hash
+set(FW_COMMIT_HASH_LENGTH 9)
+
+# Create fallback value with constant length
+string(REPEAT "0" ${FW_COMMIT_HASH_LENGTH} FW_COMMIT_HASH_UNKNOWN)
+
 function(resolve_version_variables)
   if(FW_COMMIT_DSC)
     return()
@@ -94,11 +100,17 @@ function(resolve_version_variables)
   if(NOT GIT_FOUND)
     find_package(Git QUIET)
   endif()
-  git_head_commit_data(FW_COMMIT_HASH "%h")
+
+  # Get the full commit hash
+  git_head_commit_data(FW_COMMIT_HASH "%H")
+
+  # Keep only the first 'FW_COMMIT_HASH_LENGTH' characters
+  string(SUBSTRING "${FW_COMMIT_HASH}" 0 ${FW_COMMIT_HASH_LENGTH} FW_COMMIT_HASH)
+
   set(ERRORS "GIT-NOTFOUND" "HEAD-FORMAT-NOTFOUND")
   if(FW_COMMIT_HASH IN_LIST ERRORS)
     # git not available, set fallback values
-    set(FW_COMMIT_HASH "UNKNOWN")
+    set(FW_COMMIT_HASH ${FW_COMMIT_HASH_UNKNOWN})
     set(FW_COMMIT_DSC "v${PROJECT_VERSION}-${FW_COMMIT_HASH}")
     string(TIMESTAMP FW_COMMIT_DATE "%s")
   else()

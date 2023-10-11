@@ -81,6 +81,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         submodules: true
+        fetch-depth: 0
 
     - name: Checkout ${{ github.event.ref }}
       uses: actions/checkout@v3
@@ -88,6 +89,7 @@ jobs:
       with:
         ref: ${{ github.event.ref }}
         submodules: true
+        fetch-depth: 0
 
     - name: Cache Dependencies
       uses: actions/cache@v3.0.11
@@ -126,6 +128,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         submodules: true
+        fetch-depth: 0
 
     - name: Checkout ${{ github.event.ref }}
       uses: actions/checkout@v3
@@ -133,6 +136,7 @@ jobs:
       with:
         ref: ${{ github.event.ref }}
         submodules: true
+        fetch-depth: 0
 
     - name: Cache Dependencies
       uses: actions/cache@v3.0.11

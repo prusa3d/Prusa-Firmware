@@ -90,7 +90,7 @@ if (NO_TAG_IS_FATAL)
 else()
     MESSAGE(STATUS "Git was not found or an error occurred parsing the tag. Falling back to Configuration.h values (${PROJECT_VERSION}).")
 endif()
-set(FW_COMMIT_HASH "0") # Clear it, the code expects a binary...
+set(FW_COMMIT_HASH ${FW_COMMIT_HASH_UNKNOWN}) # Clear it, the code expects a binary...
 set(PROJECT_VERSION_TIMESTAMP "0")
 endif()
 
@@ -367,7 +367,8 @@ function(add_base_binary variant_name)
   target_compile_definitions(
     ${variant_name}
     PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
-            FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+            FW_COMMIT_HASH="${FW_COMMIT_HASH}"
+            FW_COMMIT_HASH_LENGTH=${FW_COMMIT_HASH_LENGTH}
             FW_MAJOR=${PROJECT_VERSION_MAJOR}
             FW_MINOR=${PROJECT_VERSION_MINOR}
             FW_REVISION=${PROJECT_VERSION_REV}
@@ -438,7 +439,7 @@ function(fw_add_variant variant_name)
     add_custom_target(
       check_lang_${variant_name}_${LANG}
       COMMENT "Checking ${variant_name} language ${LANG}"
-      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
       DEPENDS ${LANG_MAP} ${PO_FILE}
       USES_TERMINAL
       )
@@ -510,7 +511,7 @@ function(fw_add_variant variant_name)
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.bin
         COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_FINAL}.bin
-        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
+        COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
                 ${FW_LANG_FINAL}.bin
         DEPENDS ${FW_LANG_BASE} ${LANG_BIN}
         COMMENT "Generating ${FW_LANG_FINAL}.bin"
