@@ -2341,7 +2341,7 @@ msgstr ""
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3189
 msgid "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-msgstr "Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!"
+msgstr "Calibrazione XYZ corretta. Assi X/Y leggermente storti. Ben fatto!"
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3170
@@ -2371,7 +2371,7 @@ msgstr "Calibrazione XYZ fallita. Punti anteriori non raggiungibili."
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3155
 #: ../../Firmware/ultralcd.cpp:3183
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "Calibraz. XYZ fallita. Consultare manuale."
+msgstr "Calibrazione XYZ fallita. Consultare manuale."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3161
