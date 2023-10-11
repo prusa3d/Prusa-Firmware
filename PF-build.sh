@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.2-Build_80
+# Version: 2.0.3-Build_89
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -183,6 +183,11 @@
 # 06 Jul 2022, 3d-gussner, Change to v1.0.8 and Ardunio_boards v1.0.5-2
 # 06 Jul 2022, 3d-gussner, Fix branch check
 # 12 Jul 2022, 3d-gussner, Check if FW_FLAVAVOR and FW_FLAVERSION are correct
+# 29 Sep 2022, 3d-gussner, Rename EN_ONLY to EN_FARM
+# 03 Oct 2022, 3d-gussner, Update to Arduino boards 1.0.6 and remove gawk
+# 17 Dec 2022, wavexx    , Check for the coorect pyton version, improve depencies
+# 14 Mar 2023, 3d-gussner, Rename MMU2 to MMU
+# 11 Oct 2023, 3d-gussner, Fix issues with new cmake build, remove devel flag
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 export SRCDIR=$SCRIPT_PATH
@@ -219,7 +224,6 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
         case "${flag}" in
             b) build_flag=${OPTARG};;
             c) clean_flag=${OPTARG};;
-            d) devel_flag=${OPTARG};;
             g) mk404_graphics_flag=${OPTARG};;
             h) help_flag=1;;
             i) IDE_flag=${OPTARG};;
@@ -245,7 +249,6 @@ echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
 echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build"
-echo "$(tput setaf 2)-d$(tput sgr0) Devel build"
 echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 graphics"
 echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version"
 echo "$(tput setaf 2)-j$(tput sgr0) Arduino IDE verbose output"
@@ -264,7 +267,6 @@ echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0) [-b] [-c] [-d] [-g] [-i] [-j] [
 echo
 echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
-echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
 echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
 echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
@@ -897,18 +899,6 @@ else
         failures 5
     fi
 fi
-#Check if DEV_STATUS is selected via argument '-d'
-if [ ! -z "$devel_flag" ] ; then
-    if [[ "$devel_flag" == "GOLD" || "$devel_flag" == "RC" || "$devel_flag" == "BETA" || "$devel_flag" == "ALPHA" || "$devel_flag" == "DEVEL" || "$devel_flag" == "DEBUG" || "$devel_flag" == "UNKNOWN" ]] ; then
-        DEV_STATUS_SELECTED=$devel_flag
-    elif [[ "$devel_flag" == "atmega404" || "$devel_flag" == "atmega404_no_bootloader" ]] ; then
-        MK404_DEBUG=$devel_flag
-    else
-        echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
-        echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKNOWN' $(tput sgr0) are allowed as devel '-d' argument!$(tput sgr0)"
-        failures 5
-    fi
-fi
 
 #Check if Build is selected via argument '-b'
 if [ ! -z "$build_flag" ] ; then
@@ -1024,44 +1014,6 @@ prepare_code_for_compiling()
             failures 26
         fi
     fi
-    #DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
-    if [ -z "$DEV_STATUS_SELECTED" ] ; then
-        if [[ "$DEV_CHECK" == *"RC"* ]] ; then
-            DEV_STATUS="RC"
-        elif [[ "$DEV_CHECK" == *"ALPHA"* ]]; then
-            DEV_STATUS="ALPHA"
-        elif [[ "$DEV_CHECK" == *"BETA"* ]]; then
-            DEV_STATUS="BETA"
-        elif [[ "$DEV_CHECK" == "DEVEL" ]]; then
-            DEV_STATUS="DEVEL"
-        elif [[ "$DEV_CHECK" == "DEBUG" ]]; then
-            DEV_STATUS="DEBUG"
-        else
-            DEV_STATUS="UNKNOWN"
-            echo
-            echo "$(tput setaf 5)DEV_STATUS is UNKNOWN. Do you wish to set DEV_STATUS to GOLD?$(tput sgr0)"
-            PS3="Select YES only if source code is tested and trusted: "
-            select yn in "Yes" "No"; do
-                case $yn in
-                    Yes)
-                        DEV_STATUS="GOLD"
-                        DEV_STATUS_SELECTED="GOLD"
-                        break
-                        ;;
-                    No)
-                        DEV_STATUS="UNKNOWN"
-                        DEV_STATUS_SELECTED="UNKNOWN"
-                        break
-                        ;;
-                    *)
-                        echo "$(tput setaf 1)This is not a valid DEV_STATUS$(tput sgr0)"
-                        ;;
-                esac
-            done
-        fi
-    else
-        DEV_STATUS=$DEV_STATUS_SELECTED
-    fi
 }
 #### End: Prepare code for compiling
 
@@ -1121,7 +1073,6 @@ list_usefull_data()
     echo "Firmware       :" $FW
     echo "Build #        :" $BUILD
     echo "Dev Check      :" $DEV_CHECK
-    echo "DEV Status     :" $DEV_STATUS
     echo "Motherboard    :" $MOTHERBOARD
     echo "Board flash    :" $BOARD_FLASH
     echo "Board mem      :" $BOARD_MEM
@@ -1146,9 +1097,6 @@ prepare_variant_for_compiling()
         fi
         cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || failures 12
     fi
-
-    #Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
-    sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_.*/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
 
     # set FW_REPOSITORY
     sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
@@ -1407,7 +1355,6 @@ cleanup_firmware()
     fi
 
     # Restore files to previous state
-    sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_.*/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
     sed -i -- 's/^#define FW_REPOSITORY.*/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
     if [ ! -z "$BUILD_ORG" ] ; then
         sed -i -- "s/^#define FW_COMMIT_NR.*/#define FW_COMMIT_NR $BUILD_ORG/g" $SCRIPT_PATH/Firmware/Configuration.h
