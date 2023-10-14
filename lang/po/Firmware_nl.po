@@ -226,7 +226,7 @@ msgstr ""
 #: ../../Firmware/Marlin_main.cpp:2160 ../../Firmware/messages.cpp:19
 #: ../../Firmware/ultralcd.cpp:576
 msgid "Calibrating Z"
-msgstr "Kalibrere Z"
+msgstr "Kalibreren Z"
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ../../Firmware/ultralcd.cpp:2790
