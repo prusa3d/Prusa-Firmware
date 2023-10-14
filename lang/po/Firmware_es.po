@@ -619,7 +619,7 @@ msgstr "ERROR EJECUCIÓN FW"
 #. MSG_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5310
 msgid "Fail stats"
-msgstr "Registro d'errores"
+msgstr "Regist. de errores"
 
 #. MSG_MMU_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5313
@@ -998,7 +998,7 @@ msgstr "¿Esta el filamento cargado?"
 #: ../../Firmware/Marlin_main.cpp:3265 ../../Firmware/Marlin_main.cpp:4746
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:3855
 msgid "Is steel sheet on heatbed?"
-msgstr "¿Esta c. la lámina sobre la base?"
+msgstr "¿Esta la lámina sobre la base?"
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2258 ../../Firmware/messages.cpp:51
@@ -1845,7 +1845,7 @@ msgid ""
 "Select a filament for the First Layer Calibration and select it in the on-"
 "screen menu."
 msgstr ""
-"Escoga un filamento para la Calibración de la Primera Capa y selecciónalo en"
+"Escoge un filamento para la Calibración de la Primera Capa y selecciónalo en"
 " el menu en pantalla."
 
 #. MSG_SELECT_FILAMENT c=20
@@ -2244,7 +2244,7 @@ msgstr "Descarg. hasta polea"
 #. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:5917
 msgid "Verification failed, remove the filament and try again."
-msgstr "La verificación fallo, retira el filamento e intenta nuevamente."
+msgstr "La verificación falló, retira el filamento e intenta nuevamente."
 
 #. MSG_MENU_VOLTAGES c=18
 #: ../../Firmware/ultralcd.cpp:1686
@@ -2482,7 +2482,7 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Error al cargar en la extrusora. Inspecciona la forma de la punta del "
+"Error al cargar en la extrusor. Inspecciona la forma de la punta del "
 "filamento. Refina la calibración del sensor, si es necesario."
 
 #. MSG_TITLE_MMU_MCU_ERROR c=20
@@ -2654,7 +2654,7 @@ msgstr "Nivelación fallida. Ejecute la calibración Z."
 #~ msgstr "MMU necesita atención del usuario."
 
 #~ msgid "Please remove filament and then press the knob."
-#~ msgstr "Por favor quite el filamento y luego presiona el dial."
+#~ msgstr "Por favor quita el filamento y luego presiona el dial."
 
 #~ msgid "Please update firmware in your MMU2. Waiting for reset."
 #~ msgstr "Por favor actualice el firmware en tu MMU2. Esperando el reseteo."
