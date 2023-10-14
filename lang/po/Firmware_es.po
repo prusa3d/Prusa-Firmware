@@ -25,7 +25,7 @@ msgstr " 0.3 o mayor"
 #: ../../Firmware/Filament_sensor.cpp:282
 #: ../../Firmware/Filament_sensor.cpp:360 ../../Firmware/messages.cpp:172
 msgid " 0.4 or newer"
-msgstr " 0.4 o mas nueva"
+msgstr " 0.4 o más nueva"
 
 #. MSG_SELFTEST_FS_LEVEL c=20
 #: ../../Firmware/ultralcd.cpp:6660
@@ -87,7 +87,7 @@ msgstr "Auto"
 #: ../../Firmware/Marlin_main.cpp:3225 ../../Firmware/messages.cpp:9
 #: ../../Firmware/ultralcd.cpp:4573
 msgid "Auto home"
-msgstr "Llevar al origen"
+msgstr "Ir al origen"
 
 #. MSG_AUTO_POWER c=10
 #: ../../Firmware/messages.cpp:109 ../../Firmware/ultralcd.cpp:4152
@@ -104,13 +104,13 @@ msgstr "Carga auto. filam."
 msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr ""
-"La carga automática esta activada, pulse el dial e inserte el filamento..."
+"La carga automática está activada, pulse el dial e inserte el filamento..."
 
 #. MSG_PROGRESS_AVOID_GRIND c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:16
 #: ../../Firmware/mmu2_progress_converter.cpp:42
 msgid "Avoiding grind"
-msgstr "Evitar morder"
+msgstr "Evita morder"
 
 #. MSG_SELFTEST_AXIS c=16
 #: ../../Firmware/ultralcd.cpp:6639
@@ -262,7 +262,7 @@ msgstr "No se puede mover Selector o Tensor."
 msgid ""
 "Cannot perform the action, filament is already loaded. Unload it first."
 msgstr ""
-"No se puede realizar la acción, filamento ya cargado. Descárgalo primero."
+"No se puede realizar la acción, filamento ya cargado. Primero descarga."
 
 #. MSG_SD_REMOVED c=20
 #: ../../Firmware/ultralcd.cpp:7280
@@ -392,7 +392,7 @@ msgid ""
 "be turned on only in\n"
 "Normal mode"
 msgstr ""
-"Dec. choque puede\n"
+"Det. choque puede\n"
 "ser activada solo en\n"
 "Modo normal"
 
@@ -452,7 +452,7 @@ msgid ""
 "Do you want to repeat last step to readjust distance between nozzle and "
 "heatbed?"
 msgstr ""
-"¿Quieres repetir el ultimo paso para reajustar la distancia boquilla-base?"
+"¿Quieres repetir el último paso para re- ajustar la distancia boquilla-base?"
 
 #. MSG_BTN_DONE c=8
 #: ../../Firmware/mmu2/errors_list.h:353 ../../Firmware/mmu2/errors_list.h:366
@@ -574,7 +574,7 @@ msgid ""
 "Ensure filament can move and FINDA works."
 msgstr ""
 "FINDA no se apagó mientras descargaba el filamento. Intenta descargar "
-"manualmente. Comprueba que el fi-lamento puede mover-se y FINDA funciona."
+"manualmente. Com- prueba que el fil- amento puede moverse y FINDA funciona."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:241 ../../Firmware/mmu2/errors_list.h:297
@@ -766,7 +766,7 @@ msgstr "Cal. primera cap."
 #: ../../Firmware/ultralcd.cpp:3843
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
-"Primero, hare el Selftest para comprobar los problemas de montaje mas "
+"Primero, hare el Selftest para comprobar los problemas de montaje más "
 "comunes."
 
 #. MSG_FLOW c=15
@@ -878,8 +878,8 @@ msgid ""
 "setup process, in which the Z-axis will be calibrated. Then, you will be "
 "ready to print."
 msgstr ""
-"Hola, soy tu impresora Original Prusa i3. Te guiare a traves de un breve "
-"proceso de configuración, en el que se calibrara el eje Z. Después, estarás "
+"Hola, soy tu impresora Original Prusa i3. Te guiaré a traves de un breve "
+"proceso de configuración, en el que se calibrará el eje Z. Después, estarás "
 "listo para imprimir."
 
 #. MSG_WIZARD_WELCOME c=20 r=7
@@ -888,8 +888,8 @@ msgid ""
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
 "through the setup process?"
 msgstr ""
-"Hola, soy tu impresora Original Prusa i3. ¿Quieres que te guie a traves de la"
-" configuración?"
+"Hola, soy tu impresora Original Prusa i3. ¿Quieres que te guíe a traves de la "
+"configuración?"
 
 #. MSG_HIGH_POWER c=10
 #: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:4146
@@ -917,7 +917,7 @@ msgstr "Vent. d. fusor:"
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3848
 msgid "I will run xyz calibration now. It will take up to 24 mins."
-msgstr "Hare la calibración XYZ. Puede tardar hasta 24 min."
+msgstr "Haré la calibración XYZ. Puede tardar hasta 24 min."
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3859
@@ -986,8 +986,7 @@ msgstr ""
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
 msgstr ""
-"Error interno de ejecución. Intenta reiniciar la MMU o actualizar el "
-"firmware."
+"Error interno de ejecución. Reinicia la MMU o actualiza el firmware."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3625
@@ -999,7 +998,7 @@ msgstr "¿Esta el filamento cargado?"
 #: ../../Firmware/Marlin_main.cpp:3265 ../../Firmware/Marlin_main.cpp:4746
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:3855
 msgid "Is steel sheet on heatbed?"
-msgstr "¿Esta c. la lamina sobre la base?"
+msgstr "¿Esta c. la lámina sobre la base?"
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2258 ../../Firmware/messages.cpp:51
@@ -1147,12 +1146,12 @@ msgstr "Carga MMU falla"
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:278 ../../Firmware/mmu2/errors_list.h:332
 msgid "MMU not responding correctly. Check the wiring and connectors."
-msgstr "MMU no responde correctamente. Revise los cables y conectores."
+msgstr "MMU no responde correctamente. Revisa los cables y conectores."
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/mmu2/errors_list.h:277 ../../Firmware/mmu2/errors_list.h:331
 msgid "MMU not responding. Check the wiring and connectors."
-msgstr "La MMU no responde. Revise los cables y conectores."
+msgstr "La MMU no responde. Revisa los cables y conectores."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1633
@@ -1231,7 +1230,7 @@ msgstr "Modelo"
 #: ../../Firmware/mmu2/errors_list.h:328 ../../Firmware/mmu2/errors_list.h:329
 #: ../../Firmware/mmu2/errors_list.h:330
 msgid "More details online."
-msgstr "Mas detalles online."
+msgstr "Más detalles online."
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:96 ../../Firmware/ultralcd.cpp:6606
@@ -1336,7 +1335,7 @@ msgstr "Ahora precalentaré la boquilla para PLA."
 #. MSG_REMOVE_TEST_PRINT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3854
 msgid "Now remove the test print from steel sheet."
-msgstr "Ahora retira la prueba de la lamina de acero."
+msgstr "Ahora retira la prueba de la lámina de acero."
 
 #. MSG_NOZZLE c=10
 #: ../../Firmware/messages.cpp:72 ../../Firmware/ultralcd.cpp:1364
@@ -1383,7 +1382,7 @@ msgstr "Ina"
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr ""
 "Se han encontrado ajustes anteriores. Se ajustara el PID, los pasos del "
-"extrusor, etc"
+"extrusor, etc."
 
 #. MSG_ON c=3
 #: ../../Firmware/SpoolJoin.cpp:23 ../../Firmware/messages.cpp:130
@@ -1446,7 +1445,7 @@ msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr ""
-"La calibración PINDA esta finalizada y activa. Se puede desactivar en el "
+"La calibración PINDA está finalizada y activa. Se puede desactivar en el "
 "menu Configuración -> Cal. PINDA"
 
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
@@ -1493,12 +1492,12 @@ msgid ""
 "rebooting the printer."
 msgstr ""
 "Lee el manual y resuelve el problema. Después, reinicia la impresora y "
-"continua con el Asistente"
+"continua con el Asistente."
 
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ../../Firmware/ultralcd.cpp:5910
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "Comprueba la conexión del IR sensor y filamento esta descargado."
+msgstr "Comprueba la conexión del IR sensor y filamento está descargado."
 
 #. MSG_SELFTEST_PLEASECHECK c=20
 #: ../../Firmware/ultralcd.cpp:6587
@@ -1528,8 +1527,8 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Coloca el filamento en el primer tubo de la MMU, luego pulsa el dial para "
-"cargarlo."
+"Coloca el filamento en el primer tubo de la MMU, luego presiona el dial "
+"para cargarlo."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3630
@@ -1561,7 +1560,7 @@ msgstr "Retira el filamento de inmediato"
 #. MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 #: ../../Firmware/ultralcd.cpp:3853
 msgid "Please remove shipping helpers first."
-msgstr "Retira los soportes de envió primero."
+msgstr "Retira los soportes de envío primero."
 
 #. MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3267 ../../Firmware/Marlin_main.cpp:4756
@@ -1589,7 +1588,7 @@ msgstr "Actualiza por favor."
 #: ../../Firmware/messages.cpp:76 ../../Firmware/ultralcd.cpp:2155
 #: ../../Firmware/ultralcd.cpp:2166
 msgid "Please wait"
-msgstr "Por favor espere"
+msgstr "Por favor espera"
 
 #. MSG_POWER_FAILURES c=15
 #: ../../Firmware/messages.cpp:77 ../../Firmware/ultralcd.cpp:1206
@@ -1605,18 +1604,18 @@ msgstr "Precalentar"
 #. MSG_PREHEAT_NOZZLE c=20
 #: ../../Firmware/messages.cpp:78 ../../Firmware/ultralcd.cpp:2231
 msgid "Preheat the nozzle!"
-msgstr "Precalentar extrusor"
+msgstr "Precalentar boquilla"
 
 #. MSG_WIZARD_HEATING c=20 r=3
 #: ../../Firmware/messages.cpp:123 ../../Firmware/ultralcd.cpp:2748
 #: ../../Firmware/ultralcd.cpp:3687 ../../Firmware/ultralcd.cpp:3689
 msgid "Preheating nozzle. Please wait."
-msgstr "Precalentando nozzle. Espera por favor."
+msgstr "Precalent. boquilla. Espera por favor."
 
 #. MSG_PREHEATING_TO_CUT c=20
 #: ../../Firmware/ultralcd.cpp:1975
 msgid "Preheating to cut"
-msgstr "Precalent. laminar"
+msgstr "Precalent. cortar"
 
 #. MSG_PREHEATING_TO_EJECT c=20
 #: ../../Firmware/ultralcd.cpp:1972
@@ -1686,13 +1685,13 @@ msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First"
 " steps, section Calibration flow."
 msgstr ""
-"Impresora no esta calibrada todavía. Usa el manual capitulo Primeros pasos "
+"Impresora no está calibrada todavía. Usa el manual capitulo Primeros pasos "
 "Calibración flujo."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:143 ../../Firmware/util.cpp:293
 msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "Diámetro nozzle impresora difiere de cod.G. ¿Continuar?"
+msgstr "Diámetro boquilla impresora difiere de cod.G. ¿Continuar?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:144 ../../Firmware/util.cpp:294
@@ -1700,7 +1699,7 @@ msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
 " Print cancelled."
 msgstr ""
-"Diámetro nozzle Impresora difiere de cod.G. Comprueba los valores en "
+"Diámetro boquilla Impresora difiere de cod.G. Comprueba los valores en "
 "ajustes. Impresión cancelada."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
@@ -1747,7 +1746,7 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"El fil. solicitado no está disponible en este hardware. Revise el código G "
+"El fil. solicitado no está disponible en este hardware. Revisa el código G "
 "para si el índice de herramienta está fuera de rango (T0-T4)."
 
 #. MSG_RESET c=14
@@ -1781,7 +1780,7 @@ msgstr "Retraer del FINDA"
 #. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:352 ../../Firmware/mmu2/errors_list.h:365
 msgid "Retry"
-msgstr "Reint"
+msgstr "Reint."
 
 #. MSG_PROGRESS_RETURN_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:25
@@ -1806,7 +1805,7 @@ msgid ""
 "beginning. Continue?"
 msgstr ""
 "Ejecutar el Asistente borrara los valores de calibración actuales y "
-"comenzara de nuevo. ¿Continuar?"
+"comenzará de nuevo. ¿Continuar?"
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:147 ../../Firmware/ultralcd.cpp:4503
@@ -1846,7 +1845,7 @@ msgid ""
 "Select a filament for the First Layer Calibration and select it in the on-"
 "screen menu."
 msgstr ""
-"Escoge un filamento para la Calibración de la Primera Capa y selecciónalo en"
+"Escoga un filamento para la Calibración de la Primera Capa y selecciónalo en"
 " el menu en pantalla."
 
 #. MSG_SELECT_FILAMENT c=20
@@ -1883,7 +1882,7 @@ msgstr "Eligiendo hueco fil."
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6161
 msgid "Self test OK"
-msgstr "Self test OK"
+msgstr "Selftest OK"
 
 #. MSG_SELFTEST_START c=20
 #: ../../Firmware/ultralcd.cpp:5944
@@ -1910,7 +1909,7 @@ msgstr "Fallo Selftest"
 #: ../../Firmware/Marlin_main.cpp:1523
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr ""
-"Se realizara el auto-test para calibrar con precision la vuelta a la "
+"Se realizará el selftest para calibrar con precision la vuelta a la "
 "posición inicial sin sensores."
 
 #. MSG_INFO_SENSORS c=18
@@ -1945,7 +1944,7 @@ msgstr "Desv. severa"
 #: ../../Firmware/menu.cpp:195 ../../Firmware/menu.cpp:207
 #: ../../Firmware/messages.cpp:64
 msgid "Sheet"
-msgstr "Lamina"
+msgstr "Lámina"
 
 #. MSG_SHEET_OFFSET c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3601
@@ -1955,7 +1954,7 @@ msgid ""
 "%cContinue\n"
 "%cReset"
 msgstr ""
-"Lamina %.7s\n"
+"Lámina %.7s\n"
 "Z offset: %+1.3fmm\n"
 "%cContinuar\n"
 "%cReset"
@@ -1982,7 +1981,7 @@ msgid ""
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is "
 "100."
 msgstr ""
-"Algunos archivos no se ordenaran. Máximo 100 archivos por carpeta para "
+"Algunos archivos no se ordenarán. Máximo 100 archivos por carpeta para "
 "ordenar."
 
 #. MSG_ZLEVELING_ENFORCED c=20 r=4
@@ -2040,7 +2039,7 @@ msgstr "Sigilo"
 #: ../../Firmware/messages.cpp:65 ../../Firmware/ultralcd.cpp:4415
 #: ../../Firmware/ultralcd.cpp:5125
 msgid "Steel sheets"
-msgstr "Lamina de acero"
+msgstr "Lámina de acero"
 
 #. MSG_BTN_STOP c=8
 #: ../../Firmware/mmu2/errors_list.h:359 ../../Firmware/mmu2/errors_list.h:372
@@ -2156,7 +2155,7 @@ msgid ""
 "reach the optimal height. Check the pictures in the handbook (Calibration "
 "chapter)."
 msgstr ""
-"La impresora comenzara a imprimir una linea en zig-zag. Gira el dial hasta "
+"La impresora comenzará a imprimir una linea en zig-zag. Gira el dial hasta "
 "que la linea alcance la altura optima. Mira las fotos del manual (Capitulo "
 "de calibración)."
 
@@ -2172,7 +2171,7 @@ msgstr ""
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:149 ../../Firmware/ultralcd.cpp:4508
 msgid "Time"
-msgstr "Fecha"
+msgstr "Tiempo"
 
 #. MSG_TIMEOUT c=12
 #: ../../Firmware/messages.cpp:166 ../../Firmware/ultralcd.cpp:5539
@@ -2221,7 +2220,7 @@ msgstr "Desc."
 #: ../../Firmware/messages.cpp:118 ../../Firmware/ultralcd.cpp:5282
 #: ../../Firmware/ultralcd.cpp:5299
 msgid "Unload filament"
-msgstr "Descargar fil."
+msgstr "Descarga fil."
 
 #. MSG_UNLOADING_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:3466 ../../Firmware/messages.cpp:119
@@ -2234,13 +2233,13 @@ msgstr "Descargando fil."
 #: ../../Firmware/mmu2_progress_converter.cpp:11
 #: ../../Firmware/mmu2_progress_converter.cpp:37
 msgid "Unloading to FINDA"
-msgstr "Descarga hasta FINDA"
+msgstr "Descarg. hasta FINDA"
 
 #. MSG_PROGRESS_UNLOAD_PULLEY c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr "Descarga hasta polea"
+msgstr "Descarg. hasta polea"
 
 #. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:5917
@@ -2284,7 +2283,7 @@ msgstr "Esperando a que se enfríe la sonda PINDA"
 #. MSG_WAITING_TEMP c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2760
 msgid "Waiting for nozzle and bed cooling"
-msgstr "Esperando enfriamiento de la base y extrusor."
+msgstr "Esperando enfriamiento de la base y boquilla."
 
 #. MSG_WARN c=8
 #: ../../Firmware/messages.cpp:134 ../../Firmware/ultralcd.cpp:4227
@@ -2311,7 +2310,7 @@ msgstr "Aviso: ha cambiado el tipo de impresora."
 #. MSG_UNLOAD_SUCCESSFUL c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3546
 msgid "Was filament unload successful?"
-msgstr "¿Se descargo con éxito el filamento?"
+msgstr "¿Se descargó con éxito el filamento?"
 
 #. MSG_SELFTEST_WIRINGERROR c=18
 #: ../../Firmware/messages.cpp:98 ../../Firmware/ultralcd.cpp:6597
@@ -2362,18 +2361,18 @@ msgstr "Calibración XYZ comprometida. Punto frontal derecho no alcanzable."
 #: ../../Firmware/ultralcd.cpp:3152
 msgid "XYZ calibration failed. Bed calibration point was not found."
 msgstr ""
-"Calibración XYZ fallada. Puntos de calibración en la base no encontrados."
+"Calibración XYZ fallida. Puntos de calibración en la base no encontrados."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3158
 msgid "XYZ calibration failed. Front calibration points not reachable."
-msgstr "Calibración XYZ fallada. Puntos frontales no alcanzables."
+msgstr "Calibración XYZ fallida. Puntos frontales no alcanzables."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3155
 #: ../../Firmware/ultralcd.cpp:3183
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "Calibración XYZ fallada. Consulta el manual."
+msgstr "Calibración XYZ fallida. Consulta el manual."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3161
@@ -2425,7 +2424,7 @@ msgstr "[0;0] punto offset"
 #. MSG_PRESS c=20 r=2
 #: ../../Firmware/ultralcd.cpp:2123
 msgid "and press the knob"
-msgstr "y presione el dial"
+msgstr "y presiona el dial"
 
 #. MSG_TO_LOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:1783
@@ -2469,8 +2468,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Filamento detectado inesperadamente. Asegúrese de que no haya ningún "
-"filamento cargado. Compruebe los sensores y el cableado."
+"Filamento detectado inesperadamente. Asegúrate de que no haya ningún "
+"filamento cargado. Comprueba los sensores y el cableado."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:145 ../../Firmware/mmu2/errors_list.h:199
@@ -2483,8 +2482,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Error al cargar en la extrusora. Inspeccione la forma de la punta del "
-"filamento. Refine la calibración del sensor, si es necesario."
+"Error al cargar en la extrusora. Inspecciona la forma de la punta del "
+"filamento. Refina la calibración del sensor, si es necesario."
 
 #. MSG_TITLE_MMU_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:178 ../../Firmware/mmu2/errors_list.h:225
@@ -2514,7 +2513,7 @@ msgid ""
 " is in Selector and FINDA works properly."
 msgstr ""
 "El selector no se puede mover debido a que FINDA detecta un filamento. "
-"Asegúrese de que no haya fil. en el selector y que FINDA funcione "
+"Asegúrate de que no haya fil. en el selector y que FINDA funcione "
 "correctamente."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
@@ -2577,11 +2576,11 @@ msgstr "Sensibilidad"
 #. MSG_MBL_FAILED_Z_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:2976
 msgid "Mesh bed leveling failed. Please run Z calibration."
-msgstr "Nivelación fallada. Ejecute la calibración Z."
+msgstr "Nivelación fallida. Ejecute la calibración Z."
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
-#~ "Retira el fil. viejo y presione el dial para comenzar a cargar el nuevo."
+#~ "Retira el fil. viejo y presiona el dial para comenzar a cargar el nuevo."
 
 #~ msgid "XFLASH init"
 #~ msgstr "XFLASH init"
@@ -2597,19 +2596,19 @@ msgstr "Nivelación fallada. Ejecute la calibración Z."
 #~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
 #~ "La MMU informa que su FW no es compatible con el de la impresora. Asegúrate "
-#~ "de que el FW esta actualizado."
+#~ "de que el FW está actualizado."
 
 #~ msgid ""
 #~ "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector"
 #~ " is free. Check FINDA connection."
 #~ msgstr ""
 #~ "Lectura inesperada de FINDA. Asegúrate de que no hay ningún filamento bajo "
-#~ "FINDA y que el selector esta libre. Compruebe la conexión del FINDA."
+#~ "FINDA y que el selector está libre. Comprueba la conexión del FINDA."
 
 #~ msgid ""
 #~ "Autoloading filament available only when filament sensor is turned on..."
 #~ msgstr ""
-#~ "La carga automática solo funciona si el sensor de filamento esta activado..."
+#~ "La carga automática solo funciona si el sensor de filamento está activado..."
 
 #~ msgid "Crash detected. Resume print?"
 #~ msgstr "Choque detectado. ¿Continuar impresión?"
@@ -2625,7 +2624,7 @@ msgstr "Nivelación fallada. Ejecute la calibración Z."
 #~ msgstr "FS 0.3 o mayor"
 
 #~ msgid "FS v0.4 or newer"
-#~ msgstr "FS 0.4 o mas nueva"
+#~ msgstr "FS 0.4 o más nueva"
 
 #~ msgid "Fix the issue and then press button on MMU."
 #~ msgstr "Corrige el problema y pulsa el botón en la MMU."
@@ -2655,13 +2654,13 @@ msgstr "Nivelación fallada. Ejecute la calibración Z."
 #~ msgstr "MMU necesita atención del usuario."
 
 #~ msgid "Please remove filament and then press the knob."
-#~ msgstr "Por favor quite el filamento y luego presione el dial."
+#~ msgstr "Por favor quite el filamento y luego presiona el dial."
 
 #~ msgid "Please update firmware in your MMU2. Waiting for reset."
 #~ msgstr "Por favor actualice el firmware en tu MMU2. Esperando el reseteo."
 
 #~ msgid "Press the knob to resume nozzle temperature."
-#~ msgstr "Presione el dial para continuar con la temperatura de la boquilla."
+#~ msgstr "Presiona el dial para continuar con la temperatura de la boquilla."
 
 #~ msgid "Runouts"
 #~ msgstr "Falla"
