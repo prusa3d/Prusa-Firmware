@@ -5236,25 +5236,34 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_T(MSG_TM_ACK_ERROR), lcd_print_stop);
     }
 #endif
+
+    // only allow starting SD print if hardware errors (temperature or fan) are cleared
+    if(!get_temp_error()
+#ifdef FANCHECK
+            && fan_check_error != EFCE_REPORTED
+#endif //FANCHECK
+    )
+    {
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
-    if (card.cardOK || lcd_commands_type != LcdCommands::Idle) {
-        if (!card.isFileOpen()) {
-            if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
-                bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
-                MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
-            }
+        if (card.cardOK || lcd_commands_type != LcdCommands::Idle) {
+            if (!card.isFileOpen()) {
+                if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
+                    bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
+                    MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
+                }
 #if SDCARDDETECT < 1
-        MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user ////MSG_CNG_SDCARD c=18
+            MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user ////MSG_CNG_SDCARD c=18
+#endif //SDCARDDETECT
+            }
+        } else {
+            bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+            MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu); ////MSG_NO_CARD c=18
+#if SDCARDDETECT < 1
+            MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface ////MSG_INIT_SDCARD c=18
 #endif //SDCARDDETECT
         }
-    } else {
-        bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-        MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu); ////MSG_NO_CARD c=18
-#if SDCARDDETECT < 1
-        MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface ////MSG_INIT_SDCARD c=18
-#endif //SDCARDDETECT
-    }
 #endif //SDSUPPORT
+    }
 
     if(!printer_active() && !farm_mode) {
         const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
