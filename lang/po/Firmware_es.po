@@ -392,9 +392,9 @@ msgid ""
 "be turned on only in\n"
 "Normal mode"
 msgstr ""
-"Det. choque puede\n"
-"ser activada solo en\n"
-"Modo normal"
+"Detección de choque\n"
+"sólo puede activarse\n"
+"en modo Normal."
 
 #. MSG_CUT_FILAMENT c=16
 #: ../../Firmware/messages.cpp:61 ../../Firmware/mmu2_reporting.cpp:348
@@ -619,12 +619,12 @@ msgstr "ERROR EJECUCIÓN FW"
 #. MSG_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5310
 msgid "Fail stats"
-msgstr "Regist. de errores"
+msgstr "Registro de fallos"
 
 #. MSG_MMU_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5313
 msgid "Fail stats MMU"
-msgstr "Total Fallos MMU"
+msgstr "Fallos totales MMU"
 
 #. MSG_FALSE_TRIGGERING c=20
 #: ../../Firmware/ultralcd.cpp:6655
@@ -998,7 +998,7 @@ msgstr "¿Esta el filamento cargado?"
 #: ../../Firmware/Marlin_main.cpp:3265 ../../Firmware/Marlin_main.cpp:4746
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:3855
 msgid "Is steel sheet on heatbed?"
-msgstr "¿Esta la lámina sobre la base?"
+msgstr "¿Está la lámina sobre la base?"
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2258 ../../Firmware/messages.cpp:51
