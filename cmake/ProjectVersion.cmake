@@ -2,11 +2,11 @@
 # This file is responsible for setting the following variables:
 #
 # ~~~
-# PROJECT_VERSION_MAJOR (4)
-# PROJECT_VERSION_MINOR (0)
-# PROJECT_VERSION_REV (3)
-# PROJECT_VERSION (4.0.3)
-# FW_COMMIT_DSC ("v4.0.3-deadbeef")
+# PROJECT_VERSION_MAJOR (3)
+# PROJECT_VERSION_MINOR (13)
+# PROJECT_VERSION_REV (2)
+# PROJECT_VERSION (3.13.2)
+# FW_COMMIT_DSC ("v3.13.2-deadbeef")
 # FW_COMMIT_HASH (deadbeef)
 # FW_COMMIT_DATE (1665051856)
 #
