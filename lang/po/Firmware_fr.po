@@ -770,7 +770,7 @@ msgstr "Cal. 1ere couche"
 #: ../../Firmware/ultralcd.cpp:3843
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
-"Je vais lancer l'selftest pour verifier les problèmes d'assemblage les "
+"Je vais lancer le selftest pour verifier les problèmes d'assemblage les "
 "plus communs."
 
 #. MSG_FLOW c=15
@@ -1389,8 +1389,7 @@ msgstr "Off"
 #. MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:1508
 msgid "Old settings found. Default PID, Esteps etc. will be set."
-msgstr ""
-"Anciens réglages trouvés. Le PId, les Esteps, etc. par défaut seront réglés."
+msgstr "Anciens réglages trouvés. Le PID, les Esteps, etc. par défaut seront réglés."
 
 #. MSG_ON c=3
 #: ../../Firmware/SpoolJoin.cpp:23 ../../Firmware/messages.cpp:130
@@ -1754,7 +1753,7 @@ msgid ""
 "for tool index out of range (T0-T4)."
 msgstr ""
 "L'outil de filament demandé n'est pas disponible sur ce matériel. Recherchez "
-"dans le G-Code un index d'outil hors plage (T0-04)"
+"dans le G-Code un index d'outil hors plage (T0-T4)"
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:85 ../../Firmware/ultralcd.cpp:2689
@@ -2152,7 +2151,7 @@ msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
 "Le sélecteur ne peut se mettre correctement à zéro. Vérifiez s'il y a quoi "
-"ce que soit qui bloque son mouvement."
+"que ce que soit qui bloque son mouvement."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3735
