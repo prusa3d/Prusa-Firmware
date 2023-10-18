@@ -619,7 +619,7 @@ msgstr "CAPTEUR F: F. BLOQUE"
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:185 ../../Firmware/mmu2/errors_list.h:232
 msgid "FW RUNTIME ERROR"
-msgstr "ERREUR EXECUTION FW"
+msgstr "ERREUR EXÉCUTION FW"
 
 #. MSG_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5310
@@ -844,7 +844,7 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-code a été préparé pour un nouveau FW. Mettre a jour le FW. Impression "
+"G-code a été préparé pour un nouveau FW. Mettre à jour le FW. Impression "
 "annulée."
 
 #. MSG_HW_SETUP c=18
@@ -893,7 +893,7 @@ msgid ""
 "through the setup process?"
 msgstr ""
 "Je suis votre imprimante Original Prusa i3. Voulez-vous que je vous "
-"guide a travers le processus d'installation?
+"guide à travers le processus d'installation?
 
 #. MSG_HIGH_POWER c=10
 #: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:4146
@@ -993,7 +993,7 @@ msgstr ""
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
 msgstr ""
-"Erreur d'execution interne. Essayez de réinitialiser MMU ou de mettre a jour"
+"Erreur d'exécution interne. Essayez de réinitialiser MMU ou de mettre à jour"
 " le FW."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
@@ -1872,12 +1872,12 @@ msgstr "Choisir langue"
 msgid "Select nozzle preheat temperature which matches your material."
 msgstr ""
 "Sélectionnez la temperature de préchauffage de la buse qui correspond à "
-"votre metériel."
+"votre matériel."
 
 #. MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3732
 msgid "Select temperature which matches your material."
-msgstr "Sélectionnez la température qui correspond à votre metériel."
+msgstr "Sélectionnez la température qui correspond à votre matériel."
 
 #. MSG_PROGRESS_SELECT_SLOT c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:21
@@ -2670,7 +2670,7 @@ msgstr "Mesh bed leveling a échoué. Veuillez procéder à l'étalonnage Z."
 
 #~ msgid "Please update firmware in your MMU2. Waiting for reset."
 #~ msgstr ""
-#~ "Veuillez mettre a jour le firmware de votre MMU2. En attente d'un reset."
+#~ "Veuillez mettre à jour le firmware de votre MMU2. En attente d'un reset."
 
 #~ msgid "Press the knob to resume nozzle temperature."
 #~ msgstr "Appuyez sur le bouton pour réchauffer la buse."
