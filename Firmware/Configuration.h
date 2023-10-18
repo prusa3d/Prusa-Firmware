@@ -42,9 +42,6 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_COMMIT_HASH_LENGTH 1
 #define FW_COMMIT_HASH "0"
 #define FW_REPOSITORY "Unknown"
-#ifndef FW_VERSION_FULL
-#define FW_VERSION_FULL FW_VERSION
-#endif //END FW_VERSION_FULL
 #endif
 
 // G-code language level
