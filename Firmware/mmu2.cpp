@@ -191,12 +191,7 @@ void MMU2::mmu_loop() {
 
 void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors) {
     logicStepLastStatus = LogicStep(reportErrors); // it looks like the mmu_loop doesn't need to be a blocking call
-
-    if (isErrorScreenRunning()) {
-        // Call this every iteration to keep the knob rotation responsive
-        // This includes when mmu_loop is called within manage_response
-        ReportErrorHook((CommandInProgress)logic.CommandInProgress(), lastErrorCode, uint8_t(lastErrorSource));
-    }
+    CheckErrorScreenUserInput();
 }
 
 void MMU2::CheckFINDARunout() {
