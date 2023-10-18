@@ -263,7 +263,7 @@ msgstr "Impossible de déplacer le Sélecteur ou l'Idler."
 msgid ""
 "Cannot perform the action, filament is already loaded. Unload it first."
 msgstr ""
-"Impossible d'effectuer l'action, le filament est deja charge. Déchargez-le "
+"Impossible d'effectuer l'action, le filament est déjà chargé. Déchargez-le "
 "d'abord."
 
 #. MSG_SD_REMOVED c=20
@@ -333,7 +333,7 @@ msgstr "Vérifier du hotend"
 #: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6866
 #: ../../Firmware/ultralcd.cpp:6867
 msgid "Checking sensors"
-msgstr "Vérifier d. capteurs"
+msgstr "Vérifier capteurs"
 
 #. MSG_CHECKS c=18
 #: ../../Firmware/ultralcd.cpp:4418
@@ -385,7 +385,7 @@ msgstr "Crash détecté"
 #. MSG_CRASH_DETECTED c=20
 #: ../../Firmware/Marlin_main.cpp:571 ../../Firmware/messages.cpp:27
 msgid "Crash detected."
-msgstr "Crash détecte."
+msgstr "Crash détecté."
 
 #. MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3363
@@ -396,7 +396,7 @@ msgid ""
 msgstr ""
 "La detection de\n"
 "crash peut être\n"
-"active seulement en\n"
+"activé seulement en\n"
 "mode Normal"
 
 #. MSG_CUT_FILAMENT c=16
@@ -446,7 +446,7 @@ msgid ""
 " Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"La distance entre de la buse et du lit n'a pas encore ete réglée. Suivez"
+"La distance entre de la buse et du lit n'a pas encore été réglée. Suivez"
 " le manuel, chap. Premiers pas."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
@@ -455,7 +455,7 @@ msgid ""
 "Do you want to repeat last step to readjust distance between nozzle and "
 "heatbed?"
 msgstr ""
-"Voulez-vous refaire l'etape pour réajuster la hauteur entre la buse et le "
+"Voulez-vous refaire l'étape pour réajuster la hauteur entre la buse et le "
 "lit?"
 
 #. MSG_BTN_DONE c=8
@@ -577,8 +577,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA non désactivée lors du déchargement du filament. Essayez de décharger "
-"a la main. Assurez-vous que le filament peut bouger et que la FINDA "
+"FINDA non désactivé lors du déchargement du filament. Essayez de décharger "
+"à la main. Assurez-vous que le filament peut bouger et que la FINDA "
 "fonctionne."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
@@ -722,7 +722,7 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
-"Capteur de f. non désactive lors du déchargement du filament. Assurez-vous "
+"Capteur de f. non désactivé lors du déchargement du filament. Assurez-vous "
 "que le filament peut bouger et que le capteur fonctionne."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
@@ -731,7 +731,7 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the sensor"
 " is calibrated and the filament reached it."
 msgstr ""
-"Capteur de f. non déclenche lors du chargement du filament. Assurez-vous que"
+"Capteur de f. non déclenché lors du chargement du filament. Assurez-vous que"
 " le filament a atteint le capteur f et que le capteur fonctionne."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
@@ -740,7 +740,7 @@ msgid ""
 "Filament sensor triggered too early while loading to extruder. Check there "
 "isn't anything stuck in PTFE tube. Check that sensor reads properly."
 msgstr ""
-"Capteur de f. déclenche trop tot lors du chargement dans l'extrudeur. "
+"Capteur de f. déclenché trop tot lors du chargement dans l'extrudeur. "
 "Vérifiez le tube PTFE. Vérifiez que le capteur fonctionne."
 
 #. MSG_FILAMENT_USED c=19
@@ -806,7 +806,7 @@ msgstr "Ventilos avt/gauche"
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:141 ../../Firmware/util.cpp:386
 msgid "G-code sliced for a different level. Continue?"
-msgstr "G-code a ete prepare pour un niveau diff. Continuer?"
+msgstr "G-code a été préparé pour un niveau diff. Continuer?"
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:142 ../../Firmware/util.cpp:387
@@ -814,14 +814,14 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"G-code a été préparé pour un niveau différent. Découpez le modèle a nouveau. "
+"G-code a été préparé pour un niveau différent. Découpez le modèle à nouveau. "
 "Impression annulée."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:137 ../../Firmware/util.cpp:316
 #: ../../Firmware/util.cpp:425
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-code a ete prepare pour un type d'im- primante dif. Cont.?"
+msgstr "G-code pour un type d'imprimante différent. Continue?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/util.cpp:317
@@ -830,7 +830,7 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again."
 " Print cancelled."
 msgstr ""
-"G-code a été préparé pour un niveau différent. Découpez le modèle a nouveau. "
+"G-code pour un type d'imprimante différent. Découpez le modèle à nouveau. "
 "Impression annulée."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
@@ -844,7 +844,7 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-code a ete prepare pour un nouveau FW. Mettre a jour le FW. Impression "
+"G-code a été préparé pour un nouveau FW. Mettre a jour le FW. Impression "
 "annulée."
 
 #. MSG_HW_SETUP c=18
@@ -867,7 +867,7 @@ msgstr "Chauffe"
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:9407
 msgid "Heating disabled by safety timer."
-msgstr "Chauffage désactivée par le compteur de sécurité."
+msgstr "Chauffage désactivé par le compteur de sécurité."
 
 #. MSG_HEATING_COMPLETE c=20
 #: ../../Firmware/Marlin_main.cpp:6112 ../../Firmware/messages.cpp:49
@@ -905,7 +905,7 @@ msgstr "Haut.puiss"
 #: ../../Firmware/mmu2_progress_converter.cpp:29
 #: ../../Firmware/mmu2_progress_converter.cpp:60
 msgid "Homing"
-msgstr "Mise a zero"
+msgstr "Mise à zéro"
 
 #. MSG_NOZZLE_CNG_CHANGED c=20 r=6
 #: ../../Firmware/messages.cpp:185 ../../Firmware/ultralcd.cpp:983
@@ -1452,7 +1452,7 @@ msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr ""
-"La calibration en PINDA est terminée et activée. Il peut être désactivée "
+"La calibration en PINDA est terminée et activée. Il peut être désactivé "
 "dans le menu Réglages-> Calib. PINDA"
 
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
@@ -1692,7 +1692,7 @@ msgstr "Adr.IP imprimante:"
 msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First"
 " steps, section Calibration flow."
-msgstr "L'imprimante n'a pas encore ete calibrée. Suivez le manuel."
+msgstr "L'imprimante n'a pas encore été calibrée. Suivez le manuel."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:143 ../../Firmware/util.cpp:293
@@ -1851,7 +1851,7 @@ msgid ""
 "Select a filament for the First Layer Calibration and select it in the on-"
 "screen menu."
 msgstr ""
-"Choisissez un filament pour la Calibration de la Premiere Couche et "
+"Choisissez un filament pour la Calibration de la Première Couche et "
 "sélectionnez-le dans le menu."
 
 #. MSG_SELECT_FILAMENT c=20
@@ -1871,8 +1871,8 @@ msgstr "Choisir langue"
 #: ../../Firmware/ultralcd.cpp:3897
 msgid "Select nozzle preheat temperature which matches your material."
 msgstr ""
-"Sélectionnez la temperature de préchauffage de la buse qui correspond a "
-"votre matériau."
+"Sélectionnez la temperature de préchauffage de la buse qui correspond à "
+"votre metériel."
 
 #. MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3732
@@ -2113,13 +2113,13 @@ msgid ""
 "Thermal model cal. takes approx. 12 mins. See\n"
 "prusa.io/tm-cal"
 msgstr ""
-"Cal. du modèle thermique dure env. 12 min. Vois\n"
+"Cal. du modèle thermique dure env. 12 min. Voir\n"
 "prusa.io/tm-cal"
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1559 ../../Firmware/messages.cpp:179
 msgid "Thermal model not calibrated yet."
-msgstr "Modèle de thermique non calibre."
+msgstr "Modèle thermique non calibré."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4449
@@ -2246,7 +2246,7 @@ msgstr "Déchar.t vers poulie"
 #. MSG_FIL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:5917
 msgid "Verification failed, remove the filament and try again."
-msgstr "Vérification échoué, retirez le filament, et réessayez."
+msgstr "Vérification échouée, retirez le filament, et réessayez."
 
 #. MSG_MENU_VOLTAGES c=18
 #: ../../Firmware/ultralcd.cpp:1686
@@ -2269,7 +2269,7 @@ msgid ""
 msgstr ""
 "ATTENTION:\n"
 "Detection de crash\n"
-"désactivée en\n"
+"désactivé en\n"
 "mode furtif"
 
 #. MSG_USERWAIT c=20
@@ -2338,7 +2338,7 @@ msgstr "Details calib. XYZ"
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3192
 msgid "XYZ calibration all right. Skew will be corrected automatically."
-msgstr "Calibration XYZ OK. l'écart sera corrige automatiquement."
+msgstr "Calibration XYZ OK. L'écart sera corrigé automatiquement."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3189
