@@ -29,6 +29,9 @@ void BeginReport(CommandInProgress cip, ProgressCode ec);
 /// Called at the end of every MMU operation
 void EndReport(CommandInProgress cip, ProgressCode ec);
 
+/// Checks for error screen user input, if the error screen is open
+void CheckErrorScreenUserInput();
+
 /// Return true if the printer's LCD is drawing the error screen
 bool isErrorScreenRunning();
 
