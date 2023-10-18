@@ -4,7 +4,6 @@
 #include "fastio.h"
 #include <util/delay.h>
 #include "mmu2.h"
-#include "eeprom.h"
 
 namespace MMU2 {
 
@@ -16,13 +15,10 @@ void power_on() {
     SET_OUTPUT(MMU_RST_PIN); // setup reset pin
 #endif //MMU_HWRESET
 
-    eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, true);
-
     reset();
 }
 
 void power_off() {
-    eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
 }
 
 void reset() {
