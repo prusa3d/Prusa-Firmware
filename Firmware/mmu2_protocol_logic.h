@@ -152,6 +152,11 @@ public:
 
     uint8_t CommandInProgress() const;
 
+    /// @returns true if the protocol is processing a Query (Q0)
+    /// Note that asynchronous requests such as single register read (M707)
+    /// are not part of the Query.
+    bool IdleQueryInProgress() const;
+
     inline bool Running() const {
         return state == State::Running;
     }

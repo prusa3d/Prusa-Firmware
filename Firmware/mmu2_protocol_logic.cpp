@@ -57,8 +57,8 @@ void ProtocolLogic::CheckAndReportAsyncEvents() {
 }
 
 void ProtocolLogic::SendQuery() {
-    SendMsg(RequestMsg(RequestMsgCodes::Query, 0));
     scopeState = ScopeState::QuerySent;
+    SendMsg(RequestMsg(RequestMsgCodes::Query, 0));
 }
 
 void ProtocolLogic::StartReading8bitRegisters() {
@@ -109,28 +109,28 @@ bool __attribute__((noinline)) ProtocolLogic::ProcessWritingInitRegister() {
 }
 
 void ProtocolLogic::SendAndUpdateFilamentSensor() {
-    SendMsg(RequestMsg(RequestMsgCodes::FilamentSensor, lastFSensor = (uint8_t)WhereIsFilament()));
     scopeState = ScopeState::FilamentSensorStateSent;
+    SendMsg(RequestMsg(RequestMsgCodes::FilamentSensor, lastFSensor = (uint8_t)WhereIsFilament()));
 }
 
 void ProtocolLogic::SendButton(uint8_t btn) {
-    SendMsg(RequestMsg(RequestMsgCodes::Button, btn));
     scopeState = ScopeState::ButtonSent;
+    SendMsg(RequestMsg(RequestMsgCodes::Button, btn));
 }
 
 void ProtocolLogic::SendVersion(uint8_t stage) {
-    SendMsg(RequestMsg(RequestMsgCodes::Version, stage));
     scopeState = (ScopeState)((uint_fast8_t)ScopeState::S0Sent + stage);
+    SendMsg(RequestMsg(RequestMsgCodes::Version, stage));
 }
 
 void ProtocolLogic::SendReadRegister(uint8_t index, ScopeState nextState) {
-    SendMsg(RequestMsg(RequestMsgCodes::Read, index));
     scopeState = nextState;
+    SendMsg(RequestMsg(RequestMsgCodes::Read, index));
 }
 
 void ProtocolLogic::SendWriteRegister(uint8_t index, uint16_t value, ScopeState nextState) {
-    SendWriteMsg(RequestMsg(RequestMsgCodes::Write, index, value));
     scopeState = nextState;
+    SendWriteMsg(RequestMsg(RequestMsgCodes::Write, index, value));
 }
 
 // searches for "ok\n" in the incoming serial data (that's the usual response of the old MMU FW)
@@ -679,8 +679,10 @@ void ProtocolLogic::RecordUARTActivity() {
 }
 
 void ProtocolLogic::RecordReceivedByte(uint8_t c) {
-    lastReceivedBytes[lrb] = c;
-    lrb = (lrb + 1) % lastReceivedBytes.size();
+    if (!IdleQueryInProgress()) {
+        lastReceivedBytes[lrb] = c;
+        lrb = (lrb + 1) % lastReceivedBytes.size();
+    }
 }
 
 constexpr char NibbleToChar(uint8_t c) {
@@ -732,28 +734,32 @@ void ProtocolLogic::FormatLastResponseMsgAndClearLRB(char *dst) {
 }
 
 void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
-    constexpr uint_fast8_t rqs = modules::protocol::Protocol::MaxRequestSize() + 1;
-    char tmp[rqs] = ">";
-    static char lastMsg[rqs] = "";
-    for (uint8_t i = 0; i < size; ++i) {
-        uint8_t b = txbuff[i];
-        // Check for printable character, including space
-        if (b < 32 || b > 127)
-            b = '.';
-        tmp[i + 1] = b;
+    // To reduce spamming the serial stream, only log the requests when a command is in progress
+    if (!IdleQueryInProgress())
+    {
+        constexpr uint_fast8_t rqs = modules::protocol::Protocol::MaxRequestSize() + 1;
+        char tmp[rqs] = ">";
+        static char lastMsg[rqs] = "";
+        for (uint8_t i = 0; i < size; ++i) {
+            uint8_t b = txbuff[i];
+            // Check for printable character, including space
+            if (b < 32 || b > 127)
+                b = '.';
+            tmp[i + 1] = b;
+        }
+        tmp[size + 1] = 0;
+        if (!strncmp_P(tmp, PSTR(">S0*c6."), rqs) && !strncmp(lastMsg, tmp, rqs)) {
+            // @@TODO we skip the repeated request msgs for now
+            // to avoid spoiling the whole log just with ">S0" messages
+            // especially when the MMU is not connected.
+            // We'll lose the ability to see if the printer is actually
+            // trying to find the MMU, but since it has been reliable in the past
+            // we can live without it for now.
+        } else {
+            MMU2_ECHO_MSGLN(tmp);
+        }
+        strncpy(lastMsg, tmp, rqs);
     }
-    tmp[size + 1] = 0;
-    if (!strncmp_P(tmp, PSTR(">S0*c6."), rqs) && !strncmp(lastMsg, tmp, rqs)) {
-        // @@TODO we skip the repeated request msgs for now
-        // to avoid spoiling the whole log just with ">S0" messages
-        // especially when the MMU is not connected.
-        // We'll lose the ability to see if the printer is actually
-        // trying to find the MMU, but since it has been reliable in the past
-        // we can live without it for now.
-    } else {
-        MMU2_ECHO_MSGLN(tmp);
-    }
-    strncpy(lastMsg, tmp, rqs);
 }
 
 void ProtocolLogic::LogError(const char *reason_P) {
@@ -766,9 +772,13 @@ void ProtocolLogic::LogError(const char *reason_P) {
 }
 
 void ProtocolLogic::LogResponse() {
-    char lrb[lastReceivedBytes.size()];
-    FormatLastResponseMsgAndClearLRB(lrb);
-    MMU2_ECHO_MSGLN(lrb);
+    // To reduce spamming the serial stream, only log the response when a command is in progress
+    if (!IdleQueryInProgress())
+    {
+        char lrb[lastReceivedBytes.size()];
+        FormatLastResponseMsgAndClearLRB(lrb);
+        MMU2_ECHO_MSGLN(lrb);
+    }
 }
 
 StepStatus ProtocolLogic::SuppressShortDropOuts(const char *msg_P, StepStatus ss) {
@@ -851,6 +861,16 @@ uint8_t ProtocolLogic::CommandInProgress() const {
     if (currentScope != Scope::Command)
         return 0;
     return (uint8_t)ReqMsg().code;
+}
+
+bool ProtocolLogic::IdleQueryInProgress() const {
+    return (
+        currentScope == Scope::Idle && 
+        (scopeState == ScopeState::QuerySent
+        || scopeState == ScopeState::FilamentSensorStateSent
+        || scopeState == ScopeState::Reading8bitRegisters
+        || scopeState == ScopeState::Reading16bitRegisters)
+    );
 }
 
 void ProtocolLogic::DecrementRetryAttempts() {
