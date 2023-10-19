@@ -32,9 +32,6 @@ void EndReport(CommandInProgress cip, ProgressCode ec);
 /// Checks for error screen user input, if the error screen is open
 void CheckErrorScreenUserInput();
 
-/// Return true if the printer's LCD is drawing the error screen
-bool isErrorScreenRunning();
-
 /// Return true if the error screen is sleeping in the background
 /// Error screen sleeps when the firmware is rendering complementary
 /// UI to resolve the error screen, for example tuning Idler Stallguard Threshold
