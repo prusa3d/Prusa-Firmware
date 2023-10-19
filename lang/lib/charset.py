@@ -39,8 +39,9 @@ TRANS_CHARS = {
     # 'ć': 'c', #pl,hr
     'Ć': 'ć', #pl,hr
     'ç': 'c', #fr,nl
+    'Ç': 'C', #fr,nl
     # 'č': 'c', #cz,hr,sk
-    'Č': 'č', #cz,hr,sk
+    # 'Č': 'č', #cz,hr,sk
     # 'ď': 'd', #cz,sk
     'Ď': 'ď', #cz,sk
     'đ': 'd', #hr
@@ -49,15 +50,17 @@ TRANS_CHARS = {
     # 'É': 'E', #cz,fr,it,hu,sk
     # 'è': 'e', #fr,it,nl
     'È': 'è', #fr,it
-    'ê': 'e', #fr,nl
-    'Ê': 'E', #fr
+    # 'ê': 'e', #fr,nl
+    'Ê': 'ê', #fr
     # 'ě': 'e', #cz
     'Ě': 'ě', #cz
-    'ë': 'e', #fr
+    # 'ë': 'e', #fr
     # 'ę': 'e', #pl
-    'Ę': 'ę', #pl
+    # 'Ę': 'ę', #pl
     # 'í': 'i', #cz,es,it,sk
-    'Í': 'í', #cz,it,sk
+    # 'Í': 'í', #cz,it,sk
+    'ì': 'i',
+    'Ì': 'I',
     # 'î': 'i', #fr,ro
     # 'Î': 'I', #ro
     # 'ĺ': 'l', #sk
@@ -70,36 +73,38 @@ TRANS_CHARS = {
     'Ń': 'ń', #pl
     # 'ň': 'n', #cz,sk
     'Ň': 'ň', #cz,sk
-    # 'ñ': 'n', #es,nl
+    'ñ': 'n', #es,nl
     # 'ó': 'o', #cz,es,pl,hu,sk
-    'Ó': 'ó', #cz,pl,hu,sk
+    # 'Ó': 'ó', #cz,pl,hu,sk
     # 'ò': 'o', #it
     'Ò': 'ò', #it
     # 'ô': 'o', #fr,nl,sk
     'Ô': 'ô', #sk
     'œ': 'o', #fr
+    'œ': 'o', #fr
     # 'ø': 'ö', #sv,no
-    'Ø': 'ø', #sv,no
-    'Ö': 'ö', #de,sv,no,hu
+    # 'Ø': 'ø', #sv,no
+    # 'Ö': 'ö', #de,sv,no,hu
     # 'ő': 'o', #hu
     'Ő': 'ő', #hu
     'ŕ': 'r', #sk
     'Ŕ': 'R', #sk
     # 'ř': 'r', #cz
-    'Ř': 'ř', #cz
+    # 'Ř': 'ř', #cz
     # 'ś': 's', #pl
-    'Ś': 'ś', #pl
+    # 'Ś': 'ś', #pl
     # 'š': 's', #cz,hr,sk
-    'Š': 'š', #cz,hr,sk
+    # 'Š': 'š', #cz,hr,sk
     # 'ș': 's', #ro - s-comma
-    'Ș': 'ș', #ro - S-comma
+    # 'Ș': 'ș', #ro - S-comma
     'ş': 'ș', #ro - s-cedilla
-    'Ş': 'ș', #ro - S-cedilla
+    'Ş': 'Ș', #ro - S-cedilla
     # 'ß': 'ss',#de
+    'ẞ': 'ß',#de
     # 'ť': 't', #cz,sk
     'Ť': 'ť', #cz,sk
     # 'ț': 't', #ro - t-comma
-    # 'Ț': 'T', #ro - T-comma
+    'Ț': 'ț', #ro - T-comma
     'ţ': 'ț', #ro - t-cedilla
     'Ţ': 'Ț', #ro - T-cedilla
     # 'ú': 'u', #cz,es,hu,sk
@@ -107,18 +112,20 @@ TRANS_CHARS = {
     'ù': 'u', #it
     'Ù': 'U', #it
     'û': 'u', #fr
-    'Ü': 'ü', #de,hu
+    'Û': 'U', #fr
+    # 'Ü': 'ü', #de,hu
     # 'ů': 'u', #cz
     'Ů': 'ů', #cz
     # 'ű': 'u', #hu
     'Ű': 'ű', #hu
     # 'ý': 'y', #cz,sk
-    'Ý': 'ý', #cz,sk
+    # 'Ý': 'ý', #cz,sk
     'ÿ': 'y', #fr
+    'Ÿ': 'y', #fr
     # 'ź': 'z', #pl
     'Ź': 'ź', #pl
     # 'ž': 'z', #cz,hr,sk
-    'Ž': 'ž', #cz,hr,sk
+    # 'Ž': 'ž', #cz,hr,sk
     # 'ż': 'z', #pl
     'Ż': 'ż', #pl
     '¿': '', #es
