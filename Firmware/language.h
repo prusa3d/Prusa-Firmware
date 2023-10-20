@@ -13,10 +13,6 @@
 
 #define PROTOCOL_VERSION "1.0"
 
-#ifndef CUSTOM_MENDEL_NAME
-    #define MACHINE_NAME "Mendel"
-#endif
-
 #ifndef MACHINE_UUID
    #define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
 #endif
