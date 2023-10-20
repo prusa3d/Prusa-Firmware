@@ -577,7 +577,7 @@ void CardReader::getStatus(bool arg_P)
         SERIAL_PROTOCOL(sdpos);
         SERIAL_PROTOCOL('/');
         SERIAL_PROTOCOLLN(filesize);
-        uint16_t time = ( _millis() - starttime ) / 60000U;
+        uint32_t time = ( _millis() - starttime ) / 60000U;
         SERIAL_PROTOCOL((int)(time / 60));
         SERIAL_PROTOCOL(':');
         SERIAL_PROTOCOLLN((int)(time % 60));

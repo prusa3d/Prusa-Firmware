@@ -478,7 +478,7 @@ void lcdui_print_time(void)
             print_t = print_tr;
             suff = 'R';
         } else
-            print_t = (_millis() - starttime) / 60000;
+            print_t = (_millis() - starttime - pause_time) / 60000;
 
         if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc)) {
             suff_doubt = '?';
@@ -2297,10 +2297,10 @@ void lcd_AutoLoadFilament() {
 void lcd_menu_statistics()
 {
     lcd_timeoutToStatus.stop(); //infinite timeout
-	if (IS_SD_PRINTING)
+	if (printJobOngoing())
 	{
 		const float _met = ((float)total_filament_used) / (100000.f);
-		const uint32_t _t = (_millis() - starttime) / 1000ul;
+		const uint32_t _t = (_millis() - starttime - pause_time) / 1000ul;
 		const uint32_t _h = (_t / 60) / 60;
 		const uint8_t _m = (_t / 60) % 60;
 		const uint8_t _s = _t % 60;
@@ -5292,9 +5292,9 @@ static void lcd_main_menu()
         if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
-    if (!usb_timer.running()) {
+    //if (!usb_timer.running()) {
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
-    }
+    //}
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
     MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);////MSG_FAIL_STATS c=18

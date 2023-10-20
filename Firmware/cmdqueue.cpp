@@ -657,17 +657,17 @@ void get_command()
           card.closefile();
 
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
-          char time[30];
+//          char time[30];
           uint32_t t = (_millis() - starttime - pause_time) / 60000;
-          pause_time = 0;
-          int hours, minutes;
-          minutes = t % 60;
-          hours = t / 60;
+//          pause_time = 0;
+//          int hours, minutes;
+//          minutes = t % 60;
+//          hours = t / 60;
           save_statistics(total_filament_used, t);
-          sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
-          SERIAL_ECHO_START;
-          SERIAL_ECHOLN(time);
-          lcd_setstatus(time);
+//          sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
+//          SERIAL_ECHO_START;
+//          SERIAL_ECHOLN(time);
+//          lcd_setstatus(time);
           card.printingHasFinished();
           card.checkautostart(true);
 

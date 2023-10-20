@@ -5850,7 +5850,62 @@ Sigma_Exit:
         }
         break;
     }
-    /*!
+
+  /*!
+
+  ### M75 - Start the print job timer <a href="https://reprap.org/wiki/G-code#M75:_Start_the_print_job_timer">M75: Start the print job timer</a>
+  */
+    case 75: //M75 Start/Resume the print job timer
+    {
+        if ((!isPrintPaused) || (pause_time = 0)) {
+          starttime=_millis();
+          SERIAL_ECHOPGM("STATS starttime " ); //DEBUG Stats
+          SERIAL_ECHOLN(starttime); //DEBUG Stats
+         } else {
+          pause_time += (_millis() - start_pause_print);
+          SERIAL_ECHOPGM("STATS pause_time " ); //DEBUG Stats
+          SERIAL_ECHO(_millis());  //DEBUG Stats
+          SERIAL_ECHOPGM(" - "); //DEBUG Stats
+          SERIAL_ECHO(start_pause_print); //DEBUG Stats
+          SERIAL_ECHOPGM(" = "); //DEBUG Stats
+          SERIAL_ECHOLN(pause_time); //DEBUG Stats
+        }
+        break;
+    }
+  /*!
+  ### M76 - Pause the print job timer <a href="https://reprap.org/wiki/G-code#M76:_Pause_the_print_job_timer">M76: Pause the print job timer</a>
+  */
+    case 76: //M76 Pause the print job timer
+    {
+        pause_time = 0;
+        start_pause_print = _millis();
+        SERIAL_ECHOPGM("STATS start_pause_print "); //DEBUG Stats
+        SERIAL_ECHOLN(start_pause_print); //DEBUG Stats
+        break;
+    }
+  /*!
+  ### M77 - Stop the print job timer <a href="https://reprap.org/wiki/G-code#M77:_Stop_the_print_job_timer">M77: Stop the print job timer</a>
+  */
+    case 77: //M77 Stop the print job timer
+    {
+        uint32_t t = (_millis() - starttime - pause_time) / 60000;
+        pause_time = 0;
+        save_statistics(total_filament_used, t);
+        break;
+    }
+  /*!
+  ### M78 - Show statistical information about the print jobs <a href="https://reprap.org/wiki/G-code#M78:_Show_statistical_information_about_the_print_jobs">M78: Show statistical information about the print jobs</a>
+  */
+    case 78: //M78 Show statistical information about the print jobs
+    {
+      SERIAL_ECHOPGM("STATS ");
+      SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME));
+      SERIAL_ECHOPGM(" min ");
+      SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED));
+      SERIAL_ECHOLNPGM(" cm.");
+      break;
+    }
+  /*!
   ### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
   #### Usage
     
@@ -9633,6 +9688,26 @@ void save_statistics(uint32_t _total_filament_used, uint32_t _total_print_time) 
     eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + _total_print_time); // EEPROM_TOTALTIME unit: min
     eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (_total_filament_used / 1000));
 
+    SERIAL_ECHOPGM("STATS total_print_time "); //DEBUG Stats
+    SERIAL_ECHO(_total_print_time); //DEBUG Stats
+    SERIAL_ECHOPGM(" previous_time "); //DEBUG Stats
+    SERIAL_ECHOLN(_previous_time); //DEBUG Stats
+
+    char stats[20];
+//    uint32_t t = (_millis() - starttime - pause_time) / 60000;
+    int hours, minutes;
+    hours = _total_print_time / 60;
+    minutes = _total_print_time % 60;
+    uint32_t cms = _total_filament_used / 1000;
+    sprintf_P(stats, PSTR("Stats:%ih%im %ucm"),hours, minutes, cms);
+    SERIAL_ECHO_START;
+//    SERIAL_ECHOPGM("Print stats: ");
+//    SERIAL_ECHO(_total_filament_used / 1000);
+//    SERIAL_ECHOPGM(" cm ");
+    SERIAL_ECHOLN(stats);
+    lcd_setstatus(stats);
+
+    pause_time = 0;
     total_filament_used = 0;
 
     if (MMU2::mmu2.Enabled()) {
