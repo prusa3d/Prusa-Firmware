@@ -2572,7 +2572,7 @@ msgstr "Czułość"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Poziomowanie stołu nieudane. Proszę uruchomić kalibrację Z."
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=8
 #: ../../Firmware/ultralcd.cpp:5189
 msgid "Reprint"
 msgstr "Przedruk"
