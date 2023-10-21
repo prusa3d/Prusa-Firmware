@@ -2590,6 +2590,11 @@ msgstr "Sensibilité"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Mesh bed leveling a échoué. Veuillez procéder à l'étalonnage Z."
 
+#. MSG_REPRINT c=13
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Réimpresision"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Retirez l'ancien fil. puis appuyez sur le bouton pour charger le nouveau."

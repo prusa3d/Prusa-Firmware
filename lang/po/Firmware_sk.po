@@ -2560,6 +2560,11 @@ msgstr "Citlivosť"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Vyrovnanie platne zlyhalo. Spustite kalibráciu Z."
 
+#. MSG_REPRINT c=6
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Dotlac"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyberte starý filament a stlačte tlačidlo pre zavedenie nového."
 

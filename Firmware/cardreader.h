@@ -83,6 +83,9 @@ public:
   bool ToshibaFlashAir_isEnabled() const { return card.getFlashAirCompatible(); }
   void ToshibaFlashAir_enable(bool enable) { card.setFlashAirCompatible(enable); }
   bool ToshibaFlashAir_GetIP(uint8_t *ip);
+  
+  //Reprint
+  bool FileExists(const char* filename);
 
 public:
   bool saving;

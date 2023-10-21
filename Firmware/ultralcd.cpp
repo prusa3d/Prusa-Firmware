@@ -257,6 +257,8 @@ uint8_t selected_sheet = 0;
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
 
+//action: Reprint
+bool enableReprint = false;
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     uint8_t len = LCD_WIDTH - 1;
@@ -5181,6 +5183,14 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
+    // Menu item for reprint
+    if(!printer_active() && enableReprint && card.cardOK)
+    {
+        MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
+    }else if (!card.cardOK)
+    {
+        enableReprint = false;
+    }
     // Menu is never shown when idle
     if (babystep_allowed_strict() && (printJobOngoing() || lcd_commands_type == LcdCommands::Layer1Cal))
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
@@ -7426,4 +7436,53 @@ void lcd_heat_bed_on_load_toggle()
     else
         value = !value;
     eeprom_update_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
+}
+
+void reprint_from_eeprom() {
+	char cmd[30];
+	char filename[13];
+	char altfilename[13];
+	uint8_t depth = 0;
+	char dir_name[9];
+
+	enableReprint=false;
+
+	//cmdqueue_reset();
+
+	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
+
+	MYSERIAL.println(int(depth));
+	for (int i = 0; i < depth; i++) {
+		for (int j = 0; j < 8; j++) {
+			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
+		}
+		dir_name[8] = '\0';
+		MYSERIAL.println(dir_name);
+		// strcpy(dir_names[i], dir_name);
+		card.chdir(dir_name, false);
+	}
+
+	for (int i = 0; i < 8; i++) {
+		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
+	}
+	filename[8] = '\0';
+
+	strcpy(altfilename,filename);
+	if (!card.FileExists(altfilename))
+	{
+		strcat_P(filename, PSTR(".gco"));
+		if (card.FileExists(filename))
+		{
+			strcpy(altfilename,filename);
+		}else
+		{
+			strcat_P(altfilename, PSTR(".g"));
+		}
+	}
+	MYSERIAL.print(altfilename);
+	sprintf_P(cmd, PSTR("M23 %s"), altfilename);
+	enquecommand(cmd);
+  	sprintf_P(cmd, PSTR("M24"));
+	enquecommand(cmd);
+	lcd_return_to_status();
 }

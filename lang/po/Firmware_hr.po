@@ -2572,6 +2572,11 @@ msgstr "Osjetljivost"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Niveliranje podloge nije uspijelo. Pokrenite Z kalibraciju."
 
+#. MSG_REPRINT c=8
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Pretisak"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
 

@@ -2460,3 +2460,7 @@ msgstr ""
 #. MSG_FW_MK3_DETECTED c=20 r=4
 msgid "MK3 firmware detected on MK3S printer"
 msgstr ""
+
+#. MSG_REPRINT c=7 
+msgid "Reprint"
+msgstr ""

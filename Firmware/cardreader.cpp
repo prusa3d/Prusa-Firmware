@@ -1036,4 +1036,17 @@ bool CardReader::ToshibaFlashAir_GetIP(uint8_t *ip)
     return card.readExtMemory(1, 1, 0x400+0x150, 4, ip);
 }
 
+//Used for Reprint action
+bool CardReader::FileExists(const char* filename)
+{
+  bool exists = false;
+
+    if (file.open(curDir, filename, O_READ))
+    {
+      exists = true;
+      file.close();
+    }
+    return exists;
+}
+
 #endif //SDSUPPORT
