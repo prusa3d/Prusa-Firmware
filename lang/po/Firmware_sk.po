@@ -2570,7 +2570,7 @@ msgstr "Pripravené"
 msgid "Set not Ready"
 msgstr "Nie je pripravené"
 
-#. MSG_REPRINT c=6
+#. MSG_REPRINT c=7
 #: ../../Firmware/ultralcd.cpp:5189
 msgid "Reprint"
 msgstr "Dotlac"
