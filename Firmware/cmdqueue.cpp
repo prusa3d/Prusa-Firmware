@@ -657,6 +657,7 @@ void get_command()
           // queue is complete, but before we process EOF commands prevent
           // re-entry by disabling SD processing from any st_synchronize call
           card.closefile();
+          enableReprint=true;
 
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
           char time[30];

@@ -2582,6 +2582,11 @@ msgstr "Set spreman"
 msgid "Set not Ready"
 msgstr "Set nije spreman"
 
+#. MSG_REPRINT c=8
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Pretisak"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
 

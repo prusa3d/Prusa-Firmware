@@ -2565,6 +2565,11 @@ msgstr "Připravit"
 msgid "Set not Ready"
 msgstr "Zrušit Připravena"
 
+#. MSG_REPRINT c=7
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Reprint"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
 

@@ -2588,6 +2588,11 @@ msgstr "Listo"
 msgid "Set not Ready"
 msgstr "Conjunto no listo"
 
+#. MSG_REPRINT c=10
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Reimprimir"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Retira el fil. viejo y presiona el dial para comenzar a cargar el nuevo."

@@ -2593,6 +2593,11 @@ msgstr "Bereit setzen"
 msgid "Set not Ready"
 msgstr "Nicht breit setzen"
 
+#. MSG_REPRINT c=7
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Abdruck"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Entferne das alte Fil. und drücke den Knopf, um das neue zu laden."
 

@@ -2589,6 +2589,11 @@ msgstr "Printer pregătit"
 msgid "Set not Ready"
 msgstr "Print. nu pregătit"
 
+#. MSG_REPRINT c=10
+#: ../../Firmware/ultralcd.cpp:5189
+msgid "Reprint"
+msgstr "Retiparire"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."
 
