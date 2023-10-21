@@ -2580,7 +2580,7 @@ msgstr "Ustaw gotowość"
 msgid "Set not Ready"
 msgstr "Cofnij gotowość"
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=8
 #: ../../Firmware/ultralcd.cpp:5189
 msgid "Reprint"
 msgstr "Przedruk"
