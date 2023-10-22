@@ -7003,6 +7003,22 @@ static void menu_action_sdfile(const char* filename)
 	  }
   }
 
+    // Write the DOS 8.3 file extension into EEPROM
+    char * extension_ptr = strchr(selected_filename, '.');
+
+    if (extension_ptr) {
+        extension_ptr++; // skip the '.'
+    }
+
+    for (uint_least8_t i = 0; i < 3; i++)
+    {
+        if (extension_ptr == NULL || extension_ptr[i] == '\0') {
+            eeprom_update_byte((uint8_t*)EEPROM_FILENAME_EXTENSION + i, '\0');
+        } else {
+            eeprom_update_byte((uint8_t*)EEPROM_FILENAME_EXTENSION + i, extension_ptr[i]);
+        }
+    }
+
     const uint8_t depth = card.getWorkDirDepth();
     eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
 
