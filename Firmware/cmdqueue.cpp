@@ -7,6 +7,7 @@
 #include "meatpack.h"
 #include "messages.h"
 #include "language.h"
+#include "stopwatch.h"
 
 // Reserve BUFSIZE lines of length MAX_CMD_SIZE plus CMDBUFFER_RESERVE_FRONT.
 char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
@@ -366,7 +367,7 @@ void get_command()
 	}
 
   // start of serial line processing loop
-  while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
+  while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && print_job_timer.isPaused())) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
 #ifdef ENABLE_MEATPACK
     // MeatPack Changes
@@ -658,8 +659,7 @@ void get_command()
 
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
           char time[30];
-          uint32_t t = (_millis() - starttime - pause_time) / 60000;
-          pause_time = 0;
+          uint32_t t = print_job_timer.duration() / 60;
           int hours, minutes;
           minutes = t % 60;
           hours = t / 60;

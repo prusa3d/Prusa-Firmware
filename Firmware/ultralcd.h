@@ -173,8 +173,6 @@ void printf_IRSensorAnalogBoardChange();
 
 extern int8_t SilentModeMenu;
 
-extern bool isPrintPaused;
-
 extern uint8_t scrollstuff;
 
 
