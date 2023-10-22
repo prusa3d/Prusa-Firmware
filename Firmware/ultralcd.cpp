@@ -7439,7 +7439,6 @@ void lcd_heat_bed_on_load_toggle()
 }
 
 void reprint_from_eeprom() {
-	char cmd[30];
 	char filename[13];
 	char altfilename[13];
 	uint8_t depth = 0;
@@ -7480,9 +7479,10 @@ void reprint_from_eeprom() {
 		}
 	}
 	MYSERIAL.print(altfilename);
-	sprintf_P(cmd, PSTR("M23 %s"), altfilename);
-	enquecommand(cmd);
-  	sprintf_P(cmd, PSTR("M24"));
-	enquecommand(cmd);
+
+    // M23: Select SD file
+    enquecommandf_P(MSG_M23, altfilename);
+    // M24: Start/resume SD print
+    enquecommand_P(MSG_M24);
 	lcd_return_to_status();
 }
