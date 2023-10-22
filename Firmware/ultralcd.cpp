@@ -7473,8 +7473,6 @@ void reprint_from_eeprom() {
 
 	enableReprint=false;
 
-	//cmdqueue_reset();
-
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
 	MYSERIAL.println(int(depth));
@@ -7483,8 +7481,6 @@ void reprint_from_eeprom() {
 			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
 		}
 		dir_name[8] = '\0';
-		MYSERIAL.println(dir_name);
-		// strcpy(dir_names[i], dir_name);
 		card.chdir(dir_name, false);
 	}
 
