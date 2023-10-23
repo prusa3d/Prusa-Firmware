@@ -186,20 +186,15 @@ const char * PrusaErrorButtonMore(){
     return MSG_BTN_MORE;
 }
 
-struct ResetOnExit {
-    ResetOnExit() = default;
-    ~ResetOnExit(){
-        buttonSelectedOperation = ButtonOperations::NoOperation;
-    }
-};
-
 Buttons ButtonPressed(ErrorCode ec) {
     if (buttonSelectedOperation == ButtonOperations::NoOperation) {
         return Buttons::NoButton; // no button
     }
-    
-    ResetOnExit ros; // clear buttonSelectedOperation on exit from this call
-    return ButtonAvailable(ec);
+
+    const auto result = ButtonAvailable(ec);
+    buttonSelectedOperation = ButtonOperations::NoOperation; // Reset operation
+
+    return result;
 }
 
 Buttons ButtonAvailable(ErrorCode ec) {

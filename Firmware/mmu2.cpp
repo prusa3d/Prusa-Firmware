@@ -55,7 +55,7 @@ MMU2::MMU2()
 void MMU2::Start() {
     mmu2Serial.begin(MMU_BAUD);
 
-    PowerOn();          // I repurposed this to serve as our EEPROM disable toggle.
+    PowerOn();
     mmu2Serial.flush(); // make sure the UART buffer is clear before starting communication
 
     extruder = MMU2_NO_TOOL;
@@ -63,13 +63,13 @@ void MMU2::Start() {
 
     // start the communication
     logic.Start();
-
     logic.ResetRetryAttempts();
+    logic.ResetCommunicationTimeoutAttempts();
 }
 
 void MMU2::Stop() {
     StopKeepPowered();
-    PowerOff(); // This also disables the MMU in the EEPROM.
+    PowerOff();
 }
 
 void MMU2::StopKeepPowered() {
@@ -125,11 +125,9 @@ void MMU2::TriggerResetPin() {
 void MMU2::PowerCycle() {
     // cut the power to the MMU and after a while restore it
     // Sadly, MK3/S/+ cannot do this
-    // NOTE: the below will toggle the EEPROM var. Should we
-    // assert this function is never called in the MK3 FW? Do we even care?
-    PowerOff();
+    Stop();
     safe_delay_keep_alive(1000);
-    PowerOn();
+    Start();
 }
 
 void MMU2::PowerOff() {
@@ -191,12 +189,7 @@ void MMU2::mmu_loop() {
 
 void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors) {
     logicStepLastStatus = LogicStep(reportErrors); // it looks like the mmu_loop doesn't need to be a blocking call
-
-    if (isErrorScreenRunning()) {
-        // Call this every iteration to keep the knob rotation responsive
-        // This includes when mmu_loop is called within manage_response
-        ReportErrorHook((CommandInProgress)logic.CommandInProgress(), lastErrorCode, uint8_t(lastErrorSource));
-    }
+    CheckErrorScreenUserInput();
 }
 
 void MMU2::CheckFINDARunout() {
@@ -740,7 +733,8 @@ void MMU2::CheckUserInput() {
         // ... but mmu2_power.cpp knows this and triggers a soft-reset instead.
         break;
     case Buttons::DisableMMU:
-        Stop(); // Poweroff handles updating the EEPROM shutoff.
+        Stop();
+        DisableMMUInSettings();
         break;
     case Buttons::StopPrint:
         // @@TODO not sure if we shall handle this high level operation at this spot
@@ -840,45 +834,58 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
 }
 
 StepStatus MMU2::LogicStep(bool reportErrors) {
-    CheckUserInput(); // Process any buttons before proceeding with another MMU Query
-    StepStatus ss = logic.Step();
+    // Process any buttons before proceeding with another MMU Query
+    CheckUserInput();
+
+    const StepStatus ss = logic.Step();
     switch (ss) {
+
     case Finished:
         // At this point it is safe to trigger a runout and not interrupt the MMU protocol
         CheckFINDARunout();
         break;
+
     case Processing:
         OnMMUProgressMsg(logic.Progress());
         break;
+
     case ButtonPushed:
         lastButton = logic.Button();
         LogEchoEvent_P(PSTR("MMU Button pushed"));
         CheckUserInput(); // Process the button immediately
         break;
+
     case Interrupted:
         // can be silently handed over to a higher layer, no processing necessary at this spot
         break;
+
     default:
         if (reportErrors) {
             switch (ss) {
+
             case CommandError:
                 ReportError(logic.Error(), ErrorSourceMMU);
                 break;
+
             case CommunicationTimeout:
                 state = xState::Connecting;
                 ReportError(ErrorCode::MMU_NOT_RESPONDING, ErrorSourcePrinter);
                 break;
+
             case ProtocolError:
                 state = xState::Connecting;
                 ReportError(ErrorCode::PROTOCOL_ERROR, ErrorSourcePrinter);
                 break;
+
             case VersionMismatch:
                 StopKeepPowered();
                 ReportError(ErrorCode::VERSION_MISMATCH, ErrorSourcePrinter);
                 break;
+
             case PrinterError:
                 ReportError(logic.PrinterError(), ErrorSourcePrinter);
                 break;
+
             default:
                 break;
             }
@@ -888,6 +895,7 @@ StepStatus MMU2::LogicStep(bool reportErrors) {
     if (logic.Running()) {
         state = xState::Active;
     }
+
     return ss;
 }
 

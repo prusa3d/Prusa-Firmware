@@ -1,4 +1,5 @@
 #include <avr/pgmspace.h>
+#include "eeprom.h"
 #include "mmu2.h"
 #include "mmu2_log.h"
 #include "mmu2_reporting.h"
@@ -221,8 +222,12 @@ static bool is_mmu_error_monitor_active;
 // Set to false to allow the error screen to render again.
 static bool putErrorScreenToSleep;
 
-bool isErrorScreenRunning() {
-    return is_mmu_error_monitor_active;
+void CheckErrorScreenUserInput() {
+    if (is_mmu_error_monitor_active) {
+        // Call this every iteration to keep the knob rotation responsive
+        // This includes when mmu_loop is called within manage_response
+        ReportErrorHook((CommandInProgress)mmu2.GetCommandInProgress(), mmu2.GetLastErrorCode(), mmu2.MMULastErrorSource());
+    }
 }
 
 bool TuneMenuEntered() {
@@ -334,6 +339,11 @@ void TryLoadUnloadReporter::DumpToSerial(){
     }
     buf[LCD_WIDTH] = 0;
     MMU2_ECHO_MSGLN(buf);
+}
+
+/// Disables MMU in EEPROM
+void DisableMMUInSettings() {
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
 }
 
 void IncrementLoadFails(){

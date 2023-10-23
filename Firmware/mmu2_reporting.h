@@ -29,8 +29,8 @@ void BeginReport(CommandInProgress cip, ProgressCode ec);
 /// Called at the end of every MMU operation
 void EndReport(CommandInProgress cip, ProgressCode ec);
 
-/// Return true if the printer's LCD is drawing the error screen
-bool isErrorScreenRunning();
+/// Checks for error screen user input, if the error screen is open
+void CheckErrorScreenUserInput();
 
 /// Return true if the error screen is sleeping in the background
 /// Error screen sleeps when the firmware is rendering complementary
@@ -80,6 +80,9 @@ bool MMUAvailable();
 
 /// Global Enable/Disable use MMU (to be stored in EEPROM)
 bool UseMMU();
+
+/// Disables MMU in EEPROM
+void DisableMMUInSettings();
 
 /// Increments EEPROM cell - number of failed loads into the nozzle
 /// Note: technically, this is not an MMU error but an error of the printer.
