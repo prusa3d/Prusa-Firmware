@@ -7448,7 +7448,6 @@ void reprint_from_eeprom() {
 
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
-	MYSERIAL.println(int(depth));
 	for (int i = 0; i < depth; i++) {
 		for (int j = 0; j < 8; j++) {
 			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
@@ -7474,9 +7473,7 @@ void reprint_from_eeprom() {
 			strcat_P(altfilename, PSTR(".g"));
 		}
 	}
-	MYSERIAL.print(altfilename);
-
-    // M23: Select SD file
+	// M23: Select SD file
     enquecommandf_P(MSG_M23, altfilename);
     // M24: Start/resume SD print
     enquecommand_P(MSG_M24);
