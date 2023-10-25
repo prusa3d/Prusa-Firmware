@@ -2417,8 +2417,7 @@ void thermal_model_load_settings()
     thermal_model::data.C = eeprom_read_float((float*)EEPROM_THERMAL_MODEL_C);
     thermal_model::data.fS = eeprom_read_float((float*)EEPROM_THERMAL_MODEL_D);
     thermal_model_set_lag(eeprom_read_word((uint16_t*)EEPROM_THERMAL_MODEL_L));
-    for(uint8_t i = 0; i != THERMAL_MODEL_R_SIZE; ++i)
-        thermal_model::data.R[i] = eeprom_read_float((float*)EEPROM_THERMAL_MODEL_R + i);
+    eeprom_read_block(&thermal_model::data.R[0], (float*)EEPROM_THERMAL_MODEL_R, THERMAL_MODEL_R_SIZE * sizeof(float));
     thermal_model::data.Ta_corr = eeprom_read_float((float*)EEPROM_THERMAL_MODEL_Ta_corr);
     thermal_model::data.warn = eeprom_read_float((float*)EEPROM_THERMAL_MODEL_W);
     thermal_model::data.err = eeprom_read_float((float*)EEPROM_THERMAL_MODEL_E);
@@ -2439,8 +2438,7 @@ void thermal_model_save_settings()
     eeprom_update_float((float*)EEPROM_THERMAL_MODEL_C, thermal_model::data.C);
     eeprom_update_float((float*)EEPROM_THERMAL_MODEL_D, thermal_model::data.fS);
     eeprom_update_word((uint16_t*)EEPROM_THERMAL_MODEL_L, thermal_model::data.L);
-    for(uint8_t i = 0; i != THERMAL_MODEL_R_SIZE; ++i)
-        eeprom_update_float((float*)EEPROM_THERMAL_MODEL_R + i, thermal_model::data.R[i]);
+    eeprom_update_block(&thermal_model::data.R[0], (float*)EEPROM_THERMAL_MODEL_R, THERMAL_MODEL_R_SIZE * sizeof(float));
     eeprom_update_float((float*)EEPROM_THERMAL_MODEL_Ta_corr, thermal_model::data.Ta_corr);
     eeprom_update_float((float*)EEPROM_THERMAL_MODEL_W, thermal_model::data.warn);
     eeprom_update_float((float*)EEPROM_THERMAL_MODEL_E, thermal_model::data.err);
