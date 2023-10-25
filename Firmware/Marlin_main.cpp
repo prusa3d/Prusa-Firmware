@@ -520,6 +520,8 @@ bool __attribute__((noinline)) printer_active() {
         || mesh_bed_leveling_flag;
 }
 
+PrinterStatus printer_status;
+
 // Currently only used in one place, allowed to be inlined
 bool check_fsensor() {
     return printJobOngoing()
@@ -1733,7 +1735,7 @@ void loop()
 		usb_timer.start();
 	}
 	else if (usb_timer.expired(10000)) { //just need to check if it expired. Nothing else is needed to be done.
-		;
+    printer_status = PrinterStatus::HostPrintingFinished; //set printer state to show LCD menu after finished SD print and report correctly M862.7 Q when USB times out
 	}
     
 #ifdef PRUSA_M28
@@ -5838,6 +5840,22 @@ Sigma_Exit:
 #endif		// ENABLE_AUTO_BED_LEVELING
 
     /*!
+    ### M72 - Set Ready <a href="https://reprap.org/wiki/G-code#M73:_Set_Ready">M72: Set Ready</a>
+    #### Usage
+
+        M72 [ S ]
+
+    #### Parameters
+        - `S` - Set printer ready
+    */
+    case 72:
+    {
+        if(code_seen('S')) printer_status = PrinterStatus(code_value_uint8());
+        break;
+    }
+
+
+    /*!
     ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
     #### Usage
     
@@ -8040,6 +8058,8 @@ Sigma_Exit:
       - M862.3 { P"<model_name>" | Q }
       - M862.4 { P<fw_version> | Q }
       - M862.5 { P<gcode_level> | Q }
+      - M862.6 Not used but reserved
+      - M862.7 { Q }
     
     When run with P<> argument, the check is performed against the input value.
     When run with Q argument, the current value is shown.
@@ -8121,6 +8141,11 @@ Sigma_Exit:
                          }
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN(GCODE_LEVEL);
+                    break;
+               case ClPrintChecking::_Features:  // ~ .6
+                    break;
+               case ClPrintChecking::_PrinterState: // ~.7
+                    SERIAL_PROTOCOLLN((int)printer_status);
                     break;
                }
         break;

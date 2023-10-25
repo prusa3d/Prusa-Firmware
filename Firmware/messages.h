@@ -104,6 +104,7 @@ extern const char MSG_SELFTEST_MOTOR[];
 extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
+extern const char MSG_SET_READY[];
 extern const char MSG_SELECT_LANGUAGE[];
 extern const char MSG_SORTING_FILES[];
 extern const char MSG_TOTAL[];

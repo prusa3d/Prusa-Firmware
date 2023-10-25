@@ -311,6 +311,19 @@ bool printJobOngoing();
 
 bool printer_active();
 
+enum class PrinterStatus : uint8_t
+{
+    NotReady = 0,
+    IsReady = 1,
+    Idle = 2,
+    SDPrintingFinished = 3,
+    HostPrintingFinished = 4,
+    IsSDPrinting = 5,
+    IsHostPrinting = 6,
+};
+
+extern PrinterStatus printer_status;
+
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
 //! There can be a considerable lag between posting M600 and its real processing which might result
