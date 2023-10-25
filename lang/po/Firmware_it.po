@@ -2583,6 +2583,11 @@ msgstr "Livellamento piano fallito. Si prega di eseguire la calibrazione Z."
 msgid "Reprint"
 msgstr "Ristampa"
 
+#. MSG_SET_READY c=13
+#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
+msgid "Set Ready"
+msgstr "Impos. Pronta"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Rimuovi il fil. precedente e premi la manopola per caricare il nuovo."
 

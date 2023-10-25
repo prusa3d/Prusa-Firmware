@@ -2583,6 +2583,11 @@ msgstr "Nivelación fallida. Ejecute la calibración Z."
 msgid "Reprint"
 msgstr "Volver a imprimir"
 
+#. MSG_SET_READY c=13
+#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
+msgid "Set Ready"
+msgstr "Listo"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Retira el fil. viejo y presiona el dial para comenzar a cargar el nuevo."

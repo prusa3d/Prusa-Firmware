@@ -5131,6 +5131,16 @@ static void lcd_sheet_menu()
     MENU_END();
 }
 
+//! @brief Set printer state
+//! Sets the printer state for next print via LCD menu
+//! @endcode
+static void lcd_printer_status_toggle()
+{
+    if (printer_status == PrinterStatus::NotReady) printer_status = PrinterStatus::IsReady;
+    else printer_status = PrinterStatus::NotReady;
+    enquecommandf_P(PSTR("M118 A1 action:%s"), (printer_status == PrinterStatus::NotReady) ? "not_ready" : "ready");
+}
+
 //! @brief Show Main Menu
 //!
 //! @code{.unparsed}
@@ -5215,7 +5225,9 @@ static void lcd_main_menu()
     } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
-
+    if (printer_status < PrinterStatus::IsSDPrinting) {
+        MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), (printer_status == PrinterStatus::IsReady) ? _T(MSG_YES) : _T(MSG_NO), lcd_printer_status_toggle);
+    }
     if (mesh_bed_leveling_flag == false && homing_flag == false && !print_job_timer.isPaused() && !processing_tcode) {
         if (usb_timer.running()) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
@@ -5668,6 +5680,7 @@ void print_stop(bool interactive)
 
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::StopPrint;
+    printer_status = PrinterStatus::NotReady; //set printer state to show LCD menu after print has been stopped and report correctly M862.7 Q
     lcd_return_to_status();
 }
 
