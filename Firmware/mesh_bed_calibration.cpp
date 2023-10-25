@@ -793,12 +793,9 @@ static inline bool vec_undef(const float v[2])
  */
 void world2machine_read_valid(float vec_x[2], float vec_y[2], float cntr[2])
 {
-    vec_x[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0));
-    vec_x[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4));
-    vec_y[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0));
-    vec_y[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4));
-    cntr[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0));
-    cntr[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4));
+    eeprom_read_block(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
+    eeprom_read_block(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
+    eeprom_read_block(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
 
     bool reset = false;
     if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y))
@@ -2444,15 +2441,12 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		if (result >= 0) {
             DBG(_n("Calibration success.\n"));
 			world2machine_update(vec_x, vec_y, cntr);
-#if 1
+
 			// Fearlessly store the calibration values into the eeprom.
-			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0), cntr[0]);
-			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4), cntr[1]);
-			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X + 0), vec_x[0]);
-			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X + 4), vec_x[1]);
-			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0), vec_y[0]);
-			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4), vec_y[1]);
-#endif
+			eeprom_update_block(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
+			eeprom_update_block(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
+			eeprom_update_block(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
+
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 10) {
 				// Length of the vec_x
@@ -2735,15 +2729,11 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     }
 
     world2machine_update(vec_x, vec_y, cntr);
-#if 1
+
     // Fearlessly store the calibration values into the eeprom.
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0), cntr [0]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4), cntr [1]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0), vec_x[0]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4), vec_x[1]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0), vec_y[0]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
-#endif
+    eeprom_update_block(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
+    eeprom_update_block(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
+    eeprom_update_block(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
 
     // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
 	world2machine_update_current();
@@ -3102,18 +3092,12 @@ void babystep_reset()
 }
 
 void count_xyz_details(float (&distanceMin)[2]) {
-	float cntr[2] = {
-		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0)),
-		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4))
-	};
-	float vec_x[2] = {
-		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X + 0)),
-		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X + 4))
-	};
-	float vec_y[2] = {
-		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0)),
-		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4))
-	};
+	float cntr[2];
+	float vec_x[2];
+	float vec_y[2];
+	eeprom_read_block(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
+	eeprom_read_block(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
+	eeprom_read_block(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
 #if 0
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
