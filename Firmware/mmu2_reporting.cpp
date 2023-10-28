@@ -248,6 +248,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, ErrorCode ec, uint8_t /*es*/) {
 
     switch ((uint8_t)ReportErrorHookState) {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
+        KEEPALIVE_STATE(PAUSED_FOR_USER);
         ReportErrorHookStaticRender(ei);
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
         [[fallthrough]];
@@ -270,6 +271,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, ErrorCode ec, uint8_t /*es*/) {
                 sound_wait_for_user_reset();
                 // Reset the state in case a new error is reported
                 is_mmu_error_monitor_active = false;
+                KEEPALIVE_STATE(IN_HANDLER);
                 ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
                 break;
             default:
@@ -283,6 +285,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, ErrorCode ec, uint8_t /*es*/) {
         sound_wait_for_user_reset();
         // Reset the state in case a new error is reported
         is_mmu_error_monitor_active = false;
+        KEEPALIVE_STATE(IN_HANDLER);
         ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
         break;
     default:
