@@ -8581,14 +8581,15 @@ Sigma_Exit:
     } break;
 
     /*!
-    ### M709 - MMU reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_reset">M709: MMU reset</a>
-    The MK3S cannot not power off the MMU, for that reason the functionality is not supported.
+    ### M709 - MMU power & reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_power_&_reset">M709: MMU power & reset</a>
+    The MK3S cannot not power off the MMU, but we can en- and disable the MMU.
     #### Usage
 
-        M709 [ X ]
+        M709 [ S | X ]
 
     #### Parameters
-    - `X` - Reset MMU (0:soft reset | 1:hardware reset)
+    - `X` - Reset MMU (0:soft reset | 1:hardware reset | 42: erease MMU eeprom)
+    - `S` - En-/disable the MMU (0:off | 1:on)
 
     #### Example
 
@@ -8596,9 +8597,28 @@ Sigma_Exit:
 
     M709 X1 - toggle the MMU's reset pin (hardware reset)
 
+    M709 S1 - enable MMU
+
+    M709 S0 - disable MMU
+
+    M709    - Serial message if en- or disabled
     */
     case 709:
     {
+        if (code_seen('S'))
+        {
+            switch (code_value_uint8())
+            {
+            case 0:
+                MMU2::mmu2.Stop();
+                break;
+            case 1:
+                MMU2::mmu2.Start();
+                break;
+            default:
+                break;
+            }
+        }
         if (MMU2::mmu2.Enabled() && code_seen('X'))
         {
             switch (code_value_uint8())
@@ -8609,10 +8629,14 @@ Sigma_Exit:
             case 1:
                 MMU2::mmu2.Reset(MMU2::MMU2::ResetPin);
                 break;
+            case 42:
+                MMU2::mmu2.Reset(MMU2::MMU2::EraseEEPROM);
+                break;
             default:
                 break;
             }
         }
+        printf_P(_n("MMU state:%d\n"), MMU2::mmu2.Enabled());
     }
     break;
 
