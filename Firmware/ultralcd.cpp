@@ -45,6 +45,8 @@
 
 #include "Prusa_farm.h"
 
+#include "power_panic.h"
+
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -5199,6 +5201,9 @@ static void lcd_main_menu()
     if(!printer_active() && enableReprint && card.cardOK)
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
+    }else if(saved_printing_type == PowerPanic::PRINT_TYPE_USB) 
+    {
+        lcd_reprint_usb_print();
     }else if (!card.cardOK)
     {
         enableReprint = false;
@@ -7500,9 +7505,18 @@ void reprint_from_eeprom() {
 			strcat_P(altfilename, PSTR(".g"));
 		}
 	}
-	// M23: Select SD file
-    enquecommandf_P(MSG_M23, altfilename);
-    // M24: Start/resume SD print
-    enquecommand_P(MSG_M24);
-	lcd_return_to_status();
+    if (lcd_show_fullscreen_message_yes_no_and_wait_P(altfilename, false, LCD_LEFT_BUTTON_CHOICE)==LCD_LEFT_BUTTON_CHOICE)
+    {
+	    // M23: Select SD file
+        enquecommandf_P(MSG_M23, altfilename);
+        // M24: Start/resume SD print
+        enquecommand_P(MSG_M24);
+    }
+    lcd_return_to_status();
+}
+
+//! @brief Send host action "reprint"
+void lcd_reprint_usb_print()
+{
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_REPRINT);
 }

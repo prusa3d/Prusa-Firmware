@@ -63,6 +63,7 @@ bool cmdqueue_pop_front()
                 // No serial communication is pending. Reset both pointers to zero.
                 bufindw = 0;
             bufindr = bufindw;
+            enableReprint = true;
         } else {
             // There is at least one ready line in the buffer.
             // First skip the current command ID and iterate up to the end of the string.
@@ -657,7 +658,6 @@ void get_command()
           // queue is complete, but before we process EOF commands prevent
           // re-entry by disabling SD processing from any st_synchronize call
           card.closefile();
-          enableReprint=true;
 
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
           char time[30];
