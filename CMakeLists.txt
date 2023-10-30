@@ -182,6 +182,7 @@ set(FW_SOURCES
     Filament_sensor.cpp
     first_lay_cal.cpp
     heatbed_pwm.cpp
+    host.cpp
     la10compat.cpp
     language.c
     lcd.cpp
