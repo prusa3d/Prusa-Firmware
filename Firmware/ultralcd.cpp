@@ -4082,7 +4082,7 @@ static void menuitems_MMU_settings_common()
 static void mmu_enable_switch()
 {
     uint8_t current_state = eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED);
-    // EEPROM update is handled by the stop and start functions.
+
     if (current_state)
     {
         MMU2::mmu2.Stop();
@@ -4091,6 +4091,8 @@ static void mmu_enable_switch()
     {
         MMU2::mmu2.Start();
     }
+
+    eeprom_toggle((uint8_t *)EEPROM_MMU_ENABLED);
 }
 
 static void SETTINGS_SILENT_MODE()
