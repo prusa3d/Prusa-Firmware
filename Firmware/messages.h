@@ -231,6 +231,7 @@ extern const char MSG_OCTOPRINT_PAUSED[];
 extern const char MSG_OCTOPRINT_ASK_RESUME[];
 extern const char MSG_OCTOPRINT_RESUMED[];
 extern const char MSG_OCTOPRINT_CANCEL[];
+extern const char MSG_OCTOPRINT_REPRINT[];
 extern const char MSG_FANCHECK_HOTEND[];
 extern const char MSG_FANCHECK_PRINT[];
 extern const char MSG_M112_KILL[];
