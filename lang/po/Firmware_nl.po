@@ -2570,7 +2570,7 @@ msgstr "Sensitiviteit"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Bed leveling mislukt. Voer de Z-kalibratie uit."
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Reprint"

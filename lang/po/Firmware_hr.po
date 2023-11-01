@@ -2562,7 +2562,7 @@ msgstr "Osjetljivost"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Niveliranje podloge nije uspijelo. Pokrenite Z kalibraciju."
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Pretisak"
