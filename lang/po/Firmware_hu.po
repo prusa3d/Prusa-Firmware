@@ -2577,7 +2577,7 @@ msgstr "Készen áll"
 msgid "Set not Ready"
 msgstr "Készen nem áll"
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Reprint"

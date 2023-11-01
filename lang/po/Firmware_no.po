@@ -2554,7 +2554,7 @@ msgstr "Gjør klar"
 msgid "Set not Ready"
 msgstr "Sett ikke klar"
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Opptrykk"

@@ -2590,7 +2590,7 @@ msgstr "Ensemble prête"
 msgid "Set not Ready"
 msgstr "Ensemble pas prête"
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Réimpresision"

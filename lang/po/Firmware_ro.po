@@ -2579,7 +2579,7 @@ msgstr "Printer pregătit"
 msgid "Set not Ready"
 msgstr "Print. nu pregătit"
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Retiparire"

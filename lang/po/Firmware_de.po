@@ -2583,7 +2583,7 @@ msgstr "Bereit setzen"
 msgid "Set not Ready"
 msgstr "Nicht breit setzen"
 
-#. MSG_REPRINT c=7
+#. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Abdruck"
