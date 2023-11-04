@@ -385,36 +385,16 @@ void gcode_level_check(uint16_t nGcodeLevel) {
     );
 }
 
-#define GCODE_DELIMITER '"'
-
-char *code_string(const char *pStr, size_t *nLength) {
-char* pStrBegin;
-char* pStrEnd;
-
-pStrBegin=strchr(pStr,GCODE_DELIMITER);
-if(!pStrBegin)
-     return(NULL);
-pStrBegin++;
-pStrEnd=strchr(pStrBegin,GCODE_DELIMITER);
-if(!pStrEnd)
-     return(NULL);
-*nLength=pStrEnd-pStrBegin;
-return pStrBegin;
-}
 
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
-    char* pResult;
-    size_t nLength;
-    size_t aLength;
+    unquoted_string smodel = unquoted_string(pStrPos);
 
-    pResult=code_string(pStrPos,&nLength);
-    if(pResult != NULL) {
-        aLength=strlen_P(actualPrinterSModel);
-        if(aLength > nLength) nLength = aLength;
+    if(smodel.WasFound()) {
+        const uint8_t compareLength = strlen_P(actualPrinterSModel);
 
-        // Only compare first 6 chars on MK3|MK3S if string longer than 4 characters
-        if (nLength > 4 && strncmp_P(pResult, PSTR("MK3"), 3) == 0) nLength = 6;
-        if (strncmp_P(pResult, actualPrinterSModel, nLength) == 0) return;
+        if(compareLength == smodel.GetLength()) {
+            if (strncmp_P(smodel.GetUnquotedString(), actualPrinterSModel, compareLength) == 0) return;
+        }
     }
 
     render_M862_warnings(
