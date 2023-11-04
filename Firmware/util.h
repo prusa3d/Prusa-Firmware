@@ -89,7 +89,8 @@ struct unquoted_string {
 public:
     /// @brief Given a pointer to a quoted string, filter out the quotes
     /// @param pStr A constant pointer to a constant string to be searched/filtered. Modifying the pointer is strictly forbidden.
-    unquoted_string(const char * const pStr)
+    /// NOTE: Forcing inline saves ~36 bytes of flash
+    inline __attribute__((always_inline)) unquoted_string(const char * const pStr)
     : len(0)
     , found(false)
     {
