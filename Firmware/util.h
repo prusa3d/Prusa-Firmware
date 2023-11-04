@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <string.h>
 
 extern const uint16_t FW_VERSION_NR[4];
 const char* FW_VERSION_STR_P();
@@ -82,6 +83,45 @@ enum class ClCompareValue:uint_least8_t
     _Less=0,
     _Equal=1,
     _Greater=2
+};
+
+struct unquoted_string {
+public:
+    /// @brief Given a pointer to a quoted string, filter out the quotes
+    /// @param pStr A constant pointer to a constant string to be searched/filtered. Modifying the pointer is strictly forbidden.
+    unquoted_string(const char * const pStr)
+    : len(0)
+    , found(false)
+    {
+        char * pStrEnd = NULL;
+
+        // Start of the string
+        this->ptr = strchr(pStr, '"');
+        if (!this->ptr) {
+            // First quote not found
+            return;
+        }
+
+        // Skip the leading quote
+        this->ptr++; 
+
+        // End of the string
+        pStrEnd = strchr(this->ptr, '"');
+        if(!pStrEnd) {
+            // Second quote not found
+            return;
+        }
+        this->len = pStrEnd - this->ptr;
+        this->found = true;
+    }
+
+    bool WasFound() { return found; }
+    uint8_t GetLength() { return len; }
+    const char * GetUnquotedString() { return ptr; }
+private:
+    const char * ptr = NULL;
+    uint8_t len;
+    bool found;
 };
 
 extern ClNozzleDiameter oNozzleDiameter;
