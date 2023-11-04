@@ -380,7 +380,7 @@ void lcdui_print_percent_done(void)
 		}
 	}
 
-    if (!IS_SD_PRINTING && M79_timer_get_status() && GetHostStatusScreenName())
+    if (M79_timer_get_status() && GetHostStatusScreenName())
     {
         // Overwrite the name
         char * hostName = GetHostStatusScreenName();
