@@ -2573,7 +2573,7 @@ msgstr "Nie je pripravené"
 #. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
-msgstr "Predtlač"
+msgstr "Vytlačiť znova"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyberte starý filament a stlačte tlačidlo pre zavedenie nového."
