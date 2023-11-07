@@ -104,7 +104,7 @@ public:
         }
 
         // Skip the leading quote
-        this->ptr++; 
+        this->ptr++;
 
         // End of the string
         pStrEnd = strchr(this->ptr, '"');
