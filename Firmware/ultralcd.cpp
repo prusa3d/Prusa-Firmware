@@ -45,7 +45,6 @@
 
 #include "Prusa_farm.h"
 
-#include "power_panic.h"
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
@@ -259,6 +258,8 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 
 //action: Reprint
 bool enableReprint = false;
+bool enableReprintUSB = false;
+
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     uint8_t len = LCD_WIDTH - 1;
@@ -5198,13 +5199,13 @@ static void lcd_main_menu()
 #endif //TMC2130_DEBUG
 
     // Menu item for reprint
-    if(!printer_active() && enableReprint && card.cardOK)
+    if(!printer_active() && enableReprint && card.cardOK && !enableReprintUSB)
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
-    }else if(!printer_active() && enableReprint && saved_printing_type == PowerPanic::PRINT_TYPE_USB)
+    }else if(!printer_active() && enableReprintUSB )
     {
-        lcd_reprint_usb_print();
-    }else if (!card.cardOK && (saved_printing_type != PowerPanic::PRINT_TYPE_USB))
+        MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
+    }else if (!card.cardOK)
     {
         enableReprint = false;
     }
@@ -7516,4 +7517,7 @@ void reprint_from_eeprom() {
 void lcd_reprint_usb_print()
 {
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_REPRINT);
+    enableReprint=false;
+    enableReprintUSB=false;
+    lcd_return_to_status();
 }

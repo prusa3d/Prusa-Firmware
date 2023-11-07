@@ -63,7 +63,6 @@ bool cmdqueue_pop_front()
                 // No serial communication is pending. Reset both pointers to zero.
                 bufindw = 0;
             bufindr = bufindw;
-            enableReprint = true;
         } else {
             // There is at least one ready line in the buffer.
             // First skip the current command ID and iterate up to the end of the string.
