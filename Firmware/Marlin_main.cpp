@@ -8583,6 +8583,8 @@ Sigma_Exit:
     /*!
     ### M709 - MMU power & reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_power_&_reset">M709: MMU power & reset</a>
     The MK3S cannot not power off the MMU, but we can en- and disable the MMU and will be also stored in EEPROM.
+
+    The new state of the MMU is stored in printer's EEPROM - i.e. if you disable the MMU via M709, it will not be activated after the printer resets.
     #### Usage
 
         M709 [ S | X ]
