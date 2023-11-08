@@ -386,6 +386,9 @@ void lcdui_print_percent_done(void)
     if(usb_timer.running())
     {
         enableReprintUSB = true;
+    }else
+    {
+        enableReprintUSB = false;
     }
 }
 
