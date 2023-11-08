@@ -21,7 +21,6 @@ void ultralcd_init();
 
 // Reprint
 void reprint_from_eeprom();
-extern bool enableReprint;
 
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcdui_print_status_line(void);

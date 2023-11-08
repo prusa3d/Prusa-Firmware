@@ -5192,15 +5192,16 @@ static void lcd_main_menu()
 #endif //TMC2130_DEBUG
 
     // Menu item for reprint
-    if(!printer_active() && enableReprint && card.cardOK && !enableReprintUSB)
+    if(!printer_active() && enableReprint && card.cardOK && !enableReprintUSB && (heating_status == HeatingStatus::NO_HEATING))
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
-    }else if(!printer_active() && enableReprintUSB )
+    }else if(!printer_active() && enableReprintUSB && (heating_status == HeatingStatus::NO_HEATING))
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
     }else if (!card.cardOK)
     {
         enableReprint = false;
+        enableReprintUSB = false;
     }
     // Menu is never shown when idle
     if (babystep_allowed_strict() && (printJobOngoing() || lcd_commands_type == LcdCommands::Layer1Cal))
