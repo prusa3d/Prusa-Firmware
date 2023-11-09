@@ -1201,6 +1201,9 @@ const short temptable_1047[][2] PROGMEM = {
   PtLine(200,1000,4700)
   PtLine(250,1000,4700)
   PtLine(300,1000,4700)
+  PtLine(350,1000,4700)
+  PtLine(400,1000,4700)
+  PtLine(450,1000,4700)
 };
 #endif
 
