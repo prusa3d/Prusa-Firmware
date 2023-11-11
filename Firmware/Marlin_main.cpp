@@ -3489,6 +3489,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
             if (isPrintPaused)
             {
                 // Return to retracted state during a pause
+                // @todo is retraction really needed? E-position is reverted a few lines below
                 current_position[E_AXIS] -= default_retraction;
                 plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
 
