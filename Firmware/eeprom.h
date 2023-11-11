@@ -368,6 +368,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0C97 3223 | uint8   | EEPROM_THERMAL_MODEL_VER              | 0-255        | ffh                   | Thermal Model Version                             | Thermal Model| D3 Ax0c97 C1
 | 0x0C95 3221 | PGM_P   | EEPROM_KILL_MESSAGE                   | 0-65535      | ff ffh                | Kill message PGM pointer                          | kill()       | D3 Ax0c95 C2
 | 0x0C94 3220 | uint8   | EEPROM_KILL_PENDING_FLAG              | 42h, ffh     | ffh                   | Kill pending flag (0x42 magic value)              | kill()       | D3 Ax0c94 C1
+| 0x0C91 3217 | char[3] | EEPROM_FILENAME_EXTENSION             | ???          | ffffffffh             | DOS 8.3 filename extension                        | ???          | D3 Ax0c91 C1
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -606,8 +607,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_KILL_MESSAGE (EEPROM_THERMAL_MODEL_VER-2) //PGM_P
 #define EEPROM_KILL_PENDING_FLAG (EEPROM_KILL_MESSAGE-1) //uint8
 
+#define EEPROM_FILENAME_EXTENSION (EEPROM_KILL_PENDING_FLAG - 3) // 3 x char
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_KILL_PENDING_FLAG
+#define EEPROM_LAST_ITEM EEPROM_FILENAME_EXTENSION
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

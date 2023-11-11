@@ -6984,44 +6984,54 @@ static void menu_action_sdfile(const char* filename)
 {
   if(eFilamentAction != FilamentAction::None) return;
 
-  char cmd[30];
-  char* c;
-  bool result = true;
-  sprintf_P(cmd, MSG_M23, filename);
-  for (c = &cmd[4]; *c; c++)
-    *c = tolower(*c);
+    // Create a copy of card.filename on the stack since card.filename pointer
+    // will be modified by the SD card library when searching for the file
+    char selected_filename[FILENAME_LENGTH];
+    strcpy(selected_filename, filename);
 
-  const char end[5] = ".gco";
+  bool result = true;
 
   //we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
   for (uint_least8_t i = 0; i < 8; i++) {
-	  if (strcmp((cmd + i + 4), end) == 0) {
+	  if (selected_filename[i] == '\0' || selected_filename[i] == '.') {
 		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
  		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
 		  break;
 	  }
 	  else {
-		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, cmd[i + 4]);
+		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, selected_filename[i]);
 	  }
   }
 
-  uint8_t depth = card.getWorkDirDepth();
-  eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
+    // Write the DOS 8.3 file extension into EEPROM
+    char * extension_ptr = strchr(selected_filename, '.');
 
-  for (uint_least8_t i = 0; i < depth; i++) {
-	  for (uint_least8_t j = 0; j < 8; j++) {
-		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, card.dir_names[i][j]);
-	  }
-  }
+    if (extension_ptr) {
+        extension_ptr++; // skip the '.'
+    }
 
-  //filename is just a pointer to card.filename, which changes everytime you try to open a file by filename. So you can't use filename directly
-  //to open a file. Instead, the cached filename in cmd is used as that one is static for the whole lifetime of this function.
-  if (!check_file(cmd + 4)) {
+    for (uint_least8_t i = 0; i < 3; i++)
+    {
+        if (extension_ptr == NULL || extension_ptr[i] == '\0') {
+            eeprom_update_byte((uint8_t*)EEPROM_FILENAME_EXTENSION + i, '\0');
+        } else {
+            eeprom_update_byte((uint8_t*)EEPROM_FILENAME_EXTENSION + i, extension_ptr[i]);
+        }
+    }
+
+    const uint8_t depth = card.getWorkDirDepth();
+    eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
+
+    for (uint_least8_t i = 0; i < depth; i++) {
+        eeprom_update_block(card.dir_names[i], (uint8_t*)EEPROM_DIRS + 8 * i, 8);
+    }
+
+  if (!check_file(selected_filename)) {
       result = !lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false);////MSG_FILE_INCOMPLETE c=20 r=3
       lcd_update_enable(true);
   }
   if (result) {
-	  enquecommand(cmd);
+	  enquecommandf_P(MSG_M23, selected_filename);
 	  enquecommand_P(MSG_M24);
   }
 
