@@ -85,8 +85,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 02h 2        | ^                     | miniRambo Auto mode                               | ^            | ^
 | 0x0FFE 4094 | uchar   | EEPROM_LANG                           | 00h 0        | ffh 255         __L__ | English / LANG_ID_PRI                             | LCD menu     | D3 Ax0ffe C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Other language LANG_ID_SEC                        | ^            | ^
-| 0x0FFC 4092 | uint16  | EEPROM_BABYSTEP_X                     | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0ffc C2
-| 0x0FFA 4090 | uint16  | EEPROM_BABYSTEP_Y                     | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0ffa C2
+| 0x0FFC 4092 | uint16  | _EEPROM_FREE_NR10_                    | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0ffc C2
+| 0x0FFA 4090 | uint16  | _EEPROM_FREE_NR11_                    | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0ffa C2
 | 0x0FF8 4088 | uint16  | EEPROM_BABYSTEP_Z                     | ???          | ff ffh 65535          | Babystep for Z axis _legacy_                      | ???          | D3 Ax0ff8 C2
 | ^           | ^       | ^                                     | ^            | ^                     | multiple values stored now in EEPROM_Sheets_base  | ^            | ^
 | 0x0FF7 4087 | uint8   | EEPROM_CALIBRATION_STATUS_V1          | ffh 255      | ffh 255               | Calibration status (<v3.12)                       | ???          | D3 Ax0ff7 C1
@@ -106,7 +106,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FC4 4036 | bool    | EEPROM_FARM_MODE                      | 00h 0        | ffh 255         __P__ | Prusa farm mode: __off__                          | G99          | D3 Ax0fc4 C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Prusa farm mode: __on__                           | G98          | ^
 | 0x0FC3 4035 | free    | _EEPROM_FREE_NR1_                     | ???          | ffh 255               | _Free EEPROM space_                               | _free space_ | D3 Ax0fc3 C1
-| 0x0FC1 4033 | ???     | EEPROM_FARM_NUMBER                    | 000-999      | ff ffh / 000    __P__ | _Free EEPROM space_                               | _free space_ | D3 Ax0fc1 C2
+| 0x0FC1 4033 | ???     | _EEPROM_FREE_NR2_                     | ???          | ff ffh  65535         | _Free EEPROM space_                               | _free space_ | D3 Ax0fc1 C2
 | 0x0FC0 4032 | bool    | EEPROM_BED_CORRECTION_VALID           | 00h 0        | 00h 0                 | Bed correction: __invalid__                         | ???          | D3 Ax0fc0 C1
 | ^           | ^       | ^                                     | ffh 255      | ^                     | Bed correction: __valid__                           | ???          | ^
 | 0x0FBF 4031 | char    | EEPROM_BED_CORRECTION_LEFT            | 00h ffh      | 00h 0                 | Bed manual correction left                        | LCD menu     | D3 Ax0fbf C1
@@ -119,7 +119,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | ^            | ^                     | At this moment limited to +-100um                 | G80 Bxxx     | ^
 | 0x0FBB 4027 | bool    | EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY | 00h 0        | ffh 255               | Toshiba Air: __off__                              | LCD menu     | D3 Ax0fbb C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Toshiba Air: __on__                               | ^            | ^
-| 0x0FBA 4026 | uint8   | EEPROM_PRINT_FLAG                     | ???          | ???                   | _Free EEPROM space_                               | _free space_ | D3 Ax0fba C1
+| 0x0FBA 4026 | uint8   | _EEPROM_FREE_NR3_                     | ???          | ???                   | _Free EEPROM space_                               | _free space_ | D3 Ax0fba C1
 | 0x0FB0 4016 | int16   | EEPROM_PROBE_TEMP_SHIFT               | ???          | ???                   | ???                                               | ???          | D3 Ax0fb0 C10
 | 0x0FAF 4015 | bool    | EEPROM_TEMP_CAL_ACTIVE                | 00h 0        | 00h 0                 | PINDA Temp cal.: __inactive__                     | LCD menu     | D3 Ax0faf C1
 | ^           | ^       | ^                                     | ffh 255      | ^                     | PINDA Temp cal.: __active__                       | ^            | ^
@@ -143,8 +143,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F88 3976 | uint8   | EEPROM_UVLO_FAN_SPEED                 | ???          | ffh 255               | Saved Fan speed                                   | Power Panic  | D3 Ax0f88 C1
 | 0x0F87 3975 | uint8   | EEPROM_FAN_CHECK_ENABLED              | 00h 0        | ???                   | Fan Check __disabled__                            | LCD menu     | D3 Ax0f87 C1
 | ^           | ^       | ^                                     | 01h 1        | ffh 255               | Fan Check __enabled__                             | ^            | ^
-| 0x0F75 3957 | uint16  | EEPROM_UVLO_MESH_BED_LEVELING         | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0f75 C18
-| 0x0F73 3955 | uint16  | EEPROM_UVLO_Z_MICROSTEPS              | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0f73 C2
+| 0x0F75 3957 | uint16  | _EEPROM_FREE_NR7_                     | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0f75 C18
+| 0x0F73 3955 | uint16  | _EEPROM_FREE_NR8_                     | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0f73 C2
 | 0x0F72 3954 | uint8   | EEPROM_UVLO_E_ABS                     | ???          | ffh 0                 | E axis was in relative mode (M83)                 | Power Panic  | D3 Ax0f72 C1
 | 0x0F72 3954 | uint8   | ^                                     | ???          | ffh 1                 | E axis was in absolute mode (M82)                 | Power Panic  | ^
 | 0x0F6E 3950 | float   | EEPROM_UVLO_CURRENT_POSITION_E        | ???          | ff ff ff ffh          | Saved machine position (E axis)                   | Power Panic  | D3 Ax0f6e C4
@@ -235,7 +235,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 01h 1        | ^                     | MMU cutter: __enabled__                           | ^            | ^
 | ^           | ^       | ^                                     | 02h 2        | ^                     | MMU cutter: __always__                            | ^            | ^
 | 0x0DAE 3502 | uint16  | EEPROM_UVLO_MESH_BED_LEVELING_FULL    | ???          | ff ffh 65535          | Saved MBL points                                  | Power Panic  | D3 Ax0dae C288
-| 0x0DAD 3501 | uint8   | EEPROM_MBL_TYPE                       | ???          | ffh 255               | _Free EEPROM space_                               | _free space_ | D3 Ax0dad C1
+| 0x0DAD 3501 | uint8   | _EEPROM_FREE_NR9_                     | ???          | ffh 255               | _Free EEPROM space_                               | _free space_ | D3 Ax0dad C1
 | 0x0DAC 3500 | bool    | EEPROM_MBL_MAGNET_ELIMINATION         | 01h 1        | ffh 255               | Mesh bed leveling does: __ignores__ magnets       | LCD menu     | D3 Ax0dac C1
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Mesh bed leveling does: __NOT ignores__ magnets   | ^            | ^
 | 0x0DAB 3499 | uint8   | EEPROM_MBL_POINTS_NR                  | 03h 3        | ffh 255               | Mesh bed leveling points: __3x3__                 | LCD menu     | D3 Ax0dab C1
@@ -390,8 +390,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_TOP 4096
 #define EEPROM_SILENT 4095
 #define EEPROM_LANG 4094
-#define EEPROM_BABYSTEP_X 4092 // FREE EEPROM SPACE
-#define EEPROM_BABYSTEP_Y 4090 // FREE EEPROM SPACE
+#define _EEPROM_FREE_NR10_ 4092 // uint16_t
+#define _EEPROM_FREE_NR11_ 4090 // uint16_t
 #define EEPROM_BABYSTEP_Z 4088 //legacy, multiple values stored now in EEPROM_Sheets_base
 #define EEPROM_CALIBRATION_STATUS_V1 4087 // legacy, used up to v3.11
 #define EEPROM_BABYSTEP_Z0 4085
@@ -407,22 +407,24 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
 #define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
-#define EEPROM_FREE_NR1 (EEPROM_FARM_MODE-1) // FREE EEPROM SPACE
-#define EEPROM_FARM_NUMBER (EEPROM_FREE_NR1-2) // int16_t (FREE EEPROM SPACE)
+#define EEPROM_FREE_NR1 (EEPROM_FARM_MODE-1) // uint8_t
+#define _EEPROM_FREE_NR2_ (EEPROM_FREE_NR1 - 2) // int16_t
 
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
 // Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
+#define EEPROM_BED_CORRECTION_VALID (_EEPROM_FREE_NR2_ - 1)
 #define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
 #define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
 #define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1) // bool
-#define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1) // uint8_t (FREE EEPROM SPACE)
-#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps
+
+#define _EEPROM_FREE_NR3_ (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY - 1) // uint8_t
+
+#define EEPROM_PROBE_TEMP_SHIFT (_EEPROM_FREE_NR3_ - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps
 #define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
-#define _EEPROM_FREE_NR6_ (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int (FREE EEPROM SPACE)
+#define _EEPROM_FREE_NR6_ (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int
 #define EEPROM_CALIBRATION_STATUS_PINDA (_EEPROM_FREE_NR6_ - 1) //0 - not calibrated; 1 - calibrated
 
 #define EEPROM_UVLO                     (EEPROM_CALIBRATION_STATUS_PINDA - 1) // uint8_t
@@ -435,14 +437,16 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_UVLO_FEEDRATE            (EEPROM_UVLO_TARGET_BED - 2) //uint16_t
 #define EEPROM_UVLO_FAN_SPEED           (EEPROM_UVLO_FEEDRATE - 1)
 #define EEPROM_FAN_CHECK_ENABLED        (EEPROM_UVLO_FAN_SPEED - 1)
-#define EEPROM_UVLO_MESH_BED_LEVELING   (EEPROM_FAN_CHECK_ENABLED - 9*2)  // 9 x uint16_t (FREE EEPROM SPACE)
-#define EEPROM_UVLO_Z_MICROSTEPS        (EEPROM_UVLO_MESH_BED_LEVELING - 2) // uint16_t (FREE EEPROM SPACE)
-#define EEPROM_UVLO_E_ABS               (EEPROM_UVLO_Z_MICROSTEPS - 1) // uint8_t
+
+#define _EEPROM_FREE_NR7_               (EEPROM_FAN_CHECK_ENABLED - 9*2) // 9 x uint16_t
+#define _EEPROM_FREE_NR8_               (_EEPROM_FREE_NR7_ - 2) // uint16_t
+
+#define EEPROM_UVLO_E_ABS               (_EEPROM_FREE_NR8_ - 1) // uint8_t
 #define EEPROM_UVLO_CURRENT_POSITION_E  (EEPROM_UVLO_E_ABS - 4) // float
 #define EEPROM_UVLO_SAVED_SEGMENT_IDX   (EEPROM_UVLO_CURRENT_POSITION_E - 2) //uint16_t
 
-#define EEPROM_FREE_NR4         (EEPROM_UVLO_SAVED_SEGMENT_IDX - 1) // FREE EEPROM SPACE
-#define EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1) // FREE EEPROM SPACE
+#define EEPROM_FREE_NR4         (EEPROM_UVLO_SAVED_SEGMENT_IDX - 1) // uint8_t
+#define EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1) // uint8_t
 
 #define EEPROM_CRASH_DET        (EEPROM_FREE_NR5 - 1)      // uint8_t
 #define EEPROM_CRASH_COUNT_Y    (EEPROM_CRASH_DET - 1)     // uint8_t
@@ -537,8 +541,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_MMU_CUTTER_ENABLED (EEPROM_MMU_LOAD_FAIL - 1) // bool
 #define EEPROM_UVLO_MESH_BED_LEVELING_FULL     (EEPROM_MMU_CUTTER_ENABLED - 12*12*2) //allow 12 calibration points for future expansion
 
-#define EEPROM_MBL_TYPE	(EEPROM_UVLO_MESH_BED_LEVELING_FULL-1) //uint8_t (FREE EEPROM SPACE)
-#define EEPROM_MBL_MAGNET_ELIMINATION (EEPROM_MBL_TYPE -1)
+#define _EEPROM_FREE_NR9_ (EEPROM_UVLO_MESH_BED_LEVELING_FULL-1) // uint8_t
+
+#define EEPROM_MBL_MAGNET_ELIMINATION (_EEPROM_FREE_NR9_ - 1)
 #define EEPROM_MBL_POINTS_NR (EEPROM_MBL_MAGNET_ELIMINATION -1) //uint8_t number of points in one exis for mesh bed leveling
 #define EEPROM_MBL_PROBE_NR (EEPROM_MBL_POINTS_NR-1) //number of measurements for each point
 
