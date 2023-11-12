@@ -10572,6 +10572,15 @@ void refresh_print_state_in_ram()
     isPartialBackupAvailable = true;
 }
 
+void __attribute__((noinline)) refresh_saved_feedrate_multiplier_in_ram() {
+    if (!saved_printing) {
+        // There is no saved print, therefore nothing to refresh
+        return;
+    }
+
+    saved_feedmultiply2 = feedmultiply;
+}
+
 void clear_print_state_in_ram()
 {
     // Set flag to false in order to avoid using
