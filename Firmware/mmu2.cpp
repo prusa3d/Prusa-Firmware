@@ -12,6 +12,9 @@
 #include "strlen_cx.h"
 #include "SpoolJoin.h"
 
+#include "messages.h"
+#include "language.h"
+
 #ifdef __AVR__
 // As of FW 3.12 we only support building the FW with only one extruder, all the multi-extruder infrastructure will be removed.
 // Saves at least 800B of code size
@@ -50,6 +53,17 @@ MMU2::MMU2()
     , unloadFilamentStarted(false)
     , toolchange_counter(0)
     , tmcFailures(0) {
+}
+
+void MMU2::Status() {
+    // Useful information to see during bootup and change state
+    SERIAL_ECHOPGM("MMU is ");
+    uint8_t status = eeprom_init_default_byte((uint8_t*)EEPROM_MMU_ENABLED, 0);
+    if (status == 1) {
+        SERIAL_ECHOLNRPGM(_O(MSG_ON));
+    } else {
+        SERIAL_ECHOLNRPGM(_O(MSG_OFF));
+    }
 }
 
 void MMU2::Start() {

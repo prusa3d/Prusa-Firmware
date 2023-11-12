@@ -1125,6 +1125,7 @@ void setup()
 	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
 		MMU2::mmu2.Start();
 	}
+	MMU2::mmu2.Status();
 	SpoolJoin::spooljoin.initSpoolJoinStatus();
 
 	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
@@ -8581,14 +8582,17 @@ Sigma_Exit:
     } break;
 
     /*!
-    ### M709 - MMU reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_reset">M709: MMU reset</a>
-    The MK3S cannot not power off the MMU, for that reason the functionality is not supported.
+    ### M709 - MMU power & reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_power_&_reset">M709: MMU power & reset</a>
+    The MK3S cannot not power off the MMU, but we can en- and disable the MMU.
+
+    The new state of the MMU is stored in printer's EEPROM - i.e. if you disable the MMU via M709, it will not be activated after the printer resets.
     #### Usage
 
-        M709 [ X ]
+        M709 [ S | X ]
 
     #### Parameters
-    - `X` - Reset MMU (0:soft reset | 1:hardware reset)
+    - `X` - Reset MMU (0:soft reset | 1:hardware reset | 42: erase MMU eeprom)
+    - `S` - En-/disable the MMU (0:off | 1:on)
 
     #### Example
 
@@ -8596,9 +8600,32 @@ Sigma_Exit:
 
     M709 X1 - toggle the MMU's reset pin (hardware reset)
 
+    M709 X42 - erase MMU EEPROM
+
+    M709 S1 - enable MMU
+
+    M709 S0 - disable MMU
+
+    M709    - Serial message if en- or disabled
     */
     case 709:
     {
+        if (code_seen('S'))
+        {
+            switch (code_value_uint8())
+            {
+            case 0:
+                eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
+                MMU2::mmu2.Stop();
+                break;
+            case 1:
+                eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, true);
+                MMU2::mmu2.Start();
+                break;
+            default:
+                break;
+            }
+        }
         if (MMU2::mmu2.Enabled() && code_seen('X'))
         {
             switch (code_value_uint8())
@@ -8609,10 +8636,14 @@ Sigma_Exit:
             case 1:
                 MMU2::mmu2.Reset(MMU2::MMU2::ResetPin);
                 break;
+            case 42:
+                MMU2::mmu2.Reset(MMU2::MMU2::EraseEEPROM);
+                break;
             default:
                 break;
             }
         }
+    MMU2::mmu2.Status();
     }
     break;
 

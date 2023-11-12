@@ -347,6 +347,7 @@ void TryLoadUnloadReporter::DumpToSerial(){
 /// Disables MMU in EEPROM
 void DisableMMUInSettings() {
     eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
+    mmu2.Status();
 }
 
 void IncrementLoadFails(){
