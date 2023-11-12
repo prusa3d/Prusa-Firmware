@@ -5854,16 +5854,26 @@ Sigma_Exit:
     }
 
     /*!
-    ### M79 - TODO
-    Restart the printer-host enable keepalive timer. While the timer has not expired, the printer will enable host specific features.
+    ### M79 - Start host timer <a href="https://reprap.org/wiki/G-code#M79:_Start_host_timer">M79: Start host timer</a>
+    Start the printer-host enable keep-alive timer. While the timer has not expired, the printer will enable host specific features.
     #### Usage
 
-        M79
+        M79 [ S ]
     #### Parameters
-       None
+       - `S` - Quoted string containing two characters e.g. "PL"
     */
     case 79:
         M79_timer_restart();
+
+        if (code_seen('S'))
+        {
+            unquoted_string str = unquoted_string(strchr_pointer);
+            if (str.WasFound())
+            {
+                ResetHostStatusScreenName();
+                SetHostStatusScreenName(str.GetUnquotedString());
+            }
+        }
         break;
 
     /*!
