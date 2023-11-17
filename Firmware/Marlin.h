@@ -22,6 +22,7 @@
 #include "pins.h"
 #include "Timer.h"
 #include "mmu2.h"
+#include "printer_state.h"
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -310,19 +311,6 @@ extern LongTimer safetyTimer;
 bool printJobOngoing();
 
 bool printer_active();
-
-enum class PrinterStatus : uint8_t
-{
-    NotReady = 0,
-    IsReady = 1,
-    Idle = 2,
-    SDPrintingFinished = 3,
-    HostPrintingFinished = 4,
-    IsSDPrinting = 5,
-    IsHostPrinting = 6,
-};
-
-extern PrinterStatus printer_status;
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
