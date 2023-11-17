@@ -5201,7 +5201,7 @@ static void lcd_main_menu()
     } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
-    if (GetPrinterState() < PrinterState::IsSDPrinting) {
+    if (GetPrinterState() < PrinterState::IsSDPrinting && M79_timer_get_status()) {
         if(GetPrinterState() == PrinterState::IsReady) {
             MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), _T(MSG_NO), lcd_printer_status_toggle);
         } else {
