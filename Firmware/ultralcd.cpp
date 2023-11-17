@@ -5139,7 +5139,7 @@ static void lcd_printer_status_toggle()
 {
     if (GetPrinterState() == PrinterState::IsReady) SetPrinterState(PrinterState::NotReady);
     else SetPrinterState(PrinterState::IsReady);
-    enquecommandf_P(PSTR("M118 A1 action:%s"), (GetPrinterState() == PrinterState::IsReady) ? "ready" : "not_ready");
+    enquecommandf_P(PSTR("M118 A1 action:%S"), (GetPrinterState() == PrinterState::IsReady) ? "ready" : "not_ready");
 }
 
 //! @brief Show Main Menu
