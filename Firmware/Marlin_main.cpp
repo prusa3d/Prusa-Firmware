@@ -7705,11 +7705,6 @@ Sigma_Exit:
     case 125:
     case 601:
     {
-        // Set default values
-        pause_position[X_AXIS] = X_PAUSE_POS;
-        pause_position[Y_AXIS] = Y_PAUSE_POS;
-        pause_position[Z_AXIS] = Z_PAUSE_LIFT;
-
         for (uint8_t axis = 0; axis < E_AXIS; axis++) {
           if (code_seen(axis_codes[axis])) {
             pause_position[axis] = constrain(code_value(), min_pos[axis], max_pos[axis]);
