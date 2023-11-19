@@ -663,7 +663,7 @@ void get_command()
           int hours, minutes;
           minutes = t % 60;
           hours = t / 60;
-          save_statistics(total_filament_used, t);
+          save_statistics();
           sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
           SERIAL_ECHO_START;
           SERIAL_ECHOLN(time);
