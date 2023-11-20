@@ -7673,54 +7673,70 @@ Sigma_Exit:
 
     /*!
     ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#M601:_Pause_print">M601: Pause print</a>
-    Without any parameters it will park the extruder to default.
+    Without any parameters it will park the extruder to default or last set position.
+    The default pause position will be set during power up and a reset, the new pause positions aren't permanent.
     #### Usage
 
          M601 [ X | Y | Z | S ]
 
     #### Parameters
-     - `X` - X position to park at (otherwise X_PAUSE_POS 50) these are saved until change or reset.
-     - `Y` - Y position to park at (otherwise Y_PAUSE_POS 190) these are saved until change or reset.
-     - `Z` - Z raise before park (otherwise Z_PAUSE_LIFT 20) these are saved until change or reset.
-     - `S` - Set values [S0 = set default | S1 = set values only without pausing]
+     - `X` - X position to park at (default X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (default Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (default Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = set values] without pausing
     */
     /*!
 
     ### M125 - Pause print <a href="https://reprap.org/wiki/G-code#M125:_Pause_print">M125: Pause print</a>
-    Without any parameters it will park the extruderthe extruder to default.
+    Without any parameters it will park the extruder to default or last set position.
+    The default pause position will be set during power up and a reset, the new pause positions aren't permanent.
     #### Usage
 
          M125 [ X | Y | Z | S ]
 
     #### Parameters
-     - `X` - X position to park at (otherwise X_PAUSE_POS 50) these are saved until change or reset.
-     - `Y` - Y position to park at (otherwise Y_PAUSE_POS 190 these are saved until change or reset.
-     - `Z` - Z raise before park (otherwise Z_PAUSE_LIFT 20) these are saved until change or reset.
-     - `S` - Set values [S0 = set to default values | S1 = set values only without pausing]
+     - `X` - X position to park at (default X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (default Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (default Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = set values] without pausing
     */
     /*!
     ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
+    Without any parameters it will park the extruder to default or last set position.
+    The default pause position will be set during power up and a reset, the new pause positions aren't permanent.
+    #### Usage
+
+         M25 [ X | Y | Z | S ]
+
+    #### Parameters
+     - `X` - X position to park at (default X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (default Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (default Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = set values] without pausing
     */
     case 25:
     case 125:
     case 601:
     {
+        //Set new pause position for all three axis XYZ
         for (uint8_t axis = 0; axis < E_AXIS; axis++) {
           if (code_seen(axis_codes[axis])) {
+            //Check that the positions are within hardware limits
             pause_position[axis] = constrain(code_value(), min_pos[axis], max_pos[axis]);
           }
         }
-
+        //Set default or new pause position without pausing
         if (code_seen('S')) {
             if ( code_value_uint8() == 0 ) {
                 pause_position[X_AXIS] = X_PAUSE_POS;
                 pause_position[Y_AXIS] = Y_PAUSE_POS;
                 pause_position[Z_AXIS] = Z_PAUSE_LIFT;
-            } else {
-                break;
             }
+        break;
         }
-/*      SERIAL_ECHOPGM("X:");
+/*
+        //Debug serial output
+        SERIAL_ECHOPGM("X:");
         SERIAL_ECHOLN(pause_position[X_AXIS]);
         SERIAL_ECHOPGM("Y:");
         SERIAL_ECHOLN(pause_position[Y_AXIS]);
