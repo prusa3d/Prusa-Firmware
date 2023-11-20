@@ -460,5 +460,4 @@ extern "C" void softReset();
 void stack_error();
 
 extern uint32_t IP_address;
-
 #endif
