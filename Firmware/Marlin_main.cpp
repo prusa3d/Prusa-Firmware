@@ -200,6 +200,8 @@ float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
 
+static float pause_position[3] = { X_PAUSE_POS, Y_PAUSE_POS, Z_PAUSE_LIFT };
+
 uint8_t fanSpeed = 0;
 uint8_t newFanSpeed = 0;
 
@@ -556,8 +558,8 @@ void crashdet_stop_and_save_print()
 
 void crashdet_restore_print_and_continue()
 {
-	restore_print_from_ram_and_continue(default_retraction); //XYZ = orig, E +1mm unretract
-//	babystep_apply();
+  restore_print_from_ram_and_continue(default_retraction); //XYZ = orig, E +1mm unretract
+//babystep_apply();
 }
 
 void crashdet_fmt_error(char* buf, uint8_t mask)
@@ -631,8 +633,8 @@ void crashdet_detected(uint8_t mask)
 
 void crashdet_recover()
 {
-	crashdet_restore_print_and_continue();
-	if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
+  if (!isPrintPaused) crashdet_restore_print_and_continue();
+  if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
 void crashdet_cancel()
@@ -7671,16 +7673,76 @@ Sigma_Exit:
 
     /*!
     ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#M601:_Pause_print">M601: Pause print</a>
+    Without any parameters it will park the extruder to default or last set position.
+    The default pause position will be set during power up and a reset, the new pause positions aren't permanent.
+    #### Usage
+
+         M601 [ X | Y | Z | S ]
+
+    #### Parameters
+     - `X` - X position to park at (default X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (default Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (default Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = set values] without pausing
     */
     /*!
-    ### M125 - Pause print (TODO: not implemented)
+
+    ### M125 - Pause print <a href="https://reprap.org/wiki/G-code#M125:_Pause_print">M125: Pause print</a>
+    Without any parameters it will park the extruder to default or last set position.
+    The default pause position will be set during power up and a reset, the new pause positions aren't permanent.
+    #### Usage
+
+         M125 [ X | Y | Z | S ]
+
+    #### Parameters
+     - `X` - X position to park at (default X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (default Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (default Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = set values] without pausing
     */
     /*!
     ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
+    Without any parameters it will park the extruder to default or last set position.
+    The default pause position will be set during power up and a reset, the new pause positions aren't permanent.
+    #### Usage
+
+         M25 [ X | Y | Z | S ]
+
+    #### Parameters
+     - `X` - X position to park at (default X_PAUSE_POS 50) these are saved until change or reset.
+     - `Y` - Y position to park at (default Y_PAUSE_POS 190) these are saved until change or reset.
+     - `Z` - Z raise before park (default Z_PAUSE_LIFT 20) these are saved until change or reset.
+     - `S` - Set values [S0 = set to default values | S1 = set values] without pausing
     */
     case 25:
+    case 125:
     case 601:
     {
+        //Set new pause position for all three axis XYZ
+        for (uint8_t axis = 0; axis < E_AXIS; axis++) {
+          if (code_seen(axis_codes[axis])) {
+            //Check that the positions are within hardware limits
+            pause_position[axis] = constrain(code_value(), min_pos[axis], max_pos[axis]);
+          }
+        }
+        //Set default or new pause position without pausing
+        if (code_seen('S')) {
+            if ( code_value_uint8() == 0 ) {
+                pause_position[X_AXIS] = X_PAUSE_POS;
+                pause_position[Y_AXIS] = Y_PAUSE_POS;
+                pause_position[Z_AXIS] = Z_PAUSE_LIFT;
+            }
+        break;
+        }
+/*
+        //Debug serial output
+        SERIAL_ECHOPGM("X:");
+        SERIAL_ECHOLN(pause_position[X_AXIS]);
+        SERIAL_ECHOPGM("Y:");
+        SERIAL_ECHOLN(pause_position[Y_AXIS]);
+        SERIAL_ECHOPGM("Z:");
+        SERIAL_ECHOLN(pause_position[Z_AXIS]);
+*/
         if (!isPrintPaused) {
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
@@ -10405,12 +10467,12 @@ void long_pause() //long pause print
     setTargetHotend(0);
 
     // Lift z
-    raise_z(Z_PAUSE_LIFT);
+    raise_z(pause_position[Z_AXIS]);
 
     // Move XY to side
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
-        current_position[X_AXIS] = X_PAUSE_POS;
-        current_position[Y_AXIS] = Y_PAUSE_POS;
+        current_position[X_AXIS] = pause_position[X_AXIS];
+        current_position[Y_AXIS] = pause_position[Y_AXIS];
         plan_buffer_line_curposXYZE(50);
     }
 
