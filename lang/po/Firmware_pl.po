@@ -163,8 +163,8 @@ msgid ""
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
 "reset."
 msgstr ""
-"Poziomowanie stołu nieudane. Sensor nie aktywował się. Zanieczysz. dysza? Czekam na "
-"reset."
+"Poziomowanie stołu nieudane. Sensor nie aktywował się. Zanieczysz. dysza? "
+"Czekam na reset."
 
 #. MSG_SELFTEST_BEDHEATER c=20
 #: ../../Firmware/ultralcd.cpp:6596
@@ -219,8 +219,8 @@ msgid ""
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibracja XYZ. Przekręć pokrętło, aby przesunąć oś Z do górnych "
-"krańcówek. Naciśnij pokrętło gdy gotowe."
+"Kalibracja XYZ. Przekręć pokrętło, aby przesunąć oś Z do górnych krańcówek. "
+"Naciśnij pokrętło gdy gotowe."
 
 #. MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:2160 ../../Firmware/messages.cpp:19
@@ -234,8 +234,8 @@ msgid ""
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibracja Z. Przekręć pokrętło, aby przesunąć oś Z do górnych "
-"krańcówek. Naciśnij gdy gotowe."
+"Kalibracja Z. Przekręć pokrętło, aby przesunąć oś Z do górnych krańcówek. "
+"Naciśnij gdy gotowe."
 
 #. MSG_CALIBRATING_HOME c=20
 #: ../../Firmware/ultralcd.cpp:6870
@@ -841,8 +841,8 @@ msgstr "G-code pocięty dla nowszego firmware. Kontynuować?"
 msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
-msgstr "G-code pocięty dla nowszego firmware. Zaktualizuj firmware. "
-"Druk anulowany."
+msgstr ""
+"G-code pocięty dla nowszego firmware. Zaktualizuj firmware. Druk anulowany."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:105 ../../Firmware/ultralcd.cpp:4360
@@ -2161,8 +2161,8 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Należy przeprowadzić kalibrację Z. Kieruj się Podręcznikiem: rozdział Pierwsze"
-" Kroki."
+"Należy przeprowadzić kalibrację Z. Kieruj się Podręcznikiem: rozdział "
+"Pierwsze Kroki."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:149 ../../Firmware/ultralcd.cpp:4508
@@ -2358,8 +2358,7 @@ msgstr "Kalibracja XYZ nieudana. Nie znaleziono punktów kalibracyjnych."
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3158
 msgid "XYZ calibration failed. Front calibration points not reachable."
-msgstr ""
-"Kalibracja XYZ nieudana. Przednie punkty kalibracji nieosiągalne."
+msgstr "Kalibracja XYZ nieudana. Przednie punkty kalibracji nieosiągalne."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3155
@@ -2371,8 +2370,7 @@ msgstr ""
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3161
 msgid "XYZ calibration failed. Right front calibration point not reachable."
-msgstr ""
-"Kalibracja XYZ nieudana. Prawy przedni punkt nieosiągalny."
+msgstr "Kalibracja XYZ nieudana. Prawy przedni punkt nieosiągalny."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3186
@@ -2478,8 +2476,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Ładowanie do ekstrudera nieudane. Sprawdź kształt końcówki "
-"filamentu. W razie potrzeby dostrój kalibrację czujnika."
+"Ładowanie do ekstrudera nieudane. Sprawdź kształt końcówki filamentu. W "
+"razie potrzeby dostrój kalibrację czujnika."
 
 #. MSG_TITLE_MMU_MCU_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:178 ../../Firmware/mmu2/errors_list.h:225
@@ -2508,16 +2506,16 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in Selector and FINDA works properly."
 msgstr ""
-"Wybierak nie może się poruszyć, bo czujnik FINDA wykrył filament. "
-"Upewnij się, że w selektorze nie ma filamentu i że FINDA działa prawidłowo."
+"Wybierak nie może się poruszyć, bo czujnik FINDA wykrył filament. Upewnij "
+"się, że w selektorze nie ma filamentu i że FINDA działa prawidłowo."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:289 ../../Firmware/mmu2/errors_list.h:336
 msgid ""
 "MMU FW version is incompatible with printer FW.Update to version 3.0.1."
 msgstr ""
-"Wersja firmware MMU jest niezgodna z firmware drukarki. Zaktualizuj "
-"MMU do wersji 3.0.1."
+"Wersja firmware MMU jest niezgodna z firmware drukarki. Zaktualizuj MMU do "
+"wersji 3.0.1."
 
 #. MSG_PRELOAD_TO_MMU c=17
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:5279
@@ -2572,10 +2570,15 @@ msgstr "Czułość"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Poziomowanie stołu nieudane. Proszę uruchomić kalibrację Z."
 
-#. MSG_SET_READY c=13
+#. MSG_SET_READY c=18
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
-msgstr "Ust. gotowość"
+msgstr "Ustaw gotowość"
+
+#. MSG_SET_NOT_READY c=18
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
+msgid "Set not Ready"
+msgstr "Cofnij gotowość"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Wyciągnij poprzedni filament i naciśnij pokrętło aby załadować nowy."

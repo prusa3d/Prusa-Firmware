@@ -1429,8 +1429,8 @@ msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr ""
-"PINDA kalibrace dokončena a je nyní aktivní. Lze deaktivovat v "
-"menu Nastavení->Tepl. kal."
+"PINDA kalibrace dokončena a je nyní aktivní. Lze deaktivovat v menu "
+"Nastavení->Tepl. kal."
 
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:196
@@ -2555,10 +2555,15 @@ msgstr "Citlivost"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Mesh Bed Leveling selhal. Spusťte kalibraci osy Z."
 
-#. MSG_SET_READY c=13
+#. MSG_SET_READY c=18
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
 msgstr "Připravit"
+
+#. MSG_SET_NOT_READY c=18
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
+msgid "Set not Ready"
+msgstr "Zrušit Připravena"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."

@@ -163,7 +163,8 @@ msgid ""
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
 "reset."
 msgstr ""
-"Falló la nivelación. Sensor no funciona. ¿Restos en boquilla? Esperando reset."
+"Falló la nivelación. Sensor no funciona. ¿Restos en boquilla? Esperando "
+"reset."
 
 #. MSG_SELFTEST_BEDHEATER c=20
 #: ../../Firmware/ultralcd.cpp:6596
@@ -810,8 +811,8 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"Código G laminado para un nivel diferente. Vuelve a laminar el modelo de nuevo. "
-"Impresión cancelada."
+"Código G laminado para un nivel diferente. Vuelve a laminar el modelo de "
+"nuevo. Impresión cancelada."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:137 ../../Firmware/util.cpp:316
@@ -826,8 +827,8 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again."
 " Print cancelled."
 msgstr ""
-"Código G laminado para una impresora diferente. Vuelve a laminar el modelo de nuevo."
-" Impresión cancelada."
+"Código G laminado para una impresora diferente. Vuelve a laminar el modelo "
+"de nuevo. Impresión cancelada."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:139 ../../Firmware/util.cpp:366
@@ -888,8 +889,8 @@ msgid ""
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
 "through the setup process?"
 msgstr ""
-"Hola, soy tu impresora Original Prusa i3. ¿Quieres que te guíe a traves de la "
-"configuración?"
+"Hola, soy tu impresora Original Prusa i3. ¿Quieres que te guíe a traves de "
+"la configuración?"
 
 #. MSG_HIGH_POWER c=10
 #: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:4146
@@ -985,8 +986,7 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:337
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
-msgstr ""
-"Error interno de ejecución. Reinicia la MMU o actualiza el firmware."
+msgstr "Error interno de ejecución. Reinicia la MMU o actualiza el firmware."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3625
@@ -1527,8 +1527,8 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Coloca el filamento en el primer tubo de la MMU, luego presiona el dial "
-"para cargarlo."
+"Coloca el filamento en el primer tubo de la MMU, luego presiona el dial para"
+" cargarlo."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3630
@@ -1909,8 +1909,8 @@ msgstr "Fallo Selftest"
 #: ../../Firmware/Marlin_main.cpp:1523
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr ""
-"Se realizará el selftest para calibrar con precision la vuelta a la "
-"posición inicial sin sensores."
+"Se realizará el selftest para calibrar con precision la vuelta a la posición"
+" inicial sin sensores."
 
 #. MSG_INFO_SENSORS c=18
 #: ../../Firmware/ultralcd.cpp:1677
@@ -2578,10 +2578,15 @@ msgstr "Sensibilidad"
 msgid "Mesh bed leveling failed. Please run Z calibration."
 msgstr "Nivelación fallida. Ejecute la calibración Z."
 
-#. MSG_SET_READY c=13
+#. MSG_SET_READY c=18
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
 msgstr "Listo"
+
+#. MSG_SET_NOT_READY c=18
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
+msgid "Set not Ready"
+msgstr "Conjunto no listo"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""

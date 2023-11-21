@@ -1939,9 +1939,14 @@ msgstr ""
 msgid "Sensor verified, remove the filament now."
 msgstr ""
 
-#. MSG_SET_READY c=13
+#. MSG_SET_READY c=18
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
+msgstr ""
+
+#. MSG_SET_NOT_READY c=18
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
+msgid "Set not Ready"
 msgstr ""
 
 #. MSG_SET_TEMPERATURE c=20
