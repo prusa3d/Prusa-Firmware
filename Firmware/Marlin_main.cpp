@@ -1733,7 +1733,7 @@ void loop()
 		usb_timer.start();
 	}
 	else if (usb_timer.expired(10000)) { //just need to check if it expired. Nothing else is needed to be done.
-        SetPrinterState(PrinterState::HostPrintingFinished); //set printer state to show LCD menu after finished SD print and report correctly M862.7 Q when USB times out
+        SetPrinterState(PrinterState::HostPrintingFinished); //set printer state to show LCD menu after finished SD print
 	}
     
 #ifdef PRUSA_M28
