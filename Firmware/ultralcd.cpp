@@ -783,6 +783,7 @@ void lcd_commands()
             custom_message_type = CustomMsg::Status;
             lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
             lcd_commands_type = LcdCommands::Idle;
+            SetPrinterState(PrinterState::Idle);
             lcd_commands_step = 0;
             lcd_print_stop_finish();
         }
@@ -798,6 +799,7 @@ void lcd_commands()
 				lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
 			}
 			lcd_commands_type = LcdCommands::Idle;
+			SetPrinterState(PrinterState::Idle);
 			lcd_commands_step = 0;
 			long_pause();
 		}
@@ -858,6 +860,7 @@ void lcd_commands()
                 lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
+                SetPrinterState(PrinterState::Idle);
                 if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
                     lcd_wizard(WizState::RepeatLay1Cal);
                 break;
@@ -899,7 +902,7 @@ void lcd_commands()
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
-            SetPrinterState(PrinterState::Idle);
+			SetPrinterState(PrinterState::Idle);
 		}
 	}
 
@@ -938,6 +941,7 @@ void lcd_commands()
         case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
+            SetPrinterState(PrinterState::Idle);
             thermal_model_set_warn_beep(true);
             bool res = thermal_model_autotune_result();
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
@@ -996,6 +1000,7 @@ void lcd_commands()
                 lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
+                SetPrinterState(PrinterState::Idle);
                 break;
             }
         }
