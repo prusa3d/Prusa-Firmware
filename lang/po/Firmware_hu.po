@@ -2582,10 +2582,15 @@ msgstr "Sikertelen asztal szintezés. Kérjük, futtasd a Z kalibrálást."
 msgid "Reprint"
 msgstr "Újranyomtatás"
 
-#. MSG_SET_READY c=13
+#. MSG_SET_READY c=18
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
 msgstr "Készen áll"
+
+#. MSG_SET_NOT_READY c=18
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
+msgid "Set not Ready"
+msgstr "Készen nem áll"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vedd ki a regi fil., majd nyomd meg a gombot az uj fil. betoltesehez."

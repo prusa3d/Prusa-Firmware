@@ -446,8 +446,8 @@ msgid ""
 " Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"La distance entre de la buse et du lit n'a pas encore été réglée. Suivez"
-" le manuel, chap. Premiers pas."
+"La distance entre de la buse et du lit n'a pas encore été réglée. Suivez le "
+"manuel, chap. Premiers pas."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ../../Firmware/ultralcd.cpp:3920
@@ -577,8 +577,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA non désactivé lors du déchargement du filament. Essayez de décharger "
-"à la main. Assurez-vous que le filament peut bouger et que la FINDA "
+"FINDA non désactivé lors du déchargement du filament. Essayez de décharger à"
+" la main. Assurez-vous que le filament peut bouger et que la FINDA "
 "fonctionne."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
@@ -770,8 +770,8 @@ msgstr "Cal. 1ere couche"
 #: ../../Firmware/ultralcd.cpp:3843
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
-"Je vais lancer le selftest pour verifier les problèmes d'assemblage les "
-"plus communs."
+"Je vais lancer le selftest pour verifier les problèmes d'assemblage les plus"
+" communs."
 
 #. MSG_FLOW c=15
 #: ../../Firmware/ultralcd.cpp:5440
@@ -814,8 +814,8 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"G-code a été préparé pour un niveau différent. Découpez le modèle à nouveau. "
-"Impression annulée."
+"G-code a été préparé pour un niveau différent. Découpez le modèle à nouveau."
+" Impression annulée."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:137 ../../Firmware/util.cpp:316
@@ -892,8 +892,8 @@ msgid ""
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
 "through the setup process?"
 msgstr ""
-"Je suis votre imprimante Original Prusa i3. Voulez-vous que je vous "
-"guide à travers le processus d'installation?
+"Je suis votre imprimante Original Prusa i3. Voulez-vous que je vous guide à "
+"travers le processus d'installation"
 
 #. MSG_HIGH_POWER c=10
 #: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:4146
@@ -1389,7 +1389,8 @@ msgstr "Off"
 #. MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:1508
 msgid "Old settings found. Default PID, Esteps etc. will be set."
-msgstr "Anciens réglages trouvés. Le PID, les Esteps, etc. par défaut seront réglés."
+msgstr ""
+"Anciens réglages trouvés. Le PID, les Esteps, etc. par défaut seront réglés."
 
 #. MSG_ON c=3
 #: ../../Firmware/SpoolJoin.cpp:23 ../../Firmware/messages.cpp:130
@@ -1452,8 +1453,8 @@ msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr ""
-"La calibration en PINDA est terminée et activée. Il peut être désactivé "
-"dans le menu Réglages-> Calib. PINDA"
+"La calibration en PINDA est terminée et activée. Il peut être désactivé dans"
+" le menu Réglages-> Calib. PINDA"
 
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:196
@@ -1752,8 +1753,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"L'outil de filament demandé n'est pas disponible sur ce matériel. Recherchez "
-"dans le G-Code un index d'outil hors plage (T0-T4)"
+"L'outil de filament demandé n'est pas disponible sur ce matériel. Recherchez"
+" dans le G-Code un index d'outil hors plage (T0-T4)"
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:85 ../../Firmware/ultralcd.cpp:2689
@@ -2167,7 +2168,8 @@ msgstr ""
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
-msgstr "Il faut toujours effectuer la calibration Z. Veuillez suivre le manuel."
+msgstr ""
+"Il faut toujours effectuer la calibration Z. Veuillez suivre le manuel."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:149 ../../Firmware/ultralcd.cpp:4508
@@ -2365,8 +2367,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3152
 msgid "XYZ calibration failed. Bed calibration point was not found."
 msgstr ""
-"Échec calibration XYZ. Le point de calibration du lit n'a pas été "
-"trouvé."
+"Échec calibration XYZ. Le point de calibration du lit n'a pas été trouvé."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3158
@@ -2594,10 +2595,15 @@ msgstr "Mesh bed leveling a échoué. Veuillez procéder à l'étalonnage Z."
 msgid "Reprint"
 msgstr "Ré-imprimer"
 
-#. MSG_SET_READY c=13
+#. MSG_SET_READY c=18
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
-msgstr "Ensemb. prête"
+msgstr "Ensemble prête"
+
+#. MSG_SET_NOT_READY c=18
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
+msgid "Set not Ready"
+msgstr "Ensemble pas prête"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""

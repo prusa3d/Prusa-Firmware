@@ -5133,13 +5133,12 @@ static void lcd_sheet_menu()
 }
 
 //! @brief Set printer state
-//! Sets the printer state for next print via LCD menu
+//! Sends the printer state for next print via LCD menu to host
+//! The host has to set the printer ready state with `M72` to keep printer in sync with the host
 //! @endcode
-static void lcd_printer_status_toggle()
+static void lcd_printer_ready_state_toggle()
 {
-    if (GetPrinterState() == PrinterState::IsReady) SetPrinterState(PrinterState::NotReady);
-    else SetPrinterState(PrinterState::IsReady);
-    enquecommandf_P(PSTR("M118 A1 action:%S"), (GetPrinterState() == PrinterState::IsReady) ? "ready" : "not_ready");
+    enquecommandf_P(PSTR("M118 %S"), (GetPrinterState() == PrinterState::IsReady) ? MSG_OCTOPRINT_NOT_READY : MSG_OCTOPRINT_READY);
 }
 
 //! @brief Show Main Menu
@@ -5228,9 +5227,9 @@ static void lcd_main_menu()
     }
     if (GetPrinterState() < PrinterState::IsSDPrinting && M79_timer_get_status()) {
         if(GetPrinterState() == PrinterState::IsReady) {
-            MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), _T(MSG_NO), lcd_printer_status_toggle);
+            MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
         } else {
-            MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), _T(MSG_YES), lcd_printer_status_toggle);
+            MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
         }
     }
     if (mesh_bed_leveling_flag == false && homing_flag == false && !print_job_timer.isPaused() && !processing_tcode) {
