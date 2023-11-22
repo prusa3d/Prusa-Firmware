@@ -1,7 +1,7 @@
 /**
- *
+ * 
  * NOTE: this file has been changed in order to compile & run on Prusa-Firmware https://github.com/prusa3d/Prusa-Firmware
- *
+ * 
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
