@@ -912,7 +912,6 @@ void lcd_commands()
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
-            SetPrinterState(PrinterState::Idle);
 		}
 	}
 
@@ -5137,9 +5136,9 @@ static void lcd_sheet_menu()
 //! @endcode
 static void lcd_printer_status_toggle()
 {
-    if (GetPrinterState() == PrinterState::IsReady) SetPrinterState(PrinterState::NotReady);
-    else SetPrinterState(PrinterState::IsReady);
-    enquecommandf_P(PSTR("M118 A1 action:%s"), (GetPrinterState() == PrinterState::IsReady) ? "ready" : "not_ready");
+    if (printer_status == PrinterStatus::NotReady) printer_status = PrinterStatus::IsReady;
+    else printer_status = PrinterStatus::NotReady;
+    enquecommandf_P(PSTR("M118 A1 action:%s"), (printer_status == PrinterStatus::NotReady) ? "not_ready" : "ready");
 }
 
 //! @brief Show Main Menu
@@ -5226,12 +5225,8 @@ static void lcd_main_menu()
     } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
-    if (GetPrinterState() < PrinterState::IsSDPrinting) {
-        if(GetPrinterState() == PrinterState::IsReady) {
-            MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), _T(MSG_NO), lcd_printer_status_toggle);
-        } else {
-            MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), _T(MSG_YES), lcd_printer_status_toggle);
-        }
+    if (printer_status < PrinterStatus::IsSDPrinting) {
+        MENU_ITEM_TOGGLE_P(_T(MSG_SET_READY), (printer_status == PrinterStatus::IsReady) ? _T(MSG_YES) : _T(MSG_NO), lcd_printer_status_toggle);
     }
     if (mesh_bed_leveling_flag == false && homing_flag == false && !print_job_timer.isPaused() && !processing_tcode) {
         if (usb_timer.running()) {
@@ -5685,7 +5680,7 @@ void print_stop(bool interactive)
 
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::StopPrint;
-    SetPrinterState(PrinterState::NotReady); //set printer state to show LCD menu after print has been stopped and report correctly M862.7 Q
+    printer_status = PrinterStatus::NotReady; //set printer state to show LCD menu after print has been stopped and report correctly M862.7 Q
     lcd_return_to_status();
 }
 
