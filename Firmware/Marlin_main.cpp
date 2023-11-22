@@ -7705,23 +7705,24 @@ Sigma_Exit:
     case 125:
     case 601:
     {
-        float temp_pause_position[3] = { X_PAUSE_POS, Y_PAUSE_POS, Z_PAUSE_LIFT };
-        for (uint8_t axis = 0; axis < E_AXIS; axis++) {
-          if (code_seen(axis_codes[axis])) temp_pause_position[axis] = code_value();
+        if (code_seen('X')) {
+          //Check that the X pause position is within printer limits
+          if ((code_value() >= X_MIN_POS) && (code_value() <= X_MAX_POS-1)) {
+            pause_position[X_AXIS] = code_value();
+          } else pause_position[X_AXIS] = X_PAUSE_POS;
         }
-        //Check that the X pause position is within printer limits
-        if ((temp_pause_position[X_AXIS] >= X_MIN_POS) && (temp_pause_position[X_AXIS] <= X_MAX_POS-1)) {
-            pause_position[X_AXIS] = temp_pause_position[X_AXIS];
-          }
-        //Check that the Y pause position is within printer limits
-        if ((temp_pause_position[Y_AXIS] >= Y_MIN_POS) && (temp_pause_position[Y_AXIS] <= Y_MAX_POS-1)) {
-          pause_position[Y_AXIS] = temp_pause_position[Y_AXIS];
+        if (code_seen('Y')) {
+          //Check that the Y pause position is within printer limits
+          if ((code_value() >= Y_MIN_POS) && (code_value() <= Y_MAX_POS-1)) {
+            pause_position[Y_AXIS] = code_value();
+          } else pause_position[Y_AXIS] = Y_PAUSE_POS;
         }
-        //Check that the Z lift position is within printer limits
-        if (temp_pause_position[Z_AXIS] <=Z_MAX_POS) {
-          pause_position[Z_AXIS] = temp_pause_position[Z_AXIS];
+        if (code_seen('Z')) {
+          //Check that the Z pause lift is within printer limits
+          if (code_value() <=Z_MAX_POS) {
+            pause_position[Z_AXIS] = code_value();
+          } else pause_position[Z_AXIS] = Z_PAUSE_LIFT;
         }
-
         if (code_seen('S')) {
             if ( code_value_uint8() == 0 ) {
                 pause_position[X_AXIS] = X_PAUSE_POS;
