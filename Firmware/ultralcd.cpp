@@ -783,6 +783,7 @@ void lcd_commands()
             custom_message_type = CustomMsg::Status;
             lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
             lcd_commands_type = LcdCommands::Idle;
+            SetPrinterState(PrinterState::Idle);
             lcd_commands_step = 0;
             lcd_print_stop_finish();
         }
@@ -798,6 +799,7 @@ void lcd_commands()
 				lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
 			}
 			lcd_commands_type = LcdCommands::Idle;
+			SetPrinterState(PrinterState::Idle);
 			lcd_commands_step = 0;
 			long_pause();
 		}
@@ -858,6 +860,7 @@ void lcd_commands()
                 lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
+                SetPrinterState(PrinterState::Idle);
                 if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
                     lcd_wizard(WizState::RepeatLay1Cal);
                 break;
@@ -899,6 +902,7 @@ void lcd_commands()
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
+			SetPrinterState(PrinterState::Idle);
 		}
 	}
 
@@ -937,6 +941,7 @@ void lcd_commands()
         case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
+            SetPrinterState(PrinterState::Idle);
             thermal_model_set_warn_beep(true);
             bool res = thermal_model_autotune_result();
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
@@ -995,6 +1000,7 @@ void lcd_commands()
                 lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
+                SetPrinterState(PrinterState::Idle);
                 break;
             }
         }
@@ -2308,7 +2314,7 @@ void lcd_menu_statistics()
 	if (printJobOngoing())
 	{
 		const float _met = ((float)total_filament_used) / (100000.f);
-        
+
 		const uint32_t _t = print_job_timer.duration();
 		const uint32_t _h = (_t / 60) / 60;
 		const uint8_t _m = (_t / 60) % 60;
@@ -5118,6 +5124,15 @@ static void lcd_sheet_menu()
     MENU_END();
 }
 
+//! @brief Set printer state
+//! Sends the printer state for next print via LCD menu to host
+//! The host has to set the printer ready state with `M72` to keep printer in sync with the host
+//! @endcode
+static void lcd_printer_ready_state_toggle()
+{
+    enquecommandf_P(PSTR("M118 %S"), (GetPrinterState() == PrinterState::IsReady) ? MSG_OCTOPRINT_NOT_READY : MSG_OCTOPRINT_READY);
+}
+
 //! @brief Show Main Menu
 //!
 //! @code{.unparsed}
@@ -5190,7 +5205,13 @@ static void lcd_main_menu()
     } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
-
+    if (GetPrinterState() < PrinterState::IsSDPrinting && M79_timer_get_status()) {
+        if(GetPrinterState() == PrinterState::IsReady) {
+            MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
+        } else {
+            MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+        }
+    }
     if (mesh_bed_leveling_flag == false && homing_flag == false && !print_job_timer.isPaused() && !processing_tcode) {
         if (usb_timer.running()) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
@@ -5643,6 +5664,7 @@ void print_stop(bool interactive)
 
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::StopPrint;
+    SetPrinterState(PrinterState::NotReady); //set printer state to show LCD menu after print has been stopped
     lcd_return_to_status();
 }
 

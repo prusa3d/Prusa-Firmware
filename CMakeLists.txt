@@ -210,6 +210,7 @@ set(FW_SOURCES
     pat9125.cpp
     planner.cpp
     power_panic.cpp
+    printer_state.cpp
     Prusa_farm.cpp
     qr_solve.cpp
     rbuf.c

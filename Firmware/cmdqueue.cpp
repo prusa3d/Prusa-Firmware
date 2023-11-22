@@ -480,9 +480,10 @@ void get_command()
             allow_when_stopped = true;
 
         // Handle the USB timer
-        if ((*cmd_start == 'G') && !(IS_SD_PRINTING))
+        if ((*cmd_start == 'G') && (GetPrinterState() != PrinterState::IsSDPrinting)) {
             usb_timer.start();
-
+            SetPrinterState(PrinterState::IsHostPrinting); //set printer state busy printing to hide LCD menu while USB printing
+        }
         if (allow_when_stopped == false && Stopped == true) {
             // Stopped can be set either during error states (thermal error: cannot continue), or
             // when a printer-initiated action is processed. In such case the printer will send to
