@@ -835,58 +835,45 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
 }
 
 StepStatus MMU2::LogicStep(bool reportErrors) {
-    // Process any buttons before proceeding with another MMU Query
-    CheckUserInput();
-
-    const StepStatus ss = logic.Step();
+    CheckUserInput(); // Process any buttons before proceeding with another MMU Query
+    StepStatus ss = logic.Step();
     switch (ss) {
-
     case Finished:
         // At this point it is safe to trigger a runout and not interrupt the MMU protocol
         CheckFINDARunout();
         break;
-
     case Processing:
         OnMMUProgressMsg(logic.Progress());
         break;
-
     case ButtonPushed:
         lastButton = logic.Button();
         LogEchoEvent_P(PSTR("MMU Button pushed"));
         CheckUserInput(); // Process the button immediately
         break;
-
     case Interrupted:
         // can be silently handed over to a higher layer, no processing necessary at this spot
         break;
-
     default:
         if (reportErrors) {
             switch (ss) {
-
             case CommandError:
                 ReportError(logic.Error(), ErrorSourceMMU);
                 break;
-
             case CommunicationTimeout:
                 state = xState::Connecting;
                 ReportError(ErrorCode::MMU_NOT_RESPONDING, ErrorSourcePrinter);
                 break;
-
             case ProtocolError:
                 state = xState::Connecting;
                 ReportError(ErrorCode::PROTOCOL_ERROR, ErrorSourcePrinter);
                 break;
-
             case VersionMismatch:
                 StopKeepPowered();
                 ReportError(ErrorCode::VERSION_MISMATCH, ErrorSourcePrinter);
                 break;
-
             case PrinterError:
                 ReportError(logic.PrinterError(), ErrorSourcePrinter);
                 break;
-
             default:
                 break;
             }
@@ -896,7 +883,6 @@ StepStatus MMU2::LogicStep(bool reportErrors) {
     if (logic.Running()) {
         state = xState::Active;
     }
-
     return ss;
 }
 
