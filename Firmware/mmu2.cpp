@@ -639,6 +639,9 @@ void MMU2::SaveAndPark(bool move_axes) {
             }
         }
     }
+    // keep the motors powered forever (until some other strategy is chosen)
+    // @@TODO do we need that in 8bit?
+    gcode_reset_stepper_timeout();
 }
 
 void MMU2::ResumeHotendTemp() {

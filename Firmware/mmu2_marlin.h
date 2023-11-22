@@ -60,4 +60,6 @@ void Disable_E0();
 
 bool all_axes_homed();
 
+void gcode_reset_stepper_timeout();
+
 } // namespace MMU2
