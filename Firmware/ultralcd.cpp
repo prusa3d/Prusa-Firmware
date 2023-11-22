@@ -5684,7 +5684,7 @@ void print_stop(bool interactive)
 
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::StopPrint;
-    SetPrinterState(PrinterState::NotReady); //set printer state to show LCD menu after print has been stopped
+    SetPrinterState(PrinterState::NotReady); //set printer state to show LCD menu after print has been stopped and report correctly M862.7 Q
     lcd_return_to_status();
 }
 

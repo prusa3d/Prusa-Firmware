@@ -274,7 +274,7 @@ void CardReader::startFileprint()
   if(cardOK)
   {
     sdprinting = true;
-    SetPrinterState(PrinterState::IsSDPrinting); //set printer state to hide LCD menu
+    SetPrinterState(PrinterState::IsSDPrinting); //set printer state to hide LCD menu and report correctly M862.7 Q while SD printing
 	#ifdef SDCARD_SORT_ALPHA
 		//flush_presort();
 	#endif
