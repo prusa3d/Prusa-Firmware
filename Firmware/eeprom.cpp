@@ -46,12 +46,6 @@ void eeprom_init()
     }
     check_babystep();
 
-    // initialize custom mendel name in eeprom
-    if (eeprom_read_byte((uint8_t*)EEPROM_CUSTOM_MENDEL_NAME) == EEPROM_EMPTY_VALUE) {
-        //SERIAL_ECHOLN("Init Custom Mendel Name");
-        eeprom_update_block(CUSTOM_MENDEL_NAME, (uint8_t*)EEPROM_CUSTOM_MENDEL_NAME, sizeof(CUSTOM_MENDEL_NAME));
-    } //else SERIAL_ECHOLN("Found Custom Mendel Name");
-
 #ifdef PINDA_TEMP_COMP
     eeprom_init_default_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, 0);
 #endif //PINDA_TEMP_COMP
