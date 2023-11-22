@@ -186,8 +186,6 @@ public:
     /// Reset the retryAttempts back to the default value
     void ResetRetryAttempts();
 
-    void ResetCommunicationTimeoutAttempts();
-
     constexpr bool InAutoRetry() const { return inAutoRetry; }
     void SetInAutoRetry(bool iar) {
         inAutoRetry = iar;
