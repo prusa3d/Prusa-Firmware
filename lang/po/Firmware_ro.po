@@ -577,8 +577,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA nu s-a oprit la descărcare Fil.Încercați descăr. manuală. Asigurați-vă"
-" că FINDA funcționează."
+"FINDA nu s-a oprit la descărcare Fil.Încercați descăr. manuală. Asigurați-vă "
+"că FINDA funcționează."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:241 ../../Firmware/mmu2/errors_list.h:297
@@ -730,8 +730,8 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the sensor"
 " is calibrated and the filament reached it."
 msgstr ""
-"Senzorul de filament nu s-a declanșast în timpul încărcării fil. Asigurați-"
-"vă că filamentul a ajuns la fsenzor și senzorul funcționează."
+"Senzorul de filament nu s-a declanșast în timpul încărcării fil. Asigurați-vă"
+" că filamentul a ajuns la fsenzor și senzorul funcționează."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -829,8 +829,8 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again."
 " Print cancelled."
 msgstr ""
-"G-code pregătit pentru un alt tip de printer. Vă rugăm să pregătiți modelul "
-"din nou. Print anulat."
+"G-code pregătit pentru un alt tip de printer. Vă rugăm să pregătiți modelul din"
+" nou. Print anulat."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:139 ../../Firmware/util.cpp:366
@@ -988,8 +988,7 @@ msgstr "Înfige filamentul (nu-l încărca) in extruder și apasă butonul."
 msgid ""
 "Internal runtime error. Try resetting the MMU or updating the firmware."
 msgstr ""
-"ERR internă de runtime. Încercați să resetați MMU sau să actualizați "
-"firmwarul."
+"ERR internă de runtime. Încercați să resetați MMU sau să actualizați firmwarul."
 
 #. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3625
@@ -1518,8 +1517,8 @@ msgstr "Curățați vârful pentru calibrare. Apăsați butonul când terminați
 msgid ""
 "Please insert filament into the extruder, then press the knob to load it."
 msgstr ""
-"Vă rugăm să introduceți filamentul în extruder, apoi apăsați butonul pentru "
-"a-l încărca."
+"Vă rugăm să introduceți filamentul în extruder, apoi apăsați butonul pentru a-l "
+"încărca."
 
 #. MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3702
@@ -1685,8 +1684,8 @@ msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First"
 " steps, section Calibration flow."
 msgstr ""
-"Imprimanta nu a fost calibrată. Vă rugăm să urmați manualul, capitolul First"
-" steps, secțiunea Calibration flow."
+"Imprimanta nu a fost calibrată. Vă rugăm să urmați manualul, "
+"capitolul First steps, secțiunea Calibration flow."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:143 ../../Firmware/util.cpp:293
@@ -1706,8 +1705,8 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:245 ../../Firmware/mmu2/errors_list.h:301
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
 msgstr ""
-"Motorul Pully e blocat. Asigurați-vă că fulia se poate mișca și verificați "
-"cablajul."
+"Motorul Pully e blocat. Asigurați-vă că fulia se poate mișca și "
+"verificați cablajul."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:23
@@ -1746,8 +1745,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"Fil. solicitat nu este disponibil pe acest hardware. Verifică G-codul dacă "
-"folosește filam. în afara intervalului (T0-T4)."
+"Fil. solicitat nu este disponibil pe acest hardware. "
+"Verifică G-codul dacă folosește filam. în afara intervalului (T0-T4)."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:85 ../../Firmware/ultralcd.cpp:2689
@@ -2584,15 +2583,10 @@ msgstr "Nivelarea patului a eșuat. Rulează Calibrare Z."
 msgid "Reprint"
 msgstr "Repetă print"
 
-#. MSG_SET_READY c=18
+#. MSG_SET_READY c=13
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
-msgstr "Printer pregătit"
-
-#. MSG_SET_NOT_READY c=18
-#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
-msgid "Set not Ready"
-msgstr "Print. nu pregătit"
+msgstr "Set pregătit"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."
@@ -2610,15 +2604,15 @@ msgstr "Print. nu pregătit"
 #~ "The MMU reports its FW version incompatible with the printer's firmware. "
 #~ "Make sure the MMU firmware is up to date."
 #~ msgstr ""
-#~ "Versiunea FW MMU este incompatibilă cu cea a imprimantei. Asigurați-vă că FW"
-#~ " MMU este actualizat."
+#~ "Versiunea FW MMU este incompatibilă cu cea a imprimantei. Asigurați-vă că FW "
+#~ "MMU este actualizat."
 
 #~ msgid ""
 #~ "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector"
 #~ " is free. Check FINDA connection."
 #~ msgstr ""
-#~ "Citire FINDA neașteptată. Asig. că nu este Fil. în FINDA și selector-ul este"
-#~ " liber. Verifică conexiune FINDA."
+#~ "Citire FINDA neașteptată. Asig. că nu este Fil. în FINDA și selector-ul "
+#~ "este liber. Verifică conexiune FINDA."
 
 #~ msgid ""
 #~ "Autoloading filament available only when filament sensor is turned on..."
@@ -2693,14 +2687,12 @@ msgstr "Print. nu pregătit"
 #~ "You are using firmware alpha version. This is development version. Using "
 #~ "this version is not recommended and may cause printer damage."
 #~ msgstr ""
-#~ "Utilizați vers.alfa de FW. Acestă este vers. de dezvoltare. Folosirea "
-#~ "aceastei versiuni nu este recomandată și poate cauza deteriorarea "
-#~ "imprimantei"
+#~ "Utilizați vers.alfa de FW. Acestă este vers. de dezvoltare. Folosirea aceastei"
+#~ " versiuni nu este recomandată și poate cauza deteriorarea imprimantei"
 
 #~ msgid ""
 #~ "You are using firmware beta version. This is development version. Using this"
 #~ " version is not recommended and may cause printer damage."
 #~ msgstr ""
 #~ "Utilizați vers. beta de FW. Acesta este vers. de dezvoltare. Folosirea "
-#~ "aceastei versiuni nu este recomandată și poate cauza deteriorarea "
-#~ "imprimantei"
+#~ "aceastei versiuni nu este recomandată și poate cauza deteriorarea imprimantei"

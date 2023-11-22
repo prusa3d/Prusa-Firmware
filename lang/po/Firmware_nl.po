@@ -2585,15 +2585,10 @@ msgstr "Bed leveling mislukt. Voer de Z-kalibratie uit."
 msgid "Reprint"
 msgstr "Herhaal druk"
 
-#. MSG_SET_READY c=18
+#. MSG_SET_READY c=13
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
 msgstr "Gereed zetten"
-
-#. MSG_SET_NOT_READY c=18
-#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
-msgid "Set not Ready"
-msgstr "Niet gereed zetten"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""

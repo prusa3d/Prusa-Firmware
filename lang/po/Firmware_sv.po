@@ -2571,16 +2571,10 @@ msgstr "Bäddnivelleringen felade. Kör Z-kalibrering."
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
 msgstr "Upprepa trycket"
-
-#. MSG_SET_READY c=18
+#. MSG_SET_READY c=13
 #: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
 msgid "Set Ready"
 msgstr "Gör klar"
-
-#. MSG_SET_NOT_READY c=18
-#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:5211
-msgid "Set not Ready"
-msgstr "Set inte klart"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Ta bort det gamla fil. och tryck på knappen för att börja ladda nytt."
