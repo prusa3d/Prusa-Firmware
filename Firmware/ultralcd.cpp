@@ -1051,7 +1051,8 @@ static void lcd_move_menu_axis();
 
 static void lcd_cooldown()
 {
-  disable_heater();
+  setTargetHotend(0);
+  setTargetBed(0);
   fanSpeed = 0;
   lcd_return_to_status();
 }
@@ -2734,7 +2735,8 @@ void pid_extruder()
 
 #ifdef PINDA_THERMISTOR
 bool lcd_wait_for_pinda(float temp) {
-	disable_heater();
+	setTargetHotend(0);
+	setTargetBed(0);
 	LongTimer pinda_timeout;
 	pinda_timeout.start();
 	bool target_temp_reached = true;
@@ -2765,7 +2767,8 @@ void lcd_wait_for_heater() {
 }
 
 void lcd_wait_for_cool_down() {
-	disable_heater();
+	setTargetHotend(0);
+	setTargetBed(0);
 	uint8_t fanSpeedBckp = fanSpeed;
 	fanSpeed = 255;
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {

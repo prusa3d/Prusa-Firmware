@@ -78,7 +78,8 @@ void uvlo_() {
     }
 
     // Stop all heaters before continuing
-    disable_heater();
+    setTargetHotend(0);
+    setTargetBed(0);
 
     // Fetch data not included in a partial back-up
     if (!sd_print_saved_in_ram) {
@@ -233,7 +234,8 @@ static void uvlo_tiny() {
 #endif //TMC2130
 
     // Stop all heaters
-    disable_heater();
+    setTargetHotend(0);
+    setTargetBed(0);
 
     // When power is interrupted on the _first_ recovery an attempt can be made to raise the
     // extruder, causing the Z position to change. Similarly, when recovering, the Z position is

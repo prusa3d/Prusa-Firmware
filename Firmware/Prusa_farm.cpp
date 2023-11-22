@@ -163,7 +163,9 @@ static void trace() {
 }
 
 void serial_read_stream() {
-    disable_heater();
+
+    setTargetHotend(0);
+    setTargetBed(0);
 
     lcd_clear();
     lcd_puts_P(PSTR(" Upload in progress"));
