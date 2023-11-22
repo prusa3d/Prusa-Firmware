@@ -480,7 +480,7 @@ void get_command()
             allow_when_stopped = true;
 
         // Handle the USB timer
-        if ((*cmd_start == 'G') && (GetPrinterState() != PrinterState::IsSDPrinting)) {
+        if ((*cmd_start == 'G') && !(IS_SD_PRINTING)) {
             usb_timer.start();
             SetPrinterState(PrinterState::IsHostPrinting); //set printer state busy printing to hide LCD menu and report correctly M862.7 Q while USB printing
         }
