@@ -68,7 +68,6 @@
 #include "backlight.h"
 
 #include "planner.h"
-#include "host.h"
 #include "stepper.h"
 #include "temperature.h"
 #include "fancheck.h"
@@ -5851,20 +5850,6 @@ Sigma_Exit:
         }
         break;
     }
-
-    /*!
-    ### M79 - TODO
-    Restart the printer-host enable keepalive timer. While the timer has not expired, the printer will enable host specific features.
-    #### Usage
-
-        M79
-    #### Parameters
-       None
-    */
-    case 79:
-        M79_timer_restart();
-        break;
-
     /*!
   ### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
   #### Usage
@@ -6321,6 +6306,7 @@ Sigma_Exit:
 	case 113:
 		if (code_seen('S')) {
 			host_keepalive_interval = code_value_uint8();
+//			NOMORE(host_keepalive_interval, 60);
 		}
 		else {
 			SERIAL_ECHO_START;
@@ -9438,7 +9424,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
   host_autoreport();
 #endif //AUTO_REPORT
   host_keepalive();
-  M79_timer_update_status();
 }
 
 void kill(const char *full_screen_message) {
