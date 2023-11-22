@@ -736,7 +736,6 @@ void lcd_status_screen()                          // NOT static due to using ins
         if (initial_feedmultiply != feedmultiply) {
             feedmultiply = constrain(feedmultiply, 10, 999);
             lcd_encoder = 0; // Consume rotation event
-            refresh_saved_feedrate_multiplier_in_ram();
         }
     }
 #endif //ULTIPANEL_FEEDMULTIPLY
@@ -5469,9 +5468,6 @@ static void lcd_tune_menu()
 	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 
 	MENU_BEGIN();
-	ON_MENU_LEAVE(
-		refresh_saved_feedrate_multiplier_in_ram();
-	);
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);////MSG_SPEED c=15
 

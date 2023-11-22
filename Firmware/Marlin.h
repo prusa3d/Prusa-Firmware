@@ -378,10 +378,6 @@ void save_print_file_state();
 void restore_print_file_state();
 void save_planner_global_state();
 void refresh_print_state_in_ram();
-
-/// Updates the feedrate multiplier when a print is saved such that
-/// it is not overwritten when the print is later resumed
-void refresh_saved_feedrate_multiplier_in_ram();
 void clear_print_state_in_ram();
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_extruder_temperature_from_ram();
