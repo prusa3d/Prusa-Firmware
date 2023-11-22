@@ -8582,13 +8582,13 @@ Sigma_Exit:
 
     /*!
     ### M709 - MMU power & reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_power_&_reset">M709: MMU power & reset</a>
-    The MK3S cannot not power off the MMU, but we can en- and disable the MMU and will be also stored in EEPROM.
+    The MK3S cannot not power off the MMU, but we can en- and disable the MMU.
     #### Usage
 
         M709 [ S | X ]
 
     #### Parameters
-    - `X` - Reset MMU (0:soft reset | 1:hardware reset | 42: erase MMU eeprom)
+    - `X` - Reset MMU (0:soft reset | 1:hardware reset | 42: erease MMU eeprom)
     - `S` - En-/disable the MMU (0:off | 1:on)
 
     #### Example
@@ -8610,11 +8610,9 @@ Sigma_Exit:
             switch (code_value_uint8())
             {
             case 0:
-                eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
                 MMU2::mmu2.Stop();
                 break;
             case 1:
-                eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, true);
                 MMU2::mmu2.Start();
                 break;
             default:
