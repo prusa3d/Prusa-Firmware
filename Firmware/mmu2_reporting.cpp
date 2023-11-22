@@ -1,5 +1,4 @@
 #include <avr/pgmspace.h>
-#include "eeprom.h"
 #include "mmu2.h"
 #include "mmu2_log.h"
 #include "mmu2_reporting.h"
@@ -343,11 +342,6 @@ void TryLoadUnloadReporter::DumpToSerial(){
     }
     buf[LCD_WIDTH] = 0;
     MMU2_ECHO_MSGLN(buf);
-}
-
-/// Disables MMU in EEPROM
-void DisableMMUInSettings() {
-    eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
 }
 
 void IncrementLoadFails(){
