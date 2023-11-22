@@ -8,7 +8,6 @@
 #include "ultralcd.h"
 #include "Filament_sensor.h"
 #include "language.h"
-#include "stopwatch.h"
 
 #ifdef PRUSA_FARM
 uint8_t farm_mode = 0;
@@ -93,8 +92,8 @@ static void prusa_stat_printinfo() {
     SERIAL_ECHOPGM("][FNM:");
     SERIAL_ECHO(card.longFilename[0] ? card.longFilename : card.filename);
     SERIAL_ECHOPGM("][TIM:");
-    if (print_job_timer.isRunning()) {
-        SERIAL_ECHO(print_job_timer.duration());
+    if (starttime != 0) {
+        SERIAL_ECHO((_millis() - starttime) / 1000);
     }
     else {
         SERIAL_ECHO(0);
@@ -238,7 +237,7 @@ void prusa_statistics(uint8_t _message) {
         if (busy_state == PAUSED_FOR_USER) {
             prusa_statistics_case0(15);
         }
-        else if (print_job_timer.isPaused()) {
+        else if (isPrintPaused) {
             prusa_statistics_case0(14);
         }
         else if (IS_SD_PRINTING || (eFilamentAction != FilamentAction::None)) {

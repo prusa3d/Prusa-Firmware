@@ -262,6 +262,9 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
+extern uint32_t starttime; // milliseconds
+extern uint32_t pause_time; // milliseconds
+extern uint32_t start_pause_print; // milliseconds
 extern ShortTimer usb_timer;
 extern bool processing_tcode;
 extern bool homing_flag;

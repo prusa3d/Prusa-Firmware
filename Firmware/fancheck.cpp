@@ -5,7 +5,6 @@
 #include "messages.h"
 #include "temperature.h"
 #include "stepper.h"
-#include "stopwatch.h"
 
 #define FAN_CHECK_PERIOD 5000 //5s
 #define FAN_CHECK_DURATION 100 //100ms
@@ -94,7 +93,7 @@ void fanSpeedError(unsigned char _fan) {
 
     if (printJobOngoing()) {
         // A print is ongoing, pause the print normally
-        if(!print_job_timer.isPaused()) {
+        if(!isPrintPaused) {
             if (usb_timer.running())
                 lcd_pause_usb_print();
             else
