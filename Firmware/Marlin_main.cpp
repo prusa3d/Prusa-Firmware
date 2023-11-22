@@ -7705,9 +7705,9 @@ Sigma_Exit:
     case 125:
     case 601:
     {
-        if (code_seen('X')) pause_position[1] = code_value();
-        if (code_seen('Y')) pause_position[2] = code_value();
-        if (code_seen('Z')) pause_position[3] = code_value();
+        if (code_seen('X')) pause_position[1] = code_value_uint8();
+        if (code_seen('Y')) pause_position[2] = code_value_uint8();
+        if (code_seen('Z')) pause_position[3] = code_value_uint8();
         if (code_seen('S')) {
             if ( code_value_uint8() == 0 ) {
                 pause_position[1] = X_PAUSE_POS;
