@@ -3415,7 +3415,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
 
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
-    float HotendTempBckp = saved_extruder_temperature;
+    float HotendTempBckp = degTargetHotend(active_extruder);
     uint8_t fanSpeedBckp = fanSpeed;
 
     memcpy(lastpos, current_position, sizeof(lastpos));
@@ -3424,16 +3424,9 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     fanSpeed = 0;
 
     // Retract E
-    if (!isPrintPaused)
-    {
-      current_position[E_AXIS] += e_shift;
-      plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
-      st_synchronize();
-    } else {
-        // Print is paused and the extruder may be cold
-        // Filament change can be issued via the Tune menu
-        restore_extruder_temperature_from_ram();
-    }
+    current_position[E_AXIS] += e_shift;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
+    st_synchronize();
 
     // Raise the Z axis
     raise_z(z_shift);
@@ -3487,21 +3480,8 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     
         // Feed a little of filament to stabilize pressure
         if (!automatic) {
-            if (isPrintPaused)
-            {
-                // Return to retracted state during a pause
-                current_position[E_AXIS] -= default_retraction;
-                plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
-
-                // Cooldown the extruder again
-                setTargetHotend(0);
-            }
-            else
-            {
-                // Feed a little of filament to stabilize pressure
-                current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-                plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
-            }
+            current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
         }
 
         // Move XY back
@@ -3522,8 +3502,8 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         feedmultiply = feedmultiplyBckp;
         enquecommandf_P(MSG_M220, feedmultiplyBckp);
     }
-    if (isPrintPaused) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
-    else lcd_setstatuspgm(MSG_WELCOME);
+    
+    lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
 
