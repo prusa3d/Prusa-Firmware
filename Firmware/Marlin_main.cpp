@@ -3423,7 +3423,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     fanSpeed = 0;
 
     // Retract E
-    if (!print_job_timer.isPaused())
+    if (!isPrintPaused)
     {
       current_position[E_AXIS] += e_shift;
       plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
@@ -3486,7 +3486,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     
         // Feed a little of filament to stabilize pressure
         if (!automatic) {
-            if (print_job_timer.isPaused())
+            if (isPrintPaused)
             {
                 // Return to retracted state during a pause
                 // @todo is retraction really needed? E-position is reverted a few lines below
@@ -3522,7 +3522,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         feedmultiply = feedmultiplyBckp;
         enquecommandf_P(MSG_M220, feedmultiplyBckp);
     }
-    if (print_job_timer.isPaused()) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
+    if (isPrintPaused) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
     else lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
