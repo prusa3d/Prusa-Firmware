@@ -55,7 +55,7 @@ MMU2::MMU2()
 void MMU2::Start() {
     mmu2Serial.begin(MMU_BAUD);
 
-    PowerOn();
+    PowerOn();          // I repurposed this to serve as our EEPROM disable toggle.
     mmu2Serial.flush(); // make sure the UART buffer is clear before starting communication
 
     extruder = MMU2_NO_TOOL;

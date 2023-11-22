@@ -7,7 +7,8 @@
 
 namespace MMU2 {
 
-// On MK3 we cannot do actual power cycle on HW. Instead trigger a hardware reset.
+// sadly, on MK3 we cannot do actual power cycle on HW...
+// so we just block the MMU via EEPROM var instead.
 void power_on() {
 #ifdef MMU_HWRESET
     WRITE(MMU_RST_PIN, 1);
