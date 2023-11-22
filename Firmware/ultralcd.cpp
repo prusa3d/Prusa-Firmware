@@ -2327,7 +2327,7 @@ void lcd_menu_statistics()
 	if (printJobOngoing())
 	{
 		const float _met = ((float)total_filament_used) / (100000.f);
-        
+
 		const uint32_t _t = print_job_timer.duration();
 		const uint32_t _h = (_t / 60) / 60;
 		const uint8_t _m = (_t / 60) % 60;

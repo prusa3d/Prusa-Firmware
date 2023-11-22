@@ -12,6 +12,8 @@
 #pragma once
 #include "macros.h"
 
+// The order of the states is important as we check
+// - LCD menu only shown when lower than "IsSDPrinting"
 enum class PrinterState : uint8_t
 {
     NotReady = 0,                 //Lowest state to simplify queries
