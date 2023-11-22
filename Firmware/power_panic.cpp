@@ -430,26 +430,23 @@ void restore_file_from_sd()
     char dir_name[9];
     uint8_t depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
+    MYSERIAL.println(int(depth));
     for (uint8_t i = 0; i < depth; i++) {
         for (uint8_t j = 0; j < 8; j++) {
             dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
         }
         dir_name[8] = '\0';
+        MYSERIAL.println(dir_name);
         card.chdir(dir_name, false);
     }
 
     for (uint8_t i = 0; i < 8; i++) {
-        const char c = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
-        filename[i] = c;
-        if (c == '\0') break; // Filename is shorter than 8 characters
+        filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
     }
-
-    // Add null delimiter in case all 8 characters were not NULL
     filename[8] = '\0';
 
-    // Add extension to complete the DOS 8.3 filename
+    MYSERIAL.print(filename);
     strcat_P(filename, PSTR(".gco"));
-
     enquecommandf_P(MSG_M23, filename);
 }
 
