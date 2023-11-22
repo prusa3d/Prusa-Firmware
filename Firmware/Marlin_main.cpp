@@ -631,7 +631,7 @@ void crashdet_detected(uint8_t mask)
 
 void crashdet_recover()
 {
-  if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
+  if (!isPrintPaused) crashdet_restore_print_and_continue();
   if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
