@@ -2577,11 +2577,6 @@ msgstr "Niveliranje podloge nije uspijelo. Pokrenite Z kalibraciju."
 msgid "Reprint"
 msgstr "Ponovno tiskanje"
 
-#. MSG_SET_READY c=13
-#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
-msgid "Set Ready"
-msgstr "Set spreman"
-
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
 

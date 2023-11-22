@@ -2560,11 +2560,6 @@ msgstr "Mesh Bed Leveling selhal. Spusťte kalibraci osy Z."
 msgid "Reprint"
 msgstr "Tisk. znovu"
 
-#. MSG_SET_READY c=13
-#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
-msgid "Set Ready"
-msgstr "Připravit"
-
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
 

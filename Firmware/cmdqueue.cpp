@@ -480,10 +480,9 @@ void get_command()
             allow_when_stopped = true;
 
         // Handle the USB timer
-        if ((*cmd_start == 'G') && !(IS_SD_PRINTING)) {
+        if ((*cmd_start == 'G') && !(IS_SD_PRINTING))
             usb_timer.start();
-            printer_status = PrinterStatus::IsHostPrinting; //set printer state busy printing to hide LCD menu and report correctly M862.7 Q while USB printing
-        }
+
         if (allow_when_stopped == false && Stopped == true) {
             // Stopped can be set either during error states (thermal error: cannot continue), or
             // when a printer-initiated action is processed. In such case the printer will send to

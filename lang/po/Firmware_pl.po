@@ -2577,11 +2577,6 @@ msgstr "Poziomowanie stołu nieudane. Proszę uruchomić kalibrację Z."
 msgid "Reprint"
 msgstr "Przedruk"
 
-#. MSG_SET_READY c=13
-#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
-msgid "Set Ready"
-msgstr "Ust. gotowość"
-
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Wyciągnij poprzedni filament i naciśnij pokrętło aby załadować nowy."
 

@@ -2565,11 +2565,6 @@ msgstr "Vyrovnanie platne zlyhalo. Spustite kalibráciu Z."
 msgid "Reprint"
 msgstr "Vytlačiť znova"
 
-#. MSG_SET_READY c=13
-#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:5204
-msgid "Set Ready"
-msgstr "Pripravte sa"
-
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyberte starý filament a stlačte tlačidlo pre zavedenie nového."
 
