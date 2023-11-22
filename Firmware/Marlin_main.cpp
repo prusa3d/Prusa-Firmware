@@ -8459,7 +8459,7 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">M702: Unload filament</a>
+    ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
     #### Usage
     
         M702 [ U | Z ]
