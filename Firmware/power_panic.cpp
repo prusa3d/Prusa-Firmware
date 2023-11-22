@@ -431,7 +431,9 @@ void restore_file_from_sd()
     uint8_t depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
     for (uint8_t i = 0; i < depth; i++) {
-        eeprom_read_block(dir_name, (const char *)EEPROM_DIRS + 8 * i, 8);
+        for (uint8_t j = 0; j < 8; j++) {
+            dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
+        }
         dir_name[8] = '\0';
         card.chdir(dir_name, false);
     }
