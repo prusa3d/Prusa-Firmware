@@ -1125,7 +1125,6 @@ void setup()
 	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
 		MMU2::mmu2.Start();
 	}
-	MMU2::mmu2.Status();
 	SpoolJoin::spooljoin.initSpoolJoinStatus();
 
 	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
@@ -8641,7 +8640,7 @@ Sigma_Exit:
                 break;
             }
         }
-    MMU2::mmu2.Status();
+        printf_P(_n("MMU state:%d\n"), MMU2::mmu2.Enabled());
     }
     break;
 

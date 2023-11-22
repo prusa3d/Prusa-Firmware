@@ -39,9 +39,6 @@ public:
     /// Stops the protocol logic, closes the UART, powers OFF the MMU
     void Stop();
 
-    /// Serial output of MMU state
-    void Status();
-
     inline xState State() const { return state; }
 
     inline bool Enabled() const { return State() == xState::Active; }

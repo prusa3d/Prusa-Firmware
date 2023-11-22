@@ -4106,7 +4106,6 @@ static void mmu_enable_switch()
     }
 
     eeprom_toggle((uint8_t *)EEPROM_MMU_ENABLED);
-    MMU2::mmu2.Status();
 }
 
 static void SETTINGS_SILENT_MODE()
