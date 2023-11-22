@@ -160,14 +160,8 @@ public:
     /// @returns Current error code
     inline ErrorCode MMUCurrentErrorCode() const { return logic.Error(); }
 
-    /// @returns Command in progress
-    inline uint8_t GetCommandInProgress() const { return logic.CommandInProgress(); }
-
     /// @returns Last error source
     inline ErrorSource MMULastErrorSource() const { return lastErrorSource; }
-
-    /// @returns Last error code
-    inline ErrorCode GetLastErrorCode() const { return lastErrorCode; }
 
     /// @returns the version of the connected MMU FW.
     /// In the future we'll return the trully detected FW version

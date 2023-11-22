@@ -221,14 +221,6 @@ static bool is_mmu_error_monitor_active;
 // Set to false to allow the error screen to render again.
 static bool putErrorScreenToSleep;
 
-void CheckErrorScreenUserInput() {
-    if (isErrorScreenRunning()) {
-        // Call this every iteration to keep the knob rotation responsive
-        // This includes when mmu_loop is called within manage_response
-        ReportErrorHook((CommandInProgress)mmu2.GetCommandInProgress(), mmu2.GetLastErrorCode(), mmu2.MMULastErrorSource());
-    }
-}
-
 bool isErrorScreenRunning() {
     return is_mmu_error_monitor_active;
 }
