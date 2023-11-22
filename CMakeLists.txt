@@ -225,6 +225,7 @@ set(FW_SOURCES
     spi.c
     SpoolJoin.cpp
     stepper.cpp
+    stopwatch.cpp
     strtod.c
     swi2c.c
     Tcodes.cpp

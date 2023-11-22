@@ -89,6 +89,7 @@
 #include "Tcodes.h"
 #include "Dcodes.h"
 #include "SpoolJoin.h"
+#include "stopwatch.h"
 
 #ifndef LA_NOCOMPAT
 #include "la10compat.h"
@@ -174,7 +175,7 @@ static LongTimer crashDetTimer;
 
 bool mesh_bed_leveling_flag = false;
 
-uint32_t total_filament_used;
+uint32_t total_filament_used; // unit mm/100 or 10um
 HeatingStatus heating_status;
 int fan_edge_counter[2];
 int fan_speed[2];
@@ -289,9 +290,6 @@ static uint32_t max_inactive_time = 0;
 static uint32_t stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
 static uint32_t safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
 
-uint32_t starttime;
-uint32_t pause_time;
-uint32_t start_pause_print;
 ShortTimer usb_timer;
 
 bool Stopped=false;
@@ -509,12 +507,12 @@ void servo_init()
 }
 
 bool __attribute__((noinline)) printJobOngoing() {
-    return (IS_SD_PRINTING || usb_timer.running());
+    return (IS_SD_PRINTING || usb_timer.running() || print_job_timer.isRunning());
 }
 
 bool __attribute__((noinline)) printer_active() {
     return printJobOngoing()
-        || isPrintPaused
+        || print_job_timer.isPaused()
         || saved_printing
         || (lcd_commands_type != LcdCommands::Idle)
         || MMU2::mmu2.MMU_PRINT_SAVED()
@@ -535,7 +533,7 @@ bool check_fsensor() {
 bool __attribute__((noinline)) babystep_allowed() {
     return ( !homing_flag
         && !mesh_bed_leveling_flag
-        && !isPrintPaused
+        && !print_job_timer.isPaused()
         && ((lcd_commands_type == LcdCommands::Layer1Cal && CHECK_ALL_HEATERS)
             || printJobOngoing()
             || lcd_commands_type == LcdCommands::Idle
@@ -633,7 +631,7 @@ void crashdet_detected(uint8_t mask)
 
 void crashdet_recover()
 {
-  if (!isPrintPaused) crashdet_restore_print_and_continue();
+  if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
   if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
@@ -1731,7 +1729,7 @@ void loop()
         KEEPALIVE_STATE(NOT_BUSY);
     }
 
-	if (isPrintPaused && saved_printing_type == PowerPanic::PRINT_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+	if (print_job_timer.isPaused() && saved_printing_type == PowerPanic::PRINT_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
 		usb_timer.start();
 	}
 	else if (usb_timer.expired(10000)) { //just need to check if it expired. Nothing else is needed to be done.
@@ -1828,7 +1826,7 @@ void loop()
 }
   //check heater every n milliseconds
   manage_heater();
-  manage_inactivity(isPrintPaused);
+  manage_inactivity(print_job_timer.isPaused());
   checkHitEndstops();
   lcd_update(0);
 #ifdef TMC2130
@@ -3425,7 +3423,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     fanSpeed = 0;
 
     // Retract E
-    if (!isPrintPaused)
+    if (!print_job_timer.isPaused())
     {
       current_position[E_AXIS] += e_shift;
       plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
@@ -3488,7 +3486,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     
         // Feed a little of filament to stabilize pressure
         if (!automatic) {
-            if (isPrintPaused)
+            if (print_job_timer.isPaused())
             {
                 // Return to retracted state during a pause
                 // @todo is retraction really needed? E-position is reverted a few lines below
@@ -3524,7 +3522,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         feedmultiply = feedmultiplyBckp;
         enquecommandf_P(MSG_M220, feedmultiplyBckp);
     }
-    if (isPrintPaused) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
+    if (print_job_timer.isPaused()) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
     else lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
@@ -5256,7 +5254,7 @@ void process_commands()
 	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
     */
     case 24:
-    if (isPrintPaused)
+    if (print_job_timer.isPaused())
       lcd_resume_print();
     else
     {
@@ -5271,7 +5269,7 @@ void process_commands()
       }
 
       card.startFileprint();
-      starttime=_millis();
+      print_job_timer.start();
       if (MMU2::mmu2.Enabled())
       {
         if (MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent())
@@ -5389,7 +5387,7 @@ void process_commands()
                 la10c_reset();
 #endif
             }
-            starttime=_millis(); // procedure calls count as normal print time.
+            print_job_timer.start(); // procedure calls count as normal print time.
         }
       }
     } break;
@@ -5413,7 +5411,7 @@ void process_commands()
     case 31: //M31 take time since the start of the SD print or an M109 command
       {
       char time[30];
-      uint32_t t = (_millis() - starttime) / 1000;
+      uint32_t t = print_job_timer.duration();
       int16_t sec, min;
       min = t / 60;
       sec = t % 60;
@@ -5876,6 +5874,48 @@ Sigma_Exit:
     }
 
     /*!
+    ### M75 - Start the print job timer <a href="https://reprap.org/wiki/G-code#M75:_Start_the_print_job_timer">M75: Start the print job timer</a>
+    */
+    case 75:
+    {
+        print_job_timer.start();
+        break;
+    }
+
+    /*!
+    ### M76 - Pause the print job timer <a href="https://reprap.org/wiki/G-code#M76:_Pause_the_print_job_timer">M76: Pause the print job timer</a>
+    */
+    case 76:
+    {
+        print_job_timer.pause();
+        break;
+    }
+
+    /*!
+    ### M77 - Stop the print job timer <a href="https://reprap.org/wiki/G-code#M77:_Stop_the_print_job_timer">M77: Stop the print job timer</a>
+    */
+    case 77:
+    {
+        print_job_timer.stop();
+        save_statistics();
+        break;
+    }
+
+    /*!
+    ### M78 - Show statistical information about the print jobs <a href="https://reprap.org/wiki/G-code#M78:_Show_statistical_information_about_the_print_jobs">M78: Show statistical information about the print jobs</a>
+    */
+    case 78:
+    {
+        // @todo useful for maintenance notifications
+        SERIAL_ECHOPGM("STATS ");
+        SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME));
+        SERIAL_ECHOPGM(" min ");
+        SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED));
+        SERIAL_ECHOLNPGM(" cm.");
+        break;
+    }
+
+    /*!
     ### M79 - Start host timer <a href="https://reprap.org/wiki/G-code#M79:_Start_host_timer">M79: Start host timer</a>
     Start the printer-host enable keep-alive timer. While the timer has not expired, the printer will enable host specific features.
     #### Usage
@@ -6050,8 +6090,7 @@ Sigma_Exit:
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
 		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
         prusa_statistics(2);
-        
-        //starttime=_millis();
+
         previous_millis_cmd.start();
       }
       break;
@@ -7743,7 +7782,7 @@ Sigma_Exit:
         SERIAL_ECHOPGM("Z:");
         SERIAL_ECHOLN(pause_position[Z_AXIS]);
 */
-        if (!isPrintPaused) {
+        if (!print_job_timer.isPaused()) {
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
@@ -7757,7 +7796,7 @@ Sigma_Exit:
     */
     case 602:
     {
-        if (isPrintPaused) lcd_resume_print();
+        if (print_job_timer.isPaused()) lcd_resume_print();
     }
     break;
 
@@ -9631,7 +9670,7 @@ void ThermalStop(bool allow_recovery)
 
         // Either pause or stop the print
         if(allow_recovery && printJobOngoing()) {
-            if (!isPrintPaused) {
+            if (!print_job_timer.isPaused()) {
                 lcd_setalertstatuspgm(_T(MSG_PAUSED_THERMAL_ERROR), LCD_STATUS_CRITICAL);
 
                 // we cannot make a distinction for the host here, the pause must be instantaneous
@@ -9765,13 +9804,15 @@ void setPwmFrequency(uint8_t pin, int val)
 }
 #endif //FAST_PWM_FAN
 
-void save_statistics(uint32_t _total_filament_used, uint32_t _total_print_time) {
+void save_statistics() {
     uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: meter
     uint32_t _previous_time = eeprom_init_default_dword((uint32_t *)EEPROM_TOTALTIME, 0);        //_previous_time unit: min
 
-    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + _total_print_time); // EEPROM_TOTALTIME unit: min
-    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (_total_filament_used / 1000));
+    uint32_t time_minutes = print_job_timer.duration() / 60;
+    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + time_minutes); // EEPROM_TOTALTIME unit: min
+    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (total_filament_used / 1000));
 
+    print_job_timer.reset();
     total_filament_used = 0;
 
     if (MMU2::mmu2.Enabled()) {
@@ -10460,7 +10501,6 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 void long_pause() //long pause print
 {
 	st_synchronize();
-	start_pause_print = _millis();
 
     // Stop heaters
     heating_status = HeatingStatus::NO_HEATING;
