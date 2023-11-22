@@ -428,7 +428,6 @@ void restore_file_from_sd()
 {
     char filename[FILENAME_LENGTH];
     char dir_name[9];
-    char extension_ptr[5];
     uint8_t depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
     for (uint8_t i = 0; i < depth; i++) {
@@ -444,11 +443,8 @@ void restore_file_from_sd()
     // Add null delimiter in case all 8 characters were not NULL
     filename[8] = '\0';
 
-    // Add extension to complete the DOS 8.3 filename e.g. ".gco" or ".g"
-    extension_ptr[0] = '.';
-    eeprom_read_block(&extension_ptr[1], (const char *)EEPROM_FILENAME_EXTENSION, 3);
-    extension_ptr[4] = '\0';
-    strcat(filename, extension_ptr);
+    // Add extension to complete the DOS 8.3 filename
+    strcat_P(filename, PSTR(".gco"));
 
     enquecommandf_P(MSG_M23, filename);
 }
