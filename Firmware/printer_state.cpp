@@ -1,5 +1,5 @@
 //! @file
-//! @brief Printer State
+//! @brief Printer State 
 //! @param GetPrinterState get current printer state
 //! @param SetPrinterState set printer state
 
