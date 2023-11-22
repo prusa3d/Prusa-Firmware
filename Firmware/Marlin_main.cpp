@@ -200,7 +200,7 @@ float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
 
-static float pause_position[3] = { X_PAUSE_POS, Y_PAUSE_POS, Z_PAUSE_LIFT };
+float pause_position[3] = { X_PAUSE_POS, Y_PAUSE_POS, Z_PAUSE_LIFT };
 
 uint8_t fanSpeed = 0;
 uint8_t newFanSpeed = 0;
