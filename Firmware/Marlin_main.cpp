@@ -5874,47 +5874,6 @@ Sigma_Exit:
     }
 
     /*!
-    ### M75 - Start the print job timer <a href="https://reprap.org/wiki/G-code#M75:_Start_the_print_job_timer">M75: Start the print job timer</a>
-    */
-    case 75:
-    {
-        print_job_timer.start();
-        break;
-    }
-
-    /*!
-    ### M76 - Pause the print job timer <a href="https://reprap.org/wiki/G-code#M76:_Pause_the_print_job_timer">M76: Pause the print job timer</a>
-    */
-    case 76:
-    {
-        print_job_timer.pause();
-        break;
-    }
-
-    /*!
-    ### M77 - Stop the print job timer <a href="https://reprap.org/wiki/G-code#M77:_Stop_the_print_job_timer">M77: Stop the print job timer</a>
-    */
-    case 77:
-    {
-        print_job_timer.stop();
-        break;
-    }
-
-    /*!
-    ### M78 - Show statistical information about the print jobs <a href="https://reprap.org/wiki/G-code#M78:_Show_statistical_information_about_the_print_jobs">M78: Show statistical information about the print jobs</a>
-    */
-    case 78:
-    {
-        // @todo useful for maintenance notifications
-        SERIAL_ECHOPGM("STATS ");
-        SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME));
-        SERIAL_ECHOPGM(" min ");
-        SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED));
-        SERIAL_ECHOLNPGM(" cm.");
-        break;
-    }
-
-    /*!
     ### M79 - Start host timer <a href="https://reprap.org/wiki/G-code#M79:_Start_host_timer">M79: Start host timer</a>
     Start the printer-host enable keep-alive timer. While the timer has not expired, the printer will enable host specific features.
     #### Usage
