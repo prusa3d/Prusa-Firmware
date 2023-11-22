@@ -438,9 +438,11 @@ void restore_file_from_sd()
         card.chdir(dir_name, false);
     }
 
-    // Recover DOS 8.3 filename without extension.
-    // Short filenames are always null terminated.
-    eeprom_read_block(filename, (const char *)EEPROM_FILENAME, 8);
+    for (uint8_t i = 0; i < 8; i++) {
+        const char c = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
+        filename[i] = c;
+        if (c == '\0') break; // Filename is shorter than 8 characters
+    }
 
     // Add null delimiter in case all 8 characters were not NULL
     filename[8] = '\0';
