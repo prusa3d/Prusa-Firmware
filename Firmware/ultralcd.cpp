@@ -19,7 +19,7 @@
 #include "menu.h"
 
 #include "backlight.h"
-#include "host.h"
+
 #include "util.h"
 #include "mesh_bed_leveling.h"
 #include "mesh_bed_calibration.h"
@@ -364,7 +364,8 @@ void lcdui_print_feedrate(void)
 // Print percent done in form "USB---%", " SD---%", "   ---%" (7 chars total)
 void lcdui_print_percent_done(void)
 {
-	const char* src = usb_timer.running()?_N(" HO"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
+	const char* src = usb_timer.running()?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
+	char per[4];
 	bool num = IS_SD_PRINTING || (printer_active() && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status != HeatingStatus::NO_HEATING) // either not printing or heating
 	{
@@ -379,18 +380,8 @@ void lcdui_print_percent_done(void)
 			return; //do not also print the percentage
 		}
 	}
-
-    if (M79_timer_get_status() && GetHostStatusScreenName())
-    {
-        // Overwrite the name
-        char * hostName = GetHostStatusScreenName();
-        lcd_space(1);    // Blank space
-        lcd_print(hostName); // Two characters
-    } else {
-        lcd_printf_P(PSTR("%3S"), src);
-    }
-
-    lcd_printf_P(num ? _N("%3d%%"):_N("---%%"), calc_percent_done());
+	sprintf_P(per, num?_N("%3d"):_N("---"), calc_percent_done());
+	lcd_printf_P(_N("%3S%3s%%"), src, per);
     enableReprint = true;
     if(usb_timer.running())
     {

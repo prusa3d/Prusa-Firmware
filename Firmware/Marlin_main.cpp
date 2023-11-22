@@ -5858,22 +5858,12 @@ Sigma_Exit:
     Restart the printer-host enable keepalive timer. While the timer has not expired, the printer will enable host specific features.
     #### Usage
 
-        M79 [ S ]
+        M79
     #### Parameters
-       - `S` - Quoted string containing two characters e.g. "PL"
+       None
     */
     case 79:
         M79_timer_restart();
-
-        if (code_seen('S'))
-        {
-            unquoted_string str = unquoted_string(strchr_pointer);
-            if (str.WasFound())
-            {
-                ResetHostStatusScreenName();
-                SetHostStatusScreenName(str.GetUnquotedString());
-            }
-        }
         break;
 
     /*!
