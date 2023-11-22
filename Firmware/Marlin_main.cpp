@@ -5854,8 +5854,8 @@ Sigma_Exit:
     }
 
     /*!
-    ### M79 - Start host timer <a href="https://reprap.org/wiki/G-code#M79:_Start_host_timer">M79: Start host timer</a>
-    Start the printer-host enable keep-alive timer. While the timer has not expired, the printer will enable host specific features.
+    ### M79 - TODO
+    Restart the printer-host enable keepalive timer. While the timer has not expired, the printer will enable host specific features.
     #### Usage
 
         M79 [ S ]
