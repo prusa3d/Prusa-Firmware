@@ -45,7 +45,6 @@
 
 #include "Prusa_farm.h"
 
-
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -255,10 +254,6 @@ uint8_t selected_sheet = 0;
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
-
-//action: Reprint
-bool enableReprint = false;
-bool enableReprintUSB = false;
 
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
@@ -5199,17 +5194,14 @@ static void lcd_main_menu()
 #endif //TMC2130_DEBUG
 
     // Menu item for reprint
-    if(!printer_active() && enableReprint && card.cardOK && !enableReprintUSB && (heating_status == HeatingStatus::NO_HEATING))
-    {
-        MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
-    }else if(!printer_active() && enableReprintUSB && (heating_status == HeatingStatus::NO_HEATING))
-    {
-        MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
-    }else if (!card.cardOK)
-    {
-        enableReprint = false;
-        enableReprintUSB = false;
+    if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
+        if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.cardOK) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
+        } else if (GetPrinterState() == PrinterState::HostPrintingFinished) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
+        }
     }
+
     // Menu is never shown when idle
     if (babystep_allowed_strict() && (printJobOngoing() || lcd_commands_type == LcdCommands::Layer1Cal))
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
@@ -7478,8 +7470,6 @@ void reprint_from_eeprom() {
 	uint8_t depth = 0;
 	char dir_name[9];
 
-	enableReprint=false;
-
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 
 	for (int i = 0; i < depth; i++) {
@@ -7518,7 +7508,5 @@ void reprint_from_eeprom() {
 void lcd_reprint_usb_print()
 {
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_REPRINT);
-    enableReprint=false;
-    enableReprintUSB=false;
     lcd_return_to_status();
 }
