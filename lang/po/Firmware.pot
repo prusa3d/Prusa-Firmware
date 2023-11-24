@@ -1750,6 +1750,11 @@ msgstr ""
 msgid "Rename"
 msgstr ""
 
+#. MSG_REPRINT c=18
+#: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
+msgid "Reprint"
+msgstr ""
+
 #. MSG_DESC_INVALID_TOOL c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:280 ../../Firmware/mmu2/errors_list.h:334
 msgid ""

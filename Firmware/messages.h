@@ -191,6 +191,7 @@ extern const char MSG_LOAD_ALL[];
 extern const char MSG_NOZZLE_CNG_MENU [];
 extern const char MSG_NOZZLE_CNG_READ_HELP [];
 extern const char MSG_NOZZLE_CNG_CHANGED [];
+extern const char MSG_REPRINT [];
 
 //not internationalized messages
 #if 0
@@ -235,6 +236,7 @@ extern const char MSG_OCTOPRINT_RESUMED[];
 extern const char MSG_OCTOPRINT_CANCEL[];
 extern const char MSG_OCTOPRINT_READY[];
 extern const char MSG_OCTOPRINT_NOT_READY[];
+extern const char MSG_OCTOPRINT_REPRINT[];
 extern const char MSG_FANCHECK_HOTEND[];
 extern const char MSG_FANCHECK_PRINT[];
 extern const char MSG_M112_KILL[];

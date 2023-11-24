@@ -5193,6 +5193,15 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
+    // Menu item for reprint
+    if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
+        if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.cardOK) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
+        } else if (GetPrinterState() == PrinterState::HostPrintingFinished) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
+        }
+    }
+
     // Menu is never shown when idle
     if (babystep_allowed_strict() && (printJobOngoing() || lcd_commands_type == LcdCommands::Layer1Cal))
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
@@ -7453,4 +7462,51 @@ void lcd_heat_bed_on_load_toggle()
     else
         value = !value;
     eeprom_update_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
+}
+
+void reprint_from_eeprom() {
+	char filename[13];
+	char altfilename[13];
+	uint8_t depth = 0;
+	char dir_name[9];
+
+	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
+
+	for (int i = 0; i < depth; i++) {
+		for (int j = 0; j < 8; j++) {
+			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
+		}
+		dir_name[8] = '\0';
+		card.chdir(dir_name, false);
+	}
+
+	for (int i = 0; i < 8; i++) {
+		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
+	}
+	filename[8] = '\0';
+
+	strcpy(altfilename,filename);
+	if (!card.FileExists(altfilename))
+	{
+		strcat_P(filename, PSTR(".gco"));
+		if (card.FileExists(filename))
+		{
+			strcpy(altfilename,filename);
+		}else
+		{
+			strcat_P(altfilename, PSTR(".g"));
+		}
+	}
+    // M23: Select SD file
+    enquecommandf_P(MSG_M23, altfilename);
+    // M24: Start/resume SD print
+    enquecommand_P(MSG_M24);
+    lcd_return_to_status();
+}
+
+//! @brief Send host action "reprint"
+void lcd_reprint_usb_print()
+{
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_REPRINT);
+    lcd_return_to_status();
 }

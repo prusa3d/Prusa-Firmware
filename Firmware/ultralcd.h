@@ -19,6 +19,9 @@ void ultralcd_init();
 #define LCD_STATUS_INFO_TIMEOUT 20000
 #define LCD_STATUS_DELAYED_TIMEOUT 4000
 
+// Reprint
+void reprint_from_eeprom();
+
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcdui_print_status_line(void);
 void lcd_clearstatus();
@@ -54,6 +57,7 @@ void lcd_loading_color();
 void lcd_sdcard_stop();
 void lcd_pause_print();
 void lcd_pause_usb_print();
+void lcd_reprint_usb_print();
 void lcd_resume_print();
 void lcd_print_stop(); // interactive print stop
 void print_stop(bool interactive=false);

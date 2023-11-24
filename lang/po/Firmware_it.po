@@ -2588,6 +2588,11 @@ msgstr "Imposta pronta"
 msgid "Set not Ready"
 msgstr "Imposta non pronta"
 
+#. MSG_REPRINT c=18
+#: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
+msgid "Reprint"
+msgstr "Ristampa"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Rimuovi il fil. precedente e premi la manopola per caricare il nuovo."
 

@@ -2587,6 +2587,11 @@ msgstr "Készen áll"
 msgid "Set not Ready"
 msgstr "Készen nem áll"
 
+#. MSG_REPRINT c=18
+#: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
+msgid "Reprint"
+msgstr "Újranyomtatás"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vedd ki a regi fil., majd nyomd meg a gombot az uj fil. betoltesehez."
 
