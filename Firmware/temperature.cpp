@@ -2676,7 +2676,7 @@ static bool autotune(int16_t cal_temp)
         set_fan_speed(speed);
         wait(10000);
 
-        sprintf_P(tm_message, PSTR("TM: R[%u] estimat."), (unsigned)i);
+        sprintf_P(tm_message, PSTR("TM: R[%u] estimate."), (unsigned)i);
         lcd_setstatus_serial(tm_message);
         samples = record();
         if(temp_error_state.v || !samples)
