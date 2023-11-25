@@ -462,16 +462,10 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     SERIAL_ECHOPGM(", feedmultiply:");
     MYSERIAL.println(feedmultiply_rec);
 
-    
     if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
     { // M23
         restore_file_from_sd();
     }
-
-    // SD: Position in file, USB: g-code line number
-    uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
-    SERIAL_ECHOPGM("Position read from eeprom:");
-    MYSERIAL.println(position);
 
     // Move to the XY print position in logical coordinates, where the print has been killed, but
     // without shifting Z along the way. This requires performing the move without mbl.
@@ -508,8 +502,19 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     // Set the fan speed saved at the power panic.
     enquecommandf_P(PSTR("M106 S%u"), fan_speed_rec);
 
-    // Set a position in the file.
-    enquecommandf_P(PSTR("M26 S%lu"), position);
+    // SD: Position in file, USB: g-code line number
+    uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
+    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
+    {
+        // Set a position in the file.
+        enquecommandf_P(PSTR("M26 S%lu"), position);
+    }
+    else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB)
+    {
+        // Set line number
+        enquecommandf_P(PSTR("M110 N%lu"), position);
+    }
+
     enquecommand_P(PSTR("G4 S0"));
     enquecommand_P(PSTR("PRUSA uvlo"));
 }
