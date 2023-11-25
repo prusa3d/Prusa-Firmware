@@ -41,10 +41,7 @@ void uvlo_() {
     unsigned long time_start = _millis();
 
     // True if a print is already saved to RAM
-    bool sd_print_saved_in_ram = saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD);
-
-    // Flag to decide whether or not to set EEPROM_UVLO bit
-    bool sd_print = card.sdprinting || sd_print_saved_in_ram;
+    const bool sd_print_saved_in_ram = saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD);
     const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
 
     // Conserve as much power as soon as possible
@@ -195,10 +192,7 @@ void uvlo_() {
 #endif
 
     // Finally store the "power outage" flag.
-    // Note: Recovering a print from EEPROM currently assumes the user
-    // is printing from an SD card, this is why this EEPROM byte is only set
-    // when SD card print is detected
-    if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY);
 
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
