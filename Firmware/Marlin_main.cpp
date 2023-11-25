@@ -1595,12 +1595,11 @@ void setup()
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
           #endif
-          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE) {
-              recover_print(0); 
-          } else { 
+          const uint8_t btn = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false);
+          if ( btn == LCD_LEFT_BUTTON_CHOICE) {
+              recover_print(0);
+          } else { // LCD_MIDDLE_BUTTON_CHOICE
               eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY); 
-              lcd_update_enable(true); 
-              lcd_update(2); 
               lcd_setstatuspgm(MSG_WELCOME); 
           } 
       }

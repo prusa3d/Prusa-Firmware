@@ -316,8 +316,6 @@ ISR(INT4_vect) {
 }
 
 void recover_print(uint8_t automatic) {
-    lcd_update_enable(true);
-    lcd_update(2);
     lcd_setstatuspgm(_i("Recovering print"));////MSG_RECOVERING_PRINT c=20
 
     // Recover position, temperatures and extrude_multipliers
