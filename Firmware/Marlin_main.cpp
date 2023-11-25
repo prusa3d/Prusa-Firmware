@@ -4105,9 +4105,16 @@ void process_commands()
         else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
             printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
         }
-        else if (code_seen_P(PSTR("uvlo"))) { // PRUSA uvlo
-            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY); 
-            enquecommand_P(MSG_M24); 
+        else if (code_seen_P(PSTR("uvlo"))) // PRUSA uvlo
+        {
+            if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
+            {
+                // M24 - Start SD print
+                enquecommand_P(MSG_M24);
+            }
+
+            // Print is recovered, clear the recovery flag
+            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
