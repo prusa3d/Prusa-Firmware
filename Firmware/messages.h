@@ -237,6 +237,7 @@ extern const char MSG_OCTOPRINT_CANCEL[];
 extern const char MSG_OCTOPRINT_READY[];
 extern const char MSG_OCTOPRINT_NOT_READY[];
 extern const char MSG_OCTOPRINT_START[];
+extern const char MSG_OCTOPRINT_UVLO_RECOVERY_READY[];
 extern const char MSG_FANCHECK_HOTEND[];
 extern const char MSG_FANCHECK_PRINT[];
 extern const char MSG_M112_KILL[];
