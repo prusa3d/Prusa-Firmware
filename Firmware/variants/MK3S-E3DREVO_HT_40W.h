@@ -16,9 +16,6 @@
 #define FILAMENT_SIZE "1_75mm_MK3S"
 #define NOZZLE_TYPE "E3DREVO_HT_40W"
 
-// Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S-RHT40"
-
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
 #define STEEL_SHEET
@@ -36,6 +33,14 @@
 // Uncomment the below for the E3D PT1000 temperature sensor
 #define E3D_PT1000_EXTRUDER
 
+
+// Printer name
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define CUSTOM_MENDEL_NAME "Prusa MK3S-RHT1c"
+#endif
+#if defined(E3D_PT1000_EXTRUDER)
+#define CUSTOM_MENDEL_NAME "Prusa MK3S-RHT1k"
+#endif
 
 /*------------------------------------
  AXIS SETTINGS
