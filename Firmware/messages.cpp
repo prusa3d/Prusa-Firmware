@@ -233,6 +233,7 @@ const char MSG_OCTOPRINT_CANCEL[] PROGMEM_N1 = "// action:cancel"; ////
 const char MSG_OCTOPRINT_READY[] PROGMEM_N1 = "// action:ready"; ////
 const char MSG_OCTOPRINT_NOT_READY[] PROGMEM_N1 = "// action:not_ready"; ////
 const char MSG_OCTOPRINT_START[] PROGMEM_N1 = "// action:start"; ////
+const char MSG_OCTOPRINT_UVLO_RECOVERY_READY[] PROGMEM_N1 = "// action:uvlo_recovery_ready"; ////
 const char MSG_FANCHECK_HOTEND[] PROGMEM_N1 = "Err:HOTEND FAN ERROR"; ////c=20
 const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err:PRINT FAN ERROR"; ////c=20
 const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
