@@ -340,6 +340,8 @@ private:
     void UnloadInner();
     void CutFilamentInner(uint8_t slot);
 
+    void SetCurrentTool(uint8_t ex);
+
     ProtocolLogic logic;          ///< implementation of the protocol logic layer
     uint8_t extruder;             ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
     uint8_t tool_change_extruder; ///< only used for UI purposes

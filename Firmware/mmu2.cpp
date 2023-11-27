@@ -72,7 +72,7 @@ void MMU2::Start() {
     PowerOn();
     mmu2Serial.flush(); // make sure the UART buffer is clear before starting communication
 
-    extruder = MMU2_NO_TOOL;
+    SetCurrentTool(MMU2_NO_TOOL);
     state = xState::Connecting;
 
     // start the communication
@@ -357,7 +357,7 @@ void MMU2::ToolChangeCommon(uint8_t slot) {
         static_cast<void>(manage_response(true, true)); // yes, I'd like to silence [[nodiscard]] warning at this spot by casting to void
     }
 
-    extruder = slot; //filament change is finished
+    SetCurrentTool(slot); //filament change is finished
     SpoolJoin::spooljoin.setSlot(slot);
 
     ++toolchange_counter;
@@ -428,6 +428,12 @@ uint8_t MMU2::get_tool_change_tool() const {
     return tool_change_extruder == MMU2_NO_TOOL ? (uint8_t)FILAMENT_UNKNOWN : tool_change_extruder;
 }
 
+void MMU2::SetCurrentTool(uint8_t ex){
+    extruder = ex;
+    MMU2_ECHO_MSGRPGM(PSTR("MMU2tool="));
+    SERIAL_ECHOLN((int)ex);
+}
+
 bool MMU2::set_filament_type(uint8_t /*slot*/, uint8_t /*type*/) {
     if (!WaitForMMUReady())
         return false;
@@ -462,7 +468,7 @@ void MMU2::UnloadInner() {
     MakeSound(Confirm);
 
     // no active tool
-    extruder = MMU2_NO_TOOL;
+    SetCurrentTool(MMU2_NO_TOOL);
     tool_change_extruder = MMU2_NO_TOOL;
 }
 
@@ -504,7 +510,7 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
 
         ReportingRAII rep(CommandInProgress::CutFilament);
         CutFilamentInner(slot);
-        extruder = MMU2_NO_TOOL;
+        SetCurrentTool(MMU2_NO_TOOL);
         tool_change_extruder = MMU2_NO_TOOL;
         MakeSound(SoundType::Confirm);
     }
@@ -587,7 +593,7 @@ bool MMU2::eject_filament(uint8_t slot, bool enableFullScreenMsg /* = true */) {
                 break;
             IncrementMMUFails();
         }
-        extruder = MMU2_NO_TOOL;
+        SetCurrentTool(MMU2_NO_TOOL);
         tool_change_extruder = MMU2_NO_TOOL;
         MakeSound(Confirm);
     }
