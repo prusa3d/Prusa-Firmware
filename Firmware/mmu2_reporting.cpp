@@ -412,7 +412,7 @@ struct TuneItem {
 
 static const TuneItem TuneItems[] PROGMEM = {
   { (uint8_t)Register::Selector_sg_thrs_R, 1, 4},
-  { (uint8_t)Register::Idler_sg_thrs_R, 4, 7},
+  { (uint8_t)Register::Idler_sg_thrs_R, 2, 10},
 };
 
 static_assert(sizeof(TuneItems)/sizeof(TuneItem) == 2);
