@@ -4105,6 +4105,9 @@ void process_commands()
             {
                 // M24 - Start SD print
                 enquecommand_P(MSG_M24);
+
+            // Print is recovered, clear the recovery flag
+            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
             }
             else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB)
             {
@@ -4116,13 +4119,7 @@ void process_commands()
                 // Park the extruder to the side and don't resume the print
                 // we must assume that the host as not fully booted up at this point
                 lcd_pause_print();
-
-                // Used by M79 to differentiate from a normal pause
-                SetPrinterState(PrinterState::PowerPanicWaitingForHost);
             }
-
-            // Print is recovered, clear the recovery flag
-            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
@@ -5981,15 +5978,12 @@ Sigma_Exit:
             }
         }
 
-        if (GetPrinterState() == PrinterState::PowerPanicWaitingForHost && print_job_timer.isPaused()) {
+        if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB && print_job_timer.isPaused()) {
             // The print is in a paused state. The print was recovered following a power panic
             // but up to this point the printer has been waiting for the M79 from the host
             // Send action to the host, so the host can resume the print. It is up to the host
             // to resume the print correctly.
             SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_UVLO_RECOVERY_READY);
-
-            // Update the state so the action is not repeated again
-            SetPrinterState(PrinterState::IsHostPrinting);
         }
 
         break;

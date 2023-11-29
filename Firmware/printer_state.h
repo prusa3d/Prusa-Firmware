@@ -23,7 +23,6 @@ enum class PrinterState : uint8_t
     HostPrintingFinished = 4,
     IsSDPrinting = 5,
     IsHostPrinting = 6,
-    PowerPanicWaitingForHost = 7,
 };
 
 PrinterState GetPrinterState();
