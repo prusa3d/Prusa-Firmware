@@ -110,12 +110,8 @@ block_t *current_block;  // A pointer to the block currently being traced
 //static makes it inpossible to be called from outside of this file by extern.!
 
 // Variables used by The Stepper Driver Interrupt
-static unsigned char out_bits;        // The next stepping-bits to be output
-static dda_isteps_t
-               counter_x,       // Counter variables for the bresenham line tracer
-               counter_y,
-               counter_z,
-               counter_e;
+static unsigned char out_bits;         // The next stepping-bits to be output
+static dda_isteps_t counter[NUM_AXIS]; // Counter variables for the bresenham line tracer
 volatile dda_usteps_t step_events_completed; // The number of step events executed in the current block
 static uint32_t  acceleration_time, deceleration_time;
 static uint16_t acc_step_rate; // needed for deccelaration start point
@@ -393,18 +389,20 @@ FORCE_INLINE void stepper_next_block()
     }
 
     if (current_block->flag & BLOCK_FLAG_DDA_LOWRES) {
-      counter_x.lo = -(current_block->step_event_count.lo >> 1);
-      counter_y.lo = counter_x.lo;
-      counter_z.lo = counter_x.lo;
-      counter_e.lo = counter_x.lo;
+      const int16_t value = -(current_block->step_event_count.lo >> 1);
+      for (uint8_t axis = 0; axis < NUM_AXIS; axis++)
+      {
+        counter[axis].lo = value;
+      }
 #ifdef LIN_ADVANCE
       e_extruding = current_block->steps[E_AXIS].lo != 0;
 #endif
     } else {
-      counter_x.wide = -(current_block->step_event_count.wide >> 1);
-      counter_y.wide = counter_x.wide;
-      counter_z.wide = counter_x.wide;
-      counter_e.wide = counter_x.wide;
+      const int32_t value = -(current_block->step_event_count.wide >> 1);
+      for (uint8_t axis = 0; axis < NUM_AXIS; axis++)
+      {
+        counter[axis].wide = value;
+      }
 #ifdef LIN_ADVANCE
       e_extruding = current_block->steps[E_AXIS].wide != 0;
 #endif
@@ -643,13 +641,13 @@ FORCE_INLINE void stepper_tick_lowres()
   for (uint8_t i=0; i < step_loops; ++ i) { // Take multiple steps per interrupt (For high speed moves)
     MSerial.checkRx(); // Check for serial chars.
     // Step in X axis
-    counter_x.lo += current_block->steps[X_AXIS].lo;
-    if (counter_x.lo > 0) {
+    counter[X_AXIS].lo += current_block->steps[X_AXIS].lo;
+    if (counter[X_AXIS].lo > 0) {
       STEP_NC_HI(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
       STEP_NC_HI(X_DUP_AXIS);
 #endif //DEBUG_XSTEP_DUP_PIN
-      counter_x.lo -= current_block->step_event_count.lo;
+      counter[X_AXIS].lo -= current_block->step_event_count.lo;
       count_position[X_AXIS]+=count_direction[X_AXIS];
       STEP_NC_LO(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
@@ -657,13 +655,13 @@ FORCE_INLINE void stepper_tick_lowres()
 #endif //DEBUG_XSTEP_DUP_PIN
     }
     // Step in Y axis
-    counter_y.lo += current_block->steps[Y_AXIS].lo;
-    if (counter_y.lo > 0) {
+    counter[Y_AXIS].lo += current_block->steps[Y_AXIS].lo;
+    if (counter[Y_AXIS].lo > 0) {
       STEP_NC_HI(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
       STEP_NC_HI(Y_DUP_AXIS);
 #endif //DEBUG_YSTEP_DUP_PIN
-      counter_y.lo -= current_block->step_event_count.lo;
+      counter[Y_AXIS].lo -= current_block->step_event_count.lo;
       count_position[Y_AXIS]+=count_direction[Y_AXIS];
       STEP_NC_LO(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
@@ -671,20 +669,20 @@ FORCE_INLINE void stepper_tick_lowres()
 #endif //DEBUG_YSTEP_DUP_PIN    
     }
     // Step in Z axis
-    counter_z.lo += current_block->steps[Z_AXIS].lo;
-    if (counter_z.lo > 0) {
+    counter[Z_AXIS].lo += current_block->steps[Z_AXIS].lo;
+    if (counter[Z_AXIS].lo > 0) {
       STEP_NC_HI(Z_AXIS);
-      counter_z.lo -= current_block->step_event_count.lo;
+      counter[Z_AXIS].lo -= current_block->step_event_count.lo;
       count_position[Z_AXIS]+=count_direction[Z_AXIS];
       STEP_NC_LO(Z_AXIS);
     }
     // Step in E axis
-    counter_e.lo += current_block->steps[E_AXIS].lo;
-    if (counter_e.lo > 0) {
+    counter[E_AXIS].lo += current_block->steps[E_AXIS].lo;
+    if (counter[E_AXIS].lo > 0) {
 #ifndef LIN_ADVANCE
       STEP_NC_HI(E_AXIS);
 #endif /* LIN_ADVANCE */
-      counter_e.lo -= current_block->step_event_count.lo;
+      counter[E_AXIS].lo -= current_block->step_event_count.lo;
       count_position[E_AXIS] += count_direction[E_AXIS];
 #ifdef LIN_ADVANCE
       e_steps += count_direction[E_AXIS];
@@ -705,13 +703,13 @@ FORCE_INLINE void stepper_tick_highres()
   for (uint8_t i=0; i < step_loops; ++ i) { // Take multiple steps per interrupt (For high speed moves)
     MSerial.checkRx(); // Check for serial chars.
     // Step in X axis
-    counter_x.wide += current_block->steps[X_AXIS].wide;
-    if (counter_x.wide > 0) {
+    counter[X_AXIS].wide += current_block->steps[X_AXIS].wide;
+    if (counter[X_AXIS].wide > 0) {
       STEP_NC_HI(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
       STEP_NC_HI(X_DUP_AXIS);
 #endif //DEBUG_XSTEP_DUP_PIN
-      counter_x.wide -= current_block->step_event_count.wide;
+      counter[X_AXIS].wide -= current_block->step_event_count.wide;
       count_position[X_AXIS]+=count_direction[X_AXIS];   
       STEP_NC_LO(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
@@ -719,13 +717,13 @@ FORCE_INLINE void stepper_tick_highres()
 #endif //DEBUG_XSTEP_DUP_PIN
     }
     // Step in Y axis
-    counter_y.wide += current_block->steps[Y_AXIS].wide;
-    if (counter_y.wide > 0) {
+    counter[Y_AXIS].wide += current_block->steps[Y_AXIS].wide;
+    if (counter[Y_AXIS].wide > 0) {
       STEP_NC_HI(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
       STEP_NC_HI(Y_DUP_AXIS);
 #endif //DEBUG_YSTEP_DUP_PIN
-      counter_y.wide -= current_block->step_event_count.wide;
+      counter[Y_AXIS].wide -= current_block->step_event_count.wide;
       count_position[Y_AXIS]+=count_direction[Y_AXIS];
       STEP_NC_LO(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
@@ -733,21 +731,21 @@ FORCE_INLINE void stepper_tick_highres()
 #endif //DEBUG_YSTEP_DUP_PIN    
     }
     // Step in Z axis
-    counter_z.wide += current_block->steps[Z_AXIS].wide;
-    if (counter_z.wide > 0) {
+    counter[Z_AXIS].wide += current_block->steps[Z_AXIS].wide;
+    if (counter[Z_AXIS].wide > 0) {
       STEP_NC_HI(Z_AXIS);
-      counter_z.wide -= current_block->step_event_count.wide;
+      counter[Z_AXIS].wide -= current_block->step_event_count.wide;
       count_position[Z_AXIS]+=count_direction[Z_AXIS];
       STEP_NC_LO(Z_AXIS);
     }
     // Step in E axis
-    counter_e.wide += current_block->steps[E_AXIS].wide;
-    if (counter_e.wide > 0) {
+    counter[E_AXIS].wide += current_block->steps[E_AXIS].wide;
+    if (counter[E_AXIS].wide > 0) {
 #ifndef LIN_ADVANCE
       STEP_NC_HI(E_AXIS);
 #endif /* LIN_ADVANCE */
-      counter_e.wide -= current_block->step_event_count.wide;
-      count_position[E_AXIS]+=count_direction[E_AXIS];
+      counter[E_AXIS].wide -= current_block->step_event_count.wide;
+      count_position[E_AXIS] += count_direction[E_AXIS];
 #ifdef LIN_ADVANCE
       e_steps += count_direction[E_AXIS];
 #else
