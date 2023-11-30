@@ -11096,11 +11096,11 @@ void M600_load_filament() {
 	}
 	KEEPALIVE_STATE(IN_HANDLER);
 
-	M600_load_filament_movements();
+	lcd_update_enable(false);
+
+    M600_load_filament_movements();
 
 	Sound_MakeCustom(50,1000,false);
-
-	lcd_update_enable(false);
 }
 
 
