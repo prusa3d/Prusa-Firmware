@@ -446,7 +446,7 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex);
 void M600_load_filament();
 void M600_load_filament_movements();
 void M600_wait_for_user();
-void M600_check_state();
+bool M600_check_state_and_repeat();
 void load_filament_final_feed();
 void marlin_wait_for_click();
 float raise_z(float delta);
