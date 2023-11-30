@@ -617,7 +617,7 @@ void crashdet_detected(uint8_t mask)
         // ask whether to resume printing
         lcd_puts_at_P(0, 1, _T(MSG_RESUME_PRINT));
         lcd_putc('?');
-        uint8_t yesno = lcd_show_yes_no_and_wait(false);
+        uint8_t yesno = lcd_show_yes_no_and_wait(false, LCD_LEFT_BUTTON_CHOICE);
 		if (yesno == LCD_LEFT_BUTTON_CHOICE)
 		{
 			enquecommand_P(PSTR("CRASH_RECOVER"));
