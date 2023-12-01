@@ -5197,7 +5197,7 @@ static void lcd_main_menu()
     if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
         if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.cardOK) {
             MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
-        } else if (GetPrinterState() == PrinterState::HostPrintingFinished) {
+        } else if ((GetPrinterState() == PrinterState::HostPrintingFinished) && M79_timer_get_status()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
         }
     }
@@ -7507,6 +7507,6 @@ void reprint_from_eeprom() {
 //! @brief Send host action "reprint"
 void lcd_reprint_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_REPRINT);
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_START);
     lcd_return_to_status();
 }
