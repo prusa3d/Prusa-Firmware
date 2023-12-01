@@ -2182,10 +2182,10 @@ uint8_t lcd_alright() {
     uint8_t cursor_pos = 0;
 
     lcd_clear();
-    lcd_puts_at_P(1, 0, _i("Changed correctly"));////MSG_CORRECTLY c=20
+    lcd_puts_at_P(1, 0, _i("Changed correctly"));////MSG_CORRECTLY c=19
     lcd_puts_at_P(1, 1, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
     lcd_puts_at_P(1, 2, _i("Color not correct"));////MSG_NOT_COLOR c=19
-    lcd_puts_at_P(1, 3, _i("Unload filament"));////MSG_UNLOAD_FILAMENT c=17
+    lcd_puts_at_P(1, 3, _T(MSG_UNLOAD_FILAMENT));
     lcd_putc_at(0, cursor_pos, '>');
 
     lcd_consume_click();
@@ -2201,7 +2201,7 @@ uint8_t lcd_alright() {
                 // Rotating knob counter clockwise
                 if (cursor_pos > 0)
                     cursor_pos--;
-                else 
+                else
                     Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             } else if (lcd_encoder > 0) {
                 // Rotating knob clockwise

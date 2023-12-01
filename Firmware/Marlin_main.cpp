@@ -3473,7 +3473,6 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         }
         if (!automatic)
             repeat = M600_check_state_and_repeat();
-        
     }
     while (repeat);
 
@@ -11107,7 +11106,7 @@ void M600_load_filament() {
 	}
 	KEEPALIVE_STATE(IN_HANDLER);
 
-    M600_load_filament_movements();
+	M600_load_filament_movements();
 
 	Sound_MakeCustom(50,1000,false);
 }

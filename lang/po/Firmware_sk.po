@@ -285,10 +285,10 @@ msgstr "Vymeniť filament"
 msgid "Change success!"
 msgstr "Výmena úspešná!"
 
-#. MSG_CORRECTLY c=20
+#. MSG_CORRECTLY c=19
 #: ../../Firmware/ultralcd.cpp:2179
-msgid "Changed correctly?"
-msgstr "Výmena ok?"
+msgid "Changed correctly"
+msgstr "Výmena ok"
 
 #. MSG_CHECKING_X c=20
 #: ../../Firmware/messages.cpp:21 ../../Firmware/ultralcd.cpp:5838
@@ -2202,7 +2202,7 @@ msgstr "UNLOAD MANUALLY"
 msgid "Unload"
 msgstr "Výsuv"
 
-#. MSG_UNLOAD_FILAMENT c=16
+#. MSG_UNLOAD_FILAMENT c=18
 #: ../../Firmware/messages.cpp:118 ../../Firmware/ultralcd.cpp:5282
 #: ../../Firmware/ultralcd.cpp:5299
 msgid "Unload filament"
