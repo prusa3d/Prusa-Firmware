@@ -631,20 +631,17 @@ void crashdet_detected(uint8_t mask)
 
 void crashdet_recover()
 {
-  if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
-  if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
+	if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
+	crashdet_use_eeprom_setting();
 }
 
-void crashdet_cancel()
-{
-	saved_printing = false;
-	tmc2130_sg_stop_on_crash = true;
-	if (saved_printing_type == PowerPanic::PRINT_TYPE_SD) {
-		print_stop();
-	}else if(saved_printing_type == PowerPanic::PRINT_TYPE_USB){
-		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		cmdqueue_reset();
-	}
+/// Crash detection cancels the print
+void crashdet_cancel() {
+    // Restore crash detection
+    crashdet_use_eeprom_setting();
+
+    // Abort the print
+    print_stop();
 }
 
 #endif //TMC2130
@@ -1276,14 +1273,11 @@ void setup()
 	if (silentMode == 0xff) silentMode = 0;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 
-	if (lcd_crash_detect_enabled() && !farm_mode)
-	{
-		lcd_crash_detect_enable();
-	    puts_P(_N("CrashDetect ENABLED!"));
-	}
-	else
-	{
-	    lcd_crash_detect_disable();
+  tmc2130_sg_stop_on_crash = eeprom_init_default_byte((uint8_t*)EEPROM_CRASH_DET, farm_mode ? false : true);
+
+	if (tmc2130_sg_stop_on_crash) {
+    puts_P(_N("CrashDetect ENABLED!"));
+	} else {
 	    puts_P(_N("CrashDetect DISABLED"));
 	}
 
@@ -9714,10 +9708,6 @@ void UnconditionalStop()
     // Reset the queue
     cmdqueue_reset();
     cmdqueue_serial_disabled = false;
-
-    // Reset the sd status
-    card.sdprinting = false;
-    card.closefile();
 
     st_reset_timer();
     CRITICAL_SECTION_END;
