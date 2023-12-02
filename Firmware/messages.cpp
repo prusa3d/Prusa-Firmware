@@ -104,6 +104,7 @@ const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////MSG
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////MSG_SETTINGS c=18
 const char MSG_SET_READY[] PROGMEM_I1 = ISTR("Set Ready"); ////MSG_SET_READY c=18
 const char MSG_SET_NOT_READY[] PROGMEM_I1 = ISTR("Set not Ready"); ////MSG_SET_NOT_READY c=18
+const char MSG_SHUTDOWN_HOST[] PROGMEM_I1 = ISTR("Shutdown host"); ////MSG_SHUTDOWN_HOST c=18
 const char MSG_SELECT_LANGUAGE[] PROGMEM_I1 = ISTR("Select language"); ////MSG_SELECT_LANGUAGE c=18
 const char MSG_SORTING_FILES[] PROGMEM_I1 = ISTR("Sorting files"); ////MSG_SORTING_FILES c=20
 const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////MSG_TOTAL c=6
@@ -234,6 +235,7 @@ const char MSG_OCTOPRINT_READY[] PROGMEM_N1 = "// action:ready"; ////
 const char MSG_OCTOPRINT_NOT_READY[] PROGMEM_N1 = "// action:not_ready"; ////
 const char MSG_OCTOPRINT_START[] PROGMEM_N1 = "// action:start"; ////
 const char MSG_OCTOPRINT_UVLO_RECOVERY_READY[] PROGMEM_N1 = "// action:uvlo_recovery_ready"; ////
+const char MSG_HOST_ACTION_SHUTDOWN[] PROGMEM_N1 = "//action:shutdown"; ////
 const char MSG_FANCHECK_HOTEND[] PROGMEM_N1 = "Err:HOTEND FAN ERROR"; ////c=20
 const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err:PRINT FAN ERROR"; ////c=20
 const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
