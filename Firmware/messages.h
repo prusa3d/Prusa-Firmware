@@ -106,6 +106,7 @@ extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
 extern const char MSG_SET_READY[];
 extern const char MSG_SET_NOT_READY[];
+extern const char MSG_PRINT_FROM_HOST[];
 extern const char MSG_SELECT_LANGUAGE[];
 extern const char MSG_SORTING_FILES[];
 extern const char MSG_TOTAL[];
