@@ -57,7 +57,7 @@ void lcd_loading_color();
 void lcd_sdcard_stop();
 void lcd_pause_print();
 void lcd_pause_usb_print();
-void lcd_reprint_usb_print();
+void lcd_send_action_start();
 void lcd_resume_print();
 void lcd_print_stop(); // interactive print stop
 void print_stop(bool interactive=false);
