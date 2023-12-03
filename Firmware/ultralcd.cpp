@@ -5196,9 +5196,9 @@ static void lcd_main_menu()
     // Menu item for reprint
     if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
         if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.cardOK) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_from_eeprom);
+            MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_reprint_from_eeprom);
         } else if ((GetPrinterState() == PrinterState::HostPrintingFinished) && M79_timer_get_status()) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_send_action_start);
+            MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_send_action_start);
         }
     }
 
