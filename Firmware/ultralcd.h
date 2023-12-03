@@ -20,7 +20,7 @@ void ultralcd_init();
 #define LCD_STATUS_DELAYED_TIMEOUT 4000
 
 // Reprint
-void reprint_from_eeprom();
+void lcd_reprint_from_eeprom();
 
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcdui_print_status_line(void);

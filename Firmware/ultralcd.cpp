@@ -5196,7 +5196,7 @@ static void lcd_main_menu()
     // Menu item for reprint
     if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
         if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.cardOK) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), reprint_from_eeprom);
+            MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_from_eeprom);
         } else if ((GetPrinterState() == PrinterState::HostPrintingFinished) && M79_timer_get_status()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_REPRINT), lcd_reprint_usb_print);
         }
@@ -7444,7 +7444,7 @@ void lcd_heat_bed_on_load_toggle()
     eeprom_update_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
 }
 
-void reprint_from_eeprom() {
+void lcd_reprint_from_eeprom() {
 	char filename[13];
 	char altfilename[13];
 	uint8_t depth = 0;
