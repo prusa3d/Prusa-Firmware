@@ -20,3 +20,7 @@ bool M79_timer_get_status();
 /// Checks if the timer period has expired. If the timer
 /// has expired, the timer is stopped
 void M79_timer_update_status();
+
+// Check if set host name is PrusaLink
+/// @returns true if the set hostname is PrusaLink ("PL"), false otherwise
+bool M79_is_host_name_pl();

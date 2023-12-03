@@ -30,3 +30,10 @@ bool M79_timer_get_status() {
 void M79_timer_update_status() {
     M79_timer.expired(M79_TIMEOUT);
 }
+
+bool M79_is_host_name_pl() {
+    if(strcmp(GetHostStatusScreenName(), "PL") == 0) {
+        return true;
+    }
+    return false;
+}
