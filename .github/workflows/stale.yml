@@ -17,7 +17,7 @@ jobs:
         # Don't ever mark PRs as stale.
         days-before-pr-stale: -1
         stale-issue-message: 'This issue has been flagged as stale because it has been open for 60 days with no activity. The issue will be closed in 7 days unless someone removes the "stale" label or adds a comment.'
-        close-issue-message: 'This issue has been closed due to lack of recent activity.' 
+        close-issue-message: 'This issue has been closed due to lack of recent activity. Please consider opening a new one if needed.' 
         # Don't act on things assigned to a milestone or assigned to someone. 
         exempt-all-milestones: true
         exempt-all-assignees: true
