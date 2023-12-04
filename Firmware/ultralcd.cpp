@@ -2179,14 +2179,14 @@ void lcd_loading_filament() {
 
 
 uint8_t lcd_alright() {
-    uint8_t cursor_pos = 1;
+    uint8_t cursor_pos = 0;
 
     lcd_clear();
-    lcd_puts_at_P(0, 0, _i("Changed correctly?"));////MSG_CORRECTLY c=20
-    lcd_puts_at_P(1, 1, _T(MSG_YES));
-    lcd_puts_at_P(1, 2, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
-    lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR c=19
-    lcd_putc_at(0, 1, '>');
+    lcd_puts_at_P(1, 0, _i("Changed correctly"));////MSG_CORRECTLY c=19
+    lcd_puts_at_P(1, 1, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
+    lcd_puts_at_P(1, 2, _i("Color not correct"));////MSG_NOT_COLOR c=19
+    lcd_puts_at_P(1, 3, _T(MSG_UNLOAD_FILAMENT));
+    lcd_putc_at(0, cursor_pos, '>');
 
     lcd_consume_click();
     while (1)
@@ -2199,21 +2199,20 @@ uint8_t lcd_alright() {
 
             if (lcd_encoder < 0 ) {
                 // Rotating knob counter clockwise
-                cursor_pos--;
+                if (cursor_pos > 0)
+                    cursor_pos--;
+                else
+                    Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             } else if (lcd_encoder > 0) {
                 // Rotating knob clockwise
-                cursor_pos++;
-            }
-            if (cursor_pos > 3) {
-                cursor_pos = 3;
-                Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-            } else if (cursor_pos < 1) {
-                cursor_pos = 1;
-                Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+                if (cursor_pos < 3)
+                    cursor_pos++;
+                else
+                    Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             }
 
             // Update '>' render only
-            lcd_puts_at_P(0, 1, PSTR(" \n \n "));
+            lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
             lcd_putc_at(0, cursor_pos, '>');
 
             // Consume rotation event and make feedback sound

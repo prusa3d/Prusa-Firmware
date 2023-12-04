@@ -3427,17 +3427,19 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
     st_synchronize();
 
-    // Unload filament
-    if (MMU2::mmu2.Enabled()) {
-        eject_slot = MMU2::mmu2.get_current_tool();
-        mmu_M600_unload_filament();
-    } else {
-        // Beep, manage nozzle heater and wait for user to start unload filament
-        M600_wait_for_user();
-        unload_filament(e_shift_late);
-    }
-    st_synchronize();          // finish moves
-    {
+    bool repeat = false;
+    do {
+        // Unload filament
+        if (MMU2::mmu2.Enabled()) {
+            eject_slot = MMU2::mmu2.get_current_tool();
+            mmu_M600_unload_filament();
+        } else {
+            // Beep, manage nozzle heater and wait for user to start unload filament
+            M600_wait_for_user();
+            unload_filament(e_shift_late);
+        }
+        st_synchronize();          // finish moves
+
         FSensorBlockRunout fsBlockRunout;
         
         if (!MMU2::mmu2.Enabled())
@@ -3445,10 +3447,11 @@ static void gcode_M600(const bool automatic, const float x_position, const float
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             uint8_t choice =
                 lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=3
+            lcd_update_enable(false);
             if (choice == LCD_MIDDLE_BUTTON_CHOICE) {
                 lcd_clear();
                 lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-                current_position[X_AXIS] -= 100;
+                current_position[X_AXIS] = 100;
                 plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
                 st_synchronize();
                 lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=4
@@ -3461,51 +3464,53 @@ static void gcode_M600(const bool automatic, const float x_position, const float
             mmu_M600_load_filament(automatic);
         }
         if (!automatic)
-            M600_check_state();
-    
-        lcd_update_enable(true);
-    
-        // Not let's go back to print
-        fanSpeed = saved_fan_speed;
-    
-        // Feed a little of filament to stabilize pressure
-        if (!automatic) {
-            if (print_job_timer.isPaused())
-            {
-                // Return to retracted state during a pause
-                // @todo is retraction really needed? E-position is reverted a few lines below
-                current_position[E_AXIS] -= default_retraction;
-                plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
-
-                // Cooldown the extruder again
-                setTargetHotend(0);
-            }
-            else
-            {
-                // Feed a little of filament to stabilize pressure
-                current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-                plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
-            }
-        }
-
-        // Move XY back
-        plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED);
-        st_synchronize();
-
-        // Move Z back
-        plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED);
-        st_synchronize();
-
-        // Set E position to original
-        plan_set_e_position(saved_pos[E_AXIS]);
-    
-        memcpy(current_position, saved_pos, sizeof(saved_pos));
-        set_destination_to_current();
-    
-        // Recover feed rate
-        feedmultiply = saved_feedmultiply2;
-        enquecommandf_P(MSG_M220, saved_feedmultiply2);
+            repeat = M600_check_state_and_repeat();
     }
+    while (repeat);
+
+    lcd_update_enable(true);
+    
+    // Not let's go back to print
+    fanSpeed = saved_fan_speed;
+    
+    // Feed a little of filament to stabilize pressure
+    if (!automatic) {
+        if (print_job_timer.isPaused())
+        {
+            // Return to retracted state during a pause
+            // @todo is retraction really needed? E-position is reverted a few lines below
+            current_position[E_AXIS] -= default_retraction;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
+
+            // Cooldown the extruder again
+            setTargetHotend(0);
+        }
+        else
+        {
+            // Feed a little of filament to stabilize pressure
+            current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+        }
+    }
+
+    // Move XY back
+    plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED);
+    st_synchronize();
+
+    // Move Z back
+    plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED);
+    st_synchronize();
+
+    // Set E position to original
+    plan_set_e_position(saved_pos[E_AXIS]);
+    
+    memcpy(current_position, saved_pos, sizeof(saved_pos));
+    set_destination_to_current();
+    
+    // Recover feed rate
+    feedmultiply = saved_feedmultiply2;
+    enquecommandf_P(MSG_M220, saved_feedmultiply2);
+
     if (print_job_timer.isPaused()) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
     else lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
@@ -10991,10 +10996,10 @@ void load_filament_final_feed()
 }
 
 //! @brief Wait for user to check the state
-void M600_check_state()
+bool M600_check_state_and_repeat()
 {
-    uint8_t lcd_change_filament_state = 0;
-    while (lcd_change_filament_state != 1)
+    uint8_t lcd_change_filament_state = 10;
+    while (lcd_change_filament_state != 0 && lcd_change_filament_state != 3)
     {
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_change_filament_state = lcd_alright();
@@ -11002,7 +11007,7 @@ void M600_check_state()
         switch(lcd_change_filament_state)
         {
         // Filament failed to load so load it again
-        case 2:
+        case 1:
             if (MMU2::mmu2.Enabled()) {
                 uint8_t eject_slot = MMU2::mmu2.get_current_tool();
 
@@ -11020,12 +11025,16 @@ void M600_check_state()
             break;
 
         // Filament loaded properly but color is not clear
-        case 3:
+        case 2:
             st_synchronize();
             load_filament_final_feed();
             lcd_loading_color();
             st_synchronize();
             break;
+
+        // Unload filament
+        case 3:
+           return true;
 
         // Everything good
         default:
@@ -11033,6 +11042,7 @@ void M600_check_state()
             break;
         }
     }
+    return false;
 }
 
 //! @brief Wait for user action
@@ -11120,8 +11130,6 @@ void M600_load_filament() {
 	M600_load_filament_movements();
 
 	Sound_MakeCustom(50,1000,false);
-
-	lcd_update_enable(false);
 }
 
 
