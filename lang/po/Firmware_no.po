@@ -2567,7 +2567,7 @@ msgstr "Sett ikke klar"
 #. MSG_REPRINT c=18
 #: ../../Firmware/messages.cpp:190 ../../Firmware/ultralcd.cpp:5191
 msgid "Reprint"
-msgstr "Nytt opptrykk"
+msgstr "Gjenta print"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Ta bort det gamle filamentet og trykk valghjulet for å laste et nytt."
