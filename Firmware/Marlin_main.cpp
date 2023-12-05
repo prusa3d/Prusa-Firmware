@@ -617,7 +617,7 @@ void crashdet_detected(uint8_t mask)
         // ask whether to resume printing
         lcd_puts_at_P(0, 1, _T(MSG_RESUME_PRINT));
         lcd_putc('?');
-        uint8_t yesno = lcd_show_yes_no_and_wait(false);
+        uint8_t yesno = lcd_show_yes_no_and_wait(false, LCD_LEFT_BUTTON_CHOICE);
 		if (yesno == LCD_LEFT_BUTTON_CHOICE)
 		{
 			enquecommand_P(PSTR("CRASH_RECOVER"));
@@ -1589,11 +1589,15 @@ void setup()
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
           #endif
-          const uint8_t btn = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false);
-          if ( btn == LCD_LEFT_BUTTON_CHOICE) {
-              recover_print(0);
-          } else { // LCD_MIDDLE_BUTTON_CHOICE
-              eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+          if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PRINT_TYPE_USB) {
+            recover_print(0);
+          } else {
+              const uint8_t btn = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false);
+              if ( btn == LCD_LEFT_BUTTON_CHOICE) {
+                  recover_print(0);
+            } else { // LCD_MIDDLE_BUTTON_CHOICE
+                  eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+            }
           }
       }
   }
@@ -4110,6 +4114,9 @@ void process_commands()
             {
                 // M24 - Start SD print
                 enquecommand_P(MSG_M24);
+
+            // Print is recovered, clear the recovery flag
+            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
             }
             else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB)
             {
@@ -4121,13 +4128,7 @@ void process_commands()
                 // Park the extruder to the side and don't resume the print
                 // we must assume that the host as not fully booted up at this point
                 lcd_pause_print();
-
-                // Used by M79 to differentiate from a normal pause
-                SetPrinterState(PrinterState::PowerPanicWaitingForHost);
             }
-
-            // Print is recovered, clear the recovery flag
-            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
@@ -5986,15 +5987,12 @@ Sigma_Exit:
             }
         }
 
-        if (GetPrinterState() == PrinterState::PowerPanicWaitingForHost && print_job_timer.isPaused()) {
+        if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB && print_job_timer.isPaused()) {
             // The print is in a paused state. The print was recovered following a power panic
             // but up to this point the printer has been waiting for the M79 from the host
             // Send action to the host, so the host can resume the print. It is up to the host
             // to resume the print correctly.
             SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_UVLO_RECOVERY_READY);
-
-            // Update the state so the action is not repeated again
-            SetPrinterState(PrinterState::IsHostPrinting);
         }
 
         break;
