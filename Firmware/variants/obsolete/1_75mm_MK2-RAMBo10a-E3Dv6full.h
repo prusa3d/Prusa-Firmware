@@ -161,6 +161,8 @@ CHANGE FILAMENT SETTINGS
 #define FILAMENTCHANGE_RFEED 400
 #define FILAMENTCHANGE_EXFEED 2
 #define FILAMENTCHANGE_ZFEED 15
+#define FILAMENTCHANGE_ROOZEFEED -10 //E retract distance in mm for ooze prevention
+#define FILAMENTCHANGE_EOOZEFEED 4 //E extrude distance in mm for ooze prevention
 
 #endif
 

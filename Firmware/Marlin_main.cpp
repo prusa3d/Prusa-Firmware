@@ -3544,6 +3544,9 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
         if (!farm_mode && (eFilamentAction != FilamentAction::None)) {
             lcd_load_filament_color_check();
         }
+
+        retract_for_ooze_prevention(); // Retract a little of filament to prevent oozing
+
         lcd_update_enable(true);
         lcd_update(2);
         lcd_setstatuspgm(MSG_WELCOME);
