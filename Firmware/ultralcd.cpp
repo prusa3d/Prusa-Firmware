@@ -979,6 +979,7 @@ void lcd_commands()
                 lcd_commands_step = 2;
                 break;
             case 2:
+            {
                 //|0123456789012456789|
                 //|Hotend at 280C!
                 //|Nozzle changed and
@@ -994,6 +995,7 @@ void lcd_commands()
                     lcd_commands_step = 1;
                 }
                 break;
+            }
             case 1:
                 lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
