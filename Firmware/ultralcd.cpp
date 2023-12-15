@@ -5603,14 +5603,16 @@ static void lcd_sd_updir()
   menu_data_reset(); //Forces reloading of cached variables.
 }
 
-/// @brief retract a little of filament to prevent oozing
+#ifdef COMMUNITY_PREVENT_OOZE
+/// @brief Retract filament to prevent oozing
 void retract_for_ooze_prevention() {
-        current_position[E_AXIS] += FILAMENTCHANGE_ROOZEFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
-        current_position[E_AXIS] += FILAMENTCHANGE_EOOZEFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST);
-        st_synchronize();
+    current_position[E_AXIS] += FILAMENTCHANGE_COMMUNITY_ROOZEFEED;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
+    current_position[E_AXIS] += FILAMENTCHANGE_COMMUNITY_EOOZEFEED;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST);
+    st_synchronize();
 }
+#endif //COMMUNITY_PREVENT_OOZE
 
 // continue stopping the print from the main loop after lcd_print_stop() is called
 void lcd_print_stop_finish()
@@ -5626,10 +5628,13 @@ void lcd_print_stop_finish()
         current_position[Y_AXIS] = Y_CANCEL_POS;
         plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
     }
+    st_synchronize();
 
-    // Retract a little of filament to prevent oozing
+    #ifdef COMMUNITY_PREVENT_OOZE
+    // Retract filament to prevent oozing
     retract_for_ooze_prevention();
-    
+    #endif //COMMUNITY_PREVENT_OOZE
+
     // did we come here from a thermal error?
     if(get_temp_error()) {
         // time to stop the error beep

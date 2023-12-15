@@ -232,8 +232,15 @@
 #define FILAMENTCHANGE_RFEED 7000 / 60
 #define FILAMENTCHANGE_EXFEED 2
 #define FILAMENTCHANGE_ZFEED 15
-#define FILAMENTCHANGE_ROOZEFEED -10 //E retract distance in mm for ooze prevention
-#define FILAMENTCHANGE_EOOZEFEED 4 //E extrude distance in mm for ooze prevention
+
+//Retract and then extrude some filament to prevent oozing.
+//After the loading sequence and after a print is canceled, the filament is retracted to get it out of the heat zone of the nozzle.
+//Then a small extrusion is performed to make sure the filament is close enough for the next print without oozing.
+//#define COMMUNITY_PREVENT_OOZE
+#ifdef COMMUNITY_PREVENT_OOZE
+#define FILAMENTCHANGE_COMMUNITY_ROOZEFEED -10 //E retract distance in mm for ooze prevention
+#define FILAMENTCHANGE_COMMUNITY_EOOZEFEED 4 //E extrude distance in mm for ooze prevention
+#endif //End COMMUNITY_PREVENT_OOZE
 
 #endif
 
