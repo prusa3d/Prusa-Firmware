@@ -5695,18 +5695,11 @@ void lcd_thermal_model_cal()
 
 void lcd_sdcard_stop()
 {
-    // Show static message
-    lcd_puts_at_P(0, 0, _T(MSG_STOP_PRINT));
-    lcd_putc_at(0, 1, '\n');
-
-    MENU_BEGIN();
-    // Skip first two LCD rows used by static message
-    if(menu_row == 0) menu_row = 2;
-
-    // Show No options first, the default selection
-    MENU_ITEM_FUNCTION_P(_T(MSG_NO), lcd_return_to_status);
-    MENU_ITEM_FUNCTION_P(_T(MSG_YES), lcd_print_stop);
-    MENU_END();
+if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STOP_PRINT), true, LCD_MIDDLE_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE) {
+    lcd_print_stop();
+} else {
+    lcd_return_to_status();
+}
 }
 
 void lcd_sdcard_menu()
