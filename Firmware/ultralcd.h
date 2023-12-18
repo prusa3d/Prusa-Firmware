@@ -68,7 +68,7 @@ void lcd_load_filament_color_check();
 
 extern void lcd_belttest();
 extern bool lcd_selftest();
-
+void lcd_calibration_bed_reset();
 void lcd_menu_statistics(); 
 
 void lcd_status_screen();                         // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")

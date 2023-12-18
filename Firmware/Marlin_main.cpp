@@ -3164,15 +3164,17 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			lcd_wait_for_cool_down();
 		}
 		#endif //STEEL_SHEET
-		if(!onlyZ)
-		{
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			#ifdef STEEL_SHEET
 			uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
-			if(result == LCD_LEFT_BUTTON_CHOICE) {
+			if(result == LCD_LEFT_BUTTON_CHOICE && !onlyZ) {
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
+			} else if (result == LCD_MIDDLE_BUTTON_CHOICE && onlyZ) {
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 			}
 			#endif //STEEL_SHEET
+		if(!onlyZ)
+		{
 			lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));

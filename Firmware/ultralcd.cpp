@@ -3495,24 +3495,6 @@ static void lcd_language_menu()
 }
 #endif //(LANG_MODE != 0)
 
-void lcd_mesh_bedleveling()
-{
-	enquecommand_P(PSTR("G80"));
-	lcd_return_to_status();
-}
-
-void lcd_mesh_calibration()
-{
-  enquecommand_P(PSTR("M45"));
-  lcd_return_to_status();
-}
-
-void lcd_mesh_calibration_z()
-{
-  enquecommand_P(PSTR("M45 Z"));
-  lcd_return_to_status();
-}
-
 void lcd_temp_calibration_set() {
 	bool temp_cal_active = eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE);
 	temp_cal_active = !temp_cal_active;
@@ -4562,25 +4544,26 @@ static void lcd_calibration_menu()
 #endif //TMC2130
     MENU_ITEM_FUNCTION_P(_i("Selftest"), lcd_selftest_v);////MSG_SELFTEST c=18
     // MK2
-    MENU_ITEM_FUNCTION_P(_i("Calibrate XYZ"), lcd_mesh_calibration);////MSG_CALIBRATE_BED c=18
+    MENU_ITEM_GCODE_P(_i("Calibrate XYZ"), PSTR("M45"));////MSG_CALIBRATE_BED c=18
     // "Calibrate Z" with storing the reference values to EEPROM.
-    MENU_ITEM_SUBMENU_P(_T(MSG_HOMEYZ), lcd_mesh_calibration_z);
+    MENU_ITEM_GCODE_P(_T(MSG_HOMEYZ), PSTR("M45 Z"));
 
-    MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bedleveling); ////MSG_MESH_BED_LEVELING c=18
+    MENU_ITEM_GCODE_P(_T(MSG_MESH_BED_LEVELING), PSTR("G80")); ////MSG_MESH_BED_LEVELING c=18
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=18
     MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17
 #ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
 #endif
-    MENU_ITEM_GCODE_P(_i("Reset XYZ calibr."), PSTR("M44"));////MSG_CALIBRATE_BED_RESET c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATE_BED_RESET), lcd_calibration_bed_reset);
 #ifdef PINDA_THERMISTOR
     if(has_temperature_compensation())
+        //Keep as function menu to show status screen and process of the calibration
         MENU_ITEM_FUNCTION_P(_T(MSG_PINDA_CALIBRATION), lcd_calibrate_pinda);
 #endif
 
 #ifdef THERMAL_MODEL
-    MENU_ITEM_SUBMENU_P(_n("Thermal Model cal."), lcd_thermal_model_cal);
+    MENU_ITEM_FUNCTION_P(_n("Thermal Model cal."), lcd_thermal_model_cal);
 #endif //THERMAL_MODEL
 
     MENU_END();
@@ -5083,6 +5066,8 @@ static void lcd_rename_sheet_menu()
 
 static void lcd_reset_sheet()
 {
+uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RESET), true, LCD_MIDDLE_BUTTON_CHOICE);
+if (result == LCD_LEFT_BUTTON_CHOICE) {
     SheetName sheetName;
     eeprom_default_sheet_name(selected_sheet, sheetName);
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),EEPROM_EMPTY_VALUE16);
@@ -5093,7 +5078,7 @@ static void lcd_reset_sheet()
         if (-1 == eeprom_next_initialized_sheet(0))
             calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
 	}
-
+}
 	menu_back();
 }
 
@@ -5118,7 +5103,7 @@ static void lcd_sheet_menu()
         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
     }
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); ////MSG_RENAME c=18
-	MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_reset_sheet);
+	MENU_ITEM_SUBMENU_P(_T(MSG_RESET), lcd_reset_sheet);
 
     MENU_END();
 }
@@ -5695,11 +5680,21 @@ void lcd_thermal_model_cal()
 
 void lcd_sdcard_stop()
 {
-if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STOP_PRINT), true, LCD_MIDDLE_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE) {
+uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STOP_PRINT), true, LCD_MIDDLE_BUTTON_CHOICE);
+if ( result == LCD_LEFT_BUTTON_CHOICE) {
     lcd_print_stop();
 } else {
     lcd_return_to_status();
 }
+}
+
+void lcd_calibration_bed_reset()
+{
+uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_CALIBRATE_BED_RESET), true, LCD_MIDDLE_BUTTON_CHOICE);
+if ( result == LCD_LEFT_BUTTON_CHOICE) {
+    enquecommand_P(PSTR("M44"));
+}
+lcd_return_to_status();
 }
 
 void lcd_sdcard_menu()
