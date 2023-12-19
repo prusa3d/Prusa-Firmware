@@ -5129,7 +5129,12 @@ static void lcd_sheet_menu()
 //! @endcode
 static void lcd_printer_ready_state_toggle()
 {
-    enquecommandf_P(PSTR("M118 %S"), (GetPrinterState() == PrinterState::IsReady) ? MSG_OCTOPRINT_NOT_READY : MSG_OCTOPRINT_READY);
+    if (GetPrinterState() == PrinterState::IsReady) {
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_NOT_READY);
+    }
+    else {
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_READY);
+    }
 }
 
 //! @brief Show Main Menu
