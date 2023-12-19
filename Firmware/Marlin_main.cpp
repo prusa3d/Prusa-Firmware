@@ -7875,9 +7875,22 @@ Sigma_Exit:
     break;
   
   case 850: {
-	//! ### M850 - set sheet parameters
-	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP] A[IS_ACTIVE]
-	uint8_t iSel = 0;
+    /*!
+    ### M850 - Sheet parameters <a href="https://reprap.org/wiki/G-code#M850:_Sheet_parameters">M850: Sheet parameters</a>
+    Get and Set Sheet parameters
+    #### Usage
+
+         M25 [ S | Z | L | B | P | A ]
+
+    #### Parameters
+     - `S` - Sheet id [0-7]
+     - `Z` - Z offset 
+     - `L` - Label [aA-zZ, 0-9 max 7 chars]
+     - `B` - Bed temp
+     - `P` - PINDA temp 
+     - `A` - Active [0|1]
+	*/
+    uint8_t iSel = 0;
 	int16_t zraw = 0;
 	float z_val = 0;
 	char strLabel[8];
@@ -7976,7 +7989,7 @@ Sigma_Exit:
 	SERIAL_PROTOCOLPGM(" B");
 	SERIAL_PROTOCOL((int)iBedC);
 	SERIAL_PROTOCOLPGM(" P");
-	SERIAL_PROTOCOLLN((int)iPindaC);
+	SERIAL_PROTOCOL((int)iPindaC);
 	SERIAL_PROTOCOLPGM(" A");
 	SERIAL_PROTOCOLLN((int)bIsActive);
 	break;
