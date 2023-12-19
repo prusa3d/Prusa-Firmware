@@ -254,4 +254,8 @@ extern void lcd_pinda_temp_compensation_toggle();
 
 extern void lcd_heat_bed_on_load_toggle();
 
+#ifdef COMMUNITY_PREVENT_OOZE
+extern void retract_for_ooze_prevention();
+#endif //COMMUNITY_PREVENT_OOZE
+
 #endif //ULTRALCD_H
