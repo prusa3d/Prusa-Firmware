@@ -2121,12 +2121,12 @@ void lcd_wait_interact() {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 1, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
+  lcd_puts_at_P(0, 0, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
 #ifdef FILAMENT_SENSOR
   if (!fsensor.getAutoLoadEnabled())
 #endif //FILAMENT_SENSOR
   {
-    lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
+    lcd_puts_at_P(0, 1, _i("and press the knob"));////MSG_PRESS c=20 r=2
   }
 }
 
