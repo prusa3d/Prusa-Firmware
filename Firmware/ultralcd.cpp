@@ -5251,12 +5251,12 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
     } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
-    }
-    if (GetPrinterState() < PrinterState::IsSDPrinting && M79_timer_get_status()) {
-        if(GetPrinterState() == PrinterState::IsReady) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
-        } else {
-            MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+        if (M79_timer_get_status()) {
+            if(GetPrinterState() == PrinterState::IsReady) {
+                MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
+            } else {
+                MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+            }
         }
     }
     if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
