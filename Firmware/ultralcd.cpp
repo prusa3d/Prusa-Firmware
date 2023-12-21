@@ -81,6 +81,9 @@ static uint8_t lcd_status_message_level;
 static uint8_t lcd_status_message_idx = 0;
 static char lcd_status_message[LCD_WIDTH + 1];
 
+/* Buffer for a generic LCD text */
+static char lcd_generic_use_text[LCD_WIDTH + 1];
+
 /* !Configuration settings */
 
 static uint8_t lay1cal_filament = 0;
@@ -2160,11 +2163,17 @@ void lcd_wait_interact() {
   lcd_clear();
 
   lcd_puts_at_P(0, 0, _T(MSG_INSERT_FILAMENT));
+  lcd_set_cursor(0, 1);
+  if (lcd_generic_use_text[0]) {
+    lcd_print(lcd_generic_use_text);
+    lcd_set_cursor(0, 2);
+  }
+
 #ifdef FILAMENT_SENSOR
   if (!fsensor.getAutoLoadEnabled())
 #endif //FILAMENT_SENSOR
   {
-    lcd_puts_at_P(0, 1, _T(MSG_PRESS));
+    lcd_puts_P(_T(MSG_PRESS));
   }
 }
 
@@ -2279,11 +2288,11 @@ void show_preheat_nozzle_warning()
 void lcd_load_filament_color_check()
 {
     uint8_t clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
-    while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
-        load_filament_final_feed();
-        st_synchronize();
+	while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
+		load_filament_final_feed();
+		st_synchronize();
         clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
-    }
+	}
     if (clean == LCD_RIGHT_BUTTON_CHOICE) {
         unload_filament(FILAMENTCHANGE_FINALRETRACT);
     }
@@ -3882,16 +3891,16 @@ void lcd_wizard(WizState state)
 			} else {
 				raise_z_above(MIN_Z_FOR_SWAP);
 				if(!MMU2::mmu2.Enabled()) {
-					//current filament needs to be unloaded and then new filament should be loaded
-					//start to preheat nozzle for unloading remaining PLA filament
-					setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
+				//current filament needs to be unloaded and then new filament should be loaded
+				//start to preheat nozzle for unloading remaining PLA filament
+				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 					lcd_display_message_fullscreen_P(_T(MSG_WIZARD_WILL_PREHEAT));
-					wait_preheat();
-					unload_filament(FILAMENTCHANGE_FINALRETRACT); // unload current filament
-					lcd_wizard_load(); // load filament
-					setTargetHotend(0); //we are finished, cooldown nozzle
+				wait_preheat();
+				unload_filament(FILAMENTCHANGE_FINALRETRACT); // unload current filament
+				lcd_wizard_load(); // load filament
+				setTargetHotend(0); //we are finished, cooldown nozzle
 				}
-			state = S::Restore;
+				state = S::Restore;
 			}
 			break;
 #ifdef THERMAL_MODEL
@@ -5273,30 +5282,30 @@ static void lcd_main_menu()
 
     if (!printer_recovering()) {
         if ( moves_planned() || printer_active()) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
-        } else if (!Stopped) {
+        MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
+    } else if (!Stopped) {
             MENU_ITEM_SUBMENU_P(_T(MSG_PREHEAT), lcd_preheat_menu);
             if (M79_timer_get_status()) {
-                if(GetPrinterState() == PrinterState::IsReady) {
-                    MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
-                } else {
-                    MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
-                }
-            }
+        if(GetPrinterState() == PrinterState::IsReady) {
+            MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
+        } else {
+            MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+        }
+    }
         }
         if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
-            if (usb_timer.running()) {
-                MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
-            } else if (IS_SD_PRINTING) {
-                MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
-            }
+        if (usb_timer.running()) {
+            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
+        } else if (IS_SD_PRINTING) {
+            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
         }
+    }
     }
     if (printingIsPaused()
         // only allow resuming if hardware errors (temperature or fan) are cleared
         && !get_temp_error()
 #ifdef FANCHECK
-        && fan_check_error != EFCE_REPORTED
+            && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
         && (saved_printing_type != PowerPanic::PRINT_TYPE_NONE || saved_printing)
         && custom_message_type != CustomMsg::Resuming) {
@@ -5304,8 +5313,8 @@ static void lcd_main_menu()
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);
         } else if ((saved_printing_type == PowerPanic::PRINT_TYPE_HOST) && (M79_timer_get_status())) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
+            }
         }
-    }
     if((printJobOngoing() || printingIsPaused() || (printer_recovering()))
         && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
@@ -5319,57 +5328,57 @@ static void lcd_main_menu()
     // only allow starting SD print if hardware errors (temperature or fan) are cleared
     if (!printer_recovering() && !printer_active() && !get_temp_error()
 #ifdef FANCHECK
-        && fan_check_error != EFCE_REPORTED
+            && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
         ) {
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
             if (card.mounted
                 || lcd_commands_type != LcdCommands::Idle) {
-                if (!card.isFileOpen()) {
-                    if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
-                        bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
-                        MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
-                    }
+            if (!card.isFileOpen()) {
+                if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
+                    bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
+                    MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
+                }
 #if SDCARDDETECT < 1
              MENU_ITEM_GCODE_P(_T(MSG_CNG_SDCARD), PSTR("M21"));  // SD-card changed by user
 #endif //SDCARDDETECT
-                }
-            } else {
-                bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+            }
+        } else {
+            bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
                 MENU_ITEM_BACK_P(_T(MSG_NO_CARD));
 #if SDCARDDETECT < 1
             MENU_ITEM_GCODE_P(_T(MSG_INIT_SDCARD), PSTR("M21")); // Manually initialize the SD-card via user interface
 #endif //SDCARDDETECT
-         }
+        }
 #endif //SDSUPPORT
         if(!farm_mode) {
-            const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
-            const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
-            if ((nextSheet >= 0) && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
-                MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
-            }
+        const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+        const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
+        if ((nextSheet >= 0) && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
+            MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
+        }
 #ifdef QUICK_NOZZLE_CHANGE
             SETTINGS_NOZZLE;
 #endif //QUICK_NOZZLE_CHANGE
 
-        }
+    }
 
         if (!((eFilamentAction != FilamentAction::None) || Stopped )) {
-            if (MMU2::mmu2.Enabled()) {
-                if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
+        if (MMU2::mmu2.Enabled()) {
+            if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
                     // The MMU 'Load filament' state machine will reject the command if any
-                    // filament sensor is reporting a detected filament
-                    MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
+                // filament sensor is reporting a detected filament
+                MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
             }
                 MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_NOZZLE), lcd_mmuLoadFilament);
-                MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
-                MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
+            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
+            MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
 #ifdef  MMU_HAS_CUTTER
-                if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
-                    MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), lcd_mmuCutFilament);
-                }
+            if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
+                MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), lcd_mmuCutFilament);
+            }
 #endif //MMU_HAS_CUTTER
-            } else {
+        } else {
 #ifdef FILAMENT_SENSOR
                 if (fsensor.isEnabled()) {
                     if (!fsensor.getFilamentPresent()) {
@@ -5377,21 +5386,21 @@ static void lcd_main_menu()
                             MENU_ITEM_SUBMENU_P(_T(MSG_AUTOLOAD_FILAMENT), lcd_menu_AutoLoadFilament);
                         } else {
                             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
-                        }
+            }
                     } else {
                         MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
                     }
                 } else {
 #endif //FILAMENT_SENSOR
-                    MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
-                    MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
+                MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
+            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
 #ifdef FILAMENT_SENSOR
-                }
+        }
 #endif //FILAMENT_SENSOR
             }
-            MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
+        MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
             MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
-        }
+    }
     }
 
         MENU_ITEM_SUBMENU_P(_T(MSG_STATISTICS), lcd_menu_statistics);
@@ -5728,16 +5737,16 @@ void lcd_print_stop_finish()
             //     1. in a paused state                      => a partial backup in RAM is always available
             //     2. after a recoverable thermal/fan error had paused the print => only extruder temperature is saved to RAM
             if (printingIsPaused())
-            {
-                // Restore temperature saved in ram after pausing print
-                restore_extruder_temperature_from_ram();
-            }
+    {
+            // Restore temperature saved in ram after pausing print
+            restore_extruder_temperature_from_ram();
+        }
 
             // If the pause state was cleared previously or the target temperature is 0°C in the case
             // of an unconditional stop. In that scenario we do not want to unload.
             if (target_temperature[0] >= extrude_min_temp) {
-                MMU2::mmu2.unload(); // M702
-            }
+        MMU2::mmu2.unload(); // M702
+    }
         }
     }
 
@@ -5754,7 +5763,7 @@ void print_stop(bool interactive, bool unconditional_stop)
     // more move in this call! Any further move must happen inside lcd_print_stop_finish(), which is
     // called by the main loop one iteration later.
     if (unconditional_stop) {
-        UnconditionalStop();
+    UnconditionalStop();
     } else {
         // Allow lcd_print_stop_finish() to use the heaters when it is safe
         ConditionalStop();
@@ -7313,6 +7322,17 @@ void lcd_reset_alert_level()
 uint8_t get_message_level()
 {
 	return lcd_status_message_level;
+}
+
+void lcd_set_generic_use_text(const char *text)
+{
+    strncpy(lcd_generic_use_text, text, LCD_WIDTH);
+    lcd_generic_use_text[LCD_WIDTH] = 0;
+}
+
+void lcd_clear_generic_use_text()
+{
+    lcd_generic_use_text[0] = 0;
 }
 
 void menu_lcd_longpress_func(void)

@@ -3456,6 +3456,8 @@ static void mmu_M600_load_filament(bool automatic) {
 static void gcode_M600(const bool automatic, const float x_position, const float y_position, const float z_shift, const float e_shift, const float e_shift_late) {
     st_synchronize();
 
+    lcd_setstatuspgm(MSG_FILAMENTCHANGE);
+
     // When using an MMU, save the currently use slot number
     // so the firmware can know which slot to eject after the filament
     // is unloaded.
@@ -3527,6 +3529,8 @@ static void gcode_M600(const bool automatic, const float x_position, const float
             repeat = M600_check_state_and_repeat();
     }
     while (repeat);
+
+    lcd_clear_generic_use_text();
 
     lcd_update_enable(true);
 
@@ -6618,8 +6622,11 @@ Sigma_Exit:
     */
     case 117: {
         const char *src = strchr_pointer + 4; // "M117"
-        lcd_setstatus(*src == ' '? src + 1: src);
+        while (*src == ' ') src++;
+        lcd_setstatus(src);
         custom_message_type = CustomMsg::M117;
+
+        lcd_set_generic_use_text(src);
     }
     break;
 
