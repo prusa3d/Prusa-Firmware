@@ -43,6 +43,10 @@ void lcd_reset_status_message_timeout();
 void lcd_setalertstatus(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 void lcd_setalertstatuspgm(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 
+// Manage the generic use text content
+void lcd_set_generic_use_text(const char *message);
+void lcd_clear_generic_use_text();
+
 //! Get/reset the current alert level
 uint8_t get_message_level();
 void lcd_reset_alert_level();
