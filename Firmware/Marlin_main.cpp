@@ -979,7 +979,7 @@ static void fw_crash_init()
     if(xfdump_check_state(&crash_reason))
     {
         // always signal to the host that a dump is available for retrieval
-        puts_P(_N("// action:dump_available"));
+        puts_P(_N("//action:dump_available"));
 
 #ifdef EMERGENCY_DUMP
         if(crash_reason != dump_crash_reason::manual &&
@@ -6003,7 +6003,7 @@ Sigma_Exit:
             // but up to this point the printer has been waiting for the M79 from the host
             // Send action to the host, so the host can resume the print. It is up to the host
             // to resume the print correctly.
-            SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_UVLO_RECOVERY_READY);
+            SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_UVLO_RECOVERY_READY);
         }
 
         break;

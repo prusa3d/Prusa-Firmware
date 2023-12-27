@@ -1033,7 +1033,7 @@ void lcd_pause_print()
 {
     stop_and_save_print_to_ram(0.0, -default_retraction);
 
-    SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
+    SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_PAUSED);
 
     // Indicate that the printer is paused
     did_pause_print = true;
@@ -1048,7 +1048,7 @@ void lcd_pause_print()
 //! @brief Send host action "pause"
 void lcd_pause_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_PAUSE);
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_ASK_PAUSE);
 }
 
 static void lcd_move_menu_axis();
@@ -5033,7 +5033,7 @@ void lcd_resume_print()
     if (print_job_timer.isPaused()) print_job_timer.start();
 
     refresh_cmd_timeout();
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_RESUMED);
     custom_message_type = CustomMsg::Status;
 }
 
@@ -5044,7 +5044,7 @@ void lcd_resume_usb_print()
     if (!resume_print_checks()) return;
 
     // resume the usb host
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_RESUME);
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_ASK_RESUME);
 }
 
 static void change_sheet()
@@ -5151,10 +5151,10 @@ static void lcd_sheet_menu()
 static void lcd_printer_ready_state_toggle()
 {
     if (GetPrinterState() == PrinterState::IsReady) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_NOT_READY);
+        SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_NOT_READY);
     }
     else {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_READY);
+        SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_READY);
     }
 }
 
@@ -5714,7 +5714,7 @@ void print_stop(bool interactive)
         card.sdprinting = false;
         card.closefile();
     } else {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
+        SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_CANCEL);
     }
 
 #ifdef MESH_BED_LEVELING
@@ -7510,6 +7510,6 @@ void lcd_reprint_from_eeprom() {
 //! @brief Send host action "start"
 void lcd_send_action_start()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_START);
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_START);
     lcd_return_to_status();
 }

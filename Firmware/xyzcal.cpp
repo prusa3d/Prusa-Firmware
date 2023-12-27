@@ -568,7 +568,7 @@ void __attribute__((noinline)) xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t
 			xyzcal_lineXYZ_to((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
             //@size=242
-			DBG(_n("%d\n"), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
+			DBG(_n("%d\n"), 64 - (r * 2 + d)); ///< to keep host connection alive
 			lcd_set_cursor(4,3);
 			lcd_printf_P(PSTR("Countdown: %d "),64 - (r * 2 + d)); ////MSG_COUNTDOWN c=12
 

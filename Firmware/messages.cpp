@@ -228,15 +228,15 @@ const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////
 const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Supervision required."; ////
 const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////
-const char MSG_OCTOPRINT_ASK_PAUSE[] PROGMEM_N1 = "// action:pause"; ////
-const char MSG_OCTOPRINT_PAUSED[] PROGMEM_N1 = "// action:paused"; ////
-const char MSG_OCTOPRINT_ASK_RESUME[] PROGMEM_N1 = "// action:resume"; ////
-const char MSG_OCTOPRINT_RESUMED[] PROGMEM_N1 = "// action:resumed"; ////
-const char MSG_OCTOPRINT_CANCEL[] PROGMEM_N1 = "// action:cancel"; ////
-const char MSG_OCTOPRINT_READY[] PROGMEM_N1 = "// action:ready"; ////
-const char MSG_OCTOPRINT_NOT_READY[] PROGMEM_N1 = "// action:not_ready"; ////
-const char MSG_OCTOPRINT_START[] PROGMEM_N1 = "// action:start"; ////
-const char MSG_OCTOPRINT_UVLO_RECOVERY_READY[] PROGMEM_N1 = "// action:uvlo_recovery_ready"; ////
+const char MSG_HOST_ACTION_ASK_PAUSE[] PROGMEM_N1 = "//action:pause"; ////
+const char MSG_HOST_ACTION_PAUSED[] PROGMEM_N1 = "//action:paused"; ////
+const char MSG_HOST_ACTION_ASK_RESUME[] PROGMEM_N1 = "//action:resume"; ////
+const char MSG_HOST_ACTION_RESUMED[] PROGMEM_N1 = "//action:resumed"; ////
+const char MSG_HOST_ACTION_CANCEL[] PROGMEM_N1 = "//action:cancel"; ////
+const char MSG_HOST_ACTION_READY[] PROGMEM_N1 = "//action:ready"; ////
+const char MSG_HOST_ACTION_NOT_READY[] PROGMEM_N1 = "//action:not_ready"; ////
+const char MSG_HOST_ACTION_START[] PROGMEM_N1 = "//action:start"; ////
+const char MSG_HOST_ACTION_UVLO_RECOVERY_READY[] PROGMEM_N1 = "//action:uvlo_recovery_ready"; ////
 #ifdef HOST_SHUTDOWN
 const char MSG_HOST_ACTION_SHUTDOWN[] PROGMEM_N1 = "//action:shutdown"; ////
 #endif //HOST_SHUTOWN
