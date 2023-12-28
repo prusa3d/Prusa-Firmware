@@ -5292,6 +5292,7 @@ static void lcd_main_menu()
 
     // only allow starting SD print if hardware errors (temperature or fan) are cleared
     if(!get_temp_error()
+            && !printer_active()
 #ifdef FANCHECK
             && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
