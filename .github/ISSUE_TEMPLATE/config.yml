@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and Discussions
+    url: https://github.com/prusa3d/Prusa-Firmware/discussions
+    about: Please use Discussions for questions, chat, and open-ended ideas. Be sure to search before creating a new topic, your question may already have been answered!
