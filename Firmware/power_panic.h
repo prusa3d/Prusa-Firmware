@@ -18,3 +18,4 @@ enum PrintType : uint8_t {
 void uvlo_();
 void recover_print(uint8_t automatic); 
 void setup_uvlo_interrupt();
+void restore_file_from_sd();

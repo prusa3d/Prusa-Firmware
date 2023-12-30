@@ -11,6 +11,7 @@
 #include "fancheck.h"
 #include "stepper.h"
 #include "ConfigurationStore.h"
+#include "power_panic.h"
 #include "printers.h"
 #include <string.h>
 #include "stopwatch.h"
@@ -7465,40 +7466,8 @@ void lcd_heat_bed_on_load_toggle()
 }
 
 void lcd_reprint_from_eeprom() {
-	char filename[13];
-	char altfilename[13];
-	uint8_t depth = 0;
-	char dir_name[9];
+    restore_file_from_sd();
 
-	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
-
-	for (int i = 0; i < depth; i++) {
-		for (int j = 0; j < 8; j++) {
-			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
-		}
-		dir_name[8] = '\0';
-		card.chdir(dir_name, false);
-	}
-
-	for (int i = 0; i < 8; i++) {
-		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
-	}
-	filename[8] = '\0';
-
-	strcpy(altfilename,filename);
-	if (!card.FileExists(altfilename))
-	{
-		strcat_P(filename, PSTR(".gco"));
-		if (card.FileExists(filename))
-		{
-			strcpy(altfilename,filename);
-		}else
-		{
-			strcat_P(altfilename, PSTR(".g"));
-		}
-	}
-    // M23: Select SD file
-    enquecommandf_P(MSG_M23, altfilename);
     // M24: Start/resume SD print
     enquecommand_P(MSG_M24);
     lcd_return_to_status();
