@@ -11,7 +11,6 @@
 #include "fancheck.h"
 #include "stepper.h"
 #include "ConfigurationStore.h"
-#include "power_panic.h"
 #include "printers.h"
 #include <string.h>
 #include "stopwatch.h"

@@ -380,6 +380,7 @@ void refresh_print_state_in_ram();
 void refresh_saved_feedrate_multiplier_in_ram();
 void clear_print_state_in_ram();
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
+void restore_file_from_sd();
 void restore_extruder_temperature_from_ram();
 extern void restore_print_from_ram_and_continue(float e_move);
 extern void cancel_saved_printing();

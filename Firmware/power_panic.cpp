@@ -413,36 +413,6 @@ bool recover_machine_state_after_power_panic() {
      return mbl_was_active;
 }
 
-/// @brief Read saved filename from EEPROM and send g-code command: M23 <filename>
-void restore_file_from_sd()
-{
-    char filename[FILENAME_LENGTH];
-    char dir_name[9];
-    char extension_ptr[5];
-    uint8_t depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
-
-    for (uint8_t i = 0; i < depth; i++) {
-        eeprom_read_block(dir_name, (const char *)EEPROM_DIRS + 8 * i, 8);
-        dir_name[8] = '\0';
-        card.chdir(dir_name, false);
-    }
-
-    // Recover DOS 8.3 filename without extension.
-    // Short filenames are always null terminated.
-    eeprom_read_block(filename, (const char *)EEPROM_FILENAME, 8);
-
-    // Add null delimiter in case all 8 characters were not NULL
-    filename[8] = '\0';
-
-    // Add extension to complete the DOS 8.3 filename e.g. ".gco" or ".g"
-    extension_ptr[0] = '.';
-    eeprom_read_block(&extension_ptr[1], (const char *)EEPROM_FILENAME_EXTENSION, 3);
-    extension_ptr[4] = '\0';
-    strcat(filename, extension_ptr);
-
-    enquecommandf_P(MSG_M23, filename);
-}
-
 void restore_print_from_eeprom(bool mbl_was_active) {
     int feedrate_rec;
     int feedmultiply_rec;
