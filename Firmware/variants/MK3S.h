@@ -642,7 +642,7 @@
 //#define SUPPORT_VERBOSITY
 
 #define MMU_CONFIG_FILE "mmu2/variants/config_MMU2S.h"
-#define MMU_FILAMENT_COUNT 5
+#define MMU_FILAMENT_COUNT 10
 //#define MMU_FORCE_STEALTH_MODE
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU and printer on serial
