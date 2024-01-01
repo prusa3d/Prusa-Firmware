@@ -1022,7 +1022,7 @@ void lcd_pause_print()
 
     SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
 
-    print_job_timer.pause();
+    print_job_timer.pause(true);
 
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::LongPause;
@@ -5010,7 +5010,12 @@ void lcd_resume_print()
     Stopped = false;
 
     restore_print_from_ram_and_continue(default_retraction);
-    print_job_timer.start();
+    if (usb_timer.running()) {
+        print_job_timer.stop(true);
+    }
+    else {
+        print_job_timer.start();
+    }
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
     custom_message_type = CustomMsg::Status;

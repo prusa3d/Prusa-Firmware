@@ -35,7 +35,11 @@ uint32_t Stopwatch::accumulator;
 uint32_t Stopwatch::startTimestamp;
 uint32_t Stopwatch::stopTimestamp;
 
-bool Stopwatch::stop() {
+bool Stopwatch::stop(bool forceStateOnly) {
+  if (forceStateOnly) {
+    state = STOPPED;
+    return true;
+  }
   if (isRunning() || isPaused()) {
     state = STOPPED;
     stopTimestamp = _millis();
@@ -44,7 +48,11 @@ bool Stopwatch::stop() {
   else return false;
 }
 
-bool Stopwatch::pause() {
+bool Stopwatch::pause(bool forceStateOnly) {
+  if (forceStateOnly) {
+    state = PAUSED;
+    return true;
+  }
   if (isRunning()) {
     state = PAUSED;
     stopTimestamp = _millis();

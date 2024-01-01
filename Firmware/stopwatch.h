@@ -53,7 +53,7 @@ class Stopwatch {
      *          no timer is currently running.
      * @return true on success
      */
-    static bool stop();
+    static bool stop(bool forceStateOnly = false);
     static bool abort() { return stop(); } // Alias by default
 
     /**
@@ -62,7 +62,7 @@ class Stopwatch {
      *          no timer is currently running.
      * @return true on success
      */
-    static bool pause();
+    static bool pause(bool forceStateOnly = false);
 
     /**
      * @brief Start the stopwatch
