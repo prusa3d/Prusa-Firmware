@@ -69,6 +69,9 @@
 // Keepalive period which is restarted with M79
 #define M79_TIMEOUT 30 * 1000 // ms
 
+// A timer which is restarted everytime a G-command is added to the command queue.
+#define USB_TIMER_TIMEOUT 10 * 1000 // ms
+
 //===========================================================================
 //=============================Mechanical Settings===========================
 //===========================================================================
