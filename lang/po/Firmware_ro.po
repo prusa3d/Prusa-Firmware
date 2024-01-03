@@ -2593,6 +2593,11 @@ msgstr "Print. nu pregătit"
 msgid "Reprint"
 msgstr "Repetă print"
 
+#. MSG_SHUTDOWN_HOST c=18
+#: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:5342
+msgid "Shutdown host"
+msgstr "Oprește gazda"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."
 

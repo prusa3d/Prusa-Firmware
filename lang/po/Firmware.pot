@@ -1992,6 +1992,11 @@ msgstr ""
 msgid "Show end stops"
 msgstr ""
 
+#. MSG_SHUTDOWN_HOST c=18
+#: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:5342
+msgid "Shutdown host"
+msgstr ""
+
 #. MSG_SILENT c=7
 #: ../../Firmware/messages.cpp:110 ../../Firmware/ultralcd.cpp:4149
 #: ../../Firmware/ultralcd.cpp:4188

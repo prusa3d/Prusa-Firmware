@@ -2570,6 +2570,11 @@ msgstr "Zrušit Připravena"
 msgid "Reprint"
 msgstr "Tisk. znovu"
 
+#. MSG_SHUTDOWN_HOST c=18
+#: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:5342
+msgid "Shutdown host"
+msgstr "Vypnutí hostitele"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
 

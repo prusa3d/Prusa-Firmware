@@ -2595,6 +2595,11 @@ msgstr "Niet gereed zetten"
 msgid "Reprint"
 msgstr "Herhaal druk"
 
+#. MSG_SHUTDOWN_HOST c=18
+#: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:5342
+msgid "Shutdown host"
+msgstr "Host uitschakelen"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Verwijder de oude filament en druk op de knop om nieuwe filament te laden."
