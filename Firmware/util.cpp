@@ -447,3 +447,22 @@ void calibration_status_clear(CalibrationStatus components)
     status &= ~components;
     eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, status);
 }
+
+void steel_sheet_check()
+{
+     const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+     const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
+     if ((nextSheet >= 0) && (sheetNR != nextSheet))
+     {
+          char sheet[8];
+          eeprom_read_block(sheet, EEPROM_Sheets_base->s[sheetNR].name, 7);
+          sheet[7] = '\0';
+          lcd_display_message_fullscreen_P(_T(MSG_CHECK_STEEL_SHEET));
+          lcd_set_cursor(0, 2);
+          lcd_printf_P(PSTR("%-7s"), sheet);
+          Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+          if (!lcd_wait_for_click_delay(30))
+               lcd_print_stop();
+          lcd_update_enable(true);
+     }
+} 

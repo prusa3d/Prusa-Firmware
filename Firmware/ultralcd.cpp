@@ -240,6 +240,8 @@ static void menu_action_sddirectory(const char* filename);
 
 static void lcd_rehome_xy();
 
+static void lcd_set_sheet_alert();
+
 #define ENCODER_FEEDRATE_DEADZONE 10
 
 #define STATE_NA 255
@@ -4460,6 +4462,7 @@ static void lcd_settings_menu()
 
     SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
+    MENU_ITEM_TOGGLE_P(_T(MSG_SHEET_ALERT), sheet_alert_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_sheet_alert);
 
     if(!farm_mode)
     {
@@ -7488,4 +7491,9 @@ void lcd_send_action_start()
 {
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_START);
     lcd_return_to_status();
+}
+
+void lcd_set_sheet_alert() {
+	sheet_alert_enabled = !sheet_alert_enabled;
+	eeprom_update_byte((uint8_t *)EEPROM_ED_SHEET_ALERT, sheet_alert_enabled);
 }

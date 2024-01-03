@@ -192,6 +192,8 @@ extern const char MSG_NOZZLE_CNG_MENU [];
 extern const char MSG_NOZZLE_CNG_READ_HELP [];
 extern const char MSG_NOZZLE_CNG_CHANGED [];
 extern const char MSG_REPRINT [];
+extern const char MSG_SHEET_ALERT [];
+extern const char MSG_CHECK_STEEL_SHEET[];
 
 //not internationalized messages
 #if 0

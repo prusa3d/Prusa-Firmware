@@ -146,6 +146,8 @@
 //===========================================================================
 //=============================public variables=============================
 //===========================================================================
+bool sheet_alert_enabled = true;
+
 #ifdef SDSUPPORT
 CardReader card;
 #endif
@@ -437,6 +439,10 @@ void serialprintlnPGM(const char *str) {
     }
   }
 #endif //!SDSUPPORT
+
+void SetSheetAlert() {
+	sheet_alert_enabled = eeprom_read_byte((uint8_t *)EEPROM_ED_SHEET_ALERT);
+}
 
 void setup_killpin()
 {
@@ -1608,6 +1614,7 @@ void setup()
 #endif //UVLO_SUPPORT
 
   fCheckModeInit();
+  SetSheetAlert();
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -6488,6 +6495,10 @@ Sigma_Exit:
 	- U - Firmware version provided by G-code to be compared to current one.  
 	*/
 	case 115: // M115
+      if (IS_SD_PRINTING && sheet_alert_enabled)
+      {
+        steel_sheet_check();
+      }
       if (code_seen('V')) {
           // Report the Prusa version number.
           SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());

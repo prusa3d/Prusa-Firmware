@@ -240,6 +240,7 @@ extern bool axis_known_position[3];
 extern uint8_t fanSpeed; //!< Print fan speed, ranges from 0 to 255
 extern uint8_t newFanSpeed;
 extern float default_retraction;
+extern bool sheet_alert_enabled;
 
 void get_coordinates();
 void prepare_move(uint16_t start_segment_idx = 0);

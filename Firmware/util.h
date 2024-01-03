@@ -139,6 +139,7 @@ void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel);
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel);
 void fw_version_check(const char *pVersion);
 void gcode_level_check(uint16_t nGcodeLevel);
+void steel_sheet_check();
 
 uint16_t nPrinterType(bool bMMu);
 const char *sPrinterType(bool bMMu);

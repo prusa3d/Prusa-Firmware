@@ -382,6 +382,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0C94 3220 | uint8   | EEPROM_KILL_PENDING_FLAG              | 42h, ffh     | ffh                   | Kill pending flag (0x42 magic value)              | kill()       | D3 Ax0c94 C1
 | 0x0C91 3217 | char[3] | EEPROM_FILENAME_EXTENSION             | ???          | ffffffffh             | DOS 8.3 filename extension                        | Power Panic  | D3 Ax0c91 C1
 | 0x0C80 3200 | char[17]| EEPROM_CUSTOM_MENDEL_NAME             | Prusa i3 MK3S| ffffffffffffffffff... | Custom Printer Name                               |              | D3 Ax0c80 C17
+| 0x0C7F 3199 | uint8_t | EEPROM_ED_SHEET_ALERT					| 00h 0		   | ffh 255			   | Disable sheet alert: __off__					   | LCD menu     | D3 Ax0d03 C1
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -621,9 +622,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_KILL_PENDING_FLAG (EEPROM_KILL_MESSAGE-1) //uint8
 #define EEPROM_FILENAME_EXTENSION (EEPROM_KILL_PENDING_FLAG - 3) // 3 x char
 #define EEPROM_CUSTOM_MENDEL_NAME (EEPROM_FILENAME_EXTENSION-17) //char[17]
+#define EEPROM_ED_SHEET_ALERT (EEPROM_CUSTOM_MENDEL_NAME - 1) //uint8
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_FILENAME_EXTENSION
+#define EEPROM_LAST_ITEM EEPROM_ED_SHEET_ALERT
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
