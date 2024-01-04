@@ -1885,12 +1885,12 @@ msgstr "Selectere fil. slot"
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6161
-msgid "Self test OK"
+msgid "Selftest OK"
 msgstr "Zelftest OK"
 
 #. MSG_SELFTEST_START c=20
 #: ../../Firmware/ultralcd.cpp:5944
-msgid "Self test start"
+msgid "Selftest start"
 msgstr "Zelftest start"
 
 #. MSG_SELFTEST c=18

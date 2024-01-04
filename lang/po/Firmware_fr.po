@@ -1887,12 +1887,12 @@ msgstr "Sélection du fil."
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6161
-msgid "Self test OK"
+msgid "Selftest OK"
 msgstr "Selftest OK"
 
 #. MSG_SELFTEST_START c=20
 #: ../../Firmware/ultralcd.cpp:5944
-msgid "Self test start"
+msgid "Selftest start"
 msgstr "Début selftest"
 
 #. MSG_SELFTEST c=18
