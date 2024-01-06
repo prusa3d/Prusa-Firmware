@@ -238,7 +238,7 @@ void prusa_statistics(uint8_t _message) {
         if (busy_state == PAUSED_FOR_USER) {
             prusa_statistics_case0(15);
         }
-        else if (print_job_timer.isPaused()) {
+        else if (printingIsPaused()) {
             prusa_statistics_case0(14);
         }
         else if (IS_SD_PRINTING || (eFilamentAction != FilamentAction::None)) {

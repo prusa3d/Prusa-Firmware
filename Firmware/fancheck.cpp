@@ -94,7 +94,7 @@ void fanSpeedError(unsigned char _fan) {
 
     if (printJobOngoing()) {
         // A print is ongoing, pause the print normally
-        if(!print_job_timer.isPaused()) {
+        if(!printingIsPaused()) {
             if (usb_timer.running())
                 lcd_pause_usb_print();
             else

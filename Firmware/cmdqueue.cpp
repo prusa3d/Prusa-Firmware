@@ -368,7 +368,7 @@ void get_command()
 	}
 
   // start of serial line processing loop
-  while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && print_job_timer.isPaused())) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
+  while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && printingIsPaused())) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
 #ifdef ENABLE_MEATPACK
     // MeatPack Changes

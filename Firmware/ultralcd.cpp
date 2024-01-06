@@ -1020,6 +1020,9 @@ void lcd_pause_print()
 
     SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
 
+    // Indicate that the printer is paused
+    did_pause_print = true;
+
     print_job_timer.pause();
 
     // return to status is required to continue processing in the main loop!
@@ -1997,7 +2000,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             if (!bFilamentPreheatState)
             {
                 setTargetHotend(0);
-                if (!print_job_timer.isPaused()) setTargetBed(0);
+                if (!printingIsPaused()) setTargetBed(0);
                 menu_back();
             }
             menu_back();
@@ -4434,7 +4437,7 @@ static void lcd_settings_menu()
 
 	MENU_ITEM_SUBMENU_P(_i("Temperature"), lcd_control_temperature_menu);////MSG_TEMPERATURE c=18
 
-	if (!printer_active() || print_job_timer.isPaused())
+	if (!printer_active() || printingIsPaused())
     {
 	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), MSG_M84);////MSG_DISABLE_STEPPERS c=18
@@ -4478,7 +4481,7 @@ static void lcd_settings_menu()
     MENU_ITEM_TOGGLE_P(_T(MSG_RPI_PORT), (selectedSerialPort == 0) ? _T(MSG_OFF) : _T(MSG_ON), lcd_second_serial_set);
 #endif //HAS_SECOND_SERIAL
 
-    if (!print_job_timer.isPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
+    if (!printingIsPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
 
 #if (LANG_MODE != 0)
 	MENU_ITEM_SUBMENU_P(_T(MSG_SELECT_LANGUAGE), lcd_language_menu);
@@ -5008,7 +5011,12 @@ void lcd_resume_print()
     Stopped = false;
 
     restore_print_from_ram_and_continue(default_retraction);
-    print_job_timer.start();
+
+    did_pause_print = false;
+
+    // Resume the print job timer if it was running
+    if (print_job_timer.isPaused()) print_job_timer.start();
+
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
     custom_message_type = CustomMsg::Status;
@@ -5231,14 +5239,14 @@ static void lcd_main_menu()
             MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
         }
     }
-    if (mesh_bed_leveling_flag == false && homing_flag == false && !print_job_timer.isPaused() && !processing_tcode) {
+    if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
         if (usb_timer.running()) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
         } else if (IS_SD_PRINTING) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
         }
     }
-    if(print_job_timer.isPaused())
+    if(printingIsPaused())
     {
         // only allow resuming if hardware errors (temperature or fan) are cleared
         if(!get_temp_error()
@@ -5253,7 +5261,7 @@ static void lcd_main_menu()
             }
         }
     }
-    if((printJobOngoing() || print_job_timer.isPaused()) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
+    if((printJobOngoing() || printingIsPaused()) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
 #ifdef THERMAL_MODEL
@@ -5326,7 +5334,7 @@ static void lcd_main_menu()
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
         MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
-        if(!print_job_timer.isPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
+        if(!printingIsPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
@@ -5478,7 +5486,7 @@ static void lcd_tune_menu()
     if (!farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);
 #endif
-    if (print_job_timer.isPaused()) {// Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
+    if (printingIsPaused()) {// Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
         MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME),PSTR("G28 XY"));
     }
 #ifdef FILAMENT_SENSOR
@@ -5656,7 +5664,7 @@ void lcd_print_stop_finish()
 
     if (MMU2::mmu2.Enabled() && MMU2::mmu2.FindaDetectsFilament())
     {
-        if (print_job_timer.isPaused())
+        if (printingIsPaused())
         {
             // Restore temperature saved in ram after pausing print
             restore_extruder_temperature_from_ram();
@@ -5690,6 +5698,7 @@ void print_stop(bool interactive)
 #endif
 
     // clear any pending paused state immediately
+    did_pause_print = false;
     print_job_timer.stop();
 
     if (interactive) {
