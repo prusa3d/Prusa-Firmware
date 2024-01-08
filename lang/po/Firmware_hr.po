@@ -1877,12 +1877,12 @@ msgstr "Odabir fil. utora"
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6161
-msgid "Self test OK"
+msgid "Selftest OK"
 msgstr "Samotestiranje OK"
 
 #. MSG_SELFTEST_START c=20
 #: ../../Firmware/ultralcd.cpp:5944
-msgid "Self test start"
+msgid "Selftest start"
 msgstr "Pocetak selftesta"
 
 #. MSG_SELFTEST c=18

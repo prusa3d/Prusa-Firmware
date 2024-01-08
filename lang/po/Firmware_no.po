@@ -1866,12 +1866,12 @@ msgstr "Velger fil. spor"
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6161
-msgid "Self test OK"
+msgid "Selftest OK"
 msgstr "Selvtest OK"
 
 #. MSG_SELFTEST_START c=20
 #: ../../Firmware/ultralcd.cpp:5944
-msgid "Self test start"
+msgid "Selftest start"
 msgstr "Selvtest starter"
 
 #. MSG_SELFTEST c=18

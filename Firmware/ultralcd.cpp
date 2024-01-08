@@ -5993,7 +5993,7 @@ bool lcd_selftest()
 #endif
 	lcd_wait_for_cool_down();
 	lcd_clear();
-	lcd_puts_at_P(0, 0, _i("Self test start"));////MSG_SELFTEST_START c=20
+	lcd_puts_at_P(0, 0, _i("Selftest start"));////MSG_SELFTEST_START c=20
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
@@ -6210,7 +6210,7 @@ bool lcd_selftest()
 	if (_result)
 	{
 		calibration_status_set(CALIBRATION_STATUS_SELFTEST);
-		lcd_setstatuspgm(_i("Self test OK"));////MSG_SELFTEST_OK c=20
+		lcd_setstatuspgm(_i("Selftest OK"));////MSG_SELFTEST_OK c=20
 		lcd_return_to_status();
 	}
 	else
