@@ -238,8 +238,6 @@ static void lcd_sheet_menu();
 static void menu_action_sdfile(const char* filename);
 static void menu_action_sddirectory(const char* filename);
 
-static void lcd_rehome_xy();
-
 #define ENCODER_FEEDRATE_DEADZONE 10
 
 #define STATE_NA 255
@@ -5358,16 +5356,6 @@ void stepper_timer_overflow() {
 }
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
 
-static void lcd_rehome_xy() {
-	// Do home directly, G28 X Y resets MBL, which could be bad.
-	homeaxis(X_AXIS);
-	homeaxis(Y_AXIS);
-	lcd_setstatuspgm(_T(MSG_AUTO_HOME));
-	lcd_return_to_status();
-	lcd_draw_update = 3;
-}
-
-
 static void lcd_colorprint_change() {
 
 	enquecommand_P(MSG_M600);
@@ -5477,7 +5465,7 @@ static void lcd_tune_menu()
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);
 #endif
     if (print_job_timer.isPaused()) {// Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
-        MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_HOME), lcd_rehome_xy);
+        MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME),PSTR("G28 XY"));
     }
 #ifdef FILAMENT_SENSOR
     MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
