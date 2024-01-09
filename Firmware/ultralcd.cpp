@@ -45,6 +45,8 @@
 
 #include "Prusa_farm.h"
 
+#include "power_panic.h"
+
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -5281,7 +5283,11 @@ static void lcd_main_menu()
             }
         }
     }
-    if((printJobOngoing() || printingIsPaused()) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
+    if((printJobOngoing()
+        || printingIsPaused()
+        || (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY))
+        && (custom_message_type != CustomMsg::MeshBedLeveling)
+        && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
 #ifdef THERMAL_MODEL
