@@ -473,7 +473,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
         // Set a position in the file.
         enquecommandf_P(PSTR("M26 S%lu"), position);
     }
-    else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB)
+    else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST)
     {
         // Set line number
         enquecommandf_P(PSTR("M110 N%lu"), position);

@@ -241,6 +241,7 @@ extern const char MSG_HOST_ACTION_READY[];
 extern const char MSG_HOST_ACTION_NOT_READY[];
 extern const char MSG_HOST_ACTION_START[];
 extern const char MSG_HOST_ACTION_UVLO_RECOVERY_READY[];
+extern const char MSG_HOST_ACTION_UVLO_AUTO_RECOVERY_READY[];
 #ifdef HOST_SHUTDOWN
 extern const char MSG_HOST_ACTION_SHUTDOWN[];
 #endif //HOST_SHUTOWN

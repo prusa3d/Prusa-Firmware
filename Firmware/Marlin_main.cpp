@@ -321,6 +321,7 @@ uint8_t saved_bed_temperature; //!< Bed temperature
 bool saved_extruder_relative_mode;
 uint8_t saved_fan_speed = 0; //!< Print fan speed
 //! @}
+bool uvlo_auto_recovery_ready = false;
 
 static int saved_feedmultiply_mm = 100;
 
@@ -1585,7 +1586,8 @@ void setup()
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
 		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
 #endif
-     if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
+     uvlo_auto_recovery_ready = (degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET));
+     if (uvlo_auto_recovery_ready){
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Automatic recovery!")); 
           #endif
@@ -1595,7 +1597,7 @@ void setup()
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
           #endif
-          if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PRINT_TYPE_USB) {
+          if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PRINT_TYPE_HOST) {
             recover_print(0);
           } else {
               const uint8_t btn = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false);
@@ -1731,7 +1733,7 @@ void loop()
         KEEPALIVE_STATE(NOT_BUSY);
     }
 
-	if (printingIsPaused() && saved_printing_type == PowerPanic::PRINT_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+	if (printingIsPaused() && saved_printing_type == PowerPanic::PRINT_TYPE_HOST) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
 		usb_timer.start();
 	}
 	else if (usb_timer.expired(USB_TIMER_TIMEOUT)) { //just need to check if it expired. Nothing else is needed to be done.
@@ -4130,7 +4132,7 @@ void process_commands()
                 // Print is recovered, clear the recovery flag
                 eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
             }
-            else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB)
+            else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST)
             {
                 // For Host prints we need to start the timer so that the pause has any effect
                 // this will allow g-codes to be processed while in the paused state
@@ -5999,14 +6001,18 @@ Sigma_Exit:
             }
         }
 
-        if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB
+        if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST
            && eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY
            && printingIsPaused()) {
             // The print is in a paused state. The print was recovered following a power panic
             // but up to this point the printer has been waiting for the M79 from the host
             // Send action to the host, so the host can resume the print. It is up to the host
             // to resume the print correctly.
-            SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_UVLO_RECOVERY_READY);
+            if (uvlo_auto_recovery_ready) {
+                SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_UVLO_AUTO_RECOVERY_READY);
+            } else {
+                SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_UVLO_RECOVERY_READY);
+            }
         }
 
         break;
@@ -10658,7 +10664,7 @@ void save_print_file_state() {
         nlines = planner_calc_sd_length(); //number of lines of commands in planner 
         saved_sdpos -= nlines;
         saved_sdpos -= buflen; //number of blocks in cmd buffer
-        saved_printing_type = PowerPanic::PRINT_TYPE_USB;
+        saved_printing_type = PowerPanic::PRINT_TYPE_HOST;
     }
     else {
         saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
@@ -10759,7 +10765,7 @@ void restore_print_file_state() {
         card.setIndex(saved_sdpos);
         sdpos_atomic = saved_sdpos;
         card.sdprinting = true;
-    } else if (saved_printing_type == PowerPanic::PRINT_TYPE_USB) { //was usb printing
+    } else if (saved_printing_type == PowerPanic::PRINT_TYPE_HOST) { //was usb printing
         gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
         serial_count = 0; 
         FlushSerialRequestResend();
