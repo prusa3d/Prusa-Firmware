@@ -415,6 +415,11 @@
 #include "thermal_model/e3d_REVO.h"
 #define THERMAL_MODEL_DEFAULT E3D_REVO // Default E3D REVO model parameters
 
+/*------------------------------------
+ HOST FEATURES
+ *------------------------------------*/
+
+//#define HOST_SHUTDOWN              //Host supports "//action:shutdown" feature
 
 /*------------------------------------
  MOTOR CURRENT SETTINGS

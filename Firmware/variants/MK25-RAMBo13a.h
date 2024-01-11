@@ -257,6 +257,12 @@
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 /*------------------------------------
+ HOST FEATURES
+ *------------------------------------*/
+
+//#define HOST_SHUTDOWN              //Host supports "//action:shutdown" feature
+
+/*------------------------------------
  MOTOR CURRENT SETTINGS
  *------------------------------------*/
 

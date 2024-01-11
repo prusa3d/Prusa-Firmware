@@ -5135,6 +5135,14 @@ static void lcd_printer_ready_state_toggle()
     }
 }
 
+#ifdef HOST_SHUTDOWN
+static void lcd_shutdown_menu()
+{
+    SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_SHUTDOWN);
+    lcd_return_to_status();
+}
+#endif //HOST_SHUTOWN
+
 //! @brief Show Main Menu
 //!
 //! @code{.unparsed}
@@ -5329,10 +5337,16 @@ static void lcd_main_menu()
     if (MMU2::mmu2.Enabled()) {
         MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////MSG_MMU_FAIL_STATS c=18
     }
+
+#ifdef HOST_SHUTDOWN
+    if (!printer_active() && M79_timer_get_status()) {
+        MENU_ITEM_FUNCTION_P(_T(MSG_SHUTDOWN_HOST), lcd_shutdown_menu);
+    }
+#endif //HOST_SHUTOWN
+
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
 
     MENU_END();
-
 }
 
 

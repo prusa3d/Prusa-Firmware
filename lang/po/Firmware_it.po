@@ -2593,6 +2593,11 @@ msgstr "Imposta non pronta"
 msgid "Reprint"
 msgstr "Ristampa"
 
+#. MSG_SHUTDOWN_HOST c=18
+#: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:5342
+msgid "Shutdown host"
+msgstr "Spegnere l'host"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Rimuovi il fil. precedente e premi la manopola per caricare il nuovo."
 

@@ -416,6 +416,11 @@
 #include "thermal_model/e3d_REVO_HF_60W.h"
 #define THERMAL_MODEL_DEFAULT E3D_REVO_HF_60W // Default E3D REVO HF 60W model parameters
 
+/*------------------------------------
+ HOST FEATURES
+ *------------------------------------*/
+
+//#define HOST_SHUTDOWN              //Host supports "//action:shutdown" feature
 
 /*------------------------------------
  MOTOR CURRENT SETTINGS
