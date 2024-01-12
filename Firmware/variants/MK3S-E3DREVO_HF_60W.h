@@ -17,7 +17,7 @@
 #define NOZZLE_TYPE "E3DREVO_HF_60W"
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa MK3S-RHF60"
+#define CUSTOM_MENDEL_NAME "Prusa MK3S+RHF60"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a

@@ -17,7 +17,7 @@
 #define NOZZLE_TYPE "E3DREVO"
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S-R"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S+R"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a

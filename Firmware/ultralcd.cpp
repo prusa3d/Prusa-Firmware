@@ -497,7 +497,7 @@ void lcdui_print_time(void)
             chars = lcd_printf_P(_N(LCD_STR_CLOCK "%3uh %c%c"), print_t / 60, suff, suff_doubt);
     } else {
 #ifdef QUICK_NOZZLE_CHANGE
-        chars = lcd_printf_P(PSTR("Nd. %4.2f"),(float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+        chars = lcd_printf_P(PSTR("Nd %4.2f "),(float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
 #else
         chars = lcd_printf_P(_N(LCD_STR_CLOCK "--:--  "));
 #endif //QUICK_NOZZLE_CHANGE
@@ -633,7 +633,7 @@ void lcdui_print_status_line(void) {
 //!
 //! |Smooth1 F?  t--:--  | // Idle + Muliple sheets + MMU3
 //!
-//! |Smooth1     Nd. 0.40| // Idle + Muliple sheets + QUICK_NOZZLE_CHANGE
+//! |Smooth1     Nd 0.40 | // Idle + Muliple sheets + QUICK_NOZZLE_CHANGE
 //!
 //! | SD 99% F1  t00:17R | // SD print + MMU3
 //!
