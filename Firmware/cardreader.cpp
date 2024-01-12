@@ -558,7 +558,7 @@ uint32_t CardReader::getFileSize()
 
 void CardReader::getStatus(bool arg_P)
 {
-    if (print_job_timer.isPaused())
+    if (printingIsPaused())
     {
         if (saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD))
             SERIAL_PROTOCOLLNPGM("SD print paused");

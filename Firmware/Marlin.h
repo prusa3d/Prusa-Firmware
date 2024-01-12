@@ -279,6 +279,7 @@ extern int fan_speed[2];
 #define active_extruder 0
 
 extern bool mesh_bed_leveling_flag;
+extern bool did_pause_print;
 
 // save/restore printing
 extern bool saved_printing;
@@ -309,6 +310,9 @@ extern LongTimer safetyTimer;
 // Returns true if there is a print running. It does not matter if
 // the print is paused, that still counts as a "running" print.
 bool printJobOngoing();
+
+// Printing is paused according to SD or host indicators
+bool printingIsPaused();
 
 bool printer_active();
 

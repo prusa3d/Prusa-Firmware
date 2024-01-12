@@ -167,6 +167,7 @@ int feedmultiply=100; //100->1 200->2
 int extrudemultiply=100; //100->1 200->2
 
 bool homing_flag = false;
+bool did_pause_print;
 
 LongTimer safetyTimer;
 static LongTimer crashDetTimer;
@@ -510,9 +511,13 @@ bool __attribute__((noinline)) printJobOngoing() {
     return (IS_SD_PRINTING || usb_timer.running() || print_job_timer.isRunning());
 }
 
+bool printingIsPaused() {
+  return did_pause_print || print_job_timer.isPaused();
+}
+
 bool __attribute__((noinline)) printer_active() {
     return printJobOngoing()
-        || print_job_timer.isPaused()
+        || printingIsPaused()
         || saved_printing
         || (lcd_commands_type != LcdCommands::Idle)
         || MMU2::mmu2.MMU_PRINT_SAVED()
@@ -533,7 +538,7 @@ bool check_fsensor() {
 bool __attribute__((noinline)) babystep_allowed() {
     return ( !homing_flag
         && !mesh_bed_leveling_flag
-        && !print_job_timer.isPaused()
+        && !printingIsPaused()
         && ((lcd_commands_type == LcdCommands::Layer1Cal && CHECK_ALL_HEATERS)
             || printJobOngoing()
             || lcd_commands_type == LcdCommands::Idle
@@ -631,7 +636,7 @@ void crashdet_detected(uint8_t mask)
 
 void crashdet_recover()
 {
-	if (!print_job_timer.isPaused()) crashdet_restore_print_and_continue();
+	if (!printingIsPaused()) crashdet_restore_print_and_continue();
 	crashdet_use_eeprom_setting();
 }
 
@@ -1725,7 +1730,7 @@ void loop()
         KEEPALIVE_STATE(NOT_BUSY);
     }
 
-	if (print_job_timer.isPaused() && saved_printing_type == PowerPanic::PRINT_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+	if (printingIsPaused() && saved_printing_type == PowerPanic::PRINT_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
 		usb_timer.start();
 	}
 	else if (usb_timer.expired(10000)) { //just need to check if it expired. Nothing else is needed to be done.
@@ -1822,7 +1827,7 @@ void loop()
 }
   //check heater every n milliseconds
   manage_heater();
-  manage_inactivity(print_job_timer.isPaused());
+  manage_inactivity(printingIsPaused());
   checkHitEndstops();
   lcd_update(0);
 #ifdef TMC2130
@@ -3411,7 +3416,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     fanSpeed = 0;
 
     // Retract E
-    if (!print_job_timer.isPaused())
+    if (!printingIsPaused())
     {
       current_position[E_AXIS] += e_shift;
       plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
@@ -3479,7 +3484,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     
     // Feed a little of filament to stabilize pressure
     if (!automatic) {
-        if (print_job_timer.isPaused())
+        if (printingIsPaused())
         {
             // Return to retracted state during a pause
             // @todo is retraction really needed? E-position is reverted a few lines below
@@ -3515,7 +3520,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     feedmultiply = saved_feedmultiply2;
     enquecommandf_P(MSG_M220, saved_feedmultiply2);
 
-    if (print_job_timer.isPaused()) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
+    if (printingIsPaused()) lcd_setstatuspgm(_T(MSG_PRINT_PAUSED));
     else lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
@@ -5271,7 +5276,7 @@ void process_commands()
 	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
     */
     case 24:
-    if (print_job_timer.isPaused())
+    if (printingIsPaused())
       lcd_resume_print();
     else
     {
@@ -5993,7 +5998,7 @@ Sigma_Exit:
             }
         }
 
-        if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB && print_job_timer.isPaused()) {
+        if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_USB && printingIsPaused()) {
             // The print is in a paused state. The print was recovered following a power panic
             // but up to this point the printer has been waiting for the M79 from the host
             // Send action to the host, so the host can resume the print. It is up to the host
@@ -7847,7 +7852,7 @@ Sigma_Exit:
         SERIAL_ECHOPGM("Z:");
         SERIAL_ECHOLN(pause_position[Z_AXIS]);
 */
-        if (!print_job_timer.isPaused()) {
+        if (!printingIsPaused()) {
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
@@ -7861,7 +7866,7 @@ Sigma_Exit:
     */
     case 602:
     {
-        if (print_job_timer.isPaused()) lcd_resume_print();
+        if (printingIsPaused()) lcd_resume_print();
     }
     break;
 
@@ -9749,7 +9754,7 @@ void ThermalStop(bool allow_recovery)
 
         // Either pause or stop the print
         if(allow_recovery && printJobOngoing()) {
-            if (!print_job_timer.isPaused()) {
+            if (!printingIsPaused()) {
                 lcd_setalertstatuspgm(_T(MSG_PAUSED_THERMAL_ERROR), LCD_STATUS_CRITICAL);
 
                 // we cannot make a distinction for the host here, the pause must be instantaneous
