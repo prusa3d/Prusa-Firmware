@@ -4604,7 +4604,7 @@ static void lcd_calibration_menu()
 uint8_t choose_menu_P(const char *header, const char *item, const char *last_item)
 {
     //following code should handle 3 to 127 number of items well
-    const int8_t items_no = last_item?(MMU2::mmu2.Enabled()?11:10):(MMU2::mmu2.Enabled()?10:9);
+    const int8_t items_no = last_item?(MMU2::mmu2.Enabled()?6:5):(MMU2::mmu2.Enabled()?5:4);
     const uint8_t item_len = item?strlen_P(item):0;
 	int8_t first = 0;
 	int8_t cursor_pos = 1;
