@@ -7885,7 +7885,7 @@ Sigma_Exit:
     Get and Set Sheet parameters
     #### Usage
 
-         M25 [ S | Z | L | B | P | A ]
+         M850 [ S | Z | L | B | P | A ]
 
     #### Parameters
      - `S` - Sheet id [0-7]
@@ -7915,7 +7915,7 @@ Sigma_Exit:
 			break; // invalid sheet ID
 		}	
 	} else {
-		break;
+		iSel = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 	}
 	
 	if (code_seen('Z')){
@@ -7972,7 +7972,11 @@ Sigma_Exit:
 	if (code_seen('A'))
 	{
 		bIsActive |= code_value_uint8() || (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
-		if(bIsActive) eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
+		if(bIsActive && eeprom_is_sheet_initialized(iSel)) {
+            eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
+        } else {
+            bIsActive = 0;
+        }
 	}
 	else
 	{
