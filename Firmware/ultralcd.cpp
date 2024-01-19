@@ -495,9 +495,13 @@ void lcdui_print_time(void)
             chars = lcd_printf_P(_N(LCD_STR_CLOCK "%02u:%02u%c%c"), print_t / 60, print_t % 60, suff, suff_doubt);
         else //time>=100h
             chars = lcd_printf_P(_N(LCD_STR_CLOCK "%3uh %c%c"), print_t / 60, suff, suff_doubt);
-    }
-    else
+    } else {
+#ifdef QUICK_NOZZLE_CHANGE
+        chars = lcd_printf_P(PSTR("Nd %4.2f "),(float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+#else
         chars = lcd_printf_P(_N(LCD_STR_CLOCK "--:--  "));
+#endif //QUICK_NOZZLE_CHANGE
+    }
     lcd_space(8 - chars);
 }
 
@@ -619,9 +623,20 @@ void lcdui_print_status_line(void) {
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |N 000/000D  Z000.0  |
-//! |B 000/000D  F100%   |
-//! |USB100% T0  t--:--  |
+//! |N000/000D   Z000.00 |
+//! |B000/000D   F100%   |
+//! |   ---%     t--:--  | // Idle
+//!
+//! |   ---% F?  t--:--  | // Idle + MMU3
+//!
+//! |Smooth1     t--:--  | // Idle + Muliple sheets
+//!
+//! |Smooth1 F?  t--:--  | // Idle + Muliple sheets + MMU3
+//!
+//! |Smooth1     Nd 0.40 | // Idle + Muliple sheets + QUICK_NOZZLE_CHANGE
+//!
+//! | SD 99% F1  t00:17R | // SD print + MMU3
+//!
 //! |Status line.........|
 //! ----------------------
 //! N - nozzle temp symbol	LCD_STR_THERMOMETER
@@ -5174,7 +5189,12 @@ static void lcd_shutdown_menu()
 //! | Preheat            | not printing + not paused
 //! | Print from SD      | not printing or paused
 //!
-//! | Switch sheet       | farm mode
+//! | Switch sheet       | NOT farm mode
+//!                        AND multiple sheets calibrated AND not active
+//!
+//! | Nozzle diameter    | NOT farm mode
+//!                        AND multiple sheets calibrated AND not active
+//!                        AND QUICK_NOZZLE_CHANGE defined
 //!
 //! | AutoLoad filament  | not printing + not mmu or paused
 //! | Load filament      | not printing + mmu or paused
@@ -5304,6 +5324,10 @@ static void lcd_main_menu()
         if ((nextSheet >= 0) && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
             MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
         }
+#ifdef QUICK_NOZZLE_CHANGE
+        SETTINGS_NOZZLE;
+#endif //QUICK_NOZZLE_CHANGE
+
     }
 
     if ( ! ( printer_active() || (eFilamentAction != FilamentAction::None) || Stopped ) ) {

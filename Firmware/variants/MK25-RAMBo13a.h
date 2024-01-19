@@ -201,6 +201,9 @@
 // Extrude mintemp
 #define EXTRUDE_MINTEMP 175
 
+// Quick nozzle change supported
+//#define QUICK_NOZZLE_CHANGE
+
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
