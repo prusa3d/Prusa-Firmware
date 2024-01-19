@@ -8,14 +8,14 @@ resolve_version_variables()
 OPTION(ENFORCE_VERSION_MATCH "Enforce checking that configuration.h matches any parsed git tags" OFF)
 OPTION(NO_TAG_IS_FATAL "If tag parsing fails, issue a fatal error" OFF)
 
-set(PROJECT_VERSION_SUFFIX
+set(PROJECT_VERSION_HASH
     "<auto>"
     CACHE
       STRING
-      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_SUFFIX>). Overrides git hash if set."
+      "Version suffix to be appended to the final filename (<ver+PROJECT_VERSION_HASH>). Overrides git hash if set."
     )
-if(PROJECT_VERSION_SUFFIX STREQUAL "<auto>")
-  set(PROJECT_VERSION_SUFFIX "${FW_COMMIT_HASH}")
+if(PROJECT_VERSION_HASH STREQUAL "<auto>")
+  set(PROJECT_VERSION_HASH "${FW_COMMIT_HASH}")
 endif()
 set(PROJECT_VERSION_FULL
     "<auto>"
@@ -36,17 +36,27 @@ set(CUSTOM_COMPILE_OPTIONS
     CACHE STRING "Allows adding custom C/C++ flags"
     )
 
-set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
+#set(FN_VERSION_SUFFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_HASH}")
+set(FN_VERSION_SUFFIX "FW_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_REV}")
+if(PROJECT_VERSION_FLV AND PROJECT_VERSION_FLV_VER)
+  set (FN_VERSION_SUFFIX "${FN_VERSION_SUFFIX}-${PROJECT_VERSION_FLV}${PROJECT_VERSION_FLV_VER}")
+endif()
+set(FN_VERSION_DEBUG_SUFFIX "${FN_VERSION_SUFFIX}+${PROJECT_VERSION_COMMIT}")
 
-# Inform user about the resolved settings
+# Inform user about the resolved settings from Configuration.h
 message(STATUS "Project version (Configuration.h): ${PROJECT_VERSION}")
-message(STATUS "Project version suffix ..........: ${PROJECT_VERSION_SUFFIX}")
-message(STATUS "Project version description......: ${PROJECT_VERSION_FULL}")
-
+#message(STATUS "Project version major............: ${PROJECT_VERSION_MAJOR}") #For debuging
+#message(STATUS "Project version minor............: ${PROJECT_VERSION_MINOR}") #For debuging
+#message(STATUS "Project version revision.........: ${PROJECT_VERSION_REV}") #For debuging
+#message(STATUS "Project version flavor...........: ${PROJECT_VERSION_FLV}") #For debuging
+#message(STATUS "Project version fla-revison......: ${PROJECT_VERSION_FLV_VER}") #For debuging
+#message(STATUS "Project version commit number....: ${PROJECT_VERSION_COMMIT}") #For debuging
+message(STATUS "Filename suffix..................: ${FN_VERSION_SUFFIX}")
+message(STATUS "Filename debug suffix ...........: ${FN_VERSION_DEBUG_SUFFIX}")
 # testing
 # SET(FW_COMMIT_DSC "v3.13.0-1234")
 
-if(NOT "${PROJECT_VERSION_SUFFIX}" STREQUAL "UNKNOWN" AND NOT "${FW_COMMIT_DSC}" MATCHES ".+NOTFOUND.+") # else -> no commit hash is known... likely no git.
+if(NOT "${PROJECT_VERSION_HASH}" STREQUAL "UNKNOWN" AND NOT "${FW_COMMIT_DSC}" MATCHES ".+NOTFOUND.+") # else -> no commit hash is known... likely no git.
 string(REGEX MATCH "[v|t]([0-9]+)\.([0-9]+)\.([0-9]+)-?(${DEV_TAG_REGEX})?([0-9]+)?-([0-9]+)" TAG_VERSION "${FW_COMMIT_DSC}")
 
 if (CMAKE_MATCH_4) # Do we have a build type?
@@ -83,6 +93,7 @@ MESSAGE(STATUS "Commit Nr: Configuration.h: ${PROJECT_VERSION_COMMIT} Tag: ${CMA
 MESSAGE(STATUS "These tag values will override Configuration.h")
 SET(PROJECT_VERSION ${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}.${PROJECT_VER_TAG_FLV})
 SET(PROJECT_VERSION_COMMIT ${CMAKE_MATCH_6})
+
 git_get_repository(PROJECT_REPOSITORY)
 else(GIT_FOUND)
 if (NO_TAG_IS_FATAL)
@@ -93,6 +104,28 @@ endif()
 set(FW_COMMIT_HASH ${FW_COMMIT_HASH_UNKNOWN}) # Clear it, the code expects a binary...
 set(PROJECT_VERSION_TIMESTAMP "0")
 endif()
+
+if(CMAKE_MATCH_1 AND CMAKE_MATCH_2)
+  set(FN_VERSION_SUFFIX "FW_${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}")
+endif()
+if(CMAKE_MATCH_4 AND CMAKE_MATCH_5)
+  set (FN_VERSION_SUFFIX "${FN_VERSION_SUFFIX}-${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
+endif()
+if(CMAKE_MATCH_6 AND PROJECT_VERSION_HASH)
+  set(FN_VERSION_DEBUG_SUFFIX "${FN_VERSION_SUFFIX}+${CMAKE_MATCH_6}_${PROJECT_VERSION_HASH}")
+endif()
+# Inform user about the resolved settings from github
+message(STATUS "Project version git..............: ${PROJECT_VERSION}")
+message(STATUS "Project version git hash.........: ${PROJECT_VERSION_HASH}")
+message(STATUS "Project version git description..: ${PROJECT_VERSION_FULL}")
+#message(STATUS "Project version git major........: ${CMAKE_MATCH_1}") #For debuging
+#message(STATUS "Project version git minor........: ${CMAKE_MATCH_2}") #For debuging
+#message(STATUS "Project version git revision.....: ${CMAKE_MATCH_3}") #For debuging
+#message(STATUS "Project version git flavor.......: ${CMAKE_MATCH_4}") #For debuging
+#message(STATUS "Project version git fla-revison..: ${CMAKE_MATCH_5}") #For debuging
+#message(STATUS "Project version git commit number: ${CMAKE_MATCH_6}") #For debuging
+message(STATUS "Filename suffix .................: ${FN_VERSION_SUFFIX}")
+message(STATUS "Filename debug suffix ...........: ${FN_VERSION_DEBUG_SUFFIX}")
 
 # Language configuration
 set(MAIN_LANGUAGES
@@ -394,7 +427,13 @@ function(fw_add_variant variant_name)
 
   # Single-language build
   set(FW_EN "${variant_name}_ENGLISH")
-  set(FW_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex)
+  #MK3S_MK3S+_FW_3.13.2-RC1_ENGLISH.hex
+  set(hex_variant_name "${variant_name}")
+  if(hex_variant_name STRGREATER_EQUAL "MK3S")
+    string(REPLACE "MK3S" "MK3S_MK3S+" hex_variant_name ${hex_variant_name})
+  endif()
+  set(FW_HEX "${CMAKE_BINARY_DIR}/${hex_variant_name}_${FN_VERSION_SUFFIX}_ENGLISH.hex")
+  #message(STATUS "Hex filename: ${FW_HEX}")
 
   add_base_binary(${FW_EN})
   target_compile_definitions(${FW_EN} PUBLIC LANG_MODE=0 FW_VARIANT="${variant_header}")
@@ -468,7 +507,15 @@ function(fw_add_variant variant_name)
   if(${HAS_XFLASH} GREATER_EQUAL 0)
     # X-Flash based build (catalogs appended to patched binary)
     set(FW_LANG_FINAL "${variant_name}_MULTILANG")
-    set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
+    set(hex_variant_name "${variant_name}")
+    #MK3S_MK3S+_FW_3.13.2-RC1+7651_deadbeef_MULTILANG.hex
+    if(hex_variant_name STRGREATER_EQUAL "MK3S")
+      string(REPLACE "MK3S" "MK3S_MK3S+" hex_variant_name ${hex_variant_name})
+    endif()
+    set(LANG_HEX ${CMAKE_BINARY_DIR}/${hex_variant_name}_${FN_VERSION_SUFFIX}_MULTILANG.hex)
+    set(LANG_DEBUG_HEX ${CMAKE_BINARY_DIR}/${hex_variant_name}_${FN_VERSION_DEBUG_SUFFIX}_MULTILANG.hex)
+    #message(STATUS "Hex filename .....: ${LANG_HEX}")
+    #message(STATUS "Hex debug filename: ${LANG_DEBUG_HEX}")
     set(LANG_CATBIN ${LANG_TMP_DIR}/${variant_name}_cat.bin)
     set(LANG_CATHEX ${LANG_TMP_DIR}/${variant_name}_cat.hex)
 
@@ -496,6 +543,8 @@ function(fw_add_variant variant_name)
       COMMAND ${CMAKE_COMMAND} -E cat ${FW_LANG_PATCH}.hex ${LANG_CATHEX} > ${FW_LANG_FINAL}.hex
       COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_HEX}
       BYPRODUCTS ${LANG_HEX}
+      COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_DEBUG_HEX}
+      BYPRODUCTS ${LANG_DEBUG_HEX}
       DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
       COMMENT "Generating final ${FW_LANG_FINAL}.hex"
       )
@@ -506,8 +555,9 @@ function(fw_add_variant variant_name)
     set(ALL_VARIANT_HEXES "")
     # Non-xflash, e.g. MK2.5
     foreach(LANG IN LISTS SELECTED_LANGUAGES)
-      set(FW_LANG_FINAL ${variant_name}-en_${LANG})
-      set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
+      set(FW_LANG_FINAL ${variant_name}_en-${LANG})
+      set(LANG_HEX ${CMAKE_BINARY_DIR}/${variant_name}_${FN_VERSION_SUFFIX}_en-${LANG}.hex)
+      set(LANG_DEBUG_HEX ${CMAKE_BINARY_DIR}/${variant_name}_${FN_VERSION_DEBUG_SUFFIX}_en-${LANG}.hex)
       set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
 
       # Patched binary with pre-baked secondary language
@@ -526,6 +576,8 @@ function(fw_add_variant variant_name)
         COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_FINAL}.bin ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_HEX}
         BYPRODUCTS ${LANG_HEX}
+        COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_DEBUG_HEX}
+        BYPRODUCTS ${LANG_DEBUG_HEX}
         DEPENDS ${FW_LANG_FINAL}.bin
         COMMENT "Creating ${FW_LANG_FINAL}.hex"
         )
