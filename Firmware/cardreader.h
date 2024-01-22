@@ -27,7 +27,7 @@ public:
     inline ls_param(bool LFN, bool timestamp):LFN(LFN), timestamp(timestamp) { }
   } __attribute__((packed));
   
-  void initsd(bool doPresort = true);
+  void mount(bool doPresort = true);
   void write_command(char *buf);
   void write_command_no_newline(char *buf);
   //files auto[0-9].g on the sd card are performed in a row
@@ -59,7 +59,7 @@ public:
   void ls(ls_param params);
   bool chdir(const char * relpath, bool doPresort);
   void updir();
-  void setroot(bool doPresort);
+  void cdroot(bool doPresort);
 
   #ifdef SDCARD_SORT_ALPHA
      void presort();
@@ -91,7 +91,7 @@ public:
   bool saving;
   bool logging;
   bool sdprinting ;  
-  bool cardOK ;
+  bool mounted;
   char filename[FILENAME_LENGTH];
   // There are scenarios when simple modification time is not enough (on MS Windows)
   // Therefore these timestamps hold the most recent one of creation/modification date/times

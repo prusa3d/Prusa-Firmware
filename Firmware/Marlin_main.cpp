@@ -1369,9 +1369,9 @@ void setup()
 
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
-	card.initsd();
+	card.mount();
 #ifdef DEBUG_SD_SPEED_TEST
-	if (card.cardOK)
+	if (card.mounted)
 	{
 		uint8_t* buff = (uint8_t*)block_buffer;
 		uint32_t block = 0;
@@ -5251,7 +5251,7 @@ void process_commands()
 	### M21 - Init SD card <a href="https://reprap.org/wiki/G-code#M21:_Initialize_SD_card">M21: Initialize SD card</a>
     */
     case 21:
-      card.initsd();
+      card.mount();
       break;
 
     /*!
@@ -5316,7 +5316,7 @@ void process_commands()
 	  - `S` - Index in bytes
     */
     case 26: 
-      if(card.cardOK && code_seen('S')) {
+      if(card.mounted && code_seen('S')) {
         long index = code_value_long();
         card.setIndex(index);
         // We don't disable interrupt during update of sdpos_atomic
@@ -5361,7 +5361,7 @@ void process_commands()
     
     */
     case 30:
-      if (card.cardOK){
+      if (card.mounted){
         card.closefile();
         card.removeFile(strchr_pointer + 4);
       }
@@ -5391,7 +5391,7 @@ void process_commands()
       if(strchr_pointer>namestartpos)
         call_procedure=false;  //false alert, 'P' found within filename
 
-      if( card.cardOK )
+      if( card.mounted )
       {
         card.openFileReadFilteredGcode(namestartpos,!call_procedure);
         if(code_seen('S'))
