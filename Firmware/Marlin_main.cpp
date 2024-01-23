@@ -321,7 +321,7 @@ uint8_t saved_bed_temperature; //!< Bed temperature
 bool saved_extruder_relative_mode;
 uint8_t saved_fan_speed = 0; //!< Print fan speed
 //! @}
-bool uvlo_auto_recovery_ready = false;
+static bool uvlo_auto_recovery_ready = false;
 
 static int saved_feedmultiply_mm = 100;
 
