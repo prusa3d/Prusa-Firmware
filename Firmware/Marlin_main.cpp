@@ -1121,7 +1121,7 @@ void setup()
 		SERIAL_PROTOCOLLNPGM("start");
 #endif
 	SERIAL_ECHO_START;
-	puts_P(PSTR(" " FW_VERSION_FULL));
+	puts_P(PSTR(" " FW_VERSION_FULL "_" FW_COMMIT_HASH));
 
 	// by default the MMU shall remain disabled - PFW-1418
 	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
@@ -6511,13 +6511,19 @@ Sigma_Exit:
           eeprom_read_block(custom_mendel_name,(char*)EEPROM_CUSTOM_MENDEL_NAME,MAX_CUSTOM_MENDEL_NAME_LENGTH);
           SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
           SERIAL_ECHORPGM(FW_VERSION_STR_P());
+          SERIAL_ECHOPGM("+");
+          SERIAL_ECHOPGM(STR(FW_COMMITNR));
+          SERIAL_ECHOPGM("_");
+          SERIAL_ECHOPGM(FW_COMMIT_HASH);
           SERIAL_ECHOPGM(" based on Marlin FIRMWARE_URL:https://github.com/prusa3d/Prusa-Firmware PROTOCOL_VERSION:");
           SERIAL_ECHOPGM(PROTOCOL_VERSION);
           SERIAL_ECHOPGM(" MACHINE_TYPE:");
           SERIAL_PROTOCOL(custom_mendel_name);
           SERIAL_ECHOPGM(" EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS));
+#ifdef MACHINE_UUID
           SERIAL_ECHOPGM(" UUID:");
           SERIAL_ECHOLNPGM(MACHINE_UUID);
+#endif //MACHINE_UUID
 #ifdef EXTENDED_CAPABILITIES_REPORT
           extended_capabilities_report();
 #endif //EXTENDED_CAPABILITIES_REPORT
