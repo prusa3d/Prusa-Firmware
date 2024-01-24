@@ -240,6 +240,7 @@ static bool temp_compensation_retracted = false;
   #endif
 
 static bool cancel_heatup = false;
+bool CooldownNoWait;
 
 int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
@@ -6126,17 +6127,19 @@ Sigma_Exit:
     */
     case 109:
     {
+      CooldownNoWait = false;
       LCD_MESSAGERPGM(_T(MSG_HEATING));
-	  heating_status = HeatingStatus::EXTRUDER_HEATING;
+      heating_status = HeatingStatus::EXTRUDER_HEATING;
       prusa_statistics(1);
 
 #ifdef AUTOTEMP
         autotemp_enabled=false;
-      #endif
+#endif
       if (code_seen('S')) {
-          setTargetHotend(code_value());
-            } else if (code_seen('R')) {
-                setTargetHotend(code_value());
+        setTargetHotend(code_value());
+        CooldownNoWait = true;
+      } else if (code_seen('R')) {
+        setTargetHotend(code_value());
       }
       #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
@@ -6158,7 +6161,7 @@ Sigma_Exit:
       wait_for_heater(codenum, active_extruder); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
-		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
+        heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
         prusa_statistics(2);
 
         previous_millis_cmd.start();
@@ -6181,7 +6184,7 @@ Sigma_Exit:
     case 190: 
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
     {
-        bool CooldownNoWait = false;
+        CooldownNoWait = false;
         LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
 		heating_status = HeatingStatus::BED_HEATING;
         prusa_statistics(1);
@@ -9976,6 +9979,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
     cancel_heatup = false;
 	while ((!cancel_heatup) && ((residencyStart == -1) ||
 		(residencyStart >= 0 && (((unsigned int)(_millis() - residencyStart)) < (TEMP_RESIDENCY_TIME * 1000UL))))) {
+		if ((CooldownNoWait == true) && !target_direction) break;
 #else
 	while (target_direction ? (isHeatingHotend(tmp_extruder)) : (isCoolingHotend(tmp_extruder) && (CooldownNoWait == false))) {
 #endif //TEMP_RESIDENCY_TIME
