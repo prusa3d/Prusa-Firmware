@@ -197,6 +197,7 @@ void kill(const char *full_screen_message = NULL);
 void finishAndDisableSteppers();
 
 void UnconditionalStop();                   // Stop heaters, motion and clear current print status
+void ConditionalStop();                     // Similar to UnconditionalStop, but doesn't disable heaters
 void ThermalStop(bool allow_pause = false); // Emergency stop used by overtemp functions which allows
                                             // recovery (with pause=true)
 bool IsStopped();                           // Returns true if the print has been stopped

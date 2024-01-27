@@ -60,7 +60,11 @@ void lcd_pause_usb_print();
 void lcd_send_action_start();
 void lcd_resume_print();
 void lcd_print_stop(); // interactive print stop
-void print_stop(bool interactive=false);
+
+/// @brief Stop the print immediately
+/// @param interactive True if the user acknowledged the action from the LCD: resume processing USB commands again
+/// @param unconditional_stop True when the print is stopped by a serious error condition e.g. Thermal Runaway. False otherwise.
+void print_stop(bool interactive=false, bool unconditional_stop=false);
 #ifdef THERMAL_MODEL
 void lcd_thermal_model_cal();
 #endif //THERMAL_MODEL
