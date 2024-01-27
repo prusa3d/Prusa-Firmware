@@ -5666,8 +5666,8 @@ void lcd_print_stop_finish()
         current_position[X_AXIS] = X_CANCEL_POS;
         current_position[Y_AXIS] = Y_CANCEL_POS;
         plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
+        st_synchronize();
     }
-    st_synchronize();
 
     #ifdef COMMUNITY_PREVENT_OOZE
     // Retract filament to prevent oozing
