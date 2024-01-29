@@ -45,6 +45,8 @@
 
 #include "Prusa_farm.h"
 
+#include "power_panic.h"
+
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -1033,7 +1035,7 @@ void lcd_pause_print()
 {
     stop_and_save_print_to_ram(0.0, -default_retraction);
 
-    SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
+    SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_PAUSED);
 
     // Indicate that the printer is paused
     did_pause_print = true;
@@ -1048,7 +1050,7 @@ void lcd_pause_print()
 //! @brief Send host action "pause"
 void lcd_pause_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_PAUSE);
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_ASK_PAUSE);
 }
 
 static void lcd_move_menu_axis();
@@ -5033,7 +5035,7 @@ void lcd_resume_print()
     if (print_job_timer.isPaused()) print_job_timer.start();
 
     refresh_cmd_timeout();
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_RESUMED);
     custom_message_type = CustomMsg::Status;
 }
 
@@ -5044,7 +5046,7 @@ void lcd_resume_usb_print()
     if (!resume_print_checks()) return;
 
     // resume the usb host
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_RESUME);
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_ASK_RESUME);
 }
 
 static void change_sheet()
@@ -5151,10 +5153,10 @@ static void lcd_sheet_menu()
 static void lcd_printer_ready_state_toggle()
 {
     if (GetPrinterState() == PrinterState::IsReady) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_NOT_READY);
+        SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_NOT_READY);
     }
     else {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_READY);
+        SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_READY);
     }
 }
 
@@ -5251,12 +5253,12 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
     } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
-    }
-    if (GetPrinterState() < PrinterState::IsSDPrinting && M79_timer_get_status()) {
-        if(GetPrinterState() == PrinterState::IsReady) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
-        } else {
-            MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+        if (M79_timer_get_status()) {
+            if(GetPrinterState() == PrinterState::IsReady) {
+                MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
+            } else {
+                MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+            }
         }
     }
     if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
@@ -5281,7 +5283,11 @@ static void lcd_main_menu()
             }
         }
     }
-    if((printJobOngoing() || printingIsPaused()) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
+    if((printJobOngoing()
+        || printingIsPaused()
+        || (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY))
+        && (custom_message_type != CustomMsg::MeshBedLeveling)
+        && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
 #ifdef THERMAL_MODEL
@@ -5292,6 +5298,7 @@ static void lcd_main_menu()
 
     // only allow starting SD print if hardware errors (temperature or fan) are cleared
     if(!get_temp_error()
+            && !printer_active()
 #ifdef FANCHECK
             && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
@@ -5714,7 +5721,7 @@ void print_stop(bool interactive)
         card.sdprinting = false;
         card.closefile();
     } else {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
+        SERIAL_ECHOLNRPGM(MSG_HOST_ACTION_CANCEL);
     }
 
 #ifdef MESH_BED_LEVELING
@@ -7510,6 +7517,6 @@ void lcd_reprint_from_eeprom() {
 //! @brief Send host action "start"
 void lcd_send_action_start()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_START);
+    SERIAL_PROTOCOLLNRPGM(MSG_HOST_ACTION_START);
     lcd_return_to_status();
 }

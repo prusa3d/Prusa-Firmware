@@ -10,7 +10,7 @@ enum PowerPanicFlag : uint8_t {
 // Types of printjobs possible when power panic is triggered
 enum PrintType : uint8_t {
     PRINT_TYPE_SD = 0,
-    PRINT_TYPE_USB = 1,
+    PRINT_TYPE_HOST = 1,
     PRINT_TYPE_NONE = 2,
 };
 } // namespace PowerPanic

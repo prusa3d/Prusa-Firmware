@@ -232,15 +232,16 @@ extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ENDSTOP_HIT[];
 extern const char MSG_EJECT_FROM_MMU[];
 extern const char MSG_CUT_FILAMENT[];
-extern const char MSG_OCTOPRINT_ASK_PAUSE[];
-extern const char MSG_OCTOPRINT_PAUSED[];
-extern const char MSG_OCTOPRINT_ASK_RESUME[];
-extern const char MSG_OCTOPRINT_RESUMED[];
-extern const char MSG_OCTOPRINT_CANCEL[];
-extern const char MSG_OCTOPRINT_READY[];
-extern const char MSG_OCTOPRINT_NOT_READY[];
-extern const char MSG_OCTOPRINT_START[];
-extern const char MSG_OCTOPRINT_UVLO_RECOVERY_READY[];
+extern const char MSG_HOST_ACTION_ASK_PAUSE[];
+extern const char MSG_HOST_ACTION_PAUSED[];
+extern const char MSG_HOST_ACTION_ASK_RESUME[];
+extern const char MSG_HOST_ACTION_RESUMED[];
+extern const char MSG_HOST_ACTION_CANCEL[];
+extern const char MSG_HOST_ACTION_READY[];
+extern const char MSG_HOST_ACTION_NOT_READY[];
+extern const char MSG_HOST_ACTION_START[];
+extern const char MSG_HOST_ACTION_UVLO_RECOVERY_READY[];
+extern const char MSG_HOST_ACTION_UVLO_AUTO_RECOVERY_READY[];
 #ifdef HOST_SHUTDOWN
 extern const char MSG_HOST_ACTION_SHUTDOWN[];
 #endif //HOST_SHUTOWN
