@@ -9764,6 +9764,28 @@ void UnconditionalStop()
 
     st_reset_timer();
     CRITICAL_SECTION_END;
+
+    // clear paused state immediately
+    did_pause_print = false;
+    print_job_timer.stop();
+}
+
+void ConditionalStop()
+{
+    CRITICAL_SECTION_START;
+
+    // Clear any saved printing state
+    cancel_saved_printing();
+
+    // Abort the planner
+    planner_abort_hard();
+    
+    // Reset the queue
+    cmdqueue_reset();
+    cmdqueue_serial_disabled = false;
+
+    st_reset_timer();
+    CRITICAL_SECTION_END;
 }
 
 // Emergency stop used by overtemp functions which allows recovery
@@ -9798,7 +9820,7 @@ void ThermalStop(bool allow_recovery)
             }
         } else {
             // We got a hard thermal error and/or there is no print going on. Just stop.
-            print_stop();
+            print_stop(false, true);
         }
 
         // Report the error on the serial

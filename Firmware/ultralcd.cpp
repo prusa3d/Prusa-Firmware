@@ -5663,6 +5663,7 @@ void retract_for_ooze_prevention() {
 // continue stopping the print from the main loop after lcd_print_stop() is called
 void lcd_print_stop_finish()
 {
+    print_job_timer.stop();
     save_statistics();
 
     // lift Z
@@ -5673,8 +5674,8 @@ void lcd_print_stop_finish()
         current_position[X_AXIS] = X_CANCEL_POS;
         current_position[Y_AXIS] = Y_CANCEL_POS;
         plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
+        st_synchronize();
     }
-    st_synchronize();
 
     #ifdef COMMUNITY_PREVENT_OOZE
     // Retract filament to prevent oozing
@@ -5695,26 +5696,40 @@ void lcd_print_stop_finish()
 
     if (MMU2::mmu2.Enabled() && MMU2::mmu2.FindaDetectsFilament())
     {
+        // The print was aborted while when the nozzle was cold:
+        //     1. in a paused state                      => a partial backup in RAM is always available
+        //     2. after a recoverable thermal/fan error had paused the print => only extruder temperature is saved to RAM
         if (printingIsPaused())
         {
             // Restore temperature saved in ram after pausing print
             restore_extruder_temperature_from_ram();
         }
-        MMU2::mmu2.unload(); // M702
+
+        // If the pause state was cleared previously or the target temperature is 0°C in the case
+        // of an unconditional stop. In that scenario we do not want to unload.
+        if (target_temperature[0] >= extrude_min_temp) {
+            MMU2::mmu2.unload(); // M702
+        }
     }
 
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
 
     finishAndDisableSteppers(); //M84
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
+    did_pause_print = false; // Clear pause state in case the print was aborted while paused
 }
 
-void print_stop(bool interactive)
+void print_stop(bool interactive, bool unconditional_stop)
 {
     // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan any
     // more move in this call! Any further move must happen inside lcd_print_stop_finish(), which is
     // called by the main loop one iteration later.
-    UnconditionalStop();
+    if (unconditional_stop) {
+        UnconditionalStop();
+    } else {
+        // Allow lcd_print_stop_finish() to use the heaters when it is safe
+        ConditionalStop();
+    }
 
     if (card.mounted) {
         // Reset the sd status
@@ -5727,10 +5742,6 @@ void print_stop(bool interactive)
 #ifdef MESH_BED_LEVELING
     mbl.active = false;
 #endif
-
-    // clear any pending paused state immediately
-    did_pause_print = false;
-    print_job_timer.stop();
 
     if (interactive) {
         // acknowledged by the user from the LCD: resume processing USB commands again
