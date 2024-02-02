@@ -56,7 +56,7 @@ void mc_arc(const float* position, float* target, const float* offset, float fee
     if (cs.arc_segments_per_sec > 0)
     {
         // 20200417 - FormerLurker - Implement MIN_ARC_SEGMENTS if it is defined - from Marlin 2.0 implementation
-        float mm_per_arc_segment_sec = (feed_rate / 60.0f) * (1.0f / cs.arc_segments_per_sec);
+        float mm_per_arc_segment_sec = feed_rate / float(60 * cs.arc_segments_per_sec);
         if (mm_per_arc_segment_sec < mm_per_arc_segment)
             mm_per_arc_segment = mm_per_arc_segment_sec;
     }
@@ -118,11 +118,12 @@ void mc_arc(const float* position, float* target, const float* offset, float fee
     // If there is only one segment, no need to do a bunch of work since this is a straight line!
     if (segments > 1 && start_segment_idx)
     {
+        const float segments_inverse = 1 / segments; // Reduce number of divisions
         // Calculate theta per segments, and linear (z) travel per segment, e travel per segment
         // as well as the small angle approximation for sin and cos.
-        const float theta_per_segment = angular_travel_total / segments,
-            linear_per_segment = travel_z / (segments),
-            segment_extruder_travel = (target[E_AXIS] - start_position[E_AXIS]) / (segments),
+        const float theta_per_segment = angular_travel_total * segments_inverse,
+            linear_per_segment = travel_z * segments_inverse,
+            segment_extruder_travel = (target[E_AXIS] - start_position[E_AXIS]) * segments_inverse,
             sq_theta_per_segment = theta_per_segment * theta_per_segment,
             sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
             cos_T = 1 - 0.5f * sq_theta_per_segment;
