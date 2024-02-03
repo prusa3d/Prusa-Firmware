@@ -2902,10 +2902,12 @@ static void gcode_G80()
         float x_pos = BED_X(ix);
         float y_pos = BED_Y(iy);
 
-        if ((nMeasPoints == 3) && !isOn3x3Mesh) {
-            mesh_point++;
-            mbl.set_z(ix, iy, NAN);
-            continue; //skip
+        if (nMeasPoints == 3) {
+            if (!isOn3x3Mesh) {
+                mesh_point++;
+                mbl.set_z(ix, iy, NAN);
+                continue; //skip
+            }
         } else if ((x_pos < area_min_x || x_pos > area_max_x || y_pos < area_min_y || y_pos > area_max_y) && (!isOn3x3Mesh || has_z)) {
             mesh_point++;
             continue; //skip
