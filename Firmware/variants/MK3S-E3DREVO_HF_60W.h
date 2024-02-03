@@ -167,6 +167,8 @@
 
 //#define DEBUG_PULLUP_CRASH //Test Pullup crash
 
+//#define DEBUG_PRINTER_ACTIVE
+
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_XFLASH   //debug external spi flash

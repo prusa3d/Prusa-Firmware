@@ -127,6 +127,8 @@
 #define DEBUG_DCODE2
 #define DEBUG_DCODE3
 
+//#define DEBUG_PRINTER_ACTIVE
+
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
