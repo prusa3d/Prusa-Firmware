@@ -9776,6 +9776,15 @@ void ConditionalStop()
 {
     CRITICAL_SECTION_START;
 
+    // Don't disable the heaters! lcd_print_stop_finish() will do it later via lcd_cooldown()
+    //
+    // However, the firmware must take into account the edge case when the firmware
+    // is running M109 or M190 G-codes. These G-codes execute a blocking while loop
+    // which waits for the bed or nozzle to reach their target temperature.
+    // To exit the loop, the firmware must set cancel_heatup to true.
+    cancel_heatup = true;
+    heating_status = HeatingStatus::NO_HEATING;
+
     // Clear any saved printing state
     cancel_saved_printing();
 
