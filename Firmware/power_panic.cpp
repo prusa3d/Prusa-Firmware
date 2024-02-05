@@ -161,6 +161,11 @@ void uvlo_() {
         eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING_FULL +2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
     }
 
+#ifdef DEBUG_UVLO
+    print_world_coordinates();
+    print_physical_coordinates();
+#endif //End DEBUG_UVLO
+
     // Write the _final_ Z position
     eeprom_update_float((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z, current_position[Z_AXIS]);
 
@@ -197,8 +202,12 @@ void uvlo_() {
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
     eeprom_increment_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
-
+#ifdef DEBUG_UVLO
+    printf_P(_N("EEPROM_UVLO: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO)));
+    printf_P(_N("EEPROM_UVLO_PRINT_TYPE: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE)));
+#endif //End DEBUG_UVLO
     printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
+
     WRITE(BEEPER,HIGH);
 
     // All is set: with all the juice left, try to move extruder away to detach the nozzle completely from the print
@@ -233,6 +242,11 @@ static void uvlo_tiny() {
     // extruder, causing the Z position to change. Similarly, when recovering, the Z position is
     // lowered. In such cases we cannot just save Z, we need to re-align the steppers to a fullstep.
     // Disable MBL (if not already) to work with physical coordinates.
+
+#ifdef DEBUG_UVLO
+    print_world_coordinates();
+    print_physical_coordinates();
+#endif //End DEBUG_UVLO
     mbl.active = false;
     planner_abort_hard();
 
@@ -269,7 +283,10 @@ static void uvlo_tiny() {
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
     eeprom_increment_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
-
+#ifdef DEBUG_UVLO
+    printf_P(_N("EEPROM_UVLO: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO)));
+    printf_P(_N("EEPROM_UVLO_PRINT_TYPE: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE)));
+#endif //End DEBUG_UVLO
     printf_P(_N("UVLO_TINY - end %d\n"), _millis() - time_start);
     uvlo_drain_reset();
 }
@@ -315,12 +332,24 @@ void recover_print(uint8_t automatic) {
     // Recover position, temperatures and extrude_multipliers
     bool mbl_was_active = recover_machine_state_after_power_panic();
 
-    // Lift the print head 25mm, first to avoid collisions with oozed material with the print,
+    // Lift the print head ONCE plus Z_PAUSE_LIFT, first to avoid collisions with oozed material with the print,
     // and second also so one may remove the excess priming material.
+
+#ifdef DEBUG_UVLO
+    print_world_coordinates();
+    print_physical_coordinates();
+#endif //End DEBUG_UVLO
+
     if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY)
     {
-        enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
+        enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + Z_PAUSE_LIFT);
+        eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
     }
+
+#ifdef DEBUG_UVLO
+    print_world_coordinates();
+    print_physical_coordinates();
+#endif //End DEBUG_UVLO
 
     // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine
     // transformation status. G28 will not touch Z when MBL is off.
@@ -346,6 +375,10 @@ void recover_print(uint8_t automatic) {
     restore_print_from_eeprom(mbl_was_active);
     puts_P(_N("Done reading EEPROM\n"));
     gcode_M114();
+#ifdef DEBUG_UVLO
+    printf_P(_N("EEPROM_UVLO: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO)));
+    printf_P(_N("EEPROM_UVLO_PRINT_TYPE: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE)));
+#endif //End DEBUG_UVLO
 }
 
 bool recover_machine_state_after_power_panic() {
@@ -386,8 +419,11 @@ bool recover_machine_state_after_power_panic() {
     clamp_to_software_endstops(current_position);
     set_destination_to_current();
     plan_set_position_curposXYZE();
-    SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
+#ifdef DEBUG_UVLO
+    SERIAL_ECHOLNPGM("recover_machine_state_after_power_panic, initial ");
     print_world_coordinates();
+    print_physical_coordinates();
+#endif //End DEBUG_UVLO
 
     // 6) Power up the Z motors, mark their positions as known.
     axis_known_position[Z_AXIS] = true;
@@ -411,6 +447,10 @@ bool recover_machine_state_after_power_panic() {
 #endif
 
      return mbl_was_active;
+#ifdef DEBUG_UVLO
+    printf_P(_N("EEPROM_UVLO: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO)));
+    printf_P(_N("EEPROM_UVLO_PRINT_TYPE: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE)));
+#endif //End DEBUG_UVLO
 }
 
 void restore_print_from_eeprom(bool mbl_was_active) {
@@ -478,7 +518,10 @@ void restore_print_from_eeprom(bool mbl_was_active) {
         // Set line number
         enquecommandf_P(PSTR("M110 N%lu"), position);
     }
-
+#ifdef DEBUG_UVLO
+    printf_P(_N("EEPROM_UVLO: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO)));
+    printf_P(_N("EEPROM_UVLO_PRINT_TYPE: %d\n"), uint8_t(eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE)));
+#endif //End DEBUG_UVLO
     enquecommand_P(PSTR("G4 S0"));
     enquecommand_P(PSTR("PRUSA uvlo"));
 }

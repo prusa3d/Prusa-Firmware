@@ -312,7 +312,7 @@ static bool chdkActive = false;
 //! @{
 bool saved_printing = false; //!< Print is paused and saved in RAM
 uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
-uint8_t saved_printing_type = PowerPanic::PRINT_TYPE_SD;
+uint8_t saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
 float saved_pos[NUM_AXIS] = { X_COORD_INVALID, 0, 0, 0 };
 uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
@@ -546,10 +546,16 @@ bool __attribute__((noinline)) printer_active() {
         printf_P(PSTR("get_temp_error() = %d\n"), (int)get_temp_error());
         printf_P(PSTR("card.mounted = %d\n"), (int)card.mounted);
         printf_P(PSTR("card.isFileOpen() = %d\n"), (int)card.isFileOpen());
+        printf_P(PSTR("PP state = %d\n"), (int)printer_recovering());
         SERIAL_ECHOLN("");
     }
     return res;
 #endif //End DEBUG_PRINTER_ACTIVE
+}
+
+// Block LCD menus when
+bool __attribute__((noinline)) printer_recovering() {
+    return (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY);
 }
 
 // Currently only used in one place, allowed to be inlined
@@ -1622,14 +1628,15 @@ void setup()
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
           #endif
-          if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PRINT_TYPE_HOST) {
+          if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST) {
             recover_print(0);
           } else {
               const uint8_t btn = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false);
               if ( btn == LCD_LEFT_BUTTON_CHOICE) {
                   recover_print(0);
             } else { // LCD_MIDDLE_BUTTON_CHOICE
-                  eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+                  // Print recovery canceled
+                  cancel_saved_printing();
             }
           }
       }
@@ -11054,6 +11061,7 @@ void restore_print_from_ram_and_continue(float e_move)
     restore_print_file_state();
 
 	lcd_setstatuspgm(MSG_WELCOME);
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
     saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
 	saved_printing = false;
     planner_aborted = true; // unroll the stack

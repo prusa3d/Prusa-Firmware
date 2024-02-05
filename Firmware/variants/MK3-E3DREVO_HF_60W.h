@@ -167,6 +167,8 @@
 
 //#define DEBUG_PRINTER_ACTIVE
 
+//#define DEBUG_UVLO
+
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_XFLASH   //debug external spi flash

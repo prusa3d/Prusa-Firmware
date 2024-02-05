@@ -129,6 +129,8 @@
 
 //#define DEBUG_PRINTER_ACTIVE
 
+//#define DEBUG_UVLO
+
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
