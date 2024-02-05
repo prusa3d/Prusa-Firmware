@@ -5731,7 +5731,7 @@ void print_stop(bool interactive, bool unconditional_stop)
         ConditionalStop();
     }
 
-    if (card.mounted) {
+    if (card.isFileOpen()) {
         // Reset the sd status
         card.sdprinting = false;
         card.closefile();
