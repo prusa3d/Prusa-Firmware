@@ -303,7 +303,7 @@ void setup_uvlo_interrupt() {
     EIMSK |= (1 << 4);
 
     // check if power was lost before we armed the interrupt
-    if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY)
+    if(!(PINE & (1 << 4)) && printer_recovering())
     {
         SERIAL_ECHOLNRPGM(MSG_INT4);
         uvlo_drain_reset();

@@ -5287,7 +5287,7 @@ static void lcd_main_menu()
     }
     if((printJobOngoing()
         || printingIsPaused()
-        || (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY))
+        || printer_recovering())
         && (custom_message_type != CustomMsg::MeshBedLeveling)
         && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
