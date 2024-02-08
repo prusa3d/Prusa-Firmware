@@ -329,6 +329,9 @@ ISR(INT4_vect) {
 void recover_print(uint8_t automatic) {
     lcd_setstatuspgm(_i("Recovering print"));////MSG_RECOVERING_PRINT c=20
 
+    // Recover saved_printing_type
+    saved_printing_type = eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE);
+
     // Recover position, temperatures and extrude_multipliers
     bool mbl_was_active = recover_machine_state_after_power_panic();
 

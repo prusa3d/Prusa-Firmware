@@ -517,41 +517,63 @@ bool printingIsPaused() {
 }
 
 bool __attribute__((noinline)) printer_active() {
-#ifdef DEBUG_PRINTER_ACTIVE
-    bool res = printJobOngoing()
-#else
     return printJobOngoing()
-#endif //End DEBUG_PRINTER_ACTIVE
         || printingIsPaused()
         || saved_printing
         || (lcd_commands_type != LcdCommands::Idle)
         || MMU2::mmu2.MMU_PRINT_SAVED()
         || homing_flag
         || mesh_bed_leveling_flag;
-#ifdef DEBUG_PRINTER_ACTIVE
-    if (!res)
-    {
-        printf_P(PSTR("printJobOngoing() = %d\n"), (int)printJobOngoing());
-        printf_P(PSTR("IS_SD_PRINTING = %d\n"), (int)IS_SD_PRINTING);
-        printf_P(PSTR("usb_timer.running() = %d\n"), (int)usb_timer.running());
-        printf_P(PSTR("print_job_timer.isRunning() = %d\n"), (int)print_job_timer.isRunning());
-        printf_P(PSTR("printingIsPaused() = %d\n"), (int)printingIsPaused());
-        printf_P(PSTR("did_pause_print = %d\n"), (int)did_pause_print);
-        printf_P(PSTR("print_job_timer.isPaused() = %d\n"), (int)print_job_timer.isPaused());
-        printf_P(PSTR("saved_printing = %d\n"), (int)saved_printing);
-        printf_P(PSTR("(lcd_commands_type != LcdCommands::Idle) = %d\n"), (int)(lcd_commands_type != LcdCommands::Idle));
-        printf_P(PSTR("MMU2::mmu2.MMU_PRINT_SAVED() = %d\n"), (int)MMU2::mmu2.MMU_PRINT_SAVED());
-        printf_P(PSTR("homing_flag = %d\n"), (int)homing_flag);
-        printf_P(PSTR("mesh_bed_leveling_flag = %d\n"), (int)mesh_bed_leveling_flag);
-        printf_P(PSTR("get_temp_error() = %d\n"), (int)get_temp_error());
-        printf_P(PSTR("card.mounted = %d\n"), (int)card.mounted);
-        printf_P(PSTR("card.isFileOpen() = %d\n"), (int)card.isFileOpen());
-        printf_P(PSTR("PP state = %d\n"), (int)printer_recovering());
-        SERIAL_ECHOLN("");
-    }
-    return res;
-#endif //End DEBUG_PRINTER_ACTIVE
 }
+
+#ifdef DEBUG_PRINTER_STATES
+//! @brief debug printer states
+//!
+//! This outputs a lot over serial and should be only used
+//! - when debugging LCD menus
+//! - or other functions related to these states
+//! To reduce the output feel free to comment out the lines you
+//! aren't troubleshooting.
+
+void debug_printer_states()
+{
+    printf_P(PSTR("DPS:printJobOngoing() = %d\n"), (int)printJobOngoing());
+    printf_P(PSTR("DPS:IS_SD_PRINTING = %d\n"), (int)IS_SD_PRINTING);
+    printf_P(PSTR("DPS:printer_recovering() = %d\n"), (int)printer_recovering());
+    printf_P(PSTR("DPS:heating_status = %d\n"), (int)heating_status);
+    printf_P(PSTR("DPS:GetPrinterState() = %d\n"), (int)GetPrinterState());
+    printf_P(PSTR("DPS:babystep_allowed_strict() = %d\n"), (int)babystep_allowed_strict());
+    printf_P(PSTR("DPS:lcd_commands_type = %d\n"), (int)lcd_commands_type);
+    printf_P(PSTR("DPS:farm_mode = %d\n"), (int)farm_mode);
+    printf_P(PSTR("DPS:moves_planned() = %d\n"), (int)moves_planned());
+    printf_P(PSTR("DPS:Stopped = %d\n"), (int)Stopped);
+    printf_P(PSTR("DPS:usb_timer.running() = %d\n"), (int)usb_timer.running());
+    printf_P(PSTR("DPS:M79_timer_get_status() = %d\n"), (int)M79_timer_get_status());
+    printf_P(PSTR("DPS:print_job_timer.isRunning() = %d\n"), (int)print_job_timer.isRunning());
+    printf_P(PSTR("DPS:printingIsPaused() = %d\n"), (int)printingIsPaused());
+    printf_P(PSTR("DPS:did_pause_print = %d\n"), (int)did_pause_print);
+    printf_P(PSTR("DPS:print_job_timer.isPaused() = %d\n"), (int)print_job_timer.isPaused());
+    printf_P(PSTR("DPS:saved_printing = %d\n"), (int)saved_printing);
+    printf_P(PSTR("DPS:saved_printing_type = %d\n"), (int)saved_printing_type);
+    printf_P(PSTR("DPS:homing_flag = %d\n"), (int)homing_flag);
+    printf_P(PSTR("DPS:mesh_bed_leveling_flag = %d\n"), (int)mesh_bed_leveling_flag);
+    printf_P(PSTR("DPS:get_temp_error() = %d\n"), (int)get_temp_error());
+    printf_P(PSTR("DPS:card.mounted = %d\n"), (int)card.mounted);
+    printf_P(PSTR("DPS:card.isFileOpen() = %d\n"), (int)card.isFileOpen());
+    printf_P(PSTR("DPS:fan_check_error = %d\n"), (int)fan_check_error);
+    printf_P(PSTR("DPS:processing_tcode = %d\n"), (int)processing_tcode);
+    printf_P(PSTR("DPS:nextSheet = %d\n"), (int)eeprom_next_initialized_sheet(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
+    printf_P(PSTR("DPS:eFilamentAction = %d\n"), (int)eFilamentAction);
+    printf_P(PSTR("DPS:MMU2::mmu2.Enabled() = %d\n"), (int)MMU2::mmu2.Enabled());
+    printf_P(PSTR("DPS:MMU2::mmu2.MMU_PRINT_SAVED() = %d\n"), (int)MMU2::mmu2.MMU_PRINT_SAVED());
+    printf_P(PSTR("DPS:MMU2::mmu2.FindaDetectsFilament() = %d\n"), (int)MMU2::mmu2.FindaDetectsFilament());
+    printf_P(PSTR("DPS:fsensor.getFilamentPresent() = %d\n"), (int)fsensor.getFilamentPresent());
+    printf_P(PSTR("DPS:MMU CUTTER ENABLED = %d\n"), (int)eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED));
+    printf_P(PSTR("DPS:fsensor.isEnabled() = %d\n"), (int)fsensor.isEnabled());
+    printf_P(PSTR("DPS:fsensor.getAutoLoadEnabled() = %d\n"), (int)fsensor.getAutoLoadEnabled());
+    SERIAL_ECHOLN("");
+}
+#endif //End DEBUG_PRINTER_STATES
 
 // Block LCD menus when
 bool __attribute__((noinline)) printer_recovering() {
@@ -10722,16 +10744,14 @@ void save_print_file_state() {
         sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
         saved_sdpos -= sdlen_cmdqueue;
         saved_printing_type = PowerPanic::PRINT_TYPE_SD;
-    }
-    else if (usb_timer.running()) { //reuse saved_sdpos for storing line number
+    } else if (usb_timer.running()) { //reuse saved_sdpos for storing line number
         saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
         //reuse planner_calc_sd_length function for getting number of lines of commands in planner:
         nlines = planner_calc_sd_length(); //number of lines of commands in planner 
         saved_sdpos -= nlines;
         saved_sdpos -= buflen; //number of blocks in cmd buffer
         saved_printing_type = PowerPanic::PRINT_TYPE_HOST;
-    }
-    else {
+    } else if (!printer_recovering()) {
         saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
         //not sd printing nor usb printing
     }

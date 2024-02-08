@@ -165,7 +165,7 @@
 
 //#define DEBUG_PULLUP_CRASH //Test Pullup crash
 
-//#define DEBUG_PRINTER_ACTIVE
+//#define DEBUG_PRINTER_STATES
 
 //#define DEBUG_UVLO
 

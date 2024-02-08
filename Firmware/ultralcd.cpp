@@ -5228,6 +5228,10 @@ static void lcd_main_menu()
         MENU_ITEM_FUNCTION_P(PSTR("tst - Restore"), lcd_menu_test_restore);
 #endif //RESUME_DEBUG
 
+#ifdef DEBUG_PRINTER_STATES
+    debug_printer_states();
+#endif //End DEBUG_PRINTER_STATES
+
 #ifdef TMC2130_DEBUG
     MENU_ITEM_FUNCTION_P(PSTR("recover print"), recover_print);
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
@@ -5250,39 +5254,39 @@ static void lcd_main_menu()
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 
     if (!printer_recovering()) {
-    if ( moves_planned() || printer_active() ) {
-        MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
-    } else if (!Stopped) {
-        MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
-        if (M79_timer_get_status()) {
-            if(GetPrinterState() == PrinterState::IsReady) {
-                MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
-            } else {
-                MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+        if ( moves_planned() || printer_active() ) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
+        } else if (!Stopped) {
+            MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
+            if (M79_timer_get_status()) {
+                if(GetPrinterState() == PrinterState::IsReady) {
+                    MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
+                } else {
+                    MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+                }
+            }
+        }
+        if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
+            if (usb_timer.running()) {
+                MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
+            } else if (IS_SD_PRINTING) {
+                MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
             }
         }
     }
-    if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
-        if (usb_timer.running()) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
-        } else if (IS_SD_PRINTING) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
-        }
-    }
-    }
-    if(printingIsPaused())
-    {
+    if(printingIsPaused()
         // only allow resuming if hardware errors (temperature or fan) are cleared
-        if(!get_temp_error()
+        && !get_temp_error()
 #ifdef FANCHECK
-            && fan_check_error != EFCE_REPORTED
+        && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
-           ) {
-            if (saved_printing) {
-                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);
-            } else {
-                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
-            }
+        && (saved_printing_type != PowerPanic::PRINT_TYPE_NONE
+            || saved_printing)
+        && custom_message_type != CustomMsg::Resuming) {
+        if (saved_printing_type == PowerPanic::PRINT_TYPE_SD) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);
+        } else if ((saved_printing_type == PowerPanic::PRINT_TYPE_HOST) && (M79_timer_get_status())) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
         }
     }
     if((printJobOngoing()

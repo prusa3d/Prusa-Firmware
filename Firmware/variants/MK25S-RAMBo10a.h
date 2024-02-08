@@ -126,7 +126,7 @@
 #define DEBUG_DCODE2
 #define DEBUG_DCODE3
 
-//#define DEBUG_PRINTER_ACTIVE
+//#define DEBUG_PRINTER_STATES
 
 //#define DEBUG_UVLO
 

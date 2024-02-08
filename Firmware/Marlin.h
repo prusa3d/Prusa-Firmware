@@ -316,6 +316,7 @@ bool printJobOngoing();
 bool printingIsPaused();
 
 bool printer_active();
+void debug_printer_states();
 
 bool printer_recovering();
 
