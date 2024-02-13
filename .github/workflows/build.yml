@@ -22,7 +22,7 @@ jobs:
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout ${{ github.event.pull_request.head.ref }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ github.event.pull_request }}
       with:
         ref: ${{ github.event.pull_request.head.sha }}
@@ -30,7 +30,7 @@ jobs:
         fetch-depth: 0
 
     - name: Checkout ${{ github.event.ref }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ !github.event.pull_request }}
       with:
         ref: ${{ github.event.ref }}
@@ -38,7 +38,7 @@ jobs:
         fetch-depth: 0
 
     - name: Cache Dependencies
-      uses: actions/cache@v3.0.11
+      uses: actions/cache@v4.0.0
       id: cache-pkgs
       with:
           path: ".dependencies"
@@ -76,7 +76,7 @@ jobs:
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout ${{ github.event.pull_request.head.ref }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ github.event.pull_request }}
       with:
         ref: ${{ github.event.pull_request.head.sha }}
@@ -84,7 +84,7 @@ jobs:
         fetch-depth: 0
 
     - name: Checkout ${{ github.event.ref }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ !github.event.pull_request }}
       with:
         ref: ${{ github.event.ref }}
@@ -92,7 +92,7 @@ jobs:
         fetch-depth: 0
 
     - name: Cache Dependencies
-      uses: actions/cache@v3.0.11
+      uses: actions/cache@v4.0.0
       id: cache-pkgs
       with:
           path: ".dependencies"
@@ -123,7 +123,7 @@ jobs:
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout ${{ github.event.pull_request.head.ref }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ github.event.pull_request }}
       with:
         ref: ${{ github.event.pull_request.head.sha }}
@@ -131,7 +131,7 @@ jobs:
         fetch-depth: 0
 
     - name: Checkout ${{ github.event.ref }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ !github.event.pull_request }}
       with:
         ref: ${{ github.event.ref }}
@@ -139,7 +139,7 @@ jobs:
         fetch-depth: 0
 
     - name: Cache Dependencies
-      uses: actions/cache@v3.0.11
+      uses: actions/cache@v4.0.0
       id: cache-pkgs
       with:
           path: ".dependencies"
