@@ -315,11 +315,12 @@ void recover_print(uint8_t automatic) {
     // Recover position, temperatures and extrude_multipliers
     bool mbl_was_active = recover_machine_state_after_power_panic();
 
-    // Lift the print head 25mm, first to avoid collisions with oozed material with the print,
+    // Lift the print head 20mm, first to avoid collisions with oozed material with the print,
     // and second also so one may remove the excess priming material.
     if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY)
     {
-        enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
+        enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + Z_PAUSE_LIFT);
+        eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
     }
 
     // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine

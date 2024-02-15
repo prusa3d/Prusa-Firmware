@@ -312,7 +312,7 @@ static bool chdkActive = false;
 //! @{
 bool saved_printing = false; //!< Print is paused and saved in RAM
 uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
-uint8_t saved_printing_type = PowerPanic::PRINT_TYPE_SD;
+uint8_t saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
 float saved_pos[NUM_AXIS] = { X_COORD_INVALID, 0, 0, 0 };
 uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
