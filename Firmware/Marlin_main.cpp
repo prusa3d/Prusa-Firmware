@@ -523,8 +523,7 @@ bool __attribute__((noinline)) printer_active() {
         || (lcd_commands_type != LcdCommands::Idle)
         || MMU2::mmu2.MMU_PRINT_SAVED()
         || homing_flag
-        || mesh_bed_leveling_flag
-        || (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY);
+        || mesh_bed_leveling_flag;
 }
 
 #ifdef DEBUG_PRINTER_STATES
@@ -576,6 +575,11 @@ void debug_printer_states()
     SERIAL_ECHOLN("");
 }
 #endif //End DEBUG_PRINTER_STATES
+
+// Block LCD menus when
+bool __attribute__((noinline)) printer_recovering() {
+    return (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY);
+}
 
 // Currently only used in one place, allowed to be inlined
 bool check_fsensor() {
@@ -1631,7 +1635,7 @@ void setup()
     fw_crash_init();
 
 #ifdef UVLO_SUPPORT
-  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY) { //previous print was terminated by UVLO
+  if (printer_recovering()) { //previous print was terminated by UVLO
       manage_heater(); // Update temperatures 
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
 		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
@@ -6051,7 +6055,7 @@ Sigma_Exit:
         }
 
         if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST
-           && eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY
+           && printer_recovering()
            && printingIsPaused()) {
             // The print is in a paused state. The print was recovered following a power panic
             // but up to this point the printer has been waiting for the M79 from the host
