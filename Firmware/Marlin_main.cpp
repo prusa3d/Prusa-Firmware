@@ -527,6 +527,56 @@ bool __attribute__((noinline)) printer_active() {
         || (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != PowerPanic::NO_PENDING_RECOVERY);
 }
 
+#ifdef DEBUG_PRINTER_STATES
+//! @brief debug printer states
+//!
+//! This outputs a lot over serial and should be only used
+//! - when debugging LCD menus
+//! - or other functions related to these states
+//! To reduce the output feel free to comment out the lines you
+//! aren't troubleshooting.
+
+void debug_printer_states()
+{
+    printf_P(PSTR("DBG:printJobOngoing() = %d\n"), (int)printJobOngoing());
+    printf_P(PSTR("DBG:IS_SD_PRINTING = %d\n"), (int)IS_SD_PRINTING);
+    printf_P(PSTR("DBG:printer_recovering() = %d\n"), (int)printer_recovering());
+    printf_P(PSTR("DBG:heating_status = %d\n"), (int)heating_status);
+    printf_P(PSTR("DBG:GetPrinterState() = %d\n"), (int)GetPrinterState());
+    printf_P(PSTR("DBG:babystep_allowed_strict() = %d\n"), (int)babystep_allowed_strict());
+    printf_P(PSTR("DBG:lcd_commands_type = %d\n"), (int)lcd_commands_type);
+    printf_P(PSTR("DBG:farm_mode = %d\n"), (int)farm_mode);
+    printf_P(PSTR("DBG:moves_planned() = %d\n"), (int)moves_planned());
+    printf_P(PSTR("DBG:Stopped = %d\n"), (int)Stopped);
+    printf_P(PSTR("DBG:usb_timer.running() = %d\n"), (int)usb_timer.running());
+    printf_P(PSTR("DBG:M79_timer_get_status() = %d\n"), (int)M79_timer_get_status());
+    printf_P(PSTR("DBG:print_job_timer.isRunning() = %d\n"), (int)print_job_timer.isRunning());
+    printf_P(PSTR("DBG:printingIsPaused() = %d\n"), (int)printingIsPaused());
+    printf_P(PSTR("DBG:did_pause_print = %d\n"), (int)did_pause_print);
+    printf_P(PSTR("DBG:print_job_timer.isPaused() = %d\n"), (int)print_job_timer.isPaused());
+    printf_P(PSTR("DBG:saved_printing = %d\n"), (int)saved_printing);
+    printf_P(PSTR("DBG:saved_printing_type = %d\n"), (int)saved_printing_type);
+    printf_P(PSTR("DBG:homing_flag = %d\n"), (int)homing_flag);
+    printf_P(PSTR("DBG:mesh_bed_leveling_flag = %d\n"), (int)mesh_bed_leveling_flag);
+    printf_P(PSTR("DBG:get_temp_error() = %d\n"), (int)get_temp_error());
+    printf_P(PSTR("DBG:card.mounted = %d\n"), (int)card.mounted);
+    printf_P(PSTR("DBG:card.isFileOpen() = %d\n"), (int)card.isFileOpen());
+    printf_P(PSTR("DBG:fan_check_error = %d\n"), (int)fan_check_error);
+    printf_P(PSTR("DBG:processing_tcode = %d\n"), (int)processing_tcode);
+    printf_P(PSTR("DBG:nextSheet = %d\n"), (int)eeprom_next_initialized_sheet(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
+    printf_P(PSTR("DBG:eFilamentAction = %d\n"), (int)eFilamentAction);
+    printf_P(PSTR("DBG:MMU2::mmu2.Enabled() = %d\n"), (int)MMU2::mmu2.Enabled());
+    printf_P(PSTR("DBG:MMU2::mmu2.MMU_PRINT_SAVED() = %d\n"), (int)MMU2::mmu2.MMU_PRINT_SAVED());
+    printf_P(PSTR("DBG:MMU2::mmu2.FindaDetectsFilament() = %d\n"), (int)MMU2::mmu2.FindaDetectsFilament());
+    printf_P(PSTR("DBG:fsensor.getFilamentPresent() = %d\n"), (int)fsensor.getFilamentPresent());
+    printf_P(PSTR("DBG:MMU CUTTER ENABLED = %d\n"), (int)eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED));
+    printf_P(PSTR("DBG:fsensor.isEnabled() = %d\n"), (int)fsensor.isEnabled());
+    printf_P(PSTR("DBG:fsensor.getAutoLoadEnabled() = %d\n"), (int)fsensor.getAutoLoadEnabled());
+    printf_P(PSTR("DBG:custom_message_type = %d\n"), (int)custom_message_type);
+    SERIAL_ECHOLN("");
+}
+#endif //End DEBUG_PRINTER_STATES
+
 // Currently only used in one place, allowed to be inlined
 bool check_fsensor() {
     return printJobOngoing()

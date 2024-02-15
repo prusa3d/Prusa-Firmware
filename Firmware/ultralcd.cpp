@@ -5228,6 +5228,10 @@ static void lcd_main_menu()
         MENU_ITEM_FUNCTION_P(PSTR("tst - Restore"), lcd_menu_test_restore);
 #endif //RESUME_DEBUG
 
+#ifdef DEBUG_PRINTER_STATES
+    debug_printer_states();
+#endif //End DEBUG_PRINTER_STATES
+
 #ifdef TMC2130_DEBUG
     MENU_ITEM_FUNCTION_P(PSTR("recover print"), recover_print);
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
