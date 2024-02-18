@@ -46,6 +46,10 @@ enum BlockFlag {
     BLOCK_FLAG_DDA_LOWRES = 8,
     // Block starts with Zeroed E counter
     BLOCK_FLAG_E_RESET = 16,
+    // Block is being executed by the stepper ISR
+    BLOCK_FLAG_BUSY = 32,
+    // Whether the block uses LA
+    BLOCK_FLAG_USE_ADVANCE_LEAD = 64,
 };
 
 union dda_isteps_t
@@ -104,14 +108,12 @@ typedef struct {
   uint32_t final_rate;                // The minimal rate at exit
   uint32_t acceleration_steps_per_s2; // acceleration steps/sec^2
   uint8_t fan_speed; // Print fan speed, ranges from 0 to 255
-  volatile char busy;
 
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
   float speed_factor;
 
 #ifdef LIN_ADVANCE
-  bool use_advance_lead;            // Whether the current block uses LA
   uint16_t advance_rate,            // Step-rate for extruder speed
            max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
            final_adv_steps;         // advance steps due to exit speed
@@ -233,7 +235,7 @@ FORCE_INLINE block_t *plan_get_current_block()
     return(NULL); 
   }
   block_t *block = &block_buffer[block_buffer_tail];
-  block->busy = true;
+  block->flag |= BLOCK_FLAG_BUSY;
   return(block);
 }
 

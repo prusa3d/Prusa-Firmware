@@ -229,7 +229,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
 #ifdef LIN_ADVANCE
   uint16_t final_adv_steps = 0;
   uint16_t max_adv_steps = 0;
-  if (block->use_advance_lead) {
+  if (block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
       final_adv_steps = final_rate * block->adv_comp;
   }
 #endif
@@ -240,7 +240,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   if (accel_decel_steps < block->step_event_count.wide) {
     plateau_steps = block->step_event_count.wide - accel_decel_steps;
 #ifdef LIN_ADVANCE
-    if (block->use_advance_lead)
+    if (block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD)
         max_adv_steps = block->nominal_rate * block->adv_comp;
 #endif
   } else {
@@ -277,7 +277,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
     }
 
 #ifdef LIN_ADVANCE
-    if (block->use_advance_lead) {
+    if (block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
         if(!accelerate_steps || !decelerate_steps) {
             // accelerate_steps=0: deceleration-only ramp, max_rate is effectively unused
             // decelerate_steps=0: acceleration-only ramp, max_rate _is_ final_rate
@@ -295,7 +295,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   // which corresponds to a maximum repeat frequency of 228.57 kHz.
   // This blocking is safe in the context of a 10kHz stepper driver interrupt
   // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
-  if (! block->busy) { // Don't update variables if block is busy.
+  if (!(block->flag & BLOCK_FLAG_BUSY)) { // Don't update variables if block is busy.
     block->accelerate_until = accelerate_steps;
     block->decelerate_after = accelerate_steps+plateau_steps;
     block->initial_rate = initial_rate;
@@ -726,7 +726,8 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   block_t *block = &block_buffer[block_buffer_head];
 
   // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
-  block->busy = false;
+  // Also reset the block flag.
+  block->flag = 0;
 
   // Set sdlen for calculating sd position
   block->sdlen = 0;
@@ -1009,7 +1010,7 @@ Having the real displacement of the head, we can calculate the total movement le
   {
     accel = ceil(cs.retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
     #ifdef LIN_ADVANCE
-    block->use_advance_lead = false;
+    block->flag &= ~BLOCK_FLAG_USE_ADVANCE_LEAD;
     #endif
   }
   else
@@ -1024,10 +1025,10 @@ Having the real displacement of the head, we can calculate the total movement le
      * delta_mm[E_AXIS] >= 0    : Extruding or traveling, but _not_ retracting.
      * |delta_mm[Z_AXIS]| < 0.5 : Z is only moved for leveling (_not_ for priming)
      */
-    block->use_advance_lead = extruder_advance_K > 0
-                              && delta_mm[E_AXIS] >= 0
-                              && fabs(delta_mm[Z_AXIS]) < 0.5;
-    if (block->use_advance_lead) {
+    if (extruder_advance_K > 0
+            && delta_mm[E_AXIS] >= 0
+            && fabs(delta_mm[Z_AXIS]) < 0.5) {
+        block->flag |= BLOCK_FLAG_USE_ADVANCE_LEAD;
 #ifdef LA_FLOWADJ
         // M221/FLOW should change uniformly the extrusion thickness
         float delta_e = (e - position_float[E_AXIS]) / extruder_multiplier[extruder];
@@ -1048,7 +1049,7 @@ Having the real displacement of the head, we can calculate the total movement le
         // no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print
         // 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
         if (e_D_ratio > 3.0)
-            block->use_advance_lead = false;
+            block->flag &= ~BLOCK_FLAG_USE_ADVANCE_LEAD;
         else if (e_D_ratio > 0) {
             const uint32_t max_accel_steps_per_s2 = ceil(cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio) * steps_per_mm);
             if (accel > max_accel_steps_per_s2) {
@@ -1100,9 +1101,6 @@ Having the real displacement of the head, we can calculate the total movement le
           }
       }
   }
-
-  // Reset the block flag.
-  block->flag = 0;
 
   if (plan_reset_next_e_sched)
   {
@@ -1203,7 +1201,7 @@ Having the real displacement of the head, we can calculate the total movement le
   block->speed_factor = block->nominal_rate / block->nominal_speed;
 
 #ifdef LIN_ADVANCE
-  if (block->use_advance_lead) {
+  if (block->flag & BLOCK_FLAG_USE_ADVANCE_LEAD) {
       // calculate the compression ratio for the segment (the required advance steps are computed
       // during trapezoid planning)
       float adv_comp = extruder_advance_K * e_D_ratio * cs.axis_steps_per_mm[E_AXIS]; // (step/(mm/s))
