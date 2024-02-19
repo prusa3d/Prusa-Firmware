@@ -95,13 +95,17 @@ struct MotorCurrents {
         }
     }
 
+    // PROGMEM initializer
+    inline __attribute__((always_inline)) MotorCurrents(const MotorCurrents &curr_P) { memcpy_P(this, &curr_P, sizeof(*this)); }
+
     constexpr inline __attribute__((always_inline)) MotorCurrents(uint8_t ir, uint8_t ih)
         : vSense((ir < 32) ? 1 : 0)
         , iRun((ir < 32) ? ir : (ir >> 1))
         , iHold((ir < 32) ? ih : (ih >> 1)) {}
 
     inline uint8_t getiRun() const { return iRun; }
-    inline uint8_t getiHold() const { return iHold; }
+    inline uint8_t getiHold() const { return min(iHold, iRun); }
+    inline bool iHoldIsClamped() const { return iHold > iRun; }
     inline uint8_t getvSense() const { return vSense; }
 
     void __attribute__((noinline)) setiRun(uint8_t ir) {
@@ -165,12 +169,8 @@ extern uint16_t tmc2130_sg_measure_stop();
 // Enable or Disable crash detection according to EEPROM
 void crashdet_use_eeprom_setting();
 
-extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres);
+extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, const MotorCurrents *curr = nullptr);
 
-//set holding current for any axis (M911)
-extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);
-//set running current for any axis (M912)
-extern void tmc2130_set_current_r(uint8_t axis, uint8_t current);
 //print currents (M913)
 extern void tmc2130_print_currents();
 
