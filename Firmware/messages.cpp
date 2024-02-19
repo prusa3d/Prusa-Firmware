@@ -192,7 +192,12 @@ extern const char MSG_TM_ACK_ERROR[] PROGMEM_I1 = ISTR("Clear TM error");////MSG
 extern const char MSG_LOAD_ALL[] PROGMEM_I1 = ISTR("Load All"); ////MSG_LOAD_ALL c=18
 extern const char MSG_NOZZLE_CNG_MENU [] PROGMEM_I1 = ISTR("Nozzle change");////MSG_NOZZLE_CNG_MENU c=18
 extern const char MSG_NOZZLE_CNG_READ_HELP [] PROGMEM_I1 = ISTR("For a Nozzle change please read\nprusa.io/nozzle-mk3s");////MSG_NOZZLE_CNG_READ_HELP c=20 r=4
+#ifndef QUICK_NOZZLE_CHANGE
 extern const char MSG_NOZZLE_CNG_CHANGED [] PROGMEM_I1 = ISTR("Hotend at 280C! Nozzle changed and tightened to specs?");////MSG_NOZZLE_CNG_CHANGED c=20 r=6
+#else
+extern const char MSG_NOZZLE_CNG_COOLDOWN [] PROGMEM_I1 = ISTR("Nozzle is hot! Wait for cooldown.");////MSG_NOZZLE_CNG_COOLDOWN c=20 r=3
+extern const char MSG_NOZZLE_CNG_CHANGED [] PROGMEM_I1 = ISTR("Nozzle changed?");////MSG_NOZZLE_CNG_CHANGED_QUICK c=20 r=3
+#endif //QUICK_NOZZLE_CHANGE
 extern const char MSG_REPRINT [] PROGMEM_I1 = ISTR("Reprint"); ////MSG_REPRINT c=18
 //not internationalized messages
 #if 0

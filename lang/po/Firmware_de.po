@@ -2603,6 +2603,16 @@ msgstr "Druck wiederholen"
 msgid "Shutdown host"
 msgstr "Host runterfahren"
 
+#. MSG_NOZZLE_CNG_COOLDOWN c=20 r=3
+#: ../../Firmware/messages.cpp:198 ../../Firmware/ultralcd.cpp:1002
+msgid "Nozzle is hot! Wait for cooldown."
+msgstr "Die Düse ist heiß! Auf Abkühlung warten."
+
+#. MSG_NOZZLE_CNG_CHANGED_QUICK c=20 r=3
+#: ../../Firmware/messages.cpp:199
+msgid "Nozzle changed?"
+msgstr "Düse gewechselt?"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Entferne das alte Fil. und drücke den Knopf, um das neue zu laden."
 

@@ -2592,6 +2592,16 @@ msgstr "Przedruk"
 msgid "Shutdown host"
 msgstr "Zamknięcie hosta"
 
+#. MSG_NOZZLE_CNG_COOLDOWN c=20 r=3
+#: ../../Firmware/messages.cpp:198 ../../Firmware/ultralcd.cpp:1002
+msgid "Nozzle is hot! Wait for cooldown."
+msgstr "Dysza jest gorąca! Poczekaj na schłodzenie."
+
+#. MSG_NOZZLE_CNG_CHANGED_QUICK c=20 r=3
+#: ../../Firmware/messages.cpp:199
+msgid "Nozzle changed?"
+msgstr "Dysza została zmieniona?"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Wyciągnij poprzedni filament i naciśnij pokrętło aby załadować nowy."
 

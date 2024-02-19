@@ -2575,6 +2575,16 @@ msgstr "Tisk. znovu"
 msgid "Shutdown host"
 msgstr "Vypnutí hostitele"
 
+#. MSG_NOZZLE_CNG_COOLDOWN c=20 r=3
+#: ../../Firmware/messages.cpp:198 ../../Firmware/ultralcd.cpp:1002
+msgid "Nozzle is hot! Wait for cooldown."
+msgstr "Tryska je horká! Počkejte na vychladnutí."
+
+#. MSG_NOZZLE_CNG_CHANGED_QUICK c=20 r=3
+#: ../../Firmware/messages.cpp:199
+msgid "Nozzle changed?"
+msgstr "Vyměnili jste trysku?"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
 
