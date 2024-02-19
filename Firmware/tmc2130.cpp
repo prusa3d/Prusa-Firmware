@@ -439,6 +439,9 @@ void tmc2130_home_exit()
 		{
 			if (tmc2130_sg_homing_axes_mask & mask) {
 				tmc2130_XYZ_reg_init(axis);
+				currents[axis].setiRun(tmc2130_current_r[axis]);
+				currents[axis].setiHold(tmc2130_current_h[axis]);
+				tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 			}
 		}
 		tmc2130_sg_homing_axes_mask = 0x00;
