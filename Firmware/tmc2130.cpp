@@ -580,10 +580,10 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, const MotorCurrents *curr
 void tmc2130_print_currents()
 {
 	printf_P(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
-		currents[0].getiHold(), currents[0].getiRun(),
-		currents[1].getiHold(), currents[1].getiRun(),
-		currents[2].getiHold(), currents[2].getiRun(),
-		currents[3].getiHold(), currents[3].getiRun()
+		currents[0].getOriginaliHold(), currents[0].getOriginaliRun(),
+		currents[1].getOriginaliHold(), currents[1].getOriginaliRun(),
+		currents[2].getOriginaliHold(), currents[2].getOriginaliRun(),
+		currents[3].getOriginaliHold(), currents[3].getOriginaliRun()
 	);
 }
 
