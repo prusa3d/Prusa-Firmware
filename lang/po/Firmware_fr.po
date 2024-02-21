@@ -2535,10 +2535,10 @@ msgstr ""
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:289 ../../Firmware/mmu2/errors_list.h:336
 msgid ""
-"MMU FW version is incompatible with printer FW.Update to version 3.0.1."
+"MMU FW version is incompatible with printer FW.Update to version 3.0.2."
 msgstr ""
 "La version du MMU est incompatible avec le FW de l'imprimante. Mise à jour "
-"vers la version 3.0.1."
+"vers la version 3.0.2."
 
 #. MSG_PRELOAD_TO_MMU c=17
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:5281
