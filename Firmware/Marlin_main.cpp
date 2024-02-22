@@ -1658,7 +1658,7 @@ void setup()
               if ( btn == LCD_LEFT_BUTTON_CHOICE) {
                   recover_print(0);
             } else { // LCD_MIDDLE_BUTTON_CHOICE
-                  eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+                  cancel_saved_printing();
             }
           }
       }
