@@ -553,7 +553,9 @@ static void SetCurrents(const uint8_t axis, const MotorCurrents &curr) {
     };
 
     IHoldRun ihold_irun(iHold, iRun);
-
+#ifdef DEBUG_TMC_CURRENTS
+	printf_P(PSTR("SetCurrents(axis=%u, iHold=%u, iRun=%u, vsense=%u, reg=%08lX)\n"), axis, iHold, iRun, curr.getvSense(), ihold_irun.dw);
+#endif //DEBUG_TMC_CURRENTS
     tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, ihold_irun.dw);
 }
 
