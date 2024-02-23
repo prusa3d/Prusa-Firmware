@@ -2861,7 +2861,9 @@ bool sample_mesh_and_store_reference()
         enable_endstops(true);
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         go_to_current(homing_feedrate[Z_AXIS]/60);
+#ifdef TMC2130
         check_Z_crash();
+#endif
         enable_endstops(false);
 
         // Move XY to first point
