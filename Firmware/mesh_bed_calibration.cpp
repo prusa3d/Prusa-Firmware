@@ -2838,6 +2838,7 @@ void go_home_with_z_lift()
 // Returns false if the reference values are more than 3mm far away.
 bool sample_mesh_and_store_reference()
 {
+    bool result = false;
 #ifdef TMC2130
     tmc2130_home_enter(Z_AXIS_MASK);
 #endif
@@ -2856,30 +2857,23 @@ bool sample_mesh_and_store_reference()
     // Sample Z heights for the mesh bed leveling.
     // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
     {
-        // The first point defines the reference.
+        // Lower Z to the mesh search height with stall detection
+        enable_endstops(true);
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         go_to_current(homing_feedrate[Z_AXIS]/60);
+        check_Z_crash();
+        enable_endstops(false);
+
+        // Move XY to first point
         current_position[X_AXIS] = BED_X0;
         current_position[Y_AXIS] = BED_Y0;
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
         go_to_current(homing_feedrate[X_AXIS]/60);
         set_destination_to_current();
-        enable_endstops(true);
         homeaxis(Z_AXIS);
-
-#ifdef TMC2130
-		if (!axis_known_position[Z_AXIS] && (!READ(Z_TMC2130_DIAG))) //Z crash
-		{
-			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			goto fail;
-		}
-#endif //TMC2130
-
-        enable_endstops(false);
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
 			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			goto fail;
 		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
@@ -2905,7 +2899,6 @@ bool sample_mesh_and_store_reference()
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
 			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			goto fail;
 		}
         // Get cords of measuring point
        
@@ -2924,7 +2917,7 @@ bool sample_mesh_and_store_reference()
             // The span of the Z offsets is extreme. Give up.
             // Homing failed on some of the points.
             SERIAL_PROTOCOLLNPGM("Exreme span of the Z values!");
-            goto fail;
+            goto end;
         }
     }
 
@@ -2964,18 +2957,14 @@ bool sample_mesh_and_store_reference()
 
     go_home_with_z_lift();
 
+    result = true;
+end:
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
 #ifdef TMC2130
     tmc2130_home_exit();
 #endif
-    return true;
-
-fail:
-#ifdef TMC2130
-    tmc2130_home_exit();
-#endif
-    return false;
+    return result;
 }
 
 #ifndef NEW_XYZCAL

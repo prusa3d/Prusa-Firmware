@@ -253,6 +253,7 @@ uint16_t restore_interrupted_gcode();
 float __attribute__((noinline)) get_feedrate_mm_s(const float feedrate_mm_min);
 
 #ifdef TMC2130
+void check_Z_crash(void);
 void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
 void homeaxis(uint8_t axis, uint8_t cnt = 1);

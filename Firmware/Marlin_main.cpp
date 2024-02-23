@@ -2193,7 +2193,7 @@ bool calibrate_z_auto()
 #endif //TMC2130
 
 #ifdef TMC2130
-static void check_Z_crash(void)
+void check_Z_crash(void)
 {
 	if (!READ(Z_TMC2130_DIAG)) { //Z crash
 		FORCE_HIGH_POWER_END;
