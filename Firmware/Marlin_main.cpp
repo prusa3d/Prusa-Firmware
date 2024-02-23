@@ -3278,9 +3278,6 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					final_result = true;
 				}
 			}
-#ifdef TMC2130
-			tmc2130_home_exit();
-#endif
 		}
 		else
 		{

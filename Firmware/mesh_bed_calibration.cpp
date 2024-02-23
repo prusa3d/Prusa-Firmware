@@ -2838,6 +2838,9 @@ void go_home_with_z_lift()
 // Returns false if the reference values are more than 3mm far away.
 bool sample_mesh_and_store_reference()
 {
+#ifdef TMC2130
+    tmc2130_home_enter(Z_AXIS_MASK);
+#endif
     bool endstops_enabled  = enable_endstops(false);
     bool endstop_z_enabled = enable_z_endstop(false);
 
@@ -2868,7 +2871,7 @@ bool sample_mesh_and_store_reference()
 		if (!axis_known_position[Z_AXIS] && (!READ(Z_TMC2130_DIAG))) //Z crash
 		{
 			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return false;
+			goto fail;
 		}
 #endif //TMC2130
 
@@ -2876,7 +2879,7 @@ bool sample_mesh_and_store_reference()
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
 			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return false;
+			goto fail;
 		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
@@ -2902,7 +2905,7 @@ bool sample_mesh_and_store_reference()
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
 			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return false;
+			goto fail;
 		}
         // Get cords of measuring point
        
@@ -2921,7 +2924,7 @@ bool sample_mesh_and_store_reference()
             // The span of the Z offsets is extreme. Give up.
             // Homing failed on some of the points.
             SERIAL_PROTOCOLLNPGM("Exreme span of the Z values!");
-            return false;
+            goto fail;
         }
     }
 
@@ -2963,7 +2966,16 @@ bool sample_mesh_and_store_reference()
 
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
+#ifdef TMC2130
+    tmc2130_home_exit();
+#endif
     return true;
+
+fail:
+#ifdef TMC2130
+    tmc2130_home_exit();
+#endif
+    return false;
 }
 
 #ifndef NEW_XYZCAL
