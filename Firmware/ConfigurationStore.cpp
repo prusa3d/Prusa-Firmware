@@ -214,6 +214,10 @@ bool Config_RetrieveSettings()
         eeprom_init_default_block(&EEPROM_M500_base->max_feedrate_silent, sizeof(EEPROM_M500_base->max_feedrate_silent), default_conf.max_feedrate_silent);
         eeprom_init_default_block(&EEPROM_M500_base->max_acceleration_mm_per_s2_silent, sizeof(EEPROM_M500_base->max_acceleration_mm_per_s2_silent), default_conf.max_acceleration_mm_per_s2_silent);
 
+#ifdef TMC2130
+        eeprom_init_default_block(&EEPROM_M500_base->axis_ustep_resolution, sizeof(EEPROM_M500_base->axis_ustep_resolution), default_conf.axis_ustep_resolution);
+#endif // TMC2130
+
         // load the CS to RAM
         eeprom_read_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
         calculate_extruder_multipliers();
@@ -230,11 +234,6 @@ bool Config_RetrieveSettings()
       if (cs.max_acceleration_mm_per_s2_silent[j] > SILENT_MAX_ACCEL_XY)
         cs.max_acceleration_mm_per_s2_silent[j] = SILENT_MAX_ACCEL_XY;
     }
-        
-    if(cs.axis_ustep_resolution[X_AXIS] == 0xff){ cs.axis_ustep_resolution[X_AXIS] = TMC2130_USTEPS_XY; }
-    if(cs.axis_ustep_resolution[Y_AXIS] == 0xff){ cs.axis_ustep_resolution[Y_AXIS] = TMC2130_USTEPS_XY; }
-    if(cs.axis_ustep_resolution[Z_AXIS] == 0xff){ cs.axis_ustep_resolution[Z_AXIS] = TMC2130_USTEPS_Z; }
-    if(cs.axis_ustep_resolution[E_AXIS] == 0xff){ cs.axis_ustep_resolution[E_AXIS] = TMC2130_USTEPS_E; }
 
     tmc2130_set_res(X_AXIS, cs.axis_ustep_resolution[X_AXIS]);
     tmc2130_set_res(Y_AXIS, cs.axis_ustep_resolution[Y_AXIS]);
