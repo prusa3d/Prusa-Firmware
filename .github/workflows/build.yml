@@ -18,6 +18,7 @@ jobs:
     # setup base required dependencies
     - name: Setup dependencies
       run: |
+          sudo apt-get update
           sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -72,6 +73,7 @@ jobs:
     # setup base required dependencies
     - name: Setup dependencies
       run: |
+          sudo apt-get update
           sudo apt-get install gcc-11 g++11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -119,6 +121,7 @@ jobs:
     # setup base required dependencies
     - name: Setup dependencies
       run: |
+          sudo apt-get update
           sudo apt-get install gcc-11 g++11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it

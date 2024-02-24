@@ -18,6 +18,7 @@ jobs:
     # setup base required dependencies
     - name: Setup dependencies
       run: |
+          sudo apt-get update
           sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib
 
     # build the base branch
