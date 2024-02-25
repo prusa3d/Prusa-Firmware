@@ -947,6 +947,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 #endif //SUPPORT_VERBOSITY
         )
 {
+    bool result = false;
 	bool high_deviation_occured = false; 
     bedPWMDisabled = 1;
 #ifdef TMC2130
@@ -974,13 +975,13 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
     if (! endstop_z_hit_on_purpose())
 	{
 		//printf_P(PSTR("endstop not hit 1, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
-		goto error;
+		goto end;
 	}
 #ifdef TMC2130
 	if (!READ(Z_TMC2130_DIAG))
 	{
 		//printf_P(PSTR("crash detected 1, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
-		goto error; //crash Z detected
+		goto end; //crash Z detected
 	}
 #endif //TMC2130
     for (uint8_t i = 0; i < n_iter; ++ i)
@@ -1010,12 +1011,12 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 		if (!endstop_z_hit_on_purpose())
 		{
 			//printf_P(PSTR("i = %d, endstop not hit 2, current_pos[Z]: %f \n"), i, current_position[Z_AXIS]);
-			goto error;
+			goto end;
 		}
 #ifdef TMC2130
 		if (!READ(Z_TMC2130_DIAG)) {
 			//printf_P(PSTR("crash detected 2, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
-			goto error; //crash Z detected
+			goto end; //crash Z detected
 		}
 #endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
@@ -1035,7 +1036,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 				z = 0;
 			}
 			else {
-				goto error;
+				goto end;
 			}
 		}
 		//printf_P(PSTR("PINDA triggered at %f\n"), current_position[Z_AXIS]);
@@ -1044,7 +1045,8 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
     if (n_iter > 1)
         current_position[Z_AXIS] /= float(n_iter);
 
-
+    result = true; //success
+end:
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 3");
@@ -1052,17 +1054,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
     if (bHighPowerForced) FORCE_HIGH_POWER_END;
 #endif
     bedPWMDisabled = 0;
-	return true;
-
-error:
-//    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 4");
-    enable_endstops(endstops_enabled);
-    enable_z_endstop(endstop_z_enabled);
-#ifdef TMC2130
-	if (bHighPowerForced) FORCE_HIGH_POWER_END;
-#endif
-    bedPWMDisabled = 0;
-	return false;
+	return result;
 }
 
 #ifdef NEW_XYZCAL

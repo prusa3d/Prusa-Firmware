@@ -2192,16 +2192,29 @@ bool calibrate_z_auto()
 }
 #endif //TMC2130
 
+static void nozzle_crash_handler() {
+    // Exit whatever homing or endstop mode was enabled
+#ifdef TMC2130
+    FORCE_HIGH_POWER_END;
+    tmc2130_home_exit();
+#endif
+    enable_endstops(false);
+    enable_z_endstop(false);
+    // Fix the planner position to a known value
+    current_position[Z_AXIS] = 0;
+    plan_set_position_curposXYZE();
+    // Raize Z to release pressure on bed after nozzle crash
+    current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
+    plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
+    st_synchronize();
+}
+
 #ifdef TMC2130
 void check_Z_crash(void)
 {
 	if (!READ(Z_TMC2130_DIAG)) { //Z crash
-		FORCE_HIGH_POWER_END;
-		current_position[Z_AXIS] = 0;
-		plan_set_position_curposXYZE();
-		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
-		plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
-		st_synchronize();
+        nozzle_crash_handler();
+        // throw unrecoverable error
 		kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 	}
 }
@@ -3281,6 +3294,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		}
 		else
 		{
+            nozzle_crash_handler();            
 			lcd_show_fullscreen_message_and_wait_P(PSTR("Calibration failed! Check the axes and run again."));
 			final_result = false;
 		}
