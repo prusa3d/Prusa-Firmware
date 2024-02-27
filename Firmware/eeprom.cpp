@@ -26,7 +26,7 @@ void eeprom_init()
     eeprom_init_default_dword((uint32_t*)EEPROM_MMU_MATERIAL_CHANGES, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == EEPROM_EMPTY_VALUE)
     {
-        eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+        eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), 0);
         // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
         // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
         int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
@@ -49,7 +49,7 @@ void eeprom_init()
     // initialize custom mendel name in eeprom
     if (eeprom_read_byte((uint8_t*)EEPROM_CUSTOM_MENDEL_NAME) == EEPROM_EMPTY_VALUE) {
         //SERIAL_ECHOLN("Init Custom Mendel Name");
-        eeprom_update_block(CUSTOM_MENDEL_NAME, (uint8_t*)EEPROM_CUSTOM_MENDEL_NAME, sizeof(CUSTOM_MENDEL_NAME));
+        eeprom_update_block_notify(CUSTOM_MENDEL_NAME, (uint8_t*)EEPROM_CUSTOM_MENDEL_NAME, sizeof(CUSTOM_MENDEL_NAME));
     } //else SERIAL_ECHOLN("Found Custom Mendel Name");
 
 #ifdef PINDA_TEMP_COMP
@@ -66,11 +66,11 @@ void eeprom_init()
 }
 
 void eeprom_adjust_bed_reset() {
-    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
-    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_LEFT, 0);
-    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_RIGHT, 0);
-    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_FRONT, 0);
-    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_REAR, 0);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_LEFT, 0);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_RIGHT, 0);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_FRONT, 0);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_REAR, 0);
 }
 
 //! @brief Get default sheet name for index
@@ -137,12 +137,175 @@ int8_t eeprom_next_initialized_sheet(int8_t sheet)
     return -1;
 }
 
+#ifdef DEBUG_EEPROM_CHANGES
+static void eeprom_byte_notify(uint8_t *dst, uint8_t previous_value, uint8_t value, bool write) {
+    printf_P(PSTR("EEPROMChng b %s %u %d -> %d\n"), write ? "write":"", dst , previous_value, value);
+}
+
+static void eeprom_word_notify(uint16_t *dst, uint16_t previous_value, uint16_t value, bool write) {
+    printf_P(PSTR("EEPROMChng w %s %u %u -> %u\n"), write ? "write":"", dst , previous_value, value);
+}
+
+static void eeprom_dword_notify(uint32_t *dst, uint32_t previous_value, uint32_t value, bool write) {
+    printf_P(PSTR("EEPROMChng d %s %u %x -> %x\n"), write ? "write":"", reinterpret_cast<const uint16_t>(dst) , previous_value, value);
+}
+
+static void eeprom_float_notify(float *dst, float previous_value, float value, bool write) {
+    printf_P(PSTR("EEPROMChng f %s %u %f -> %f\n"), write ? "write":"", reinterpret_cast<const uint16_t>(dst) , previous_value, value);
+}
+
+static void eeprom_block_notify(void *dst, const uint8_t *previous_values, const uint8_t *values, size_t size, bool write) {
+    for(size_t i = 0; i < size; ++i){
+        if (previous_values[i] != values[i] || write) {
+            printf_P(PSTR("EEPROMChng bl %s %u %x -> %x\n"), write ? "write":"", reinterpret_cast<const uint16_t>(dst) + i, previous_values[i], values[i]);
+        }
+    }
+}
+#endif //DEBUG_EEPROM_CHANGES
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_write_byte_notify(uint8_t *dst, uint8_t value){
+#else
+void eeprom_write_byte_notify(uint8_t *dst, uint8_t value, bool active){
+    if (active) {
+        uint8_t previous_value = eeprom_read_byte(dst);
+        eeprom_byte_notify(dst, previous_value, value, true);
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_write_byte(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_update_byte_notify(uint8_t *dst, uint8_t value){
+#else
+void eeprom_update_byte_notify(uint8_t *dst, uint8_t value, bool active){
+
+    if (active) {
+        uint8_t previous_value = eeprom_read_byte(dst);
+        if (previous_value != value) {
+            eeprom_byte_notify(dst, previous_value, value, false);
+        }
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_update_byte(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_write_word_notify(uint16_t *dst, uint16_t value){
+#else
+void eeprom_write_word_notify(uint16_t *dst, uint16_t value, bool active){
+    if (active) {
+        uint16_t previous_value = eeprom_read_word(dst);
+        eeprom_word_notify(dst, previous_value, value, true);
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_write_word(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_update_word_notify(uint16_t *dst, uint16_t value){
+#else
+void eeprom_update_word_notify(uint16_t *dst, uint16_t value, bool active){
+    if (active) {
+        uint16_t previous_value = eeprom_read_word(dst);
+        if (previous_value != value) {
+            eeprom_word_notify(dst, previous_value, value, false);
+        }
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_update_word(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_write_dword_notify(uint32_t *dst, uint32_t value){
+#else
+void eeprom_write_dword_notify(uint32_t *dst, uint32_t value, bool active){
+    if (active) {
+        uint32_t previous_value = eeprom_read_dword(dst);
+        eeprom_dword_notify(dst, previous_value, value, true);
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_write_dword(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_update_dword_notify(uint32_t *dst, uint32_t value){
+#else
+void eeprom_update_dword_notify(uint32_t *dst, uint32_t value, bool active){
+    if (active) {
+        uint32_t previous_value = eeprom_read_dword(dst);
+        if (previous_value != value) {
+            eeprom_dword_notify(dst, previous_value, value, false);
+        }
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_update_dword(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_write_float_notify(float *dst, float value){
+#else
+void eeprom_write_float_notify(float *dst, float value, bool active){
+    if (active) {
+        float previous_value = eeprom_read_float(dst);
+        eeprom_float_notify(dst, previous_value, value, true);
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_write_float(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_update_float_notify(float *dst, float value){
+#else
+void eeprom_update_float_notify(float *dst, float value, bool active){
+    if (active) {
+        float previous_value = eeprom_read_float(dst);
+        if (previous_value != value) {
+            eeprom_float_notify(dst, previous_value, value, false);
+        }
+    }
+#endif //DEBUG_EEPROM_CHANGES
+    eeprom_update_float(dst, value);
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_write_block_notify(const void *__src, void *__dst, size_t __n){
+    eeprom_write_block(__src, __dst, __n);
+#else
+void eeprom_write_block_notify(const void *__src, void *__dst, size_t __n, bool active){
+    if (active) {
+        uint8_t previous_values[__n];
+        uint8_t new_values[__n];
+        eeprom_read_block(previous_values, __dst, __n);
+        eeprom_write_block(__src, __dst, __n);
+        eeprom_read_block(new_values, __dst, __n);
+        eeprom_block_notify(__dst, previous_values, new_values, __n, true);
+    }
+#endif //DEBUG_EEPROM_CHANGES
+}
+
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_update_block_notify(const void *__src, void *__dst, size_t __n){
+    eeprom_update_block(__src, __dst, __n);
+#else
+void eeprom_update_block_notify(const void *__src, void *__dst, size_t __n, bool active){
+    if (active) {
+        uint8_t previous_values[__n];
+        uint8_t new_values[__n];
+        eeprom_read_block(previous_values, __dst, __n);
+        eeprom_update_block(__src, __dst, __n);
+        eeprom_read_block(new_values, __dst, __n);
+        eeprom_block_notify(__dst, previous_values, new_values, __n, false);
+    }
+#endif //DEBUG_EEPROM_CHANGES
+}
+
 void eeprom_switch_to_next_sheet()
 {
     int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 
     sheet = eeprom_next_initialized_sheet(sheet);
-    if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
+    if (sheet >= 0) eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), sheet);
 }
 
 bool __attribute__((noinline)) eeprom_is_sheet_initialized(uint8_t sheet_num) {
@@ -163,44 +326,44 @@ void eeprom_update_block_P(const void *__src, void *__dst, size_t __n) {
     const uint8_t *src = (const uint8_t*)__src;
     uint8_t *dst = (uint8_t*)__dst;
     while (__n--) {
-        eeprom_update_byte(dst++, pgm_read_byte(src++));
+        eeprom_update_byte_notify(dst++, pgm_read_byte(src++));
     }
 }
 
 void eeprom_toggle(uint8_t *__p) {
-    eeprom_write_byte(__p, !eeprom_read_byte(__p));
+    eeprom_write_byte_notify(__p, !eeprom_read_byte(__p));
 }
 
 void __attribute__((noinline)) eeprom_increment_byte(uint8_t *__p) {
-    eeprom_write_byte(__p, eeprom_read_byte(__p) + 1);
+    eeprom_write_byte_notify(__p, eeprom_read_byte(__p) + 1);
 }
 
 void __attribute__((noinline)) eeprom_increment_word(uint16_t *__p) {
-    eeprom_write_word(__p, eeprom_read_word(__p) + 1);
+    eeprom_write_word_notify(__p, eeprom_read_word(__p) + 1);
 }
 
 void __attribute__((noinline)) eeprom_increment_dword(uint32_t *__p) {
-    eeprom_write_dword(__p, eeprom_read_dword(__p) + 1);
+    eeprom_write_dword_notify(__p, eeprom_read_dword(__p) + 1);
 }
 
 
 void __attribute__((noinline)) eeprom_add_byte(uint8_t *__p, uint8_t add) {
-    eeprom_write_byte(__p, eeprom_read_byte(__p) + add);
+    eeprom_write_byte_notify(__p, eeprom_read_byte(__p) + add);
 }
 
 void __attribute__((noinline)) eeprom_add_word(uint16_t *__p, uint16_t add) {
-    eeprom_write_word(__p, eeprom_read_word(__p) + add);
+    eeprom_write_word_notify(__p, eeprom_read_word(__p) + add);
 }
 
 void __attribute__((noinline)) eeprom_add_dword(uint32_t *__p, uint32_t add) {
-    eeprom_write_dword(__p, eeprom_read_dword(__p) + add);
+    eeprom_write_dword_notify(__p, eeprom_read_dword(__p) + add);
 }
 
 
 uint8_t __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def) {
     uint8_t val = eeprom_read_byte(__p);
     if (val == EEPROM_EMPTY_VALUE) {
-        eeprom_write_byte(__p, def);
+        eeprom_write_byte_notify(__p, def);
         return def;
     }
     return val;
@@ -209,7 +372,7 @@ uint8_t __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t
 uint16_t __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def) {
     uint16_t val = eeprom_read_word(__p);
     if (val == EEPROM_EMPTY_VALUE16) {
-        eeprom_write_word(__p, def);
+        eeprom_write_word_notify(__p, def);
         return def;
     }
     return val;
@@ -218,7 +381,7 @@ uint16_t __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint1
 uint32_t __attribute__((noinline)) eeprom_init_default_dword(uint32_t *__p, uint32_t def) {
     uint32_t val = eeprom_read_dword(__p);
     if (val == EEPROM_EMPTY_VALUE32) {
-        eeprom_write_dword(__p, def);
+        eeprom_write_dword_notify(__p, def);
         return def;
     }
     return val;
@@ -226,12 +389,12 @@ uint32_t __attribute__((noinline)) eeprom_init_default_dword(uint32_t *__p, uint
 
 void __attribute__((noinline)) eeprom_init_default_float(float *__p, float def) {
     if (eeprom_read_dword((uint32_t*)__p) == EEPROM_EMPTY_VALUE32)
-        eeprom_write_float(__p, def);
+        eeprom_write_float_notify(__p, def);
 }
 
 void __attribute__((noinline)) eeprom_init_default_block(void *__p, size_t __n, const void *def) {
     if (!eeprom_is_initialized_block(__p, __n))
-        eeprom_update_block(def, __p, __n);
+        eeprom_update_block_notify(def, __p, __n);
 }
 
 void __attribute__((noinline)) eeprom_init_default_block_P(void *__p, size_t __n, const void *def) {

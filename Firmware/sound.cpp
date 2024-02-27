@@ -30,7 +30,7 @@ void Sound_Init(void)
 
 void Sound_SaveMode(void)
 {
-eeprom_update_byte((uint8_t*)EEPROM_SOUND_MODE,(uint8_t)eSoundMode);
+eeprom_update_byte_notify((uint8_t*)EEPROM_SOUND_MODE,(uint8_t)eSoundMode);
 }
 
 void Sound_CycleState(void)

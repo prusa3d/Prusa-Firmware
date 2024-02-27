@@ -238,7 +238,7 @@ bool extruder_altfan_detect()
 void altfanOverride_toggle()
 {
     altfanStatus.altfanOverride = !altfanStatus.altfanOverride;
-    eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanStatus.altfanOverride);
+    eeprom_update_byte_notify((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanStatus.altfanOverride);
 }
 
 bool altfanOverride_get()

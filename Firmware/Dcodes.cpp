@@ -120,7 +120,7 @@ void write_mem(uint16_t address, uint16_t count, const uint8_t* data, const dcod
         switch (type)
         {
         case dcode_mem_t::sram: *((uint8_t*)address) = data[i]; break;
-        case dcode_mem_t::eeprom: eeprom_write_byte((uint8_t*)address, data[i]); break;
+        case dcode_mem_t::eeprom: eeprom_write_byte_notify((uint8_t*)address, data[i]); break;
         case dcode_mem_t::progmem: break;
         case dcode_mem_t::xflash: break;
         }
@@ -255,7 +255,7 @@ void dcode_1()
 	LOG("D1 - Clear EEPROM and RESET\n");
 	cli();
 	for (int i = 0; i < 8192; i++)
-		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
+		eeprom_write_byte_notify((unsigned char*)i, (unsigned char)0xff);
 	softReset();
 }
 #endif
@@ -487,12 +487,12 @@ void dcode_8()
 	else if (strchr_pointer[1+1] == '!')
 	{
 		cal_status = 1;
-		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, cal_status);
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+		eeprom_write_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, cal_status);
+		eeprom_write_word_notify(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
+		eeprom_write_word_notify(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
+		eeprom_write_word_notify(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
+		eeprom_write_word_notify(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
+		eeprom_write_word_notify(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
 	}
 	else
 	{

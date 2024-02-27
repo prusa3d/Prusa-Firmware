@@ -373,7 +373,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         angleDiff = fabs(a2 - a1);
         /// XY skew and Y-bed skew
         DBG(_n("Measured skews: %f %f\n"), degrees(a2 - a1), degrees(a2));
-        eeprom_update_float((float *)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later
+        eeprom_update_float_notify((float *)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
                 BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME :
@@ -669,16 +669,16 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
  */
 void reset_bed_offset_and_skew()
 {
-    eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+0), 0x0FFFFFFFF);
-    eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+4), 0x0FFFFFFFF);
-    eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_X +0), 0x0FFFFFFFF);
-    eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_X +4), 0x0FFFFFFFF);
-    eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_Y +0), 0x0FFFFFFFF);
-    eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_Y +4), 0x0FFFFFFFF);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+0), 0x0FFFFFFFF);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+4), 0x0FFFFFFFF);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_X +0), 0x0FFFFFFFF);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_X +4), 0x0FFFFFFFF);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_Y +0), 0x0FFFFFFFF);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_Y +4), 0x0FFFFFFFF);
 
     // Reset the 8 16bit offsets.
     for (int8_t i = 0; i < 4; ++ i)
-        eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_Z_JITTER+i*4), 0x0FFFFFFFF);
+        eeprom_update_dword_notify((uint32_t*)(EEPROM_BED_CALIBRATION_Z_JITTER+i*4), 0x0FFFFFFFF);
 }
 
 bool is_bed_z_jitter_data_valid()
@@ -2443,9 +2443,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			world2machine_update(vec_x, vec_y, cntr);
 
 			// Fearlessly store the calibration values into the eeprom.
-			eeprom_update_block(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
-			eeprom_update_block(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
-			eeprom_update_block(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
+			eeprom_update_block_notify(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
+			eeprom_update_block_notify(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
+			eeprom_update_block_notify(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
 
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 10) {
@@ -2731,9 +2731,9 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     world2machine_update(vec_x, vec_y, cntr);
 
     // Fearlessly store the calibration values into the eeprom.
-    eeprom_update_block(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
-    eeprom_update_block(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
-    eeprom_update_block(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
+    eeprom_update_block_notify(&cntr[0], (float*)(EEPROM_BED_CALIBRATION_CENTER), 8);
+    eeprom_update_block_notify(&vec_x[0], (float*)(EEPROM_BED_CALIBRATION_VEC_X), 8);
+    eeprom_update_block_notify(&vec_y[0], (float*)(EEPROM_BED_CALIBRATION_VEC_Y), 8);
 
     // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
 	world2machine_update_current();
@@ -2934,7 +2934,7 @@ bool sample_mesh_and_store_reference()
                     continue;
                 float dif = mbl.z_values[j][i] - mbl.z_values[0][0];
                 int16_t dif_quantized = int16_t(floor(dif * 100.f + 0.5f));
-                eeprom_update_word((uint16_t*)addr, *reinterpret_cast<uint16_t*>(&dif_quantized));
+                eeprom_update_word_notify((uint16_t*)addr, *reinterpret_cast<uint16_t*>(&dif_quantized));
                 #if 0
                 {
                     uint16_t z_offset_u = eeprom_read_word((uint16_t*)addr);

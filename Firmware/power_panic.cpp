@@ -113,11 +113,11 @@ void uvlo_() {
         // mesh bed leveling offset value.
         logical_z -= mbl.get_z(saved_pos[X_AXIS], saved_pos[Y_AXIS]);
     }
-    eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z, logical_z);
+    eeprom_update_float_notify((float*)EEPROM_UVLO_CURRENT_POSITION_Z, logical_z);
 
     // Store the print E position before we lose track
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), saved_pos[E_AXIS]);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, !saved_extruder_relative_mode);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_CURRENT_POSITION_E), saved_pos[E_AXIS]);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_E_ABS, !saved_extruder_relative_mode);
 
     // Clean the input command queue, inhibit serial processing using saved_printing
     cmdqueue_reset();
@@ -149,7 +149,7 @@ void uvlo_() {
     poweroff_z();
 
     // Write the file position.
-    eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), saved_sdpos);
+    eeprom_update_dword_notify((uint32_t*)(EEPROM_FILE_POSITION), saved_sdpos);
 
     // Store the mesh bed leveling offsets. This is 2*7*7=98 bytes, which takes 98*3.4us=333us in worst case.
     for (uint8_t mesh_point = 0; mesh_point < MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS; ++ mesh_point)
@@ -158,41 +158,41 @@ void uvlo_() {
         uint8_t iy = mesh_point / MESH_NUM_X_POINTS;
         // Scale the z value to 1u resolution.
         int16_t v = mbl_was_active ? int16_t(floor(mbl.z_values[iy][ix] * 1000.f + 0.5f)) : 0;
-        eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING_FULL +2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
+        eeprom_update_word_notify((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING_FULL +2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
     }
 
     // Write the _final_ Z position
-    eeprom_update_float((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z, current_position[Z_AXIS]);
+    eeprom_update_float_notify((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z, current_position[Z_AXIS]);
 
     // Store the current position.
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), saved_pos[X_AXIS]);
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), saved_pos[Y_AXIS]);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), saved_pos[X_AXIS]);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), saved_pos[Y_AXIS]);
 
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, saved_feedrate2);
-    eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
-    eeprom_update_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_extruder_temperature);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_bed_temperature);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, saved_fan_speed);
-    eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
-    eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
+    eeprom_update_word_notify((uint16_t*)EEPROM_UVLO_FEEDRATE, saved_feedrate2);
+    eeprom_update_word_notify((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
+    eeprom_update_word_notify((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_extruder_temperature);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_bed_temperature);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_FAN_SPEED, saved_fan_speed);
+    eeprom_update_float_notify((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
+    eeprom_update_word_notify((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
 
-    eeprom_update_float((float*)(EEPROM_UVLO_ACCELL), cs.acceleration);
-    eeprom_update_float((float*)(EEPROM_UVLO_RETRACT_ACCELL), cs.retract_acceleration);
-    eeprom_update_float((float*)(EEPROM_UVLO_TRAVEL_ACCELL), cs.travel_acceleration);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_ACCELL), cs.acceleration);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_RETRACT_ACCELL), cs.retract_acceleration);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_TRAVEL_ACCELL), cs.travel_acceleration);
 
     // Store the saved target
-    eeprom_update_block(saved_start_position, (float *)EEPROM_UVLO_SAVED_START_POSITION, sizeof(saved_start_position));
+    eeprom_update_block_notify(saved_start_position, (float *)EEPROM_UVLO_SAVED_START_POSITION, sizeof(saved_start_position));
 
-    eeprom_update_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX, saved_segment_idx);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE, saved_printing_type);
+    eeprom_update_word_notify((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX, saved_segment_idx);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_PRINT_TYPE, saved_printing_type);
 
 #ifdef LIN_ADVANCE
-    eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
+    eeprom_update_float_notify((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
 #endif
 
     // Finally store the "power outage" flag.
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY);
 
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
@@ -260,11 +260,11 @@ static void uvlo_tiny() {
         poweroff_z();
 
         // Update Z position
-        eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+        eeprom_update_float_notify((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
     }
 
     // Update the the "power outage" flag.
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
 
     // Increment power failure counter
     eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);

@@ -30,9 +30,9 @@ void SpoolJoin::toggleSpoolJoin()
 {
     if (eeprom_read_byte((uint8_t*)EEPROM_SPOOL_JOIN) == (uint8_t)EEPROM::Disabled)
     {
-        eeprom_write_byte((uint8_t*)EEPROM_SPOOL_JOIN, (uint8_t)EEPROM::Enabled);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_SPOOL_JOIN, (uint8_t)EEPROM::Enabled);
     } else {
-        eeprom_write_byte((uint8_t*)EEPROM_SPOOL_JOIN, (uint8_t)EEPROM::Disabled);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_SPOOL_JOIN, (uint8_t)EEPROM::Disabled);
     }
 }
 

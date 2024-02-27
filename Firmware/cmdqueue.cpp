@@ -484,7 +484,7 @@ void get_command()
         if ((*cmd_start == 'G') && (GetPrinterState() != PrinterState::IsSDPrinting)) {
             usb_timer.start();
             SetPrinterState(PrinterState::IsHostPrinting); //set printer state busy printing to hide LCD menu while USB printing
-            eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+            eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
         }
         if (allow_when_stopped == false && Stopped == true) {
             // Stopped can be set either during error states (thermal error: cannot continue), or
