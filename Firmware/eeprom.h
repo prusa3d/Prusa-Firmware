@@ -684,6 +684,30 @@ uint32_t eeprom_init_default_dword(uint32_t *__p, uint32_t def);
 void eeprom_init_default_float(float *__p, float def);
 void eeprom_init_default_block(void *__p, size_t __n, const void *def);
 void eeprom_init_default_block_P(void *__p, size_t __n, const void *def);
+/// Updates eeprom byte and notifies the changed eeprom address (just the address!) onto the serial line
+#ifndef DEBUG_EEPROM_CHANGES
+void eeprom_write_byte_notify(uint8_t *dst, uint8_t value);
+void eeprom_update_byte_notify(uint8_t *dst, uint8_t value);
+void eeprom_write_word_notify(uint16_t *dst, uint16_t value);
+void eeprom_update_word_notify(uint16_t *dst, uint16_t value);
+void eeprom_write_dword_notify(uint32_t *dst, uint32_t value);
+void eeprom_update_dword_notify(uint32_t *dst, uint32_t value);
+void eeprom_write_float_notify(float *dst, float value);
+void eeprom_update_float_notify(float *dst, float value);
+void eeprom_write_block_notify(const void *__src, void *__dst , size_t __size);
+void eeprom_update_block_notify(const void *__src, void *__dst, size_t __size);
+#else
+void eeprom_write_byte_notify(uint8_t *dst, uint8_t value, bool active = true);
+void eeprom_update_byte_notify(uint8_t *dst, uint8_t value, bool active = true);
+void eeprom_write_word_notify(uint16_t *dst, uint16_t value, bool active = true);
+void eeprom_update_word_notify(uint16_t *dst, uint16_t value, bool active = true);
+void eeprom_write_dword_notify(uint32_t *dst, uint32_t value, bool active = true);
+void eeprom_update_dword_notify(uint32_t *dst, uint32_t value, bool active = true);
+void eeprom_write_float_notify(float *dst, float value, bool active = true);
+void eeprom_update_float_notify(float *dst, float value, bool active = true);
+void eeprom_write_block_notify(const void *__src, void *__dst , size_t __size, bool active = true);
+void eeprom_update_block_notify(const void *__src, void *__dst, size_t __size , bool active = true);
+#endif //DEBUG_EEPROM_CHANGES
 #endif
 
 #endif // EEPROM_H

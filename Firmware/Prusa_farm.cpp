@@ -403,7 +403,7 @@ void farm_mode_init() {
         fsensor.setAutoLoadEnabled(false);
 #endif //FILAMENT_SENSOR
         // ~ FanCheck -> on
-        eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
     }
 }
 
@@ -447,9 +447,9 @@ bool farm_prusa_code_seen() {
 
 void farm_gcode_g98() {
     farm_mode = 1;
-    eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+    eeprom_update_byte_notify((unsigned char *)EEPROM_FARM_MODE, farm_mode);
     SilentModeMenu = SILENT_MODE_OFF;
-    eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+    eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, SilentModeMenu);
     fCheckModeInit(); // alternatively invoke printer reset
 }
 
@@ -461,7 +461,7 @@ void farm_gcode_g99() {
 
 void farm_disable() {
     farm_mode = false;
-    eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 }
 
 #else //PRUSA_FARM

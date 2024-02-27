@@ -2431,17 +2431,17 @@ void thermal_model_load_settings()
 
 void thermal_model_save_settings()
 {
-    eeprom_update_byte((uint8_t*)EEPROM_THERMAL_MODEL_ENABLE, thermal_model::enabled);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_P, thermal_model::data.P);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_U, thermal_model::data.U);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_V, thermal_model::data.V);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_C, thermal_model::data.C);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_D, thermal_model::data.fS);
-    eeprom_update_word((uint16_t*)EEPROM_THERMAL_MODEL_L, thermal_model::data.L);
-    eeprom_update_block(&thermal_model::data.R[0], (float*)EEPROM_THERMAL_MODEL_R, THERMAL_MODEL_R_SIZE * sizeof(float));
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_Ta_corr, thermal_model::data.Ta_corr);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_W, thermal_model::data.warn);
-    eeprom_update_float((float*)EEPROM_THERMAL_MODEL_E, thermal_model::data.err);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_THERMAL_MODEL_ENABLE, thermal_model::enabled);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_P, thermal_model::data.P);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_U, thermal_model::data.U);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_V, thermal_model::data.V);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_C, thermal_model::data.C);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_D, thermal_model::data.fS);
+    eeprom_update_word_notify((uint16_t*)EEPROM_THERMAL_MODEL_L, thermal_model::data.L);
+    eeprom_update_block_notify(&thermal_model::data.R[0], (float*)EEPROM_THERMAL_MODEL_R, THERMAL_MODEL_R_SIZE * sizeof(float));
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_Ta_corr, thermal_model::data.Ta_corr);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_W, thermal_model::data.warn);
+    eeprom_update_float_notify((float*)EEPROM_THERMAL_MODEL_E, thermal_model::data.err);
 }
 
 namespace thermal_model_cal {

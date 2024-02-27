@@ -41,7 +41,7 @@ FSensorBlockRunout::~FSensorBlockRunout() { }
 #endif // FILAMENT_SENSOR
 
 void Filament_sensor::setEnabled(bool enabled) {
-    eeprom_update_byte((uint8_t *)EEPROM_FSENSOR, enabled);
+    eeprom_update_byte_notify((uint8_t *)EEPROM_FSENSOR, enabled);
     if (enabled) {
         fsensor.init();
     } else {
@@ -52,21 +52,21 @@ void Filament_sensor::setEnabled(bool enabled) {
 void Filament_sensor::setAutoLoadEnabled(bool state, bool updateEEPROM) {
     autoLoadEnabled = state;
     if (updateEEPROM) {
-        eeprom_update_byte((uint8_t *)EEPROM_FSENS_AUTOLOAD_ENABLED, state);
+        eeprom_update_byte_notify((uint8_t *)EEPROM_FSENS_AUTOLOAD_ENABLED, state);
     }
 }
 
 void Filament_sensor::setRunoutEnabled(bool state, bool updateEEPROM) {
     runoutEnabled = state;
     if (updateEEPROM) {
-        eeprom_update_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, state);
+        eeprom_update_byte_notify((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, state);
     }
 }
 
 void Filament_sensor::setActionOnError(SensorActionOnError state, bool updateEEPROM) {
     sensorActionOnError = state;
     if (updateEEPROM) {
-        eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_ACTION_NA, (uint8_t)state);
+        eeprom_update_byte_notify((uint8_t *)EEPROM_FSENSOR_ACTION_NA, (uint8_t)state);
     }
 }
 
@@ -288,7 +288,7 @@ const char *IR_sensor_analog::getIRVersionText() {
 void IR_sensor_analog::setSensorRevision(SensorRevision rev, bool updateEEPROM) {
     sensorRevision = rev;
     if (updateEEPROM) {
-        eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)rev);
+        eeprom_update_byte_notify((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)rev);
     }
 }
 
@@ -446,7 +446,7 @@ void PAT9125_sensor::setJamDetectionEnabled(bool state, bool updateEEPROM) {
     resetStepCount();
     jamErrCnt = 0;
     if (updateEEPROM) {
-        eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_JAM_DETECTION, state);
+        eeprom_update_byte_notify((uint8_t *)EEPROM_FSENSOR_JAM_DETECTION, state);
     }
 }
 

@@ -127,6 +127,7 @@
 #define DEBUG_DCODE2
 #define DEBUG_DCODE3
 
+//#define DEBUG_EEPROM_CHANGES //Uses +1188 bytes Flash +6 bytes SRAM
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
 //#define _NO_ASM

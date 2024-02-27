@@ -62,10 +62,10 @@ void backlight_wake(const uint8_t flashNo)
 
 void backlight_save() //saves all backlight data to eeprom.
 {
-    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, backlightLevel_HIGH);
-    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, backlightLevel_LOW);
-    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_MODE, backlightMode);
-    eeprom_update_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, backlightTimer_period);
+    eeprom_update_byte_notify((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, backlightLevel_HIGH);
+    eeprom_update_byte_notify((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, backlightLevel_LOW);
+    eeprom_update_byte_notify((uint8_t *)EEPROM_BACKLIGHT_MODE, backlightMode);
+    eeprom_update_word_notify((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, backlightTimer_period);
 }
 
 void backlight_update()

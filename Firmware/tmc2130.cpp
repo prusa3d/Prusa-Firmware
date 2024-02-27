@@ -1032,8 +1032,8 @@ bool tmc2130_home_calibrate(uint8_t axis)
 	bubblesort_uint8(cnt, cl, val);
 	tmc2130_home_origin[axis] = val[cl-1];
 	printf_P(PSTR("result value: %d\n"), tmc2130_home_origin[axis]);
-	if (axis == X_AXIS) eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN, tmc2130_home_origin[X_AXIS]);
-	else if (axis == Y_AXIS) eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN, tmc2130_home_origin[Y_AXIS]);
+	if (axis == X_AXIS) eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN, tmc2130_home_origin[X_AXIS]);
+	else if (axis == Y_AXIS) eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN, tmc2130_home_origin[Y_AXIS]);
 	return true;
 }
 

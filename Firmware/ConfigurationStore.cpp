@@ -181,7 +181,7 @@ static const M500_conf default_conf PROGMEM =
 void Config_StoreSettings()
 {
   strcpy_P(cs.version, default_conf.version);
-  eeprom_update_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
+  eeprom_update_block_notify(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
 #ifdef THERMAL_MODEL
   thermal_model_save_settings();
 #endif

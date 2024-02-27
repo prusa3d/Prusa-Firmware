@@ -1732,7 +1732,7 @@ static void lcd_support_menu()
 
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
-	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+	eeprom_update_byte_notify((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
 #ifdef FANCHECK
 	if (fans_check_enabled == false) fan_check_error = EFCE_OK; //reset error if fanCheck is disabled during error. Allows resuming print.
 #endif //FANCHECK
@@ -1744,19 +1744,19 @@ void lcd_cutter_enabled()
     if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
     {
 #ifndef MMU_ALWAYS_CUT
-        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
     }
 #else //MMU_ALWAYS_CUT
-        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_always);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_always);
     }
     else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
     {
-        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
     }
 #endif //MMU_ALWAYS_CUT
     else
     {
-        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_enabled);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_enabled);
     }
 }
 #endif //MMU_HAS_CUTTER
@@ -2638,12 +2638,12 @@ static void lcd_babystep_z()
 	{
 		// Only update the EEPROM when leaving the menu.
           uint8_t active_sheet=eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
-		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[active_sheet].z_offset)),_md->babystepMemZ);
+		eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[active_sheet].z_offset)),_md->babystepMemZ);
 
         // NOTE: bed_temp and pinda_temp are not currently read/used anywhere.
-		eeprom_update_byte(&(EEPROM_Sheets_base->s[active_sheet].bed_temp),target_temperature_bed);
+		eeprom_update_byte_notify(&(EEPROM_Sheets_base->s[active_sheet].bed_temp),target_temperature_bed);
 #ifdef PINDA_THERMISTOR
-		eeprom_update_byte(&(EEPROM_Sheets_base->s[active_sheet].pinda_temp),current_temperature_pinda);
+		eeprom_update_byte_notify(&(EEPROM_Sheets_base->s[active_sheet].pinda_temp),current_temperature_pinda);
 #endif //PINDA_THERMISTOR
 		calibration_status_set(CALIBRATION_STATUS_LIVE_ADJUST);
 	}
@@ -2699,11 +2699,11 @@ void lcd_adjust_bed(void)
     MENU_BEGIN();
 	// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
     ON_MENU_LEAVE(
-        eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_LEFT, (uint8_t)_md->left);
-        eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_FRONT, (uint8_t)_md->front);
-        eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_REAR, (uint8_t)_md->rear);
-        eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_RIGHT, (uint8_t)_md->right);
-        eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_LEFT, (uint8_t)_md->left);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_FRONT, (uint8_t)_md->front);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_REAR, (uint8_t)_md->rear);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_RIGHT, (uint8_t)_md->right);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
     );
     MENU_ITEM_BACK_P(_T(MSG_BACK));
 	MENU_ITEM_EDIT_int3_P(_i("Left side [\xe4m]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14
@@ -3222,8 +3222,8 @@ void lcd_temp_cal_show_result(bool result) {
 	setTargetBed(0); //set bed target temperature back to 0
 
 	// Store boolean result
-	eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, result);
-	eeprom_update_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, result);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, result);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, result);
 
 	if (result) {
 		SERIAL_ECHOLNPGM("PINDA calibration done. Continue with pressing the knob.");
@@ -3362,7 +3362,7 @@ static void lcd_sort_type_set() {
 		case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
 		default: sdSort = SD_SORT_TIME;
 	}
-	eeprom_update_byte((uint8_t*)EEPROM_SD_SORT, sdSort);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_SD_SORT, sdSort);
 	card.presort_flag = true;
 }
 #endif //SDCARD_SORT_ALPHA
@@ -3406,7 +3406,7 @@ static void lcd_silent_mode_set() {
 	default: SilentModeMenu = SILENT_MODE_POWER; break; // (probably) not needed
 #endif //TMC2130
 	}
-  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+  eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
   if (blocks_queued())
   {
@@ -3534,14 +3534,14 @@ void lcd_mesh_calibration_z()
 void lcd_temp_calibration_set() {
 	bool temp_cal_active = eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE);
 	temp_cal_active = !temp_cal_active;
-	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
+	eeprom_update_byte_notify((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
 }
 
 #ifdef HAS_SECOND_SERIAL_PORT
 void lcd_second_serial_set() {
 	if(selectedSerialPort == 1) selectedSerialPort = 0;
 	else selectedSerialPort = 1;
-	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
+	eeprom_update_byte_notify((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
 	MYSERIAL.begin(BAUDRATE);
 }
 #endif //HAS_SECOND_SERIAL_PORT
@@ -3554,7 +3554,7 @@ void lcd_calibrate_pinda() {
 void lcd_toshiba_flash_air_compatibility_toggle()
 {
    card.ToshibaFlashAir_enable(! card.ToshibaFlashAir_isEnabled());
-   eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
+   eeprom_update_byte_notify((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
 //! @brief Continue first layer calibration with previous value or start from zero?
@@ -3583,7 +3583,7 @@ void lcd_first_layer_calibration_reset()
     {
         if (menuData->reset)
         {
-            eeprom_update_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
+            eeprom_update_word_notify(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
         }
 
         // If the knob was clicked, don't produce feedback
@@ -3781,7 +3781,7 @@ void lcd_wizard(WizState state)
 	uint8_t wizard_event;
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
-	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+	if (state != S::Run) eeprom_update_byte_notify((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
 
     FORCE_BL_ON_START;
 
@@ -3810,10 +3810,10 @@ void lcd_wizard(WizState state)
 				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_WELCOME), false, LCD_LEFT_BUTTON_CHOICE);
 				if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
 					state = S::Restore;
-					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+					eeprom_update_byte_notify((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
 				} else {
 					// user interrupted
-					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+					eeprom_update_byte_notify((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 					end = true;
 				}
 			}
@@ -3934,7 +3934,7 @@ void lcd_wizard(WizState state)
 			break;
 		case S::Finish:
 		case S::Failed:
-			eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+			eeprom_update_byte_notify((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 			end = true;
 			break;
 		}
@@ -4218,7 +4218,7 @@ switch(oCheckMode)
      default:
           oCheckMode=ClCheckMode::_None;
      }
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)oCheckMode);
+eeprom_update_byte_notify((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)oCheckMode);
 }
 
 #define SETTINGS_MODE \
@@ -4264,8 +4264,8 @@ static void lcd_nozzle_diameter_cycle(void) {
         oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
         nDiameter=400;
     }
-    eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
-    eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
+    eeprom_update_word_notify((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
 }
 
 #define SETTINGS_NOZZLE \
@@ -4298,7 +4298,7 @@ switch(oCheckModel)
      default:
           oCheckModel=ClCheckModel::_None;
      }
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODEL,(uint8_t)oCheckModel);
+eeprom_update_byte_notify((uint8_t*)EEPROM_CHECK_MODEL,(uint8_t)oCheckModel);
 }
 
 #define SETTINGS_MODEL \
@@ -4337,7 +4337,7 @@ switch(oCheckVersion)
      default:
           oCheckVersion=ClCheckVersion::_None;
      }
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_VERSION,(uint8_t)oCheckVersion);
+eeprom_update_byte_notify((uint8_t*)EEPROM_CHECK_VERSION,(uint8_t)oCheckVersion);
 }
 
 #define SETTINGS_VERSION \
@@ -4541,10 +4541,10 @@ static void lcd_settings_menu()
 #ifdef TMC2130
 static void lcd_ustep_linearity_menu_save()
 {
-    eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
-    eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
-    eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
-    eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
 }
 #endif //TMC2130
 
@@ -5051,7 +5051,7 @@ void lcd_resume_usb_print()
 
 static void change_sheet()
 {
-	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+	eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
     menu_back(3);
 }
 
@@ -5096,7 +5096,7 @@ static void lcd_rename_sheet_menu()
         }
         else
         {
-            eeprom_update_block(menuData->name,
+            eeprom_update_block_notify(menuData->name,
                 EEPROM_Sheets_base->s[selected_sheet].name,
                 sizeof(Sheet::name));
             menu_back();
@@ -5108,8 +5108,8 @@ static void lcd_reset_sheet()
 {
     SheetName sheetName;
     eeprom_default_sheet_name(selected_sheet, sheetName);
-	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),EEPROM_EMPTY_VALUE16);
-	eeprom_update_block(sheetName.c,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
+	eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),EEPROM_EMPTY_VALUE16);
+	eeprom_update_block_notify(sheetName.c,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
 	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
 	{
         eeprom_switch_to_next_sheet();
@@ -5123,7 +5123,7 @@ static void lcd_reset_sheet()
 //! @brief Activate selected_sheet and run first layer calibration
 static void activate_calibrate_sheet()
 {
-    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+    eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
     lcd_first_layer_calibration_reset();
 }
 
@@ -5544,14 +5544,14 @@ static void lcd_tune_menu()
 static void mbl_magnets_elimination_toggle() {
 	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 	magnet_elimination = !magnet_elimination;
-	eeprom_update_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, (uint8_t)magnet_elimination);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, (uint8_t)magnet_elimination);
 }
 
 static void mbl_mesh_toggle() {
 	uint8_t mesh_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
 	if(mesh_nr == 3) mesh_nr = 7;
 	else mesh_nr = 3;
-	eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mesh_nr);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_MBL_POINTS_NR, mesh_nr);
 }
 
 static void mbl_probe_nr_toggle() {
@@ -5562,7 +5562,7 @@ static void mbl_probe_nr_toggle() {
 		case 5: mbl_z_probe_nr = 1; break;
 		default: mbl_z_probe_nr = 3; break;
 	}
-	eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, mbl_z_probe_nr);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_MBL_PROBE_NR, mbl_z_probe_nr);
 }
 
 static void lcd_mesh_bed_leveling_settings()
@@ -6202,7 +6202,7 @@ bool lcd_selftest()
 		bres &= tmc2130_home_calibrate(Y_AXIS);
 		_progress = lcd_selftest_screen(TestScreen::Home, 2, 2, true, 0);
 		if (bres)
-			eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
+			eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
 		_result = bres;
 	}
 #endif //TMC2130
@@ -6332,7 +6332,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 
 	uint16_t sg1 = tmc2130_sg_measure_stop();
 	printf_P(PSTR("%c AXIS SG1=%d\n"), 'X'+axis, sg1);
-	eeprom_write_word(((uint16_t*)((axis == X_AXIS)?EEPROM_BELTSTATUS_X:EEPROM_BELTSTATUS_Y)), sg1);
+	eeprom_write_word_notify(((uint16_t*)((axis == X_AXIS)?EEPROM_BELTSTATUS_X:EEPROM_BELTSTATUS_Y)), sg1);
 
 	current_position_final = st_get_position_mm(axis);
 	measured_axis_length[0] = fabs(current_position_final - current_position_init);
@@ -7096,11 +7096,11 @@ static void menu_action_sdfile(const char* filename)
   for (uint_least8_t i = 0; i < 8; i++) {
 	  if (selected_filename[i] == '\0' || selected_filename[i] == '.') {
 		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
- 		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
+		  eeprom_update_byte_notify((uint8_t*)EEPROM_FILENAME + i, '\0');
 		  break;
 	  }
 	  else {
-		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, selected_filename[i]);
+		  eeprom_update_byte_notify((uint8_t*)EEPROM_FILENAME + i, selected_filename[i]);
 	  }
   }
 
@@ -7114,17 +7114,17 @@ static void menu_action_sdfile(const char* filename)
     for (uint_least8_t i = 0; i < 3; i++)
     {
         if (extension_ptr == NULL || extension_ptr[i] == '\0') {
-            eeprom_update_byte((uint8_t*)EEPROM_FILENAME_EXTENSION + i, '\0');
+            eeprom_update_byte_notify((uint8_t*)EEPROM_FILENAME_EXTENSION + i, '\0');
         } else {
-            eeprom_update_byte((uint8_t*)EEPROM_FILENAME_EXTENSION + i, extension_ptr[i]);
+            eeprom_update_byte_notify((uint8_t*)EEPROM_FILENAME_EXTENSION + i, extension_ptr[i]);
         }
     }
 
     const uint8_t depth = card.getWorkDirDepth();
-    eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_DIR_DEPTH, depth);
 
     for (uint_least8_t i = 0; i < depth; i++) {
-        eeprom_update_block(card.dir_names[i], (uint8_t*)EEPROM_DIRS + 8 * i, 8);
+        eeprom_update_block_notify(card.dir_names[i], (uint8_t*)EEPROM_DIRS + 8 * i, 8);
     }
 
   if (!check_file(selected_filename)) {
@@ -7436,7 +7436,7 @@ void UserECool_toggle(){
     // The condition is intentionally inverted as we are toggling the state (i.e. if it was enabled, we are disabling the feature and vice versa)
     bool enable = ! UserECoolEnabled();
 
-    eeprom_update_byte((uint8_t *)EEPROM_ECOOL_ENABLE, enable ? EEPROM_ECOOL_MAGIC_NUMBER : EEPROM_EMPTY_VALUE);
+    eeprom_update_byte_notify((uint8_t *)EEPROM_ECOOL_ENABLE, enable ? EEPROM_ECOOL_MAGIC_NUMBER : EEPROM_EMPTY_VALUE);
 
     // @@TODO I don't like this - disabling the experimental menu shall disable ECool mode, but it will not reinit the TMC
     // and I don't want to add more code for this experimental feature ... ideally do not reinit the TMC here at all and let the user reset the printer.
@@ -7465,7 +7465,7 @@ bool FarmOrUserECool(){
 void WorkaroundPrusaSN() {
     const char *SN = PSTR("CZPXInvalidSerialNr");
     for (uint8_t i = 0; i < 20; i++) {
-        eeprom_update_byte((uint8_t*)EEPROM_PRUSA_SN + i, pgm_read_byte(SN++));
+        eeprom_update_byte_notify((uint8_t*)EEPROM_PRUSA_SN + i, pgm_read_byte(SN++));
     }
 }
 #endif //PRUSA_SN_SUPPORT
@@ -7501,7 +7501,7 @@ void lcd_pinda_temp_compensation_toggle()
 		pinda_temp_compensation = 1;                   // But for MK3/S it should be 1 so SuperPINDA is "active"
 	else
 		pinda_temp_compensation = !pinda_temp_compensation;
-	eeprom_update_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, pinda_temp_compensation);
+	eeprom_update_byte_notify((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, pinda_temp_compensation);
 	SERIAL_ECHOLNPGM("SuperPINDA:");
 	SERIAL_ECHOLN(pinda_temp_compensation);
 }
@@ -7514,7 +7514,7 @@ void lcd_heat_bed_on_load_toggle()
         value = 1;
     else
         value = !value;
-    eeprom_update_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
 }
 
 void lcd_reprint_from_eeprom() {

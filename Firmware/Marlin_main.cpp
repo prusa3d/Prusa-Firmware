@@ -655,12 +655,12 @@ void crashdet_cancel() {
 
 void failstats_reset_print()
 {
-	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
-	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
-	eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
-	eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-	eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+	eeprom_update_byte_notify((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+	eeprom_update_byte_notify((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
+	eeprom_update_byte_notify((uint8_t *)EEPROM_FERROR_COUNT, 0);
+	eeprom_update_byte_notify((uint8_t *)EEPROM_POWER_COUNT, 0);
+	eeprom_update_byte_notify((uint8_t *)EEPROM_MMU_FAIL, 0);
+	eeprom_update_byte_notify((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
 }
 
 void watchdogEarlyDisable(void) {
@@ -707,19 +707,19 @@ void softReset(void) {
 
 
 static void factory_reset_stats(){
-    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+    eeprom_update_dword_notify((uint32_t *)EEPROM_TOTALTIME, 0);
+    eeprom_update_dword_notify((uint32_t *)EEPROM_FILAMENTUSED, 0);
 
     failstats_reset_print();
 
-    eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
-    eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
-    eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
-    eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+    eeprom_update_word_notify((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+    eeprom_update_word_notify((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+    eeprom_update_word_notify((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+    eeprom_update_word_notify((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
 
-    eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-    eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-    eeprom_update_dword((uint32_t *)EEPROM_MMU_MATERIAL_CHANGES, 0);
+    eeprom_update_word_notify((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
+    eeprom_update_word_notify((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
+    eeprom_update_dword_notify((uint32_t *)EEPROM_MMU_MATERIAL_CHANGES, 0);
 }
 
 // Factory reset function
@@ -750,7 +750,7 @@ static void factory_reset(char level)
 
 		// Force the wizard in "Follow calibration flow" mode at the next boot up
 		calibration_status_clear(CALIBRATION_FORCE_PREP);
-		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 2);
+		eeprom_write_byte_notify((uint8_t*)EEPROM_WIZARD_ACTIVE, 2);
 		farm_disable();
 
 #ifdef FILAMENT_SENSOR
@@ -767,7 +767,7 @@ static void factory_reset(char level)
 		menu_progressbar_init(EEPROM_TOP, PSTR("ERASING all data"));
 		// Erase EEPROM
 		for (uint16_t i = 0; i < EEPROM_TOP; i++) {
-			eeprom_update_byte((uint8_t*)i, 0xFF);
+			eeprom_update_byte_notify((uint8_t*)i, 0xFF);
 			menu_progressbar_update(i);
 		}
 		menu_progressbar_finish();
@@ -921,7 +921,7 @@ void update_sec_lang_from_external_flash()
 			else
 			{
 				//TODO - check sec lang data integrity
-				eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_SEC);
+				eeprom_update_byte_notify((unsigned char *)EEPROM_LANG, LANG_ID_SEC);
 			}
 		}
 	}
@@ -1023,7 +1023,7 @@ static void fw_crash_init()
 #endif //XFLASH_DUMP
 
     // prevent crash prompts to reappear once acknowledged
-    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, 0xFF);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_FW_CRASH_FLAG, 0xFF);
 }
 
 #define KILL_PENDING_FLAG 0x42
@@ -1031,7 +1031,7 @@ static void fw_crash_init()
 static void fw_kill_init() {
     if (eeprom_read_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG) == KILL_PENDING_FLAG) {
         // clear pending message event
-        eeprom_write_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG, EEPROM_EMPTY_VALUE);
+        eeprom_write_byte_notify((uint8_t*)EEPROM_KILL_PENDING_FLAG, EEPROM_EMPTY_VALUE);
 
         // display the kill message
         PGM_P kill_msg = (PGM_P)eeprom_read_word((uint16_t*)EEPROM_KILL_MESSAGE);
@@ -1106,7 +1106,7 @@ void setup()
         {
             if (!get_PRUSA_SN(SN))
             {
-                eeprom_update_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
+                eeprom_update_block_notify(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
                 puts_P(PSTR("SN updated"));
             }
             else
@@ -1452,13 +1452,13 @@ void setup()
 	eeprom_init_default_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
-		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
-		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+		//eeprom_write_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+		eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		int16_t z_shift = 0;
 		for (uint8_t i = 0; i < 5; i++) {
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
 		}
-		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
+		eeprom_update_byte_notify((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
 	eeprom_init_default_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
 	eeprom_init_default_byte((uint8_t*)EEPROM_SD_SORT, 0);
@@ -1488,16 +1488,16 @@ void setup()
 	  //if user confirms with knob, new hw version (printer and/or motherboard) is written to eeprom and message will be not shown next time
 	case(0b01): 
 		lcd_show_fullscreen_message_and_wait_P(_i("Warning: motherboard type changed.")); ////MSG_CHANGED_MOTHERBOARD c=20 r=4
-		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD); 
+		eeprom_write_word_notify((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
 		break;
 	case(0b10): 
 		lcd_show_fullscreen_message_and_wait_P(_i("Warning: printer type changed.")); ////MSG_CHANGED_PRINTER c=20 r=4
-		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE); 
+		eeprom_write_word_notify((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
 		break;
 	case(0b11): 
 		lcd_show_fullscreen_message_and_wait_P(_i("Warning: both printer type and motherboard type changed.")); ////MSG_CHANGED_BOTH c=20 r=4
-		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
-		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD); 
+		eeprom_write_word_notify((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
+		eeprom_write_word_notify((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
 		break;
 	default: break; //no change, show no message
   }
@@ -1522,7 +1522,7 @@ void setup()
               calibration_status &= ~CALIBRATION_STATUS_SELFTEST;
           }
       }
-      eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, calibration_status);
+      eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, calibration_status);
   }
   if (eeprom_fw_version_older_than_p(FW_VERSION_NR)) {
       if (!calibration_status_get(CALIBRATION_WIZARD_STEPS)) {
@@ -1604,7 +1604,7 @@ void setup()
               if ( btn == LCD_LEFT_BUTTON_CHOICE) {
                   recover_print(0);
             } else { // LCD_MIDDLE_BUTTON_CHOICE
-                  eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+                  eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
             }
           }
       }
@@ -1628,7 +1628,7 @@ void setup()
 static inline void crash_and_burn(dump_crash_reason reason)
 {
     WRITE(BEEPER, HIGH);
-    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)reason);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)reason);
 #ifdef EMERGENCY_DUMP
     xfdump_full_dump_and_reset(reason);
 #elif defined(EMERGENCY_SERIAL_DUMP)
@@ -3231,7 +3231,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			{
 				// Reset the baby step value and the baby step applied flag.
 				calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
-				eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+				eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
@@ -4129,7 +4129,7 @@ void process_commands()
                 enquecommand_P(MSG_M24);
 
                 // Print is recovered, clear the recovery flag
-                eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+                eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
             }
             else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST)
             {
@@ -4173,7 +4173,7 @@ void process_commands()
 	  lang_reset();
 
 	} else if(code_seen_P(PSTR("Lz"))) { // PRUSA Lz
-      eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+      eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
     } else if(code_seen_P(PSTR("FR"))) { // PRUSA FR
         // Factory full reset
@@ -4201,8 +4201,8 @@ void process_commands()
                strchr_pointer++;                  // skip 1st char (~ 's')
                strchr_pointer++;                  // skip 2nd char (~ 'e')
                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
-               eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
-               eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+               eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
+               eeprom_update_word_notify((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
                }
           else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
     }
@@ -4759,7 +4759,7 @@ void process_commands()
             serialecho_temperatures();
         }
 
-        eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process
+        eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process
 
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         plan_buffer_line_curposXYZE(3000 / 60);
@@ -4783,7 +4783,7 @@ void process_commands()
             float temp = (40 + i * 5);
             printf_P(_N("\nStep: %d/6 (skipped)\nPINDA temperature: %d Z shift (mm):0\n"), i + 2, (40 + i*5));
             if (i >= 0) {
-                eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+                eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
             }
             if (start_temp <= temp) break;
         }
@@ -4822,7 +4822,7 @@ void process_commands()
 
             printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
-            eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+            eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
         }
         lcd_temp_cal_show_result(true);
         homing_flag = false;
@@ -4862,7 +4862,7 @@ void process_commands()
 			delay_keep_alive(1000);
 			serialecho_temperatures();
 		}
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
+		eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process
 
 		current_position[Z_AXIS] = 5;
 		plan_buffer_line_curposXYZE(3000 / 60);
@@ -4907,13 +4907,13 @@ void process_commands()
 
 			printf_P(_N("\nTemperature: %d  Z shift (mm): %.3f\n"), t_c, current_position[Z_AXIS] - zero_z);
 
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
 			
 		
 		}
 		custom_message_type = CustomMsg::Status;
 
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+		eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		puts_P(_N("Temperature calibration done."));
 			disable_x();
 			disable_y();
@@ -4921,7 +4921,7 @@ void process_commands()
 			disable_e0();
 			setTargetBed(0); //set bed target temperature back to 0
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
-		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
+		eeprom_update_byte_notify((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 		lcd_update_enable(true);
 		lcd_update(2);		
 
@@ -5005,7 +5005,7 @@ void process_commands()
                 }else{
                     // Save it to the eeprom
                     babystepLoadZ = babystepz;
-                    eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z0 + BabyPosition, babystepLoadZ);
+                    eeprom_update_word_notify((uint16_t*)EEPROM_BABYSTEP_Z0 + BabyPosition, babystepLoadZ);
                     // adjust the Z
                     babystepsTodoZadd(babystepLoadZ);
                 }
@@ -5494,7 +5494,7 @@ void process_commands()
 
         // Reset the baby step value and the baby step applied flag.
         calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
-        eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+        eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
         // Reset the skew and offset in both RAM and EEPROM.
         calibration_status_clear(CALIBRATION_STATUS_XYZ);
@@ -7940,7 +7940,7 @@ Sigma_Exit:
 			SERIAL_PROTOCOLLNPGM(" Z VALUE OUT OF RANGE");
 			break;
 		}	
-		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)),zraw);
+		eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)),zraw);
 	}
 	else
 	{
@@ -7956,7 +7956,7 @@ Sigma_Exit:
 		{
 			strncpy(strLabel,src,7);	
 		}
-		eeprom_update_block(strLabel,EEPROM_Sheets_base->s[iSel].name,sizeof(Sheet::name));
+		eeprom_update_block_notify(strLabel,EEPROM_Sheets_base->s[iSel].name,sizeof(Sheet::name));
 	}
 	else
 	{
@@ -7966,7 +7966,7 @@ Sigma_Exit:
 	if (code_seen('B'))
 	{
 		iBedC = code_value_uint8();
-		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].bed_temp, iBedC);
+		eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].bed_temp, iBedC);
 	}
 	else
 	{
@@ -7976,7 +7976,7 @@ Sigma_Exit:
 	if (code_seen('P'))
 	{
 		iPindaC = code_value_uint8();
-		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
+		eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
 	}
 	else
 	{
@@ -7987,7 +7987,7 @@ Sigma_Exit:
 	{
 		bIsActive |= code_value_uint8() || (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == iSel);
 		if(bIsActive && eeprom_is_sheet_initialized(iSel)) {
-            eeprom_update_byte(&EEPROM_Sheets_base->active_sheet, iSel);
+            eeprom_update_byte_notify(&EEPROM_Sheets_base->active_sheet, iSel);
         } else {
             bIsActive = 0;
         }
@@ -8092,24 +8092,24 @@ Sigma_Exit:
 			gcode_M861_print_pinda_cal_eeprom();
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
-			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 			int16_t z_shift = 8;    //40C -  20um -   8usteps
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT, z_shift);
 			z_shift = 24;   //45C -  60um -  24usteps
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 1, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 1, z_shift);
 			z_shift = 48;   //50C - 120um -  48usteps
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 2, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 2, z_shift);
 			z_shift = 80;   //55C - 200um -  80usteps
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 3, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 3, z_shift);
 			z_shift = 120;  //60C - 300um - 120usteps
-			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 4, z_shift);
+			eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 4, z_shift);
 			SERIAL_PROTOCOLLNPGM("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
-			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			eeprom_update_byte_notify((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 			int16_t z_shift = 0;
 			for (uint8_t i = 0; i < 5; i++) {
-				eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+				eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
 			}
 			SERIAL_PROTOCOLLNPGM("zerorized");
 		}
@@ -8118,7 +8118,7 @@ Sigma_Exit:
 			if (code_seen('I')) {
 			    uint8_t index = code_value_uint8();
 				if (index < 5) {
-					eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + index, usteps);
+					eeprom_update_word_notify((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + index, usteps);
 					SERIAL_PROTOCOLLNRPGM(MSG_OK);
 					SERIAL_PROTOCOLLNRPGM(_header);
 					gcode_M861_print_pinda_cal_eeprom();
@@ -8439,7 +8439,7 @@ Sigma_Exit:
     else if (code_seen('P'))
     {
         uint8_t newMenuMode = (mcode_in_progress==914) ? SILENT_MODE_NORMAL : SILENT_MODE_STEALTH;
-        eeprom_update_byte((unsigned char *)EEPROM_SILENT, newMenuMode);
+        eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, newMenuMode);
         SilentModeMenu = newMenuMode;
         //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
     }
@@ -8854,11 +8854,11 @@ Sigma_Exit:
             switch (code_value_uint8())
             {
             case 0:
-                eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
+                eeprom_update_byte_notify((uint8_t *)EEPROM_MMU_ENABLED, false);
                 MMU2::mmu2.Stop();
                 break;
             case 1:
-                eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, true);
+                eeprom_update_byte_notify((uint8_t *)EEPROM_MMU_ENABLED, true);
                 MMU2::mmu2.Start();
                 break;
             default:
@@ -9736,8 +9736,8 @@ void kill(const char *full_screen_message) {
     }
 
     // update eeprom with the correct kill message to be shown on startup
-    eeprom_write_word((uint16_t*)EEPROM_KILL_MESSAGE, (uint16_t)full_screen_message);
-    eeprom_write_byte((uint8_t*)EEPROM_KILL_PENDING_FLAG, KILL_PENDING_FLAG);
+    eeprom_write_word_notify((uint16_t*)EEPROM_KILL_MESSAGE, (uint16_t)full_screen_message);
+    eeprom_write_byte_notify((uint8_t*)EEPROM_KILL_PENDING_FLAG, KILL_PENDING_FLAG);
 
     softReset();
 }
@@ -9949,8 +9949,8 @@ void save_statistics() {
     uint32_t _previous_time = eeprom_init_default_dword((uint32_t *)EEPROM_TOTALTIME, 0);        //_previous_time unit: min
 
     uint32_t time_minutes = print_job_timer.duration() / 60;
-    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + time_minutes); // EEPROM_TOTALTIME unit: min
-    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (total_filament_used / 1000));
+    eeprom_update_dword_notify((uint32_t *)EEPROM_TOTALTIME, _previous_time + time_minutes); // EEPROM_TOTALTIME unit: min
+    eeprom_update_dword_notify((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (total_filament_used / 1000));
 
     print_job_timer.reset();
     total_filament_used = 0;
@@ -10070,7 +10070,7 @@ void check_babystep()
 	if ((babystep_z < Z_BABYSTEP_MIN) || (babystep_z > Z_BABYSTEP_MAX)) {
 		babystep_z = 0; //if babystep value is out of min max range, set it to 0
 		SERIAL_ECHOLNPGM("Z live adjust out of range. Setting to 0");
-		eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+		eeprom_write_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
             s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),
                     babystep_z);
 		lcd_show_fullscreen_message_and_wait_P(PSTR("Z live adjust out of range. Setting to 0. Click to continue."));
@@ -11034,7 +11034,7 @@ void restore_print_from_ram_and_continue(float e_move)
 // Cancel the state related to a currently saved print
 void cancel_saved_printing()
 {
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
     saved_start_position[0] = SAVED_START_POSITION_UNSET;
     saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
     saved_printing = false;

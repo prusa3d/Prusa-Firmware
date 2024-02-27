@@ -167,6 +167,7 @@
 
 //#define DEBUG_PULLUP_CRASH //Test Pullup crash
 
+//#define DEBUG_EEPROM_CHANGES //Uses +1188 bytes Flash +6 bytes SRAM
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_XFLASH   //debug external spi flash
