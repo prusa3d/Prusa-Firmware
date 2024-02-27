@@ -131,20 +131,20 @@ msgid "Back"
 msgstr "Zpet"
 
 #. MSG_BED c=13
-#: ../../Firmware/Marlin_main.cpp:2023 ../../Firmware/Marlin_main.cpp:4628
-#: ../../Firmware/Marlin_main.cpp:4679 ../../Firmware/messages.cpp:12
+#: ../../Firmware/Marlin_main.cpp:2023 ../../Firmware/Marlin_main.cpp:4625
+#: ../../Firmware/Marlin_main.cpp:4676 ../../Firmware/messages.cpp:12
 #: ../../Firmware/ultralcd.cpp:1364 ../../Firmware/ultralcd.cpp:4164
 msgid "Bed"
 msgstr "Podlozka"
 
 #. MSG_BED_HEATING c=20
-#: ../../Firmware/Marlin_main.cpp:6138 ../../Firmware/messages.cpp:14
+#: ../../Firmware/Marlin_main.cpp:6135 ../../Firmware/messages.cpp:14
 #: ../../Firmware/ultralcd.cpp:527
 msgid "Bed Heating"
 msgstr "Zahrivani bedu"
 
 #. MSG_BED_DONE c=20
-#: ../../Firmware/Marlin_main.cpp:6175 ../../Firmware/messages.cpp:13
+#: ../../Firmware/Marlin_main.cpp:6172 ../../Firmware/messages.cpp:13
 #: ../../Firmware/ultralcd.cpp:530
 msgid "Bed done"
 msgstr "Bed OK."
@@ -157,9 +157,8 @@ msgstr "Korekce podlozky"
 #. MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:2204 ../../Firmware/Marlin_main.cpp:2974
 #: ../../Firmware/Marlin_main.cpp:2984
-#: ../../Firmware/mesh_bed_calibration.cpp:2870
 #: ../../Firmware/mesh_bed_calibration.cpp:2878
-#: ../../Firmware/mesh_bed_calibration.cpp:2904 ../../Firmware/messages.cpp:15
+#: ../../Firmware/mesh_bed_calibration.cpp:2903 ../../Firmware/messages.cpp:15
 msgid ""
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
 "reset."
@@ -682,7 +681,7 @@ msgid "Fil. sensor"
 msgstr "Fil. senzor"
 
 #. MSG_FILAMENT c=17
-#: ../../Firmware/Marlin_main.cpp:3483 ../../Firmware/Tcodes.cpp:34
+#: ../../Firmware/Marlin_main.cpp:3480 ../../Firmware/Tcodes.cpp:34
 #: ../../Firmware/messages.cpp:34 ../../Firmware/ultralcd.cpp:3607
 #: ../../Firmware/ultralcd.cpp:6711
 msgid "Filament"
@@ -846,18 +845,18 @@ msgid "Heater/Thermistor"
 msgstr "Topeni/Termistor"
 
 #. MSG_HEATING c=20
-#: ../../Firmware/Marlin_main.cpp:6081 ../../Firmware/messages.cpp:49
+#: ../../Firmware/Marlin_main.cpp:6078 ../../Firmware/messages.cpp:49
 #: ../../Firmware/ultralcd.cpp:519
 msgid "Heating"
 msgstr "Zahrivani"
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:9413
+#: ../../Firmware/Marlin_main.cpp:9410
 msgid "Heating disabled by safety timer."
 msgstr "Zahrivani preruseno bezpecnostnim casovacem."
 
 #. MSG_HEATING_COMPLETE c=20
-#: ../../Firmware/Marlin_main.cpp:6112 ../../Firmware/messages.cpp:50
+#: ../../Firmware/Marlin_main.cpp:6109 ../../Firmware/messages.cpp:50
 #: ../../Firmware/ultralcd.cpp:522
 msgid "Heating done."
 msgstr "Zahrivani OK."
@@ -983,7 +982,7 @@ msgid "Is filament loaded?"
 msgstr "Je filament zaveden?"
 
 #. MSG_STEEL_SHEET_CHECK c=20 r=3
-#: ../../Firmware/Marlin_main.cpp:3265 ../../Firmware/Marlin_main.cpp:4746
+#: ../../Firmware/Marlin_main.cpp:3265 ../../Firmware/Marlin_main.cpp:4743
 #: ../../Firmware/messages.cpp:114 ../../Firmware/ultralcd.cpp:3852
 msgid "Is steel sheet on heatbed?"
 msgstr "Je tiskovy plat na podlozce?"
@@ -1071,7 +1070,7 @@ msgid "Loading color"
 msgstr "Cisteni barvy"
 
 #. MSG_LOADING_FILAMENT c=20
-#: ../../Firmware/Marlin_main.cpp:3610 ../../Firmware/messages.cpp:59
+#: ../../Firmware/Marlin_main.cpp:3607 ../../Firmware/messages.cpp:59
 #: ../../Firmware/mmu2_progress_converter.cpp:51
 #: ../../Firmware/mmu2_reporting.cpp:360 ../../Firmware/ultralcd.cpp:2162
 #: ../../Firmware/ultralcd.cpp:3709
@@ -1169,7 +1168,7 @@ msgstr "Merene zkos."
 
 #. MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3246
-#: ../../Firmware/mesh_bed_calibration.cpp:2848 ../../Firmware/messages.cpp:67
+#: ../../Firmware/mesh_bed_calibration.cpp:2852 ../../Firmware/messages.cpp:67
 msgid "Measuring reference height of calibration point"
 msgstr "Merim referencni vysku kalibracniho bodu"
 
@@ -1280,7 +1279,7 @@ msgid "No SD card"
 msgstr "Zadna SD karta"
 
 #. MSG_NO_MOVE c=20
-#: ../../Firmware/Marlin_main.cpp:5291
+#: ../../Firmware/Marlin_main.cpp:5288
 msgid "No move."
 msgstr "Bez pohybu."
 
@@ -1387,7 +1386,7 @@ msgid "Once"
 msgstr "Jednou"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
-#: ../../Firmware/Marlin_main.cpp:9592 ../../Firmware/messages.cpp:177
+#: ../../Firmware/Marlin_main.cpp:9589 ../../Firmware/messages.cpp:177
 msgid "PAUSED THERMAL ERROR"
 msgstr "STOP: CHYBA TEPLOTY"
 
@@ -1412,7 +1411,7 @@ msgid "PINDA Heating"
 msgstr "Nahrivani PINDA"
 
 #. MSG_PINDA_CALIBRATION c=13
-#: ../../Firmware/Marlin_main.cpp:4791 ../../Firmware/Marlin_main.cpp:4893
+#: ../../Firmware/Marlin_main.cpp:4788 ../../Firmware/Marlin_main.cpp:4890
 #: ../../Firmware/messages.cpp:117 ../../Firmware/ultralcd.cpp:600
 #: ../../Firmware/ultralcd.cpp:4486 ../../Firmware/ultralcd.cpp:4588
 msgid "PINDA cal."
@@ -1424,7 +1423,7 @@ msgid "PINDA calibration failed"
 msgstr "PINDA kalibrace selhala"
 
 #. MSG_PINDA_CALIBRATION_DONE c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:4968 ../../Firmware/messages.cpp:118
+#: ../../Firmware/Marlin_main.cpp:4965 ../../Firmware/messages.cpp:118
 #: ../../Firmware/ultralcd.cpp:3212
 msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
@@ -1519,7 +1518,7 @@ msgid "Please load filament first."
 msgstr "Nejdriv zavedte filament"
 
 #. MSG_CHECK_IDLER c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3553
+#: ../../Firmware/Marlin_main.cpp:3550
 msgid "Please open idler and remove filament manually."
 msgstr "Otevrete idler a manualne odstrante filament."
 
@@ -1530,7 +1529,7 @@ msgid "Please place steel sheet on heatbed."
 msgstr "Umistete tiskovy plat na podlozku"
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:10902 ../../Firmware/Marlin_main.cpp:10932
+#: ../../Firmware/Marlin_main.cpp:10899 ../../Firmware/Marlin_main.cpp:10929
 #: ../../Firmware/messages.cpp:80
 msgid "Please press the knob to unload filament"
 msgstr "Pro vysunuti filamentu stisknete tlacitko"
@@ -1546,13 +1545,13 @@ msgid "Please remove shipping helpers first."
 msgstr "Nejprve sundejte transportni soucastky."
 
 #. MSG_REMOVE_STEEL_SHEET c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3267 ../../Firmware/Marlin_main.cpp:4756
+#: ../../Firmware/Marlin_main.cpp:3267 ../../Firmware/Marlin_main.cpp:4753
 #: ../../Firmware/messages.cpp:85
 msgid "Please remove steel sheet from heatbed."
 msgstr "Odstrante tiskovy plat z podlozky."
 
 #. MSG_RUN_XYZ c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:4732
+#: ../../Firmware/Marlin_main.cpp:4729
 msgid "Please run XYZ calibration first."
 msgstr "Nejprve spustte kalibraci XYZ."
 
@@ -1567,7 +1566,7 @@ msgid "Please upgrade."
 msgstr "Prosim aktualizujte."
 
 #. MSG_PLEASE_WAIT c=20
-#: ../../Firmware/Marlin_main.cpp:3549 ../../Firmware/Marlin_main.cpp:7898
+#: ../../Firmware/Marlin_main.cpp:3546 ../../Firmware/Marlin_main.cpp:7895
 #: ../../Firmware/messages.cpp:77 ../../Firmware/ultralcd.cpp:2152
 #: ../../Firmware/ultralcd.cpp:2163
 msgid "Please wait"
@@ -1627,7 +1626,7 @@ msgid "Press the knob"
 msgstr "Stisknete tlacitko"
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:10914
+#: ../../Firmware/Marlin_main.cpp:10911
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Pro nahrati trysky a pokracovani stisknete tlacitko."
 
@@ -1807,7 +1806,7 @@ msgid "SELECTOR CANNOT MOVE"
 msgstr "SELEKTOR SE NEHYBE"
 
 #. MSG_STOPPED c=20
-#: ../../Firmware/Marlin_main.cpp:9618 ../../Firmware/messages.cpp:116
+#: ../../Firmware/Marlin_main.cpp:9615 ../../Firmware/messages.cpp:116
 msgid "STOPPED."
 msgstr "ZASTAVENO."
 
@@ -1830,7 +1829,7 @@ msgid ""
 msgstr "Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
 
 #. MSG_SELECT_FILAMENT c=20
-#: ../../Firmware/Marlin_main.cpp:3483 ../../Firmware/Tcodes.cpp:34
+#: ../../Firmware/Marlin_main.cpp:3480 ../../Firmware/Tcodes.cpp:34
 #: ../../Firmware/messages.cpp:53 ../../Firmware/ultralcd.cpp:3606
 #: ../../Firmware/ultralcd.cpp:6711
 msgid "Select filament:"
@@ -1996,7 +1995,7 @@ msgid "Spinning"
 msgstr "Toci se"
 
 #. MSG_TEMP_CAL_WARNING c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:4745
+#: ../../Firmware/Marlin_main.cpp:4742
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
 msgstr "Je vyzadovana stabilni pokojova teplota 21-26C a pevna podlozka."
 
@@ -2197,7 +2196,7 @@ msgid "Unload filament"
 msgstr "Vyjmout filament"
 
 #. MSG_UNLOADING_FILAMENT c=20
-#: ../../Firmware/Marlin_main.cpp:3466 ../../Firmware/messages.cpp:120
+#: ../../Firmware/Marlin_main.cpp:3463 ../../Firmware/messages.cpp:120
 #: ../../Firmware/mmu2_progress_converter.cpp:50
 #: ../../Firmware/ultralcd.cpp:4902
 msgid "Unloading filament"
@@ -2245,7 +2244,7 @@ msgstr ""
 "Stealth modu"
 
 #. MSG_USERWAIT c=20
-#: ../../Firmware/Marlin_main.cpp:5260
+#: ../../Firmware/Marlin_main.cpp:5257
 msgid "Wait for user..."
 msgstr "Ceka se na uzivatele"
 
@@ -2281,7 +2280,7 @@ msgid "Warning: printer type changed."
 msgstr "Varovani: doslo ke zmene typu tiskarny."
 
 #. MSG_UNLOAD_SUCCESSFUL c=20 r=3
-#: ../../Firmware/Marlin_main.cpp:3546
+#: ../../Firmware/Marlin_main.cpp:3543
 msgid "Was filament unload successful?"
 msgstr "Bylo vysunuti filamentu uspesne?"
 
