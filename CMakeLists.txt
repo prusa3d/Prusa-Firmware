@@ -545,6 +545,8 @@ function(fw_add_variant variant_name)
       BYPRODUCTS ${LANG_HEX}
       COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_DEBUG_HEX}
       BYPRODUCTS ${LANG_DEBUG_HEX}
+      COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${CMAKE_BINARY_DIR}/release/${hex_variant_name}_${FN_VERSION_DEBUG_SUFFIX}_MULTILANG.hex
+      BYPRODUCTS ${CMAKE_BINARY_DIR}/release/${hex_variant_name}_${FN_VERSION_DEBUG_SUFFIX}_MULTILANG.hex
       DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
       COMMENT "Generating final ${FW_LANG_FINAL}.hex"
       )
@@ -586,6 +588,13 @@ function(fw_add_variant variant_name)
       list(APPEND ALL_VARIANT_HEXES ${FW_LANG_FINAL})
     endforeach()
     add_custom_target("${variant_name}-All-Languages" DEPENDS ${ALL_VARIANT_HEXES})
+    add_custom_command(TARGET "${variant_name}-All-Languages"
+      POST_BUILD
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E make_directory "release"
+      COMMAND ${CMAKE_COMMAND} -E tar "cfv" "release/${variant_name}_${FN_VERSION_SUFFIX}.zip" --format=zip ${variant_name}_${FN_VERSION_DEBUG_SUFFIX}_en*.hex
+      BYPRODUCTS "${CMAKE_BINARY_DIR}/release/${variant_name}_${FN_VERSION_SUFFIX}.zip"
+      )
     add_dependencies(ALL_MULTILANG "${variant_name}-All-Languages")
   endif()
 endfunction()
@@ -627,6 +636,16 @@ if(CMAKE_CROSSCOMPILING)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
   endforeach(THIS_VAR IN LISTS FW_VARIANTS)
 endif()
+
+SET(REVO_FW_ZIP_NAME "E3D_REVO_FW_MK3_MK3S_MK3S+_${FN_VERSION_SUFFIX}.zip")
+
+add_custom_command(TARGET ALL_MULTILANG
+  POST_BUILD
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/release
+  BYPRODUCTS ${CMAKE_BINARY_DIR}/release/${REVO_FW_ZIP_NAME}
+  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${REVO_FW_ZIP_NAME}" --format=zip *E3DREVO*.hex
+  COMMAND ${CMAKE_COMMAND} -E rm *E3DREVO*.hex
+  )
 
 #
 # Tests

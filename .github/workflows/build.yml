@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
     - '*'
+    tags:
+    - 'v*'
   push:
     branches: [ MK3, MK3_* ]
 
@@ -65,6 +67,16 @@ jobs:
       with:
         name: Firmware
         path: build/*.hex
+
+    - name: RELEASE THE KRAKEN
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        draft: true
+        files: |
+          "build/release/*.hex"
+          "build/release/*.zip"
 
   check-lang:
     runs-on: ubuntu-latest
