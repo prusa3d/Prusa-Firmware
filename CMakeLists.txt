@@ -545,8 +545,8 @@ function(fw_add_variant variant_name)
       BYPRODUCTS ${LANG_HEX}
       COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_DEBUG_HEX}
       BYPRODUCTS ${LANG_DEBUG_HEX}
-      COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${CMAKE_BINARY_DIR}/release/${hex_variant_name}_${FN_VERSION_DEBUG_SUFFIX}_MULTILANG.hex
-      BYPRODUCTS ${CMAKE_BINARY_DIR}/release/${hex_variant_name}_${FN_VERSION_DEBUG_SUFFIX}_MULTILANG.hex
+      COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${CMAKE_BINARY_DIR}/release/${hex_variant_name}_${FN_VERSION_SUFFIX}_MULTILANG.hex
+      BYPRODUCTS ${CMAKE_BINARY_DIR}/release/${hex_variant_name}_${FN_VERSION_SUFFIX}_MULTILANG.hex
       DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
       COMMENT "Generating final ${FW_LANG_FINAL}.hex"
       )
@@ -592,7 +592,7 @@ function(fw_add_variant variant_name)
       POST_BUILD
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND ${CMAKE_COMMAND} -E make_directory "release"
-      COMMAND ${CMAKE_COMMAND} -E tar "cfv" "release/${variant_name}_${FN_VERSION_SUFFIX}.zip" --format=zip ${variant_name}_${FN_VERSION_DEBUG_SUFFIX}_en*.hex
+      COMMAND ${CMAKE_COMMAND} -E tar "cfv" "release/${variant_name}_${FN_VERSION_SUFFIX}.zip" --format=zip ${variant_name}_${FN_VERSION_SUFFIX}_en*.hex
       BYPRODUCTS "${CMAKE_BINARY_DIR}/release/${variant_name}_${FN_VERSION_SUFFIX}.zip"
       )
     add_dependencies(ALL_MULTILANG "${variant_name}-All-Languages")
