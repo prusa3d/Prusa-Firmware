@@ -9815,16 +9815,8 @@ void ThermalStop(bool allow_recovery)
 
                 // we cannot make a distinction for the host here, the pause must be instantaneous
                 // so we call the lcd_pause_print to save the print state internally. Thermal errors
-                // disable heaters and save the original temperatures to saved_*, which will get
-                // overwritten by stop_and_save_print_to_ram. For this corner-case, re-instate the
-                // original values after the pause handler is called.
-                uint8_t bed_temp = saved_bed_temperature;
-                uint16_t ext_temp = saved_extruder_temperature;
-                uint8_t fan_speed = saved_fan_speed;
+                // disable heaters and save the original temperatures to saved_*
                 lcd_pause_print();
-                saved_bed_temperature = bed_temp;
-                saved_extruder_temperature = ext_temp;
-                saved_fan_speed = fan_speed;
             }
         } else {
             // We got a hard thermal error and/or there is no print going on. Just stop.
@@ -10872,14 +10864,15 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 	planner_abort_hard(); //abort printing
 
-	memcpy(saved_pos, current_position, sizeof(saved_pos));
+    if (!isPartialBackupAvailable) {
+        refresh_print_state_in_ram();
+    }
+
     if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
 
-    saved_feedmultiply2 = feedmultiply; //save feedmultiply
-	saved_extruder_temperature = (uint16_t)degTargetHotend(active_extruder);
-	saved_bed_temperature = (uint8_t)degTargetBed();
-	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
-	saved_fan_speed = fanSpeed;
+    // Reset partial backup flag, we have a full back-up now
+    clear_print_state_in_ram();
+
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
