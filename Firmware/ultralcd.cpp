@@ -5238,7 +5238,7 @@ static void lcd_main_menu()
 #endif //TMC2130_DEBUG
 
     // Menu item for reprint
-    if(!printer_active() && (heating_status == HeatingStatus::NO_HEATING)) {
+    if(!printer_active() && !printer_recovering() && (heating_status == HeatingStatus::NO_HEATING)) {
         if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.mounted) {
             MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_reprint_from_eeprom);
         } else if ((GetPrinterState() == PrinterState::HostPrintingFinished) && M79_timer_get_status()) {
