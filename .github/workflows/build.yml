@@ -4,11 +4,11 @@ on:
   pull_request:
     branches:
     - '*'
-    tags:
-    - 'v*'
   push:
     branches: [ MK3, MK3_* ]
-
+    tags:
+    - 'v*'
+    
 env:
   GH_ANNOTATIONS: 1
 
