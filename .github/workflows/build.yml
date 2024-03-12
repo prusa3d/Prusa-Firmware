@@ -75,8 +75,8 @@ jobs:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         draft: true
         files: |
-          "${{ github.workspace }}/build/release/*.hex"
-          "${{ github.workspace }}/build/release/*.zip"
+          ${{ github.workspace }}/build/release/*.hex
+          ${{ github.workspace }}/build/release/*.zip
 
   check-lang:
     runs-on: ubuntu-latest
