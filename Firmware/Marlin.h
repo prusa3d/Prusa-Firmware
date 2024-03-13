@@ -313,6 +313,11 @@ extern LongTimer safetyTimer;
 // the print is paused, that still counts as a "running" print.
 bool printJobOngoing();
 
+// Make debug_printer_states available everywhere
+#ifdef DEBUG_PRINTER_STATES
+void debug_printer_states();
+#endif //DEBUG_PRINTER_STATES
+
 // Printing is paused according to SD or host indicators
 bool printingIsPaused();
 

@@ -572,6 +572,7 @@ void debug_printer_states()
     printf_P(PSTR("DBG:fsensor.isEnabled() = %d\n"), (int)fsensor.isEnabled());
     printf_P(PSTR("DBG:fsensor.getAutoLoadEnabled() = %d\n"), (int)fsensor.getAutoLoadEnabled());
     printf_P(PSTR("DBG:custom_message_type = %d\n"), (int)custom_message_type);
+    printf_P(PSTR("DBG:uvlo_auto_recovery_ready = %d\n"), (int)uvlo_auto_recovery_ready);
     SERIAL_ECHOLN("");
 }
 #endif //End DEBUG_PRINTER_STATES
@@ -6053,6 +6054,9 @@ Sigma_Exit:
                 SetHostStatusScreenName(str.GetUnquotedString());
             }
         }
+#ifdef DEBUG_PRINTER_STATES
+        debug_printer_states();
+#endif //DEBUG_PRINTER_STATES
 
         if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST
            && printer_recovering()
