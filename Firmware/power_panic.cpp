@@ -41,7 +41,7 @@ void uvlo_() {
     unsigned long time_start = _millis();
 
     // True if a print is already saved to RAM
-    const bool sd_print_saved_in_ram = saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD);
+    const bool print_saved_in_ram = saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD);
     const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
 
     // Conserve as much power as soon as possible
@@ -66,7 +66,7 @@ void uvlo_() {
     tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS]);
 #endif //TMC2130
 
-    if (!sd_print_saved_in_ram && !isPartialBackupAvailable)
+    if (!print_saved_in_ram && !isPartialBackupAvailable)
     {
         saved_bed_temperature = target_temperature_bed;
         saved_extruder_temperature = target_temperature[active_extruder];
@@ -78,7 +78,7 @@ void uvlo_() {
     disable_heater();
 
     // Fetch data not included in a partial back-up
-    if (!sd_print_saved_in_ram) {
+    if (!print_saved_in_ram) {
         // Calculate the file position, from which to resume this print.
         save_print_file_state();
 
@@ -99,7 +99,7 @@ void uvlo_() {
 
     // When there is no position already saved, then we must grab whatever the current position is.
     // This is most likely a position where the printer is in the middle of a G-code move
-    if (!sd_print_saved_in_ram && !isPartialBackupAvailable)
+    if (!print_saved_in_ram && !isPartialBackupAvailable)
     {
         memcpy(saved_pos, current_position, sizeof(saved_pos));
         if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
