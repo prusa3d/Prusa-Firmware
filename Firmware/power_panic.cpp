@@ -320,7 +320,7 @@ void recover_print(uint8_t automatic) {
     if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY)
     {
         enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + Z_PAUSE_LIFT);
-        eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
     }
 
     // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine
