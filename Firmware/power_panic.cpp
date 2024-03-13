@@ -41,7 +41,7 @@ void uvlo_() {
     unsigned long time_start = _millis();
 
     // True if a print is already saved to RAM
-    const bool print_saved_in_ram = saved_printing && (saved_printing_type == PowerPanic::PRINT_TYPE_SD);
+    const bool print_saved_in_ram = saved_printing && (saved_printing_type != PowerPanic::PRINT_TYPE_NONE);
     const bool pos_invalid = mesh_bed_leveling_flag || homing_flag;
 
     // Conserve as much power as soon as possible
