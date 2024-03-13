@@ -6,6 +6,8 @@ on:
     - '*'
   push:
     branches: [ MK3, MK3_* ]
+    tags:
+    - 'v*'
 
 env:
   GH_ANNOTATIONS: 1
@@ -65,6 +67,16 @@ jobs:
       with:
         name: Firmware
         path: build/*.hex
+
+    - name: RELEASE THE KRAKEN
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        draft: true
+        files: |
+          ${{ github.workspace }}/build/release/*.hex
+          ${{ github.workspace }}/build/release/*.zip
 
   check-lang:
     runs-on: ubuntu-latest
