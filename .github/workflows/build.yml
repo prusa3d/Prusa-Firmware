@@ -8,7 +8,7 @@ on:
     branches: [ MK3, MK3_* ]
     tags:
     - 'v*'
-    
+
 env:
   GH_ANNOTATIONS: 1
 
