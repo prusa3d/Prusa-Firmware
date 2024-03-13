@@ -427,7 +427,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     SERIAL_ECHOPGM(", feedmultiply:");
     MYSERIAL.println(feedmultiply_rec);
 
-    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
+    if (saved_printing_type == PowerPanic::PRINT_TYPE_SD)
     { // M23
         restore_file_from_sd();
     }
@@ -469,12 +469,12 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 
     // SD: Position in file, USB: g-code line number
     uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
-    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
+    if (saved_printing_type == PowerPanic::PRINT_TYPE_SD)
     {
         // Set a position in the file.
         enquecommandf_P(PSTR("M26 S%lu"), position);
     }
-    else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST)
+    else if (saved_printing_type == PowerPanic::PRINT_TYPE_HOST)
     {
         // Set line number
         enquecommandf_P(PSTR("M110 N%lu"), position);
