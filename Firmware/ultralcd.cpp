@@ -5238,53 +5238,66 @@ static void lcd_main_menu()
 #endif //TMC2130_DEBUG
 
     // Menu item for reprint
-    if(!printer_active() && !printer_recovering() && (heating_status == HeatingStatus::NO_HEATING)) {
-        if ((GetPrinterState() == PrinterState::SDPrintingFinished) && card.mounted) {
+    if (!printer_active()
+        && !printer_recovering()
+        && (heating_status == HeatingStatus::NO_HEATING)) {
+        if ((GetPrinterState() == PrinterState::SDPrintingFinished)
+            && card.mounted) {
             MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_reprint_from_eeprom);
-        } else if ((GetPrinterState() == PrinterState::HostPrintingFinished) && M79_timer_get_status()) {
+        } else if ((GetPrinterState() == PrinterState::HostPrintingFinished)
+                    && M79_timer_get_status()) {
             MENU_ITEM_FUNCTION_P(_T(MSG_REPRINT), lcd_send_action_start);
         }
     }
 
     // Menu is never shown when idle
-    if (babystep_allowed_strict() && (printJobOngoing() || lcd_commands_type == LcdCommands::Layer1Cal))
+    if (babystep_allowed_strict()
+        && (printJobOngoing()
+        || lcd_commands_type == LcdCommands::Layer1Cal))
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
 
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 
-    if ( moves_planned() || printer_active() ) {
-        MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
-    } else if (!Stopped) {
-        MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
-        if (M79_timer_get_status()) {
-            if(GetPrinterState() == PrinterState::IsReady) {
-                MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
-            } else {
-                MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+    if (!printer_recovering()) {
+        if ( moves_planned()
+            || printer_active()) {
+            MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
+        } else if (!Stopped) {
+            MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
+            if (M79_timer_get_status()) {
+                if(GetPrinterState() == PrinterState::IsReady) {
+                    MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
+                } else {
+                    MENU_ITEM_FUNCTION_P(_T(MSG_SET_READY), lcd_printer_ready_state_toggle);
+                }
+            }
+        }
+        if (mesh_bed_leveling_flag == false
+            && homing_flag == false
+            && !printingIsPaused()
+            && !processing_tcode) {
+            if (usb_timer.running()) {
+                MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
+            } else if (IS_SD_PRINTING) {
+                MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
             }
         }
     }
-    if (mesh_bed_leveling_flag == false && homing_flag == false && !printingIsPaused() && !processing_tcode) {
-        if (usb_timer.running()) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
-        } else if (IS_SD_PRINTING) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);
-        }
-    }
-    if(printingIsPaused())
-    {
+    if (printingIsPaused()
         // only allow resuming if hardware errors (temperature or fan) are cleared
-        if(!get_temp_error()
+        && !get_temp_error()
 #ifdef FANCHECK
-            && fan_check_error != EFCE_REPORTED
+        && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
-           ) {
-            if (saved_printing) {
+        && (saved_printing_type != PowerPanic::PRINT_TYPE_NONE
+           || saved_printing)
+        && custom_message_type != CustomMsg::Resuming) {
+        if (saved_printing_type == PowerPanic::PRINT_TYPE_SD) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);
-            } else {
+        } else if ((saved_printing_type == PowerPanic::PRINT_TYPE_HOST)
+                    && (M79_timer_get_status())) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
-            }
         }
     }
     if((printJobOngoing()
@@ -5301,81 +5314,96 @@ static void lcd_main_menu()
 #endif
 
     // only allow starting SD print if hardware errors (temperature or fan) are cleared
-    if(!get_temp_error()
-            && !printer_active()
+    if (!printer_recovering()
+        && !printer_active()
+        && !get_temp_error()
+        && !printer_active()
 #ifdef FANCHECK
-            && fan_check_error != EFCE_REPORTED
+        && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
-    )
-    {
+        ) {
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
-        if (card.mounted || lcd_commands_type != LcdCommands::Idle) {
-            if (!card.isFileOpen()) {
-                if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
-                    bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
-                    MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
-                }
+            if (card.mounted
+                || lcd_commands_type != LcdCommands::Idle) {
+                if (!card.isFileOpen()) {
+                    if (!usb_timer.running()
+                        && (lcd_commands_type == LcdCommands::Idle)) {
+                        bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
+                        MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
+                    }
 #if SDCARDDETECT < 1
-            MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user ////MSG_CNG_SDCARD c=18
+             MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user ////MSG_CNG_SDCARD c=18
 #endif //SDCARDDETECT
-            }
-        } else {
-            bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-            MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu); ////MSG_NO_CARD c=18
+                }
+            } else {
+                bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+                MENU_ITEM_BACK_P(_i("No SD card")); ////MSG_NO_CARD c=18
 #if SDCARDDETECT < 1
             MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface ////MSG_INIT_SDCARD c=18
 #endif //SDCARDDETECT
-        }
+         }
 #endif //SDSUPPORT
-    }
-
-    if(!printer_active() && !farm_mode) {
-        const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
-        const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
-        if ((nextSheet >= 0) && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
-            MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
-        }
+        if(!printer_active()
+            && !farm_mode) {
+            const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+            const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
+            if ((nextSheet >= 0)
+                && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
+                MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
+            }
 #ifdef QUICK_NOZZLE_CHANGE
-        SETTINGS_NOZZLE;
+            SETTINGS_NOZZLE;
 #endif //QUICK_NOZZLE_CHANGE
 
-    }
-
-    if ( ! ( printer_active() || (eFilamentAction != FilamentAction::None) || Stopped ) ) {
-        if (MMU2::mmu2.Enabled()) {
-            if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
-                // The MMU 'Load filament' state machine will reject the command if any 
-                // filament sensor is reporting a detected filament
-                MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
-            }
-            MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), lcd_mmuLoadFilament);////MSG_LOAD_TO_NOZZLE c=18
-            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
-            MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
-#ifdef  MMU_HAS_CUTTER
-            if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
-                MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), lcd_mmuCutFilament);
-            }
-#endif //MMU_HAS_CUTTER
-        } else {
-#ifdef FILAMENT_SENSOR
-            if (fsensor.isEnabled() && fsensor.getAutoLoadEnabled()) {
-                MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
-            }
-            else
-#endif //FILAMENT_SENSOR
-            {
-                MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
-            }
-            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
-        MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
-        if(!printingIsPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
+
+        if (!( printer_active()
+                || (eFilamentAction != FilamentAction::None)
+                || Stopped )) {
+            if (MMU2::mmu2.Enabled()) {
+                if(!MMU2::mmu2.FindaDetectsFilament()
+                    && !fsensor.getFilamentPresent()) {
+                    // The MMU 'Load filament' state machine will reject the command if any
+                    // filament sensor is reporting a detected filament
+                    MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
+            }
+                MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), lcd_mmuLoadFilament);////MSG_LOAD_TO_NOZZLE c=18
+                MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
+                MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
+#ifdef  MMU_HAS_CUTTER
+                if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
+                    MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), lcd_mmuCutFilament);
+                }
+#endif //MMU_HAS_CUTTER
+            } else {
+#ifdef FILAMENT_SENSOR
+                if (fsensor.isEnabled()) {
+                    if (!fsensor.getFilamentPresent()) {
+                        if (fsensor.getAutoLoadEnabled()) {
+                            MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
+                        } else {
+                            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
+                        }
+                    } else {
+                        MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
+                    }
+                } else {
+#endif //FILAMENT_SENSOR
+                    MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
+                    MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
+#ifdef FILAMENT_SENSOR
+                }
+#endif //FILAMENT_SENSOR
+            }
+            MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
+            if(!printingIsPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
+        }
     }
 
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
-    MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);////MSG_FAIL_STATS c=18
+        MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);////MSG_FAIL_STATS c=18
 #endif
     if (MMU2::mmu2.Enabled()) {
         MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////MSG_MMU_FAIL_STATS c=18
