@@ -1642,13 +1642,17 @@ void setup()
       saved_printing_type = eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE);
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER
       printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
+#endif //DEBUG_UVLO_AUTOMATIC_RECOVER
       uvlo_auto_recovery_ready = (degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET));
       if (uvlo_auto_recovery_ready){
+#ifdef DEBUG_UVLO_AUTOMATIC_RECOVER
         puts_P(_N("Automatic recovery!")); 
+#endif //DEBUG_UVLO_AUTOMATIC_RECOVER
         recover_print(1);
       } else {
-#endif //DEBUG_UVLO_AUTOMATIC_RECOVER
+#ifdef DEBUG_UVLO_AUTOMATIC_RECOVER
         puts_P(_N("Normal recovery!")); 
+#endif //DEBUG_UVLO_AUTOMATIC_RECOVER
         if (saved_printing_type == PowerPanic::PRINT_TYPE_HOST) {
           recover_print(0);
         } else {
@@ -1659,9 +1663,7 @@ void setup()
             cancel_saved_printing();
           }
         }
-#ifdef DEBUG_UVLO_AUTOMATIC_RECOVER
       }
-#endif //DEBUG_UVLO_AUTOMATIC_RECOVER
   }
 
   // Only arm the uvlo interrupt _after_ a recovering print has been initialized and
