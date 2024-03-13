@@ -315,8 +315,13 @@ void recover_print(uint8_t automatic) {
     // Recover position, temperatures and extrude_multipliers
     bool mbl_was_active = recover_machine_state_after_power_panic();
 
-    // Lift the print head 20mm, first to avoid collisions with oozed material with the print,
-    // and second also so one may remove the excess priming material.
+    // Undo PP Z Lift by setting current Z pos to + Z_PAUSE_LIFT
+    // After a reboot the printer doesn't know the Z height and we have to set its previous value
+    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY_RETRY) {
+        current_position[Z_AXIS] += Z_PAUSE_LIFT;
+    }
+
+    // Lift the print head ONCE plus Z_PAUSE_LIFT first to avoid collisions with oozed material with the print,
     if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY)
     {
         enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + Z_PAUSE_LIFT);

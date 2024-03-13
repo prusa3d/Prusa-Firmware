@@ -11067,7 +11067,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	set_destination_to_current();
 
     restore_print_file_state();
-
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
 	lcd_setstatuspgm(MSG_WELCOME);
     saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
 	saved_printing = false;
