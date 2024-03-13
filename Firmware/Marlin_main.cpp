@@ -4171,62 +4171,52 @@ void process_commands()
         if (farm_prusa_code_seen()) {}
         else if(code_seen_P(PSTR("FANPINTST"))) {
             gcode_PRUSA_BadRAMBoFanTest();
-        }
-        else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
+        } else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
             printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
-        }
-        else if (code_seen_P(PSTR("uvlo"))) // PRUSA uvlo
-        {
-            if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD)
-            {
+        } else if (code_seen_P(PSTR("uvlo"))) { // PRUSA uvlo
+            if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD) {
                 // M24 - Start SD print
                 enquecommand_P(MSG_M24);
 
                 // Print is recovered, clear the recovery flag
                 eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
-            }
-            else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST)
-            {
+            } else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST) {
                 // For Host prints we need to start the timer so that the pause has any effect
                 // this will allow g-codes to be processed while in the paused state
                 // For SD prints, M24 starts the timer
                 print_job_timer.start();
+                usb_timer.start();
 
                 // Park the extruder to the side and don't resume the print
                 // we must assume that the host as not fully booted up at this point
                 lcd_pause_print();
             }
-        }
-		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
-		{
-			MMU2::mmu2.Reset(MMU2::MMU2::Software);
-		}
-		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
+        } else if (code_seen_P(PSTR("MMURES"))) { // PRUSA MMURES
+            MMU2::mmu2.Reset(MMU2::MMU2::Software);
+        } else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
 #if defined(XFLASH) && defined(BOOTAPP)
             boot_app_magic = 0;
 #endif //defined(XFLASH) && defined(BOOTAPP)
             softReset();
-    }
-    else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
-        char SN[20];
-        eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
-        if (SN[19])
-            puts_P(PSTR("SN invalid"));
-        else
-            puts(SN);
-    }
-    else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
+        } else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
+            char SN[20];
+            eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
+            if (SN[19])
+                puts_P(PSTR("SN invalid"));
+            else
+                puts(SN);
+        } else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
-      SERIAL_PROTOCOLLNPGM(FW_VERSION_FULL);
+            SERIAL_PROTOCOLLNPGM(FW_VERSION_FULL);
 
     } else if(code_seen_P(PSTR("Rev"))){ // PRUSA Rev
 
       SERIAL_PROTOCOLLNPGM(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
     } else if(code_seen_P(PSTR("Lang"))) { // PRUSA Lang
-	  lang_reset();
+        lang_reset();
 
-	} else if(code_seen_P(PSTR("Lz"))) { // PRUSA Lz
+    } else if(code_seen_P(PSTR("Lz"))) { // PRUSA Lz
       eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
     } else if(code_seen_P(PSTR("FR"))) { // PRUSA FR
@@ -4244,21 +4234,17 @@ void process_commands()
             }
         }
     } else if (code_seen_P(PSTR("nozzle"))) { // PRUSA nozzle
-          uint16_t nDiameter;
-          if(code_seen('D'))
-               {
-               nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
-               nozzle_diameter_check(nDiameter);
-               }
-          else if(code_seen_P(PSTR("set")) && farm_mode)
-               {
-               strchr_pointer++;                  // skip 1st char (~ 's')
-               strchr_pointer++;                  // skip 2nd char (~ 'e')
-               nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
-               eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
-               eeprom_update_word_notify((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
-               }
-          else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+            uint16_t nDiameter;
+            if(code_seen('D')) {
+                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+                nozzle_diameter_check(nDiameter);
+            } else if(code_seen_P(PSTR("set")) && farm_mode) {
+                strchr_pointer++;                  // skip 1st char (~ 's')
+                strchr_pointer++;                  // skip 2nd char (~ 'e')
+                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+                eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
+                eeprom_update_word_notify((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+            } else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
     }
   }
   else if(*CMDBUFFER_CURRENT_STRING == 'G')
