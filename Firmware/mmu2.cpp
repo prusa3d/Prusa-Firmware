@@ -155,9 +155,11 @@ void MMU2::PowerOn() {
 bool MMU2::ReadRegister(uint8_t address) {
     if (!WaitForMMUReady())
         return false;
+
+    RequestMsg msg = RequestMsg(RequestMsgCodes::Read, address);
     do {
         logic.ReadRegister(address); // we may signal the accepted/rejected status of the response as return value of this function
-    } while (!manage_response(false, false));
+    } while (!manage_response(false, false, &msg));
 
     // Update cached value
     lastReadRegisterValue = logic.rsp.paramValue;
@@ -180,9 +182,10 @@ bool __attribute__((noinline)) MMU2::WriteRegister(uint8_t address, uint16_t dat
         break; // do not intercept any other register writes
     }
 
+    RequestMsg msg = RequestMsg(RequestMsgCodes::Write, address);
     do {
         logic.WriteRegister(address, data); // we may signal the accepted/rejected status of the response as return value of this function
-    } while (!manage_response(false, false));
+    } while (!manage_response(false, false, &msg));
 
     return true;
 }
@@ -761,6 +764,17 @@ void MMU2::CheckUserInput() {
     }
 }
 
+bool MMU2::check_nested_response(RequestMsg * msg) {
+    // If we see a response that matches RequestMsg, then return
+    if (!msg) {
+        return false;
+    }
+    return logic.rsp.request.code == msg->code
+        && logic.rsp.request.value == msg->value
+        && logic.rsp.paramCode == ResponseMsgParamCodes::Accepted;
+}
+
+
 /// Originally, this was used to wait for response and deal with timeout if necessary.
 /// The new protocol implementation enables much nicer and intense reporting, so this method will boil down
 /// just to verify the result of an issued command (which was basically the original idea)
@@ -768,7 +782,18 @@ void MMU2::CheckUserInput() {
 /// It is closely related to mmu_loop() (which corresponds to our ProtocolLogic::Step()), which does NOT perform any blocking wait for a command to finish.
 /// But - in case of an error, the command is not yet finished, but we must react accordingly - move the printhead elsewhere, stop heating, eat a cat or so.
 /// That's what's being done here...
-bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
+bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle, RequestMsg *msg) {
+    static uint8_t responseDepth = 0;
+    struct ResponseRAII {
+        ResponseRAII() {responseDepth++;}
+        ~ResponseRAII() {responseDepth--;}
+    } responseRAII;
+
+    // The printer may read and write registers in order to recover from MMU errors
+    if (responseDepth == 2) {
+        return check_nested_response(msg);
+    }
+
     mmu_print_saved = SavedState::None;
 
     MARLIN_KEEPALIVE_STATE_IN_PROCESS;
