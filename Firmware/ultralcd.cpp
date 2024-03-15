@@ -972,15 +972,18 @@ void lcd_commands()
 	{
         if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
+#ifndef QUICK_NOZZLE_CHANGE //thermal model can be ignored if a quickchange nozzle is in use, no heatup necessary
 #ifdef THERMAL_MODEL
             static bool was_enabled;
 #endif //THERMAL_MODEL
+#endif //QUICK_NOZZLE_CHANGE
             switch(lcd_commands_step)
             {
             case 0:
                 lcd_commands_step = 3;
                 break;
             case 3:
+#ifndef QUICK_NOZZLE_CHANGE
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
                 lcd_update_enabled = true;
@@ -992,30 +995,47 @@ void lcd_commands()
                 was_enabled = thermal_model_enabled();
                 thermal_model_set_enabled(false);
 #endif //THERMAL_MODEL
+#else //nozzle change without heating
+                while((int)degHotend(active_extruder)>40) { //check temp
+                    fanSpeed = 255; //turn on fan
+                    disable_heater();
+                    uint8_t choice = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_COOLDOWN), true, LCD_LEFT_BUTTON_CHOICE);
+                    lcd_update_enabled = false; //hack to avoid lcd_update recursion.
+                    if (choice == LCD_MIDDLE_BUTTON_CHOICE) {
+                        lcd_update_enabled = true;
+                        lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
+                        break;
+                    }
+                    lcd_update_enabled = true;
+                    lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
+                }
+                enquecommand_P(G28W); //home
+                enquecommand_P(PSTR("G1 X125 Z200 F1000")); //move to top center
+#endif //QUICK_NOZZLE_CHANGE
                 lcd_commands_step = 2;
                 break;
             case 2:
-                //|0123456789012456789|
-                //|Hotend at 280C!
-                //|Nozzle changed and
-                //|tightend to specs?
-                //| Yes     No
                 enquecommand_P(PSTR("M84 XY"));
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
+#ifndef QUICK_NOZZLE_CHANGE
                     setTargetHotend(0);
 #ifdef THERMAL_MODEL
                     thermal_model_set_enabled(was_enabled);
 #endif //THERMAL_MODEL
+#else
+                    fanSpeed = 0; //turn off fan
+#endif //QUICK_NOZZLE_CHANGE
                     lcd_commands_step = 1;
                 }
                 lcd_update_enabled = true;
                 break;
             case 1:
-                lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
                 SetPrinterState(PrinterState::Idle);
+                menu_goto(lcd_hw_setup_menu, 2, true);
+                menu_depth = 3;
                 break;
             }
         }

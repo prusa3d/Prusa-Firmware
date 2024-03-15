@@ -194,6 +194,9 @@ extern const char MSG_LOAD_ALL[];
 extern const char MSG_NOZZLE_CNG_MENU [];
 extern const char MSG_NOZZLE_CNG_READ_HELP [];
 extern const char MSG_NOZZLE_CNG_CHANGED [];
+#ifdef QUICK_NOZZLE_CHANGE
+extern const char MSG_NOZZLE_CNG_COOLDOWN [];
+#endif //QUICK_NOZZLE_CHANGE
 extern const char MSG_REPRINT [];
 
 //not internationalized messages

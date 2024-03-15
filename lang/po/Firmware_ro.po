@@ -2598,6 +2598,16 @@ msgstr "Repetă print"
 msgid "Shutdown host"
 msgstr "Oprește gazda"
 
+#. MSG_NOZZLE_CNG_COOLDOWN c=20 r=3
+#: ../../Firmware/messages.cpp:198 ../../Firmware/ultralcd.cpp:1002
+msgid "Nozzle is hot! Wait for cooldown."
+msgstr "Duza este fierbinte! Așteptați să se răcească."
+
+#. MSG_NOZZLE_CNG_CHANGED_QUICK c=20 r=3
+#: ../../Firmware/messages.cpp:199
+msgid "Nozzle changed?"
+msgstr "S-a schimbat duza?"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."
 

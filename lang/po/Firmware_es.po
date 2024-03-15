@@ -2598,6 +2598,16 @@ msgstr "Volver a imprimir"
 msgid "Shutdown host"
 msgstr "Apagar host"
 
+#. MSG_NOZZLE_CNG_COOLDOWN c=20 r=3
+#: ../../Firmware/messages.cpp:198 ../../Firmware/ultralcd.cpp:1002
+msgid "Nozzle is hot! Wait for cooldown."
+msgstr "La boquilla está caliente! Espere a que se enfríe."
+
+#. MSG_NOZZLE_CNG_CHANGED_QUICK c=20 r=3
+#: ../../Firmware/messages.cpp:199
+msgid "Nozzle changed?"
+msgstr "Cambió la boquilla?"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Retira el fil. viejo y presiona el dial para comenzar a cargar el nuevo."
