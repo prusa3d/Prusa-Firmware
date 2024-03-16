@@ -9489,8 +9489,9 @@ void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const
             float dz = z - current_position[Z_AXIS];
             float de = e - current_position[E_AXIS];
 
+            const float n_segment_inv = 1 / n_segments;
             for (uint16_t i = start_segment_idx; i < n_segments; ++ i) {
-                float t = float(i) / float(n_segments);
+                float t = float(i) * n_segment_inv;
                 plan_buffer_line(current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
                                  current_position[Z_AXIS] + t * dz,
@@ -9528,7 +9529,7 @@ void prepare_move(uint16_t start_segment_idx)
 void prepare_arc_move(bool isclockwise, uint16_t start_segment_idx) {
     float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
     // Trace the arc
-    mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, start_segment_idx);
+    mc_arc(current_position, destination, offset, (feedrate * feedmultiply) / 6000.f, r, isclockwise, start_segment_idx);
     // As far as the parser is concerned, the position is now == target. In reality the
     // motion control system might still be processing the action and the real tool position
     // in any intermediate location.
