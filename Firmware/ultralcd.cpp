@@ -5339,7 +5339,11 @@ static void lcd_main_menu()
 
     if ( ! ( printer_active() || (eFilamentAction != FilamentAction::None) || Stopped ) ) {
         if (MMU2::mmu2.Enabled()) {
+#ifdef FILAMENT_SENSOR
             if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
+#else
+            if(!MMU2::mmu2.FindaDetectsFilament()) {
+#endif
                 // The MMU 'Load filament' state machine will reject the command if any 
                 // filament sensor is reporting a detected filament
                 MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);

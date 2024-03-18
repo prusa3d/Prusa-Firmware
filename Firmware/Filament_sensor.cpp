@@ -40,6 +40,7 @@ FSensorBlockRunout::FSensorBlockRunout() { }
 FSensorBlockRunout::~FSensorBlockRunout() { }
 #endif // FILAMENT_SENSOR
 
+#ifdef FILAMENT_SENSOR
 void Filament_sensor::setEnabled(bool enabled) {
     eeprom_update_byte_notify((uint8_t *)EEPROM_FSENSOR, enabled);
     if (enabled) {
@@ -520,3 +521,4 @@ bool PAT9125_sensor::updatePAT9125() {
     return (filter == 0); // return stability
 }
 #endif // #if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+#endif // FILAMENT_SENSOR
