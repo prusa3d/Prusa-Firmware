@@ -2435,7 +2435,7 @@ msgstr "Offset point [0;0]"
 #. MSG_PRESS c=20 r=2
 #: ../../Firmware/ultralcd.cpp:2123
 msgid "and press the knob"
-msgstr "et appuyez sur le bouton"
+msgstr "et appuyez\nsur le bouton"
 
 #. MSG_TO_LOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:1783

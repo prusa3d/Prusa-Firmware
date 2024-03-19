@@ -2424,7 +2424,7 @@ msgstr "[0;0] pont offszet"
 #. MSG_PRESS c=20 r=2
 #: ../../Firmware/ultralcd.cpp:2123
 msgid "and press the knob"
-msgstr "es nyomd meg a gombot"
+msgstr "es nyomd meg\na gombot"
 
 #. MSG_TO_LOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:1783
