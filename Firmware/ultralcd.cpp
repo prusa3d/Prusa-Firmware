@@ -5317,7 +5317,6 @@ static void lcd_main_menu()
     if (!printer_recovering()
         && !printer_active()
         && !get_temp_error()
-        && !printer_active()
 #ifdef FANCHECK
         && fan_check_error != EFCE_REPORTED
 #endif //FANCHECK
