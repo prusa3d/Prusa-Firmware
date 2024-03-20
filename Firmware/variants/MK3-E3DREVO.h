@@ -109,7 +109,7 @@
 #define NORMAL_MAX_FEEDRATE_XY   200  // max feedrate in mm/s
 
 //number of bytes from end of the file to start check
-#define END_FILE_SECTION 30720
+#define END_FILE_SECTION 51200
 
 #define Z_AXIS_ALWAYS_ON 1
 

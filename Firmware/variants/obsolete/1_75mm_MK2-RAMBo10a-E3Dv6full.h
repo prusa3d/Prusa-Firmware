@@ -401,7 +401,7 @@ THERMISTORS SETTINGS
 
 #define DEFAULT_PID_TEMP 210
 
-#define END_FILE_SECTION 30720 //number of bytes from end of file used for checking if file is complete
+#define END_FILE_SECTION 51200 //number of bytes from end of file used for checking if file is complete
 
 // Safety timer
 #define SAFETYTIMER
