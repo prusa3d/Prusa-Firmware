@@ -492,7 +492,6 @@
 
 #define MMU_CONFIG_FILE "mmu2/variants/config_MMU2.h"
 #define MMU_FILAMENT_COUNT 5
-#define MMU_FORCE_STEALTH_MODE
 #define MMU_DEBUG //print communication between MMU and printer on serial
 #define MMU_HAS_CUTTER
 

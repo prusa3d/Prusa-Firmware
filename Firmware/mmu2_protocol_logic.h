@@ -112,6 +112,7 @@ public:
     void CutFilament(uint8_t slot);
     void ResetMMU(uint8_t mode = 0);
     void Button(uint8_t index);
+    void Mode(uint8_t mode);
     void Home(uint8_t mode);
     void ReadRegister(uint8_t address);
     void WriteRegister(uint8_t address, uint16_t data);

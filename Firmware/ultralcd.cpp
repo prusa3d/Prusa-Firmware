@@ -3387,11 +3387,10 @@ static void lcd_sound_state_set(void) {
     Sound_CycleState();
 }
 
-#ifndef MMU_FORCE_STEALTH_MODE
 static void lcd_mmu_mode_toggle() {
     eeprom_toggle((uint8_t*)EEPROM_MMU_STEALTH);
+    MMU2::mmu2.Mode(eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) ? MMU2::Stealth : MMU2::Normal);
 }
-#endif //MMU_FORCE_STEALTH_MODE
 
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
@@ -4092,9 +4091,7 @@ static void menuitems_MMU_settings_common()
     }
 #endif // MMU_HAS_CUTTER
 
-#ifndef MMU_FORCE_STEALTH_MODE
     MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), eeprom_read_byte((uint8_t *)EEPROM_MMU_STEALTH) ? _T(MSG_STEALTH) : _T(MSG_NORMAL), lcd_mmu_mode_toggle);
-#endif // MMU_FORCE_STEALTH_MODE
 }
 
 static void mmu_enable_switch()
