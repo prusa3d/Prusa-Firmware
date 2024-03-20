@@ -3527,7 +3527,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     custom_message_type = CustomMsg::Status;
 }
 
-void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
+void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex, bool raise_z_axis = false){
     FSensorBlockRunout fsBlockRunout;
     
     prusa_statistics(22);
@@ -3542,6 +3542,10 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
 
         current_position[E_AXIS] += fastLoadLength;
         plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
+
+        if (raise_z_axis) { // backwards compatibility for 3.12 and older FW
+          raise_z_above(MIN_Z_FOR_LOAD);
+        }
 
         load_filament_final_feed(); // slow sequence
         st_synchronize();
@@ -8674,13 +8678,12 @@ Sigma_Exit:
 
         // Z lift. For safety only allow positive values
         if (code_seen('Z')) z_target = fabs(code_value());
-        else raise_z_above(MIN_Z_FOR_LOAD); // backwards compatibility for 3.12 and older FW
-
+        
         // Raise the Z axis
         float delta = raise_z(z_target);
 
         // Load filament
-        gcode_M701(fastLoadLength, mmuSlotIndex);
+        gcode_M701(fastLoadLength, mmuSlotIndex, !code_seen('Z')); // if no z -> trigger MIN_Z_FOR_LOAD for backwards compatibility on 3.12 and older FW 
 
         // Restore Z axis
         raise_z(-delta);
