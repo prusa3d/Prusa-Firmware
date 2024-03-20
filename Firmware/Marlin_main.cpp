@@ -6161,8 +6161,6 @@ Sigma_Exit:
       /* See if we are heating up or cooling down */
       target_direction = isHeatingHotend(active_extruder); // true if heating, false if cooling
 
-      cancel_heatup = false;
-
       wait_for_heater(codenum, active_extruder); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
