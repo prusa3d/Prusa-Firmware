@@ -2258,12 +2258,15 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-	uint8_t clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
-	while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
-		load_filament_final_feed();
-		st_synchronize();
-		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
-	}
+    uint8_t clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
+    while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
+        load_filament_final_feed();
+        st_synchronize();
+        clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
+    }
+    if (clean == LCD_RIGHT_BUTTON_CHOICE) {
+        unload_filament(FILAMENTCHANGE_FINALRETRACT);
+    }
 }
 
 #ifdef FILAMENT_SENSOR
@@ -3041,7 +3044,13 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
     lcd_putc_at(second_col, 3, selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(second_choice);
     if (third_choice) {
-        lcd_putc_at(18, 3, selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
+        ////get size of third_choice, offset to the left. Make sure it doesn't overlap second_choice.
+        size_t third_choice_len = strlen_P(third_choice);
+        uint8_t second_col_end = second_col + strlen_P(second_choice) + 2;
+        uint8_t third_col;
+        if (uint8_t pos = 19 - third_choice_len; pos > second_col_end) {third_col = pos;} else {third_col = second_col_end;}
+        if (third_col > 18) {third_col = 18;} //backwards compatability - make sure at least one character of the third selection is shown
+        lcd_putc_at(third_col, 3, selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(third_choice);
     }
 }

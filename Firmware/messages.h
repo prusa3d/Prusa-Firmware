@@ -21,6 +21,7 @@ extern const char MSG_BED_HEATING[];
 extern const char MSG_BED_LEVELING_FAILED_POINT_LOW[];
 extern const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[];
 extern const char MSG_BELT_STATUS[];
+extern const char MSG_EJECT[];
 extern const char MSG_CANCEL[];
 extern const char MSG_CALIBRATE_Z_AUTO[];
 extern const char MSG_CARD_MENU[];
