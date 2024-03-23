@@ -1002,7 +1002,7 @@ void lcd_commands()
                 //| Yes     No
                 enquecommand_P(PSTR("M84 XY"));
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
-                if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
+                if (lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
                     setTargetHotend(0);
 #ifdef THERMAL_MODEL
                     thermal_model_set_enabled(was_enabled);
@@ -2258,11 +2258,11 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-	uint8_t clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
+	uint8_t clean = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
 	while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
 		load_filament_final_feed();
 		st_synchronize();
-		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
+		clean = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
 	}
 }
 
@@ -2845,7 +2845,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             }
         }
         // Let the user confirm, that the Z carriage is at the top end stoppers.
-        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z-carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
+        uint8_t result = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Are left and right Z-carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
         if (result == LCD_BUTTON_TIMEOUT)
             goto canceled;
         else if (result == LCD_LEFT_BUTTON_CHOICE)
@@ -3147,19 +3147,6 @@ uint8_t lcd_show_yes_no_and_wait(bool allow_timeouting, uint8_t default_selectio
     return lcd_show_multiscreen_message_yes_no_and_wait_P(NULL, allow_timeouting, default_selection);
 }
 
-//! @brief Show single screen message with yes and no possible choices and wait with possible timeout
-//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
-//! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
-//! @retval 0 yes choice selected by user
-//! @retval 1 no choice selected by user
-//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
-//! @relates lcd_show_yes_no_and_wait
-uint8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection)
-{
-    return lcd_show_multiscreen_message_yes_no_and_wait_P(msg, allow_timeouting, default_selection);
-}
-
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
 {
     const char *msg = NULL;
@@ -3447,7 +3434,7 @@ static void menu_setlang(uint8_t lang)
 {
 	if (!lang_select(lang))
 	{
-		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, LCD_LEFT_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
+		if (lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, LCD_LEFT_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
 		menu_goto(lcd_language_menu, 0, true, true);
@@ -3625,7 +3612,7 @@ void lcd_v2_calibration() {
 		if (fsensor.isReady()) {
 			loaded = fsensor.getFilamentPresent();
 		} else {
-			loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
+			loaded = !lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
 			lcd_update_enabled = true;
 		}
 
@@ -3855,7 +3842,7 @@ void lcd_wizard(WizState state)
 		case S::Z:
 			lcd_show_fullscreen_message_and_wait_P(_i("Please remove shipping helpers first."));////MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 			lcd_show_fullscreen_message_and_wait_P(_i("Now remove the test print from steel sheet."));////MSG_REMOVE_TEST_PRINT c=20 r=4
-			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
+			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
 			if (wizard_event == LCD_MIDDLE_BUTTON_CHOICE) {
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 			}
@@ -3887,7 +3874,7 @@ void lcd_wizard(WizState state)
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
-			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
+			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
 			if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
 				state = S::Lay1CalCold;
 			} else { // MIDDLE_BUTTON_CHOICE
@@ -4767,7 +4754,7 @@ char reset_menu() {
 
 static void lcd_disable_farm_mode()
 {
-	uint8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true); //allow timeouting, default no
+	uint8_t disable = lcd_show_multiscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true); //allow timeouting, default no
 	if (disable == LCD_LEFT_BUTTON_CHOICE)
 	{
 		enquecommand_P(PSTR("G99"));
@@ -7128,7 +7115,7 @@ static void menu_action_sdfile(const char* filename)
     }
 
   if (!check_file(selected_filename)) {
-      result = !lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false);////MSG_FILE_INCOMPLETE c=20 r=3
+      result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false);////MSG_FILE_INCOMPLETE c=20 r=3
       lcd_update_enable(true);
   }
   if (result) {
