@@ -94,7 +94,6 @@ extern bool lcd_wait_for_click_delay(uint16_t nDelay);
 void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr);
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 extern uint8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
-extern uint8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
 extern uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     const char * const msg, bool allow_timeouting, uint8_t default_selection,
     const char * const first_choice, const char * const second_choice, const char * const third_choice = nullptr,
