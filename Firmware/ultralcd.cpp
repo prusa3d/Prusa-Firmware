@@ -5324,7 +5324,7 @@ static void lcd_main_menu()
 #endif //SDCARDDETECT
          }
 #endif //SDSUPPORT
-        if(!printer_active() && !farm_mode) {
+        if(!farm_mode) {
             const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
             const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
             if ((nextSheet >= 0) && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
@@ -5336,7 +5336,7 @@ static void lcd_main_menu()
 
         }
 
-        if (!( printer_active() || (eFilamentAction != FilamentAction::None) || Stopped )) {
+        if (!((eFilamentAction != FilamentAction::None) || Stopped )) {
             if (MMU2::mmu2.Enabled()) {
                 if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
                     // The MMU 'Load filament' state machine will reject the command if any
@@ -5372,7 +5372,7 @@ static void lcd_main_menu()
 #endif //FILAMENT_SENSOR
             }
             MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
-            if(!printingIsPaused()) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
+            MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
         }
     }
 
