@@ -495,8 +495,4 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     enquecommand_P(PSTR("PRUSA uvlo"));
 }
 
-void reset_uvlo() {
-    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
-    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 0);
-}
 #endif //UVLO_SUPPORT

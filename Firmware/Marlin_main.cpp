@@ -4182,7 +4182,8 @@ void process_commands()
                 enquecommand_P(MSG_M24);
 
                 // Print is recovered, clear the recovery flag
-                reset_uvlo();
+                eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+                eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 0);
             } else if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_HOST) {
                 // For Host prints we need to start the timer so that the pause has any effect
                 // this will allow g-codes to be processed while in the paused state
@@ -11070,7 +11071,8 @@ void restore_print_from_ram_and_continue(float e_move)
 	set_destination_to_current();
 
     restore_print_file_state();
-    reset_uvlo();
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 0);
 	lcd_setstatuspgm(MSG_WELCOME);
     saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
 	saved_printing = false;
@@ -11080,7 +11082,8 @@ void restore_print_from_ram_and_continue(float e_move)
 // Cancel the state related to a currently saved print
 void cancel_saved_printing()
 {
-    reset_uvlo();
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 0);
     saved_start_position[0] = SAVED_START_POSITION_UNSET;
     saved_printing_type = PowerPanic::PRINT_TYPE_NONE;
     saved_printing = false;
