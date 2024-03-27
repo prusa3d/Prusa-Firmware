@@ -192,6 +192,9 @@ void uvlo_() {
 #endif
 
     // Finally store the "power outage" flag.
+    if (did_pause_print) {
+        eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 1);
+    }
     eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY);
 
     // Increment power failure counter
@@ -316,16 +319,16 @@ void recover_print(uint8_t automatic) {
     bool mbl_was_active = recover_machine_state_after_power_panic();
 
     // Undo PP Z Lift by setting current Z pos to + Z_PAUSE_LIFT
+    // With first PP or Pause + PP the Z has been already lift.
     // After a reboot the printer doesn't know the Z height and we have to set its previous value
-    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY_RETRY) {
+    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO_Z_LIFTED) == 1 ) {
         current_position[Z_AXIS] += Z_PAUSE_LIFT;
     }
 
     // Lift the print head ONCE plus Z_PAUSE_LIFT first to avoid collisions with oozed material with the print,
-    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == PowerPanic::PENDING_RECOVERY)
-    {
+    if(eeprom_read_byte((uint8_t*)EEPROM_UVLO_Z_LIFTED) == 0) {
         enquecommandf_P(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + Z_PAUSE_LIFT);
-        eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::PENDING_RECOVERY_RETRY);
+        eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 1);
     }
 
     // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine
@@ -334,7 +337,10 @@ void recover_print(uint8_t automatic) {
     // Set the target bed and nozzle temperatures and wait.
     enquecommandf_P(PSTR("M104 S%d"), target_temperature[active_extruder]);
     enquecommandf_P(PSTR("M140 S%d"), target_temperature_bed);
-    enquecommandf_P(PSTR("M109 S%d"), target_temperature[active_extruder]);
+    //No need to wait for hotend heatup while host printing, as print will pause and wait for host.
+    if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_PRINT_TYPE) == PowerPanic::PRINT_TYPE_SD) {
+        enquecommandf_P(PSTR("M109 S%d"), target_temperature[active_extruder]);
+    }
     enquecommand_P(MSG_M83); //E axis relative mode
 
     // If not automatically recoreverd (long power loss)
@@ -487,5 +493,10 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 
     enquecommand_P(PSTR("G4 S0"));
     enquecommand_P(PSTR("PRUSA uvlo"));
+}
+
+void reset_uvlo() {
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO, PowerPanic::NO_PENDING_RECOVERY);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_UVLO_Z_LIFTED, 0);
 }
 #endif //UVLO_SUPPORT
