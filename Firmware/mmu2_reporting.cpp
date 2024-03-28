@@ -393,7 +393,7 @@ void FullScreenMsgLoad(uint8_t slot){
 }
 
 void FullScreenMsgRestoringTemperature(){
-    lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); ////MSG_MMU_RESTORE_TEMP c=20 r=4
+    lcd_display_message_fullscreen_P(_T(MSG_MMU_RESTORE_TEMP));
 }
 
 void ScreenUpdateEnable(){
@@ -455,7 +455,7 @@ void tuneIdlerStallguardThresholdMenu() {
     );
     MENU_ITEM_BACK_P(_T(MSG_DONE));
     MENU_ITEM_EDIT_int3_P(
-        _i("Sensitivity"), ////MSG_MMU_SENSITIVITY c=18
+        _T(MSG_MMU_SENSITIVITY),
         &_md->currentValue,
         _md->item.minValue,
         _md->item.maxValue

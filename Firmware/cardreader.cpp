@@ -802,7 +802,7 @@ void CardReader::presort() {
 		// If you use folders to organize, 20 may be enough
 		if (fileCnt > SDSORT_LIMIT) {
 			if ((sdSort != SD_SORT_NONE) && !farm_mode) {
-				lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=6
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_FILE_CNT));
 			}
 			fileCnt = SDSORT_LIMIT;
 		}
