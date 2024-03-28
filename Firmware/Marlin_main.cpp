@@ -1543,15 +1543,15 @@ void setup()
 	  //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
 	  //if user confirms with knob, new hw version (printer and/or motherboard) is written to eeprom and message will be not shown next time
 	case(0b01): 
-		lcd_show_fullscreen_message_and_wait_P(_i("Warning: motherboard type changed.")); ////MSG_CHANGED_MOTHERBOARD c=20 r=4
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_CHANGED_MOTHERBOARD));
 		eeprom_write_word_notify((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
 		break;
 	case(0b10): 
-		lcd_show_fullscreen_message_and_wait_P(_i("Warning: printer type changed.")); ////MSG_CHANGED_PRINTER c=20 r=4
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_CHANGED_PRINTER));
 		eeprom_write_word_notify((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
 		break;
 	case(0b11): 
-		lcd_show_fullscreen_message_and_wait_P(_i("Warning: both printer type and motherboard type changed.")); ////MSG_CHANGED_BOTH c=20 r=4
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_CHANGED_BOTH));
 		eeprom_write_word_notify((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
 		eeprom_write_word_notify((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
 		break;
@@ -1559,7 +1559,7 @@ void setup()
   }
 
   if (!previous_settings_retrieved) {
-	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
+	  lcd_show_fullscreen_message_and_wait_P(_T(MSG_DEFAULT_SETTINGS_LOADED)); //if EEPROM version or printer type was changed, inform user that default setting were loaded
 	  Config_StoreSettings();
   }
 
@@ -1574,7 +1574,7 @@ void setup()
           static const uint16_t v3_2_0_4[] PROGMEM = {3, 2, 0, 4};
           if (eeprom_fw_version_older_than_p(v3_2_0_4)) {
               // printer upgraded from FW<3.2.0.4 and requires re-running selftest
-              lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
+              lcd_show_fullscreen_message_and_wait_P(_T(MSG_FORCE_SELFTEST));
               calibration_status &= ~CALIBRATION_STATUS_SELFTEST;
           }
       }
@@ -3035,12 +3035,12 @@ static void gcode_G80()
     static uint8_t g80_fail_cnt = 0;
     if (mesh_point != MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS) {
         if (g80_fail_cnt++ >= 2) {
-            kill(_i("Mesh bed leveling failed. Please run Z calibration.")); ////MSG_MBL_FAILED_Z_CAL c=20 r=4
+            kill(_T(MSG_MBL_FAILED_Z_CAL));
         }
         Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
         bool bState;
         do   {                             // repeat until Z-leveling o.k.
-            lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-leveling enforced ...")); ////MSG_ZLEVELING_ENFORCED c=20 r=4
+            lcd_display_message_fullscreen_P(_T(MSG_ZLEVELING_ENFORCED));
 #ifdef TMC2130
             lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
             calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
@@ -3514,7 +3514,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
         {
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             uint8_t choice =
-                lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=3
+                lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_UNLOAD_SUCCESSFUL), false, LCD_LEFT_BUTTON_CHOICE);
             lcd_update_enable(false);
             if (choice == LCD_MIDDLE_BUTTON_CHOICE) {
                 lcd_clear();
@@ -3522,7 +3522,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
                 current_position[X_AXIS] = 100;
                 plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
                 st_synchronize();
-                lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=4
+                lcd_show_fullscreen_message_and_wait_P(_T(MSG_CHECK_IDLER));
             }
             M600_load_filament();
         }
@@ -4728,7 +4728,7 @@ void process_commands()
         if (!calibration_status_get(CALIBRATION_STATUS_XYZ)) {
             //we need to know accurate position of first calibration point
             //if xyz calibration was not performed yet, interrupt temperature calibration and inform user that xyz cal. is needed
-            lcd_show_fullscreen_message_and_wait_P(_i("Please run XYZ calibration first.")); ////MSG_RUN_XYZ c=20 r=4
+            lcd_show_fullscreen_message_and_wait_P(_T(MSG_RUN_XYZ));
             break;
         }
 
@@ -4741,7 +4741,7 @@ void process_commands()
             enquecommand_front_P(G28W);
             break;
         }
-        lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_TEMP_CAL_WARNING));
         uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
 
         if (result == LCD_LEFT_BUTTON_CHOICE)
@@ -5237,7 +5237,7 @@ void process_commands()
             // - they need to see the filename on the status screen instead of "Wait for user..."
             // So we won't update the message in farm mode...
             if( ! farm_mode){
-                LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=20
+                LCD_MESSAGERPGM(_T(MSG_USERWAIT));
             } else {
                 custom_message_type = CustomMsg::Status; // let the lcd display the name of the printed G-code file in farm mode
             }
@@ -5268,7 +5268,7 @@ void process_commands()
     */
 
     case 17:
-        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=20
+        LCD_MESSAGERPGM(_T(MSG_NO_MOVE));
         enable_x();
         enable_y();
         enable_z();
@@ -9644,7 +9644,7 @@ static void handleSafetyTimer()
     else if (safetyTimer.expired(farm_mode?FARM_DEFAULT_SAFETYTIMER_TIME_ms:safetytimer_inactive_time))
     {
         disable_heater();
-        lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_BED_HEATING_SAFETY_DISABLED));
     }
 }
 #endif //SAFETYTIMER
@@ -11224,7 +11224,7 @@ void M600_wait_for_user() {
 				delay_keep_alive(4);
 
 				if (_millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
-					lcd_display_message_fullscreen_P(_i("Press the knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
+					lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_PREHEAT));
 					wait_for_user_state = 1;
 					setTargetHotend(0);
 					st_synchronize();

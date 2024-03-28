@@ -590,7 +590,7 @@ void lcdui_print_status_line(void) {
                 if (custom_message_state > 3 && custom_message_state <= 10) {
                     lcd_set_cursor(0, 3);
                     lcd_space(19);
-                    lcd_puts_at_P(0, 3, _i("Calibration done")); ////MSG_HOMEYZ_DONE c=20
+                    lcd_puts_at_P(0, 3, _T(MSG_HOMEYZ_DONE));
                     custom_message_state--;
                 }
             }
@@ -607,7 +607,7 @@ void lcdui_print_status_line(void) {
             lcd_printf_P(PSTR("%-12.12S%-d/6"), _T(MSG_PINDA_CALIBRATION), custom_message_state);
             break;
         case CustomMsg::TempCompPreheat:              // temp compensation preheat
-            lcd_puts_at_P(0, 3, _i("PINDA Heating")); ////MSG_PINDA_PREHEAT c=20
+            lcd_puts_at_P(0, 3, _T(MSG_PINDA_PREHEAT));
             if (custom_message_state <= PINDA_HEAT_T) {
                 lcd_puts_P(PSTR(": "));
                 lcd_print(custom_message_state); // seconds
@@ -894,12 +894,12 @@ void lcd_commands()
 			preparePidTuning(); // ensure we don't move to the next step early
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommandf_P(PSTR("M303 E0 S%3u"), pid_temp);
-			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
+			lcd_setstatuspgm(_T(MSG_PID_RUNNING));
 			lcd_commands_step = 2;
 		}
 		if (lcd_commands_step == 2 && !pidTuningRunning()) { //saving to eeprom
 			custom_message_state = 0;
-			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
+			lcd_setstatuspgm(_T(MSG_PID_FINISHED));
 			setTargetHotend(0);
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 				enquecommandf_P(PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
@@ -1390,7 +1390,7 @@ static void lcd_menu_temperatures()
     lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] );
     lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );
 #ifdef AMBIENT_THERMISTOR
-    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT c=14
+    lcd_menu_temperatures_line( _T(MSG_AMBIENT), (int)current_temperature_ambient );
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
     lcd_menu_temperatures_line(MSG_PINDA, (int)current_temperature_pinda );  ////MSG_PINDA
@@ -1642,7 +1642,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
   MENU_ITEM_BACK_P(PSTR(NOZZLE_TYPE));
   MENU_ITEM_BACK_P(STR_SEPARATOR);
-  MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17
+  MENU_ITEM_BACK_P(_T(MSG_DATE));
   MENU_ITEM_BACK_P(PSTR(SOURCE_DATE_EPOCH));
 
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
@@ -1654,7 +1654,7 @@ static void lcd_support_menu()
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (MMU2::mmu2.Enabled())
 	{
-		MENU_ITEM_BACK_P(_i("MMU connected"));  ////MSG_MMU_CONNECTED c=18
+		MENU_ITEM_BACK_P(_T(MSG_MMU_CONNECTED));
 		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
@@ -1663,7 +1663,7 @@ static void lcd_support_menu()
 			if (mmu_version.major > 0)
 				lcd_printf_P(PSTR("%d.%d.%d"), mmu_version.major, mmu_version.minor, mmu_version.build);
 			else
-				lcd_puts_P(_i("unknown"));  ////MSG_UNKNOWN c=13
+				lcd_puts_P(_T(MSG_UNKNOWN));
 		}
 	}
 	else
@@ -1686,7 +1686,7 @@ static void lcd_support_menu()
   if (IP_address) {
 
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(_i("Printer IP Addr:")); ////MSG_PRINTER_IP c=18
+      MENU_ITEM_BACK_P(_T(MSG_PRINTER_IP));
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
@@ -1696,18 +1696,18 @@ static void lcd_support_menu()
   }
 
   MENU_ITEM_BACK_P(STR_SEPARATOR);
-  MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=18
-  MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18
-  MENU_ITEM_SUBMENU_P(_i("Sensor info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18
+  MENU_ITEM_SUBMENU_P(_T(MSG_XYZ_DETAILS), lcd_menu_xyz_y_min);
+  MENU_ITEM_SUBMENU_P(_T(MSG_INFO_EXTRUDER), lcd_menu_extruder_info);
+  MENU_ITEM_SUBMENU_P(_T(MSG_INFO_SENSORS), lcd_menu_show_sensors_state);
 
 #ifdef TMC2130
   MENU_ITEM_SUBMENU_P(_T(MSG_BELT_STATUS), lcd_menu_belt_status);
 #endif //TMC2130
 
-  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=18
+  MENU_ITEM_SUBMENU_P(_T(MSG_MENU_TEMPERATURES), lcd_menu_temperatures);
 
 #if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
-  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18
+  MENU_ITEM_SUBMENU_P(_T(MSG_MENU_VOLTAGES), lcd_menu_voltages);
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef MENU_DUMP
@@ -1796,7 +1796,7 @@ void lcd_print_target_temps_first_line() {
 static void mFilamentPrompt()
 {
 lcd_print_target_temps_first_line();
-lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
+lcd_puts_at_P(0,1, _T(MSG_PRESS_KNOB));
 lcd_set_cursor(0,2);
 switch(eFilamentAction)
      {
@@ -1804,11 +1804,11 @@ switch(eFilamentAction)
      case FilamentAction::AutoLoad:
      case FilamentAction::MmuLoad:
      case FilamentAction::MmuLoadingTest:
-          lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
+          lcd_puts_P(_T(MSG_TO_LOAD_FIL));
           break;
      case FilamentAction::UnLoad:
      case FilamentAction::MmuUnLoad:
-          lcd_puts_P(_i("to unload filament"));   ////MSG_TO_UNLOAD_FIL c=20
+          lcd_puts_P(_T(MSG_TO_UNLOAD_FIL));
           break;
      case FilamentAction::MmuEject:
      case FilamentAction::MmuCut:
@@ -1984,19 +1984,19 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::AutoLoad:
             case FilamentAction::MmuLoad:
             case FilamentAction::MmuLoadingTest:
-                lcd_puts_P(_i("Preheating to load")); ////MSG_PREHEATING_TO_LOAD c=20
+                lcd_puts_P(_T(MSG_PREHEATING_TO_LOAD));
                 if (once) raise_z_above(MIN_Z_FOR_LOAD);
                 break;
             case FilamentAction::UnLoad:
             case FilamentAction::MmuUnLoad:
-                lcd_puts_P(_i("Preheating to unload")); ////MSG_PREHEATING_TO_UNLOAD c=20
+                lcd_puts_P(_T(MSG_PREHEATING_TO_UNLOAD));
                 if (once) raise_z_above(MIN_Z_FOR_UNLOAD);
                 break;
             case FilamentAction::MmuEject:
-                lcd_puts_P(_i("Preheating to eject")); ////MSG_PREHEATING_TO_EJECT c=20
+                lcd_puts_P(_T(MSG_PREHEATING_TO_EJECT));
                 break;
             case FilamentAction::MmuCut:
-                lcd_puts_P(_i("Preheating to cut")); ////MSG_PREHEATING_TO_CUT c=20
+                lcd_puts_P(_T(MSG_PREHEATING_TO_CUT));
                 break;
             case FilamentAction::None:
             case FilamentAction::Preheat:
@@ -2139,12 +2139,12 @@ void lcd_wait_interact() {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 1, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
+  lcd_puts_at_P(0, 1, _T(MSG_INSERT_FILAMENT));
 #ifdef FILAMENT_SENSOR
   if (!fsensor.getAutoLoadEnabled())
 #endif //FILAMENT_SENSOR
   {
-    lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
+    lcd_puts_at_P(0, 2, _T(MSG_PRESS));
   }
 }
 
@@ -2153,7 +2153,7 @@ void lcd_change_success() {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 2, _i("Change success!"));////MSG_CHANGE_SUCCESS c=20
+  lcd_puts_at_P(0, 2, _T(MSG_CHANGE_SUCCESS));
 
 
 }
@@ -2175,7 +2175,7 @@ void lcd_loading_color() {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 0, _i("Loading color"));////MSG_LOADING_COLOR c=20
+  lcd_puts_at_P(0, 0, _T(MSG_LOADING_COLOR));
   lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
   lcd_loading_progress_bar((FILAMENTCHANGE_FINALFEED * 1000ul) / FILAMENTCHANGE_EFEED_FINAL); //show progress bar during filament loading slow sequence
 }
@@ -2200,9 +2200,9 @@ uint8_t lcd_alright() {
     uint8_t cursor_pos = 0;
 
     lcd_clear();
-    lcd_puts_at_P(1, 0, _i("Changed correctly"));////MSG_CORRECTLY c=19
-    lcd_puts_at_P(1, 1, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
-    lcd_puts_at_P(1, 2, _i("Color not correct"));////MSG_NOT_COLOR c=19
+    lcd_puts_at_P(1, 0, _T(MSG_CORRECTLY));
+    lcd_puts_at_P(1, 1, _T(MSG_NOT_LOADED));
+    lcd_puts_at_P(1, 2, _T(MSG_NOT_COLOR));
     lcd_puts_at_P(1, 3, _T(MSG_UNLOAD_FILAMENT));
     lcd_putc_at(0, cursor_pos, '>');
 
@@ -2269,7 +2269,7 @@ void lcd_load_filament_color_check()
 #ifdef FILAMENT_SENSOR
 static void lcd_menu_AutoLoadFilament()
 {
-    lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just press the knob and insert filament..."));////MSG_AUTOLOADING_ENABLED c=20 r=4
+    lcd_display_message_fullscreen_nonBlocking_P(_T(MSG_AUTOLOADING_ENABLED));
     menu_back_if_clicked();
 }
 #endif //FILAMENT_SENSOR
@@ -2344,8 +2344,8 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%10ldh %02dm %02ds"
 		    ),
-            _i("Filament used"), _met,  ////MSG_FILAMENT_USED c=19
-            _i("Print time"), _h, _m, _s);  ////MSG_PRINT_TIME c=19
+            _T(MSG_FILAMENT_USED), _met,
+            _T(MSG_PRINT_TIME), _h, _m, _s);
 		menu_back_if_clicked();
 	}
 	else
@@ -2366,8 +2366,8 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%10ldd %02dh %02dm"
             ),
-            _i("Total filament"), _filament_m,  ////MSG_TOTAL_FILAMENT c=19
-            _i("Total print time"), _days, _hours, _minutes);  ////MSG_TOTAL_PRINT_TIME c=19
+            _T(MSG_TOTAL_FILAMENT), _filament_m,
+            _T(MSG_TOTAL_PRINT_TIME), _days, _hours, _minutes);
         menu_back_if_clicked();
 	}
 }
@@ -2473,10 +2473,10 @@ static void lcd_menu_xyz_y_min()
 	  "%S:\n"
 	  "%S:"
 	 ),
-	 _i("Y distance from min"),  ////MSG_Y_DIST_FROM_MIN c=20
+	 _T(MSG_Y_DIST_FROM_MIN),
 	 STR_SEPARATOR,
-	 _i("Left"),  ////MSG_LEFT c=10
-	 _i("Right")  ////MSG_RIGHT c=10
+	 _T(MSG_LEFT),
+	 _T(MSG_RIGHT)
 	);
 	for (uint8_t i = 0; i < 2; i++)
 	{
@@ -2516,10 +2516,10 @@ static void lcd_menu_xyz_skew()
 	  "%-14.14S:%3.2f" LCD_STR_DEGREE "\n"
 	  "%-14.14S:%3.2f" LCD_STR_DEGREE
 	 ),
-	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
+	 _T(MSG_MEASURED_SKEW),
 	 STR_SEPARATOR,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14
+	 _T(MSG_SLIGHT_SKEW), _deg(bed_skew_angle_mild),
+	 _T(MSG_SEVERE_SKEW), _deg(bed_skew_angle_extreme)
 	);
 	lcd_set_cursor(15, 0);
 	if (angleDiff < 100){
@@ -2543,7 +2543,7 @@ static void lcd_menu_xyz_skew()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_offset()
 {
-    lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
+    lcd_puts_at_P(0, 0, _T(MSG_MEASURED_OFFSET));
     lcd_puts_at_P(0, 1, STR_SEPARATOR);
 
     for (uint8_t i = 0; i < 2; i++) {
@@ -2632,7 +2632,7 @@ static void lcd_babystep_z()
 	    lcd_home();
 	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(_i("Adjusting Z"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=13
+		menu_draw_float13(_T(MSG_BABYSTEPPING_Z), _md->babystepMemMMZ);
 	}
 	if (LCD_CLICKED || menu_leaving)
 	{
@@ -2706,10 +2706,10 @@ void lcd_adjust_bed(void)
         eeprom_update_byte_notify((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
     );
     MENU_ITEM_BACK_P(_T(MSG_BACK));
-	MENU_ITEM_EDIT_int3_P(_i("Left side [\xe4m]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14
-    MENU_ITEM_EDIT_int3_P(_i("Right side[\xe4m]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14
-    MENU_ITEM_EDIT_int3_P(_i("Front side[\xe4m]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14
-    MENU_ITEM_EDIT_int3_P(_i("Rear side [\xe4m]"),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BED_CORRECTION_LEFT),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BED_CORRECTION_RIGHT), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BED_CORRECTION_FRONT), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BED_CORRECTION_REAR),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_adjust_bed_reset);
     MENU_END();
 }
@@ -2727,7 +2727,7 @@ void lcd_adjust_bed(void)
 void pid_extruder()
 {
 	lcd_clear();
-	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=20
+	lcd_puts_at_P(0, 0, _T(MSG_SET_TEMPERATURE));
 	pid_temp += lcd_encoder;
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	else if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
@@ -2750,7 +2750,7 @@ bool lcd_wait_for_pinda(float temp) {
 	bool target_temp_reached = true;
 
 	while (current_temperature_pinda > temp){
-		lcd_display_message_fullscreen_P(_i("Waiting for PINDA probe cooling"));////MSG_WAITING_TEMP_PINDA c=20 r=3
+		lcd_display_message_fullscreen_P(_T(MSG_WAITING_TEMP_PINDA));
 
 		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)current_temperature_pinda, (int16_t) temp);
@@ -2779,7 +2779,7 @@ void lcd_wait_for_cool_down() {
 	uint8_t fanSpeedBckp = fanSpeed;
 	fanSpeed = 255;
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
-		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=4
+		lcd_display_message_fullscreen_P(_T(MSG_WAITING_TEMP));
 
 		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/0"), (int16_t)degHotend(0));
@@ -2809,8 +2809,8 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
     // Until confirmed by the confirmation dialog.
     for (;;) {
         const char *msg = only_z
-            ? _i("Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.")////MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
-            : _i("Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.");////MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
+            ? _T(MSG_MOVE_CARRIAGE_TO_THE_TOP_Z)
+            : _T(MSG_MOVE_CARRIAGE_TO_THE_TOP);
         const char   *msg_next            = lcd_display_message_fullscreen_P(msg);
         const bool    multi_screen        = msg_next != NULL;
         unsigned long previous_millis_msg = _millis();
@@ -2845,7 +2845,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             }
         }
         // Let the user confirm, that the Z carriage is at the top end stoppers.
-        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z-carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
+        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_CONFIRM_CARRIAGE_AT_THE_TOP), false);
         if (result == LCD_BUTTON_TIMEOUT)
             goto canceled;
         else if (result == LCD_LEFT_BUTTON_CHOICE)
@@ -3164,16 +3164,16 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 {
     const char *msg = NULL;
     if (result == BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND) {
-        lcd_show_fullscreen_message_and_wait_P(_i("XYZ calibration failed. Bed calibration point was not found."));////MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND));
     } else if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED) {
         if (point_too_far_mask == 0)
             msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED);
         else if (point_too_far_mask == 2 || point_too_far_mask == 7)
             // Only the center point or all the three front points.
-            msg = _i("XYZ calibration failed. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
+            msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR);
         else if ((point_too_far_mask & 1) == 0)
             // The right and maybe the center point out of reach.
-            msg = _i("XYZ calibration failed. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
+            msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR);
         else
             // The left and maybe the center point out of reach. //@todo Why isn't it found in the firmware.map
             msg = _n("XYZ calibration failed. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
@@ -3182,10 +3182,10 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
         if (point_too_far_mask != 0) {
             if (point_too_far_mask == 2 || point_too_far_mask == 7)
                 // Only the center point or all the three front points.
-                msg = _i("XYZ calibration compromised. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+                msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR);
             else if ((point_too_far_mask & 1) == 0)
                 // The right and maybe the center point out of reach.
-                msg = _i("XYZ calibration compromised. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+                msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR);
             else
                 // The left and maybe the center point out of reach. //@todo Why isn't it found in the firmware.map
                 msg = _n("XYZ calibration compromised. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
@@ -3198,13 +3198,13 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
                     msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED);
                     break;
                 case BED_SKEW_OFFSET_DETECTION_PERFECT:
-                    msg = _i("XYZ calibration ok. X/Y axes are perpendicular. Congratulations!");////MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+                    msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_PERFECT);
                     break;
                 case BED_SKEW_OFFSET_DETECTION_SKEW_MILD:
-                    msg = _i("XYZ calibration all right. X/Y axes are slightly skewed. Good job!");////MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+                    msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD);
                     break;
                 case BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME:
-                    msg = _i("XYZ calibration all right. Skew will be corrected automatically.");////MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+                    msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME);
                     break;
             }
             lcd_show_fullscreen_message_and_wait_P(msg);
@@ -3230,7 +3230,7 @@ void lcd_temp_cal_show_result(bool result) {
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
 	} else {
 		SERIAL_ECHOLNPGM("PINDA calibration failed. Continue with pressing the knob.");
-		lcd_show_fullscreen_message_and_wait_P(_i("PINDA calibration failed"));////MSG_PINDA_CAL_FAILED c=20 r=4
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CAL_FAILED));
 	}
 	lcd_update_enable(true);
 	lcd_update(2);
@@ -3346,9 +3346,9 @@ void lcd_move_menu_axis()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-	MENU_ITEM_SUBMENU_P(_i("Move X"), lcd_move_x);////MSG_MOVE_X c=18
-	MENU_ITEM_SUBMENU_P(_i("Move Y"), lcd_move_y);////MSG_MOVE_Y c=18
-	MENU_ITEM_SUBMENU_P(_i("Move Z"), lcd_move_z);////MSG_MOVE_Z c=18
+	MENU_ITEM_SUBMENU_P(_T(MSG_MOVE_X), lcd_move_x);
+	MENU_ITEM_SUBMENU_P(_T(MSG_MOVE_Y), lcd_move_y);
+	MENU_ITEM_SUBMENU_P(_T(MSG_MOVE_Z), lcd_move_z);
 	MENU_ITEM_SUBMENU_P(_T(MSG_EXTRUDER), lcd_move_e);
 	MENU_END();
 }
@@ -3371,14 +3371,14 @@ static void lcd_sort_type_set() {
 static void lcd_crash_mode_info()
 {
     lcd_home();
-    lcd_puts_P(_i("Crash detection can\nbe turned on only in\nNormal mode"));////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+    lcd_puts_P(_T(MSG_CRASH_DET_ONLY_IN_NORMAL));
     menu_back_if_clicked();
 }
 
 static void lcd_crash_mode_info2()
 {
     lcd_home();
-    lcd_puts_P(_i("WARNING:\nCrash detection\ndisabled in\nStealth mode"));////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+    lcd_puts_P(_T(MSG_CRASH_DET_STEALTH_FORCE_OFF));
     menu_back_if_clicked();
 }
 #endif //TMC2130
@@ -3410,7 +3410,7 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
   if (blocks_queued())
   {
-      lcd_display_message_fullscreen_P(_i("Mode change in progress..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
+      lcd_display_message_fullscreen_P(_T(MSG_MODE_CHANGE_IN_PROGRESS));
       // Wait until the planner queue is drained and the stepper routine achieves
       // an idle state.
       st_synchronize();
@@ -3447,7 +3447,7 @@ static void menu_setlang(uint8_t lang)
 {
 	if (!lang_select(lang))
 	{
-		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, LCD_LEFT_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
+		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_COPY_SEL_LANG), false, LCD_LEFT_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE)
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
 		menu_goto(lcd_language_menu, 0, true, true);
@@ -3601,7 +3601,7 @@ void lcd_first_layer_calibration_reset()
     eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
     lcd_home();
     float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_mm[Z_AXIS];
-    lcd_printf_P(_i("Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"),////MSG_SHEET_OFFSET c=20 r=4
+    lcd_printf_P(_T(MSG_SHEET_OFFSET),
             sheet_name, offset, menuData->reset ? ' ' : '>', menuData->reset ? '>' : ' ');// \n denotes line break, %.7s is replaced by 7 character long sheet name, %+1.3f is replaced by 6 character long floating point number, %c is replaced by > or white space (one character) based on whether first or second option is selected. % denoted place holders can not be reordered.
 
 }
@@ -3630,7 +3630,7 @@ void lcd_v2_calibration() {
 		}
 
 		if (!loaded) {
-			lcd_display_message_fullscreen_P(_i("Please load filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			lcd_display_message_fullscreen_P(_T(MSG_PLEASE_LOAD_PLA));
 			lcd_consume_click();
 			for (uint_least8_t i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
@@ -3653,7 +3653,7 @@ void lcd_wizard() {
 	bool result = true;
 	if (calibration_status_get(CALIBRATION_WIZARD_STEPS)) {
 		// calibration already performed: ask before clearing the previous status
-		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Running Wizard will delete current calibration results and start from the beginning. Continue?"), false);////MSG_WIZARD_RERUN c=20 r=7
+		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_RERUN), false);
 	}
 	if (result) {
 		calibration_status_clear(CALIBRATION_WIZARD_STEPS);
@@ -3702,14 +3702,14 @@ static void wait_preheat()
 static void lcd_wizard_load() {
     if (MMU2::mmu2.Enabled()) {
         lcd_show_fullscreen_message_and_wait_P(
-            _i("Please insert filament into the first tube of the MMU, then press the knob to load it.")); ////MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
+            _T(MSG_MMU_INSERT_FILAMENT_FIRST_TUBE));
         // NOTE: a full screen message showing which filament is being inserted
         // is performed by M701. For this reason MSG_LOADING_FILAMENT is not
         // used here when a MMU is used.
         eFilamentAction = FilamentAction::MmuLoad;
     } else {
         lcd_show_fullscreen_message_and_wait_P(
-            _i("Please insert filament into the extruder, then press the knob to load it.")); ////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
+            _T(MSG_WIZARD_LOAD_FILAMENT));
         lcd_update_enable(false);
         lcd_clear();
         lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
@@ -3723,19 +3723,19 @@ static void lcd_wizard_load() {
 static void wizard_lay1cal_message(bool cold)
 {
     lcd_show_fullscreen_message_and_wait_P(
-            _i("Now I will calibrate distance between tip of the nozzle and heatbed surface.")); ////MSG_WIZARD_V2_CAL c=20 r=8
+            _T(MSG_WIZARD_V2_CAL));
     if (MMU2::mmu2.Enabled())
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("Select a filament for the First Layer Calibration and select it in the on-screen menu."));////MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+                _T(MSG_SELECT_FIL_1ST_LAYERCAL));
     }
     else if (cold)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("Select temperature which matches your material."));////MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
+                _T(MSG_SELECT_TEMP_MATCHES_MATERIAL));
     }
     lcd_show_fullscreen_message_and_wait_P(
-            _i("The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter).")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
+            _T(MSG_WIZARD_V2_CAL_2));
 }
 
 //! @brief Printer first run wizard (Selftest and calibration)
@@ -3843,23 +3843,23 @@ void lcd_wizard(WizState state)
 			}
 			break;
 		case S::Selftest:
-			lcd_show_fullscreen_message_and_wait_P(_i("First, I will run the selftest to check most common assembly problems."));////MSG_WIZARD_SELFTEST c=20 r=8
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_WIZARD_SELFTEST));
 			wizard_event = lcd_selftest();
 			state = (wizard_event ? S::Restore : S::Failed);
 			break;
 		case S::Xyz:
-			lcd_show_fullscreen_message_and_wait_P(_i("I will run xyz calibration now. It will take up to 24 mins."));////MSG_WIZARD_XYZ_CAL c=20 r=8
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_WIZARD_XYZ_CAL));
 			wizard_event = gcode_M45(false, 0);
 			state = (wizard_event ? S::Restore : S::Failed);
 			break;
 		case S::Z:
-			lcd_show_fullscreen_message_and_wait_P(_i("Please remove shipping helpers first."));////MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
-			lcd_show_fullscreen_message_and_wait_P(_i("Now remove the test print from steel sheet."));////MSG_REMOVE_TEST_PRINT c=20 r=4
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_SHIPPING_HELPERS));
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_TEST_PRINT));
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
 			if (wizard_event == LCD_MIDDLE_BUTTON_CHOICE) {
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 			}
-			lcd_show_fullscreen_message_and_wait_P(_i("I will run z calibration now."));////MSG_WIZARD_Z_CAL c=20 r=8
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_WIZARD_Z_CAL));
 			wizard_event = gcode_M45(true, 0);
 			if (!wizard_event) {
 				state = S::Failed;
@@ -3868,7 +3868,7 @@ void lcd_wizard(WizState state)
 				//current filament needs to be unloaded and then new filament should be loaded
 				//start to preheat nozzle for unloading remaining PLA filament
 				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
-				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
+				lcd_display_message_fullscreen_P(_T(MSG_WIZARD_WILL_PREHEAT));
 				wait_preheat();
 				unload_filament(FILAMENTCHANGE_FINALRETRACT); // unload current filament
 				lcd_wizard_load(); // load filament
@@ -3878,7 +3878,7 @@ void lcd_wizard(WizState state)
 			break;
 #ifdef THERMAL_MODEL
 		case S::ThermalModel:
-			lcd_show_fullscreen_message_and_wait_P(_i("Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"));////MSG_TM_CAL c=20 r=4
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_CAL));
 			lcd_commands_type = LcdCommands::ThermalModel;
 			end = true; // Leave wizard temporarily for TM cal.
 			break;
@@ -3897,7 +3897,7 @@ void lcd_wizard(WizState state)
 			break;
 		case S::Preheat:
 			menu_goto(lcd_preheat_menu, 0, true);
-		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));////MSG_SEL_PREHEAT_TEMP c=20 r=6
+		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_SEL_PREHEAT_TEMP));
 		    end = true; // Leave wizard temporarily for lcd_preheat_menu
 		    break;
 		case S::LoadFilHot:
@@ -3920,15 +3920,15 @@ void lcd_wizard(WizState state)
             end = true; // Leave wizard temporarily for lcd_v2_calibration
             break;
 		case S::RepeatLay1Cal:
-			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
+			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_REPEAT_V2_CAL), false);
 			if (wizard_event == LCD_LEFT_BUTTON_CHOICE)
 			{
-				lcd_show_fullscreen_message_and_wait_P(_i("Please clean heatbed and then press the knob."));////MSG_WIZARD_CLEAN_HEATBED c=20 r=8
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_WIZARD_CLEAN_HEATBED));
 				state = S::Lay1CalCold;
 			}
 			else
 			{
-				lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////MSG_ADDITIONAL_SHEETS c=20 r=8
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_ADDITIONAL_SHEETS));
 				state = S::Restore;
 			}
 			break;
@@ -3983,11 +3983,11 @@ void lcd_settings_linearity_correction_menu(void)
     );
 	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
-	MENU_ITEM_EDIT_int3_P(_i("X-correct"), &tmc2130_wave_fac[X_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_X_CORRECTION c=13
-	MENU_ITEM_EDIT_int3_P(_i("Y-correct"), &tmc2130_wave_fac[Y_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_Y_CORRECTION c=13
-	MENU_ITEM_EDIT_int3_P(_i("Z-correct"), &tmc2130_wave_fac[Z_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_Z_CORRECTION c=13
+	MENU_ITEM_EDIT_int3_P(_T(MSG_X_CORRECTION), &tmc2130_wave_fac[X_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT_int3_P(_T(MSG_Y_CORRECTION), &tmc2130_wave_fac[Y_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT_int3_P(_T(MSG_Z_CORRECTION), &tmc2130_wave_fac[Z_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
-	MENU_ITEM_EDIT_int3_P(_i("E-correct"), &tmc2130_wave_fac[E_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=13
+	MENU_ITEM_EDIT_int3_P(_T(MSG_EXTRUDER_CORRECTION), &tmc2130_wave_fac[E_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 	MENU_END();
 }
 #endif // TMC2130
@@ -4421,7 +4421,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     MENU_ITEM_SUBMENU_P(_T(MSG_STEEL_SHEETS), sheets_menu);
     SETTINGS_NOZZLE;
     MENU_ITEM_FUNCTION_P(_T(MSG_NOZZLE_CNG_MENU),nozzle_change);
-    MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_CHECKS), lcd_checking_menu);
 
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
@@ -4452,12 +4452,12 @@ static void lcd_settings_menu()
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
-	MENU_ITEM_SUBMENU_P(_i("Temperature"), lcd_control_temperature_menu);////MSG_TEMPERATURE c=18
+	MENU_ITEM_SUBMENU_P(_T(MSG_TEMPERATURE), lcd_control_temperature_menu);
 
 	if (!printer_active() || printingIsPaused())
     {
-	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
-	    MENU_ITEM_GCODE_P(_i("Disable steppers"), MSG_M84);////MSG_DISABLE_STEPPERS c=18
+	    MENU_ITEM_SUBMENU_P(_T(MSG_MOVE_AXIS), lcd_move_menu_axis);
+	    MENU_ITEM_GCODE_P(_T(MSG_DISABLE_STEPPERS), MSG_M84);
     }
 
 #ifdef FILAMENT_SENSOR
@@ -4488,7 +4488,7 @@ static void lcd_settings_menu()
 	MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bed_leveling_settings);
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
-    MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);////MSG_LIN_CORRECTION c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_LIN_CORRECTION), lcd_settings_linearity_correction_menu);
 #endif //LINEARITY_CORRECTION && TMC2130
 #ifdef PINDA_THERMISTOR
     if(has_temperature_compensation())
@@ -4569,29 +4569,29 @@ static void lcd_calibration_menu()
 {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17
+    MENU_ITEM_FUNCTION_P(_T(MSG_WIZARD), lcd_wizard);
     if (lcd_commands_type == LcdCommands::Idle)
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);
     }
     MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), G28W);
 #ifdef TMC2130
-    MENU_ITEM_FUNCTION_P(_i("Belt test"), lcd_belttest_v);////MSG_BELTTEST c=18
+    MENU_ITEM_FUNCTION_P(_T(MSG_BELTTEST), lcd_belttest_v);
 #endif //TMC2130
-    MENU_ITEM_FUNCTION_P(_i("Selftest"), lcd_selftest_v);////MSG_SELFTEST c=18
+    MENU_ITEM_FUNCTION_P(_T(MSG_SELFTEST), lcd_selftest_v);
     // MK2
-    MENU_ITEM_FUNCTION_P(_i("Calibrate XYZ"), lcd_mesh_calibration);////MSG_CALIBRATE_BED c=18
+    MENU_ITEM_FUNCTION_P(_T(MSG_CALIBRATE_BED), lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM_SUBMENU_P(_T(MSG_HOMEYZ), lcd_mesh_calibration_z);
 
     MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bedleveling); ////MSG_MESH_BED_LEVELING c=18
 
-    MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=18
-    MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17
+    MENU_ITEM_SUBMENU_P(_T(MSG_BED_CORRECTION_MENU), lcd_adjust_bed);
+    MENU_ITEM_SUBMENU_P(_T(MSG_PID_EXTRUDER), pid_extruder);
 #ifndef TMC2130
-    MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_SHOW_END_STOPS), menu_show_end_stops);
 #endif
-    MENU_ITEM_GCODE_P(_i("Reset XYZ calibr."), PSTR("M44"));////MSG_CALIBRATE_BED_RESET c=18
+    MENU_ITEM_GCODE_P(_T(MSG_CALIBRATE_BED_RESET), PSTR("M44"));
 #ifdef PINDA_THERMISTOR
     if(has_temperature_compensation())
         MENU_ITEM_FUNCTION_P(_T(MSG_PINDA_CALIBRATION), lcd_calibrate_pinda);
@@ -5133,14 +5133,14 @@ static void lcd_sheet_menu()
     MENU_ITEM_BACK_P(_T(MSG_STEEL_SHEETS));
 
 	if(eeprom_is_sheet_initialized(selected_sheet)){
-	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); ////MSG_SELECT c=18
+	    MENU_ITEM_SUBMENU_P(_T(MSG_SELECT), change_sheet);
 	}
 
     if (lcd_commands_type == LcdCommands::Idle)
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
     }
-    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); ////MSG_RENAME c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_RENAME), lcd_rename_sheet_menu);
 	MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_reset_sheet);
 
     MENU_END();
@@ -5257,7 +5257,7 @@ static void lcd_main_menu()
         if ( moves_planned() || printer_active()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_TUNE), lcd_tune_menu);
         } else if (!Stopped) {
-            MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
+            MENU_ITEM_SUBMENU_P(_T(MSG_PREHEAT), lcd_preheat_menu);
             if (M79_timer_get_status()) {
                 if(GetPrinterState() == PrinterState::IsReady) {
                     MENU_ITEM_FUNCTION_P(_T(MSG_SET_NOT_READY), lcd_printer_ready_state_toggle);
@@ -5313,14 +5313,14 @@ static void lcd_main_menu()
                         MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
                     }
 #if SDCARDDETECT < 1
-             MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user ////MSG_CNG_SDCARD c=18
+             MENU_ITEM_GCODE_P(_T(MSG_CNG_SDCARD), PSTR("M21"));  // SD-card changed by user
 #endif //SDCARDDETECT
                 }
             } else {
                 bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-                MENU_ITEM_BACK_P(_i("No SD card")); ////MSG_NO_CARD c=18
+                MENU_ITEM_BACK_P(_T(MSG_NO_CARD));
 #if SDCARDDETECT < 1
-            MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface ////MSG_INIT_SDCARD c=18
+            MENU_ITEM_GCODE_P(_T(MSG_INIT_SDCARD), PSTR("M21")); // Manually initialize the SD-card via user interface
 #endif //SDCARDDETECT
          }
 #endif //SDSUPPORT
@@ -5343,7 +5343,7 @@ static void lcd_main_menu()
                     // filament sensor is reporting a detected filament
                     MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
             }
-                MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), lcd_mmuLoadFilament);////MSG_LOAD_TO_NOZZLE c=18
+                MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_NOZZLE), lcd_mmuLoadFilament);
                 MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_mmuUnloadFilament);
                 MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), lcd_mmuEjectFilament);
 #ifdef  MMU_HAS_CUTTER
@@ -5356,7 +5356,7 @@ static void lcd_main_menu()
                 if (fsensor.isEnabled()) {
                     if (!fsensor.getFilamentPresent()) {
                         if (fsensor.getAutoLoadEnabled()) {
-                            MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
+                            MENU_ITEM_SUBMENU_P(_T(MSG_AUTOLOAD_FILAMENT), lcd_menu_AutoLoadFilament);
                         } else {
                             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
                         }
@@ -5376,13 +5376,13 @@ static void lcd_main_menu()
         }
     }
 
-        MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
+        MENU_ITEM_SUBMENU_P(_T(MSG_STATISTICS), lcd_menu_statistics);
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
-        MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);////MSG_FAIL_STATS c=18
+        MENU_ITEM_SUBMENU_P(_T(MSG_FAIL_STATS), lcd_menu_fails_stats);
 #endif
     if (MMU2::mmu2.Enabled()) {
-        MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////MSG_MMU_FAIL_STATS c=18
+        MENU_ITEM_SUBMENU_P(_T(MSG_MMU_FAIL_STATS), lcd_menu_fails_stats_mmu);
     }
 
 #ifdef HOST_SHUTDOWN
@@ -5391,7 +5391,7 @@ static void lcd_main_menu()
     }
 #endif //HOST_SHUTOWN
 
-    MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_SUPPORT), lcd_support_menu);
 
     MENU_END();
 }
@@ -5513,11 +5513,11 @@ static void lcd_tune_menu()
 		refresh_saved_feedrate_multiplier_in_ram();
 	);
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_EDIT_int3_P(_i("Speed"), &feedmultiply, 10, 999);////MSG_SPEED c=15
+	MENU_ITEM_EDIT_int3_P(_T(MSG_SPEED), &feedmultiply, 10, 999);
 
 	menuitems_temperature_common();
 
-	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);////MSG_FLOW c=15
+	MENU_ITEM_EDIT_int3_P(_T(MSG_FLOW), &extrudemultiply, 10, 999);
 #ifdef LA_LIVE_K
 	MENU_ITEM_EDIT_advance_K();
 #endif
@@ -5995,7 +5995,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
         return false;
     }
-    lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////MSG_INSERT_FIL c=20 r=6
+    lcd_show_fullscreen_message_and_wait_P(_T(MSG_INSERT_FIL));
     volt_IR_int = fsensor.getVoltRaw();
     printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), Raw2Voltage(volt_IR_int));
     if(volt_IR_int > (fsensor.IRsensor_Lmax_TRESHOLD)){
@@ -6017,17 +6017,17 @@ static void lcd_detect_IRsensor(){
     /// @todo Add autodetection with MMU2s
     loaded = fsensor.getFilamentPresent();
     if(loaded){
-        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_UNLOAD_FILAMENT_REPEAT));
         return;
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connection, unload filament if present."));////MSG_CHECK_IR_CONNECTION c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_CHECK_IR_CONNECTION));
         bAction = lcd_selftest_IRsensor(true);
     }
     if(bAction){
-        lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////MSG_FS_VERIFIED c=20 r=3
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_FS_VERIFIED));
         fsensor.init();
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_T(MSG_FIL_FAILED));
     }
 }
 #endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
@@ -6054,7 +6054,7 @@ bool lcd_selftest()
 #endif
 	lcd_wait_for_cool_down();
 	lcd_clear();
-	lcd_puts_at_P(0, 0, _i("Selftest start"));////MSG_SELFTEST_START c=20
+	lcd_puts_at_P(0, 0, _T(MSG_SELFTEST_START));
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
@@ -6271,7 +6271,7 @@ bool lcd_selftest()
 	if (_result)
 	{
 		calibration_status_set(CALIBRATION_STATUS_SELFTEST);
-		lcd_setstatuspgm(_i("Selftest OK"));////MSG_SELFTEST_OK c=20
+		lcd_setstatuspgm(_T(MSG_SELFTEST_OK));
 		lcd_return_to_status();
 	}
 	else
@@ -6696,21 +6696,21 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 
 	lcd_clear();
 
-	lcd_puts_at_P(0, 0, _i("Selftest error!"));////MSG_SELFTEST_ERROR c=20
-	lcd_puts_at_P(0, 1, _i("Please check:"));////MSG_SELFTEST_PLEASECHECK c=20
+	lcd_puts_at_P(0, 0, _T(MSG_SELFTEST_ERROR));
+	lcd_puts_at_P(0, 1, _T(MSG_SELFTEST_PLEASECHECK));
 
 	switch (testError)
 	{
 	case TestError::Heater:
-		lcd_puts_at_P(0, 2, _i("Heater/Thermistor"));////MSG_SELFTEST_HEATERTHERMISTOR c=20
-		lcd_puts_at_P(0, 3, _i("Not connected"));////MSG_SELFTEST_NOTCONNECTED c=20
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_HEATERTHERMISTOR));
+		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_NOTCONNECTED));
 		break;
 	case TestError::Bed:
-		lcd_puts_at_P(0, 2, _i("Bed/Heater"));////MSG_SELFTEST_BEDHEATER c=20
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_BEDHEATER));
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		break;
 	case TestError::Endstops:
-		lcd_puts_at_P(0, 2, _i("Endstops"));////MSG_SELFTEST_ENDSTOPS c=20
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_ENDSTOPS));
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
@@ -6719,12 +6719,12 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 2);
 		lcd_print(_error_1);
-		lcd_puts_at_P(0, 3, _i("Endstop"));////MSG_SELFTEST_ENDSTOP c=16
+		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_ENDSTOP));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_2);
 		break;
 	case TestError::Endstop:
-		lcd_puts_at_P(0, 2, _i("Endstop not hit"));////MSG_SELFTEST_ENDSTOP_NOTHIT c=20
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_ENDSTOP_NOTHIT));
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
@@ -6742,20 +6742,20 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_print(_error_1);
 		break;
 	case TestError::Pulley:
-		lcd_puts_at_P(0, 2, _i("Loose pulley"));////MSG_LOOSE_PULLEY c=20
+		lcd_puts_at_P(0, 2, _T(MSG_LOOSE_PULLEY));
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
 	case TestError::Axis:
-		lcd_puts_at_P(0, 2, _i("Axis length"));////MSG_SELFTEST_AXIS_LENGTH c=20
-		lcd_puts_at_P(0, 3, _i("Axis"));////MSG_SELFTEST_AXIS c=16
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_AXIS_LENGTH));
+		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_AXIS));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
 	case TestError::SwappedFan:
-		lcd_puts_at_P(0, 2, _i("Front/left fans"));////MSG_SELFTEST_FANS c=20
-		lcd_puts_at_P(0, 3, _i("Swapped"));////MSG_SELFTEST_SWAPPED c=16
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FANS));
+		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_SWAPPED));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
@@ -6765,12 +6765,12 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		break;
 	case TestError::TriggeringFsensor:
           lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
-          lcd_puts_at_P(0, 3, _i("False triggering"));////MSG_FALSE_TRIGGERING c=20
+          lcd_puts_at_P(0, 3, _T(MSG_FALSE_TRIGGERING));
           break;
 	case TestError::FsensorLevel:
           lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
           lcd_set_cursor(0, 3);
-          lcd_printf_P(_i("%s level expected"),_error_1);////MSG_SELFTEST_FS_LEVEL c=20
+          lcd_printf_P(_T(MSG_SELFTEST_FS_LEVEL),_error_1);
           break;
 	}
 
@@ -6971,18 +6971,18 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 	if (screen == TestScreen::ExtruderFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
 	if (screen == TestScreen::PrintFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
 	if (screen == TestScreen::FansOk) lcd_puts_P(_T(MSG_SELFTEST_FAN));
-	if (screen == TestScreen::EndStops) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20
+	if (screen == TestScreen::EndStops) lcd_puts_P(_T(MSG_SELFTEST_CHECK_ENDSTOPS));
 	if (screen == TestScreen::AxisX) lcd_puts_P(_T(MSG_CHECKING_X));
 	if (screen == TestScreen::AxisY) lcd_puts_P(_T(MSG_CHECKING_Y));
-	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis"));////MSG_SELFTEST_CHECK_Z c=20
+	if (screen == TestScreen::AxisZ) lcd_puts_P(_T(MSG_SELFTEST_CHECK_Z));
 	if (screen == TestScreen::Bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
 	if (screen == TestScreen::Hotend
-	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend"));////MSG_SELFTEST_CHECK_HOTEND c=20
+	    || screen == TestScreen::HotendOk) lcd_puts_P(_T(MSG_SELFTEST_CHECK_HOTEND));
 	if (screen == TestScreen::Fsensor) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
 	if (screen == TestScreen::FsensorOk) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
-	if (screen == TestScreen::AllCorrect) lcd_puts_P(_i("All correct"));////MSG_SELFTEST_CHECK_ALLCORRECT c=20
+	if (screen == TestScreen::AllCorrect) lcd_puts_P(_T(MSG_SELFTEST_CHECK_ALLCORRECT));
 	if (screen == TestScreen::Failed) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
-	if (screen == TestScreen::Home) lcd_puts_P(_i("Calibrating home"));////MSG_CALIBRATING_HOME c=20
+	if (screen == TestScreen::Home) lcd_puts_P(_T(MSG_CALIBRATING_HOME));
 
 	lcd_puts_at_P(0, 1, STR_SEPARATOR);
 	if ((screen >= TestScreen::ExtruderFan) && (screen <= TestScreen::FansOk))
@@ -7067,7 +7067,7 @@ static bool check_file(const char* filename) {
 	cmdqueue_reset();
 	cmdqueue_serial_disabled = true;
 
-	menu_progressbar_init(bytesToCheck, _i("Checking file"));////MSG_CHECKING_FILE c=17
+	menu_progressbar_init(bytesToCheck, _T(MSG_CHECKING_FILE));
 	while (!card.eof() && !result) {
 		menu_progressbar_update(card.get_sdpos() - startPos);
 		card.sdprinting = true;
@@ -7136,7 +7136,7 @@ static void menu_action_sdfile(const char* filename)
     }
 
   if (!check_file(selected_filename)) {
-      result = !lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false);////MSG_FILE_INCOMPLETE c=20 r=3
+      result = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILE_INCOMPLETE), false);
       lcd_update_enable(true);
   }
   if (result) {
@@ -7402,7 +7402,7 @@ void menu_lcd_lcdupdate_func(void)
 		else
 		{
 			card.release();
-			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=20
+			LCD_MESSAGERPGM(_T(MSG_SD_REMOVED));
 		}
 	}
 #endif//CARDINSERTED

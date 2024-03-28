@@ -313,7 +313,7 @@ ISR(INT4_vect) {
 }
 
 void recover_print(uint8_t automatic) {
-    lcd_setstatuspgm(_i("Recovering print"));////MSG_RECOVERING_PRINT c=20
+    lcd_setstatuspgm(_T(MSG_RECOVERING_PRINT));
 
     // Recover position, temperatures and extrude_multipliers
     bool mbl_was_active = recover_machine_state_after_power_panic();
