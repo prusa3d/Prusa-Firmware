@@ -313,10 +313,17 @@ extern LongTimer safetyTimer;
 // the print is paused, that still counts as a "running" print.
 bool printJobOngoing();
 
+// Make debug_printer_states available everywhere
+#ifdef DEBUG_PRINTER_STATES
+void debug_printer_states();
+#endif //DEBUG_PRINTER_STATES
+
 // Printing is paused according to SD or host indicators
 bool printingIsPaused();
 
 bool printer_active();
+
+bool printer_recovering();
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue

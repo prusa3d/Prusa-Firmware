@@ -136,16 +136,16 @@ extern LcdCommands lcd_commands_type;
 
 enum class CustomMsg : uint_least8_t
 {
-    Status,          //!< status message from lcd_status_message variable
-    MeshBedLeveling, //!< Mesh bed leveling in progress
-    FilamentLoading, //!< Loading filament in progress
-    PidCal,          //!< PID tuning in progress
-    TempCal,         //!< PINDA temperature calibration
-    TempCompPreheat, //!< Temperature compensation preheat
-    M0Wait,          //!< M0/M1 Wait command working even from SD
-    M117,            //!< M117 Set the status line message on the LCD
-    Resuming,        //!< Resuming message
-    MMUProgress,     ///< MMU progress message
+    Status,          //!< 0 status message from lcd_status_message variable
+    MeshBedLeveling, //!< 1 Mesh bed leveling in progress
+    FilamentLoading, //!< 2 Loading filament in progress
+    PidCal,          //!< 3 PID tuning in progress
+    TempCal,         //!< 4 PINDA temperature calibration
+    TempCompPreheat, //!< 5 Temperature compensation preheat
+    M0Wait,          //!< 6 M0/M1 Wait command working even from SD
+    M117,            //!< 7 M117 Set the status line message on the LCD
+    Resuming,        //!< 8 Resuming message
+    MMUProgress,     ///< 9 MMU progress message
 };
 
 extern CustomMsg custom_message_type;
