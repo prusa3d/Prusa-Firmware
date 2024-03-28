@@ -105,6 +105,8 @@ struct MotorCurrents {
 
     inline uint8_t getiRun() const { return iRun; }
     inline uint8_t getiHold() const { return min(iHold, iRun); }
+    inline uint8_t getOriginaliRun() const { return vSense ? iRun : iRun << 1; }
+    inline uint8_t getOriginaliHold() const { return min(vSense ? iHold : iHold << 1, getOriginaliRun()); }
     inline bool iHoldIsClamped() const { return iHold > iRun; }
     inline uint8_t getvSense() const { return vSense; }
 

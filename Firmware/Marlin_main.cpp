@@ -8374,6 +8374,7 @@ Sigma_Exit:
     }
     break;
 
+#ifdef TMC2130
 #ifdef TMC2130_SERVICE_CODES_M910_M918
 
     /*!
@@ -8434,6 +8435,7 @@ Sigma_Exit:
         }
     }
     break;
+#endif // TMC2130_SERVICE_CODES_M910_M918
 
     /*!
 	### M913 - Print TMC2130 currents <a href="https://reprap.org/wiki/G-code#M913:_Print_TMC2130_currents">M913: Print TMC2130 currents</a>
@@ -8446,7 +8448,6 @@ Sigma_Exit:
     }
     break;
 
-#endif // TMC2130_SERVICE_CODES_M910_M918
    /*!
 	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#M914:_Set_TMC2130_normal_mode">M914: Set TMC2130 normal mode</a>
   Updates EEPROM only if "P" is given, otherwise temporary (lasts until reset or motor idle timeout)
@@ -8473,7 +8474,6 @@ Sigma_Exit:
     - `R` - Revert to EEPROM value
     - `Q` - Print effective silent/normal status. (Does not report override)
     */
-#ifdef TMC2130
     case 914:
     case 915:
     {
@@ -8512,7 +8512,6 @@ Sigma_Exit:
     }
     break;
 
-#endif // TMC2130
 #ifdef TMC2130_SERVICE_CODES_M910_M918
     /*!
     ### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>
@@ -8585,6 +8584,7 @@ Sigma_Exit:
     break;
 
 #endif //TMC2130_SERVICE_CODES_M910_M918
+#endif // TMC2130
 
     /*!
 	### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#M350:_Set_microstepping_mode">M350: Set microstepping mode</a>
