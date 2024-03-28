@@ -355,7 +355,7 @@ static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY 
 static const char MSG_BTN_RESET_MMU[] PROGMEM_I1 = ISTR("ResetMMU"); ////MSG_BTN_RESET_MMU c=8
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
 static const char MSG_BTN_LOAD[] PROGMEM_I1 = ISTR("Load"); ////MSG_BTN_LOAD c=8
-static const char MSG_BTN_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_BTN_EJECT c=8
+//static const char MSG_BTN_EJECT[] PROGMEM_I1 = ISTR("Eject"); //Reuse MSG_EJECT c=8
 //static const char MSG_BTN_TUNE_MMU[] PROGMEM_I1 = ISTR("Tune"); //Reuse MSG_TUNE c=8
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=8
@@ -368,7 +368,7 @@ static const char * const btnOperation[] PROGMEM = {
     _R(MSG_BTN_RESET_MMU),
     _R(MSG_BTN_UNLOAD),
     _R(MSG_BTN_LOAD),
-    _R(MSG_BTN_EJECT),
+    _R(MSG_EJECT),
     _R(MSG_TUNE),
     _R(MSG_BTN_STOP),
     _R(MSG_BTN_DISABLE_MMU),
