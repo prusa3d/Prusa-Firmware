@@ -81,6 +81,9 @@ static uint8_t lcd_status_message_level;
 static uint8_t lcd_status_message_idx = 0;
 static char lcd_status_message[LCD_WIDTH + 1];
 
+/* Buffer for a generic LCD text */
+static char lcd_generic_use_text[LCD_WIDTH + 1];
+
 /* !Configuration settings */
 
 static uint8_t lay1cal_filament = 0;
@@ -2156,11 +2159,17 @@ void lcd_wait_interact() {
   lcd_clear();
 
   lcd_puts_at_P(0, 0, _T(MSG_INSERT_FILAMENT));
+  lcd_set_cursor(0, 1);
+  if (lcd_generic_use_text[0]) {
+    lcd_print(lcd_generic_use_text);
+    lcd_set_cursor(0, 2);
+  }
+
 #ifdef FILAMENT_SENSOR
   if (!fsensor.getAutoLoadEnabled())
 #endif //FILAMENT_SENSOR
   {
-    lcd_puts_at_P(0, 1, _T(MSG_PRESS));
+    lcd_puts_P(_T(MSG_PRESS));
   }
 }
 
@@ -7310,6 +7319,17 @@ void lcd_reset_alert_level()
 uint8_t get_message_level()
 {
 	return lcd_status_message_level;
+}
+
+void lcd_set_generic_use_text(const char *text)
+{
+    strncpy(lcd_generic_use_text, text, LCD_WIDTH);
+    lcd_generic_use_text[LCD_WIDTH] = 0;
+}
+
+void lcd_clear_generic_use_text()
+{
+    lcd_generic_use_text[0] = 0;
 }
 
 void menu_lcd_longpress_func(void)

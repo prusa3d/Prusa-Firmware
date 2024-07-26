@@ -3528,6 +3528,8 @@ static void gcode_M600(const bool automatic, const float x_position, const float
     }
     while (repeat);
 
+    lcd_clear_generic_use_text();
+
     lcd_update_enable(true);
 
     // Not let's go back to print
@@ -5930,6 +5932,17 @@ Sigma_Exit:
 	}
 #endif		// Z_PROBE_REPEATABILITY_TEST
 #endif		// ENABLE_AUTO_BED_LEVELING
+
+    /*!
+    ### M70 - Display Message <a href="https://reprap.org/wiki/G-code#M70:_Display_message">M70: Store Message</a>
+    */
+    case 70: 
+    {
+        const char *src = strchr_pointer + 3;
+        while (*src == ' ') src++;
+        lcd_set_generic_use_text(src);
+    }
+    break;
 
     /*!
     ### M72 - Set/get Printer State <a href="https://reprap.org/wiki/G-code#M72:_Set.2FGet_Printer_State">M72: Set/get Printer State</a>
