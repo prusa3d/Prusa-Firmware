@@ -7,6 +7,7 @@
 #include "tmc2130.h"
 #include "language.h"
 #include "spi.h"
+#include "stepper.h"
 #include "Timer.h"
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
@@ -27,9 +28,6 @@ static constexpr uint8_t default_dedge_bit = 0;
 #define _DO_STEP_Z      { WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN); }
 #define _DO_STEP_E      { WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN); TMC2130_MINIMUM_DELAY; WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN); }
 #endif // TMC2130_DEDGE_STEPPING
-
-//mode
-uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
 
 static constexpr uint8_t tmc2130_default_current_h[4] = TMC2130_CURRENTS_H;
 //running currents
@@ -291,7 +289,7 @@ static void tmc2130_XYZ_reg_init(uint8_t axis)
 {
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis]);
 	tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
-	const bool isStealth = (tmc2130_mode == TMC2130_MODE_SILENT);
+	const bool isStealth = (stepper_cached_mode == TMC2130_MODE_SILENT);
 	if (axis == Z_AXIS) {
 #ifdef TMC2130_STEALTH_Z
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
@@ -313,7 +311,7 @@ static void tmc2130_XYZ_reg_init(uint8_t axis)
 
 void tmc2130_init(TMCInitParams params)
 {
-//	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
+//	DBG(_n("tmc2130_init(), mode=%S\n"), stepper_cached_mode?_n("STEALTH"):_n("NORMAL"));
 	WRITE(X_TMC2130_CS, HIGH);
 	WRITE(Y_TMC2130_CS, HIGH);
 	WRITE(Z_TMC2130_CS, HIGH);
@@ -387,7 +385,7 @@ uint8_t tmc2130_sample_diag()
 
 void tmc2130_st_isr()
 {
-	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false || tmc2130_sg_homing_axes_mask != 0)
+	if (stepper_cached_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false || tmc2130_sg_homing_axes_mask != 0)
 		return;
 	uint8_t mask = tmc2130_sample_diag();
 	if (tmc2130_sg_stop_on_crash && mask) {
@@ -590,14 +588,14 @@ void tmc2130_print_currents()
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 {
     pwmconf[axis].s.pwm_ampl = pwm_ampl;
-    if (((axis == X_AXIS) || (axis == Y_AXIS)) && (tmc2130_mode == TMC2130_MODE_SILENT))
+    if (((axis == X_AXIS) || (axis == Y_AXIS)) && (stepper_cached_mode == TMC2130_MODE_SILENT))
         tmc2130_wr(axis, TMC2130_REG_PWMCONF, pwmconf[axis].dw);
 }
 
 void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
 {
     pwmconf[axis].s.pwm_grad = pwm_grad;
-    if (((axis == X_AXIS) || (axis == Y_AXIS)) && (tmc2130_mode == TMC2130_MODE_SILENT))
+    if (((axis == X_AXIS) || (axis == Y_AXIS)) && (stepper_cached_mode == TMC2130_MODE_SILENT))
         tmc2130_wr(axis, TMC2130_REG_PWMCONF, pwmconf[axis].dw);
 }
 

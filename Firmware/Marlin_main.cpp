@@ -1267,14 +1267,10 @@ void setup()
 
 	factory_reset();
 
-  eeprom_init_default_byte((uint8_t*)EEPROM_SILENT, SILENT_MODE_OFF);
+  stepper_cached_mode = eeprom_init_default_byte((uint8_t*)EEPROM_SILENT, SILENT_MODE_OFF);
   eeprom_init_default_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard if uninitialized
 
 #ifdef TMC2130
-	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-	if (silentMode == 0xff) silentMode = 0;
-	tmc2130_mode = TMC2130_MODE_NORMAL;
-
   tmc2130_sg_stop_on_crash = eeprom_init_default_byte((uint8_t*)EEPROM_CRASH_DET, farm_mode ? false : true);
 
 	if (tmc2130_sg_stop_on_crash) {
@@ -1312,7 +1308,6 @@ void setup()
 	st_init();    // Initialize stepper, this enables interrupts!
 
 #ifdef TMC2130
-	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
 	tmc2130_init(TMCInitParams(false, UserECoolEnabled() ));
 #endif //TMC2130
@@ -2404,7 +2399,9 @@ void change_power_mode_live(uint8_t mode)
   // Wait for the planner queue to drain and for the stepper timer routine to reach an idle state.
 		st_synchronize();
 		cli();
-		tmc2130_mode = mode;
+
+    // EEPROM is intentionally not updated here, see M914/M915
+    stepper_cached_mode = mode;
 		update_mode_profile();
 		tmc2130_init(TMCInitParams(UserECoolEnabled()));
     // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
@@ -2417,9 +2414,7 @@ void force_high_power_mode(bool start_high_power_section) {
 #ifdef PSU_Delta
 	if (start_high_power_section == true) enable_force_z();
 #endif //PSU_Delta
-	uint8_t silent;
-	silent = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-	if (silent == 1 || tmc2130_mode == TMC2130_MODE_SILENT) {
+	if (stepper_cached_mode == TMC2130_MODE_SILENT) {
 		//we are in silent mode, set to normal mode to enable crash detection
     change_power_mode_live((start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT);
 	}
@@ -8317,27 +8312,28 @@ Sigma_Exit:
     case 915:
     {
     uint8_t newMode = (mcode_in_progress==914) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
-    //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
+    //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),stepper_cached_mode,newMode,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
     if (code_seen('R'))
     {
-        newMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+        newMode = stepper_cached_mode;
     }
     else if (code_seen('P'))
     {
         uint8_t newMenuMode = (mcode_in_progress==914) ? SILENT_MODE_NORMAL : SILENT_MODE_STEALTH;
-        eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, newMenuMode);
-        SilentModeMenu = newMenuMode;
-        //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
+
+        // Update both EEPROM value an cached value in RAM
+        st_update_stepper_mode(newMenuMode);
+        //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),stepper_cached_mode,stepper_cached_mode,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
     }
     else if (code_seen('Q'))
     {
         printf_P(PSTR("%S: %S\n"), _O(MSG_MODE),
-            tmc2130_mode == TMC2130_MODE_NORMAL ?
+            stepper_cached_mode == TMC2130_MODE_NORMAL ?
             _O(MSG_NORMAL) : _O(MSG_SILENT)
         );
 
     }
-      if (tmc2130_mode != newMode
+      if (stepper_cached_mode != newMode
 #ifdef PSU_Delta
           || !bEnableForce_z
 #endif
@@ -9301,7 +9297,7 @@ void get_coordinates() {
       if (relative)
         destination[i] += current_position[i];
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
-	  if (i == Z_AXIS && SilentModeMenu == SILENT_MODE_AUTO) update_currents();
+	  if (i == Z_AXIS && stepper_cached_mode == SILENT_MODE_AUTO) update_currents();
 #endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
@@ -10860,7 +10856,7 @@ uint8_t calc_percent_done()
     //in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
     uint8_t percent_done = 0;
 #ifdef TMC2130
-    if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100)
+    if (stepper_cached_mode == SILENT_MODE_OFF && print_percent_done_normal <= 100)
     {
         percent_done = print_percent_done_normal;
     }
@@ -11073,7 +11069,7 @@ void disable_force_z()
 
     // switching to silent mode
 #ifdef TMC2130
-    tmc2130_mode=TMC2130_MODE_SILENT;
+    st_update_stepper_mode(TMC2130_MODE_SILENT)
     update_mode_profile();
     tmc2130_init(TMCInitParams(true, UserECoolEnabled()));
 #endif // TMC2130
@@ -11087,7 +11083,6 @@ bEnableForce_z=true;
 
 // mode recovering
 #ifdef TMC2130
-tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 update_mode_profile();
 tmc2130_init(TMCInitParams(true, UserECoolEnabled()));
 #endif // TMC2130

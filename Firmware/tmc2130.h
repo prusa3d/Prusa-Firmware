@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include "Configuration_var.h"
 
-//mode
-extern uint8_t tmc2130_mode;
 //microstep resolution (0 means 256usteps, 8 means 1ustep
 extern uint8_t tmc2130_mres[4];
 

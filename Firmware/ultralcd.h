@@ -149,22 +149,9 @@ enum class CustomMsg : uint_least8_t
 extern CustomMsg custom_message_type;
 extern uint8_t custom_message_state;
 
-#ifdef TMC2130
-#define SILENT_MODE_NORMAL 0
-#define SILENT_MODE_STEALTH 1
-#define SILENT_MODE_OFF SILENT_MODE_NORMAL
-#else
-#define SILENT_MODE_POWER 0
-#define SILENT_MODE_SILENT 1
-#define SILENT_MODE_AUTO 2
-#define SILENT_MODE_OFF SILENT_MODE_POWER
-#endif
-
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 void printf_IRSensorAnalogBoardChange();
 #endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
-
-extern int8_t SilentModeMenu;
 
 extern uint8_t scrollstuff;
 

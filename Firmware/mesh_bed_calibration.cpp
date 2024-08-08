@@ -937,7 +937,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
     bedPWMDisabled = 1;
 #ifdef TMC2130
     bool bHighPowerForced = false;
-	if (tmc2130_mode == TMC2130_MODE_SILENT)
+	if (stepper_cached_mode == TMC2130_MODE_SILENT)
     {
         FORCE_HIGH_POWER_START;
         bHighPowerForced = true;

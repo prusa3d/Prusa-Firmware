@@ -30,6 +30,20 @@
 extern bool abort_on_endstop_hit;
 #endif
 
+extern uint8_t stepper_cached_mode;
+void st_update_stepper_mode(uint8_t mode);
+
+#ifdef TMC2130
+#define SILENT_MODE_NORMAL 0
+#define SILENT_MODE_STEALTH 1
+#define SILENT_MODE_OFF SILENT_MODE_NORMAL
+#else
+#define SILENT_MODE_POWER 0
+#define SILENT_MODE_SILENT 1
+#define SILENT_MODE_AUTO 2
+#define SILENT_MODE_OFF SILENT_MODE_POWER
+#endif
+
 // Initialize and start the stepper motor subsystem
 void st_init();
 

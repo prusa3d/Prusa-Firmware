@@ -61,8 +61,6 @@ static bool bFilamentSkipPreheat; // True if waiting for preheat is not required
 int8_t ReInitLCD = 0;
 uint8_t scrollstuff = 0;
 
-int8_t SilentModeMenu = SILENT_MODE_OFF;
-
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 static bool extraPurgeNeeded = false; ///< lcd_commands - detect if extra purge after MMU-toolchange is necessary or not
@@ -451,7 +449,7 @@ void lcdui_print_time(void)
         char suff_doubt = ' ';
 
 #ifdef TMC2130
-        if (SilentModeMenu != SILENT_MODE_OFF) {
+        if (stepper_cached_mode != SILENT_MODE_OFF) {
             if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT)
                 print_tr = print_time_remaining_silent;
 //#ifdef CLOCK_INTERVAL_TIME
@@ -3396,19 +3394,20 @@ static void lcd_mmu_mode_toggle() {
 #endif //MMU_FORCE_STEALTH_MODE
 
 static void lcd_silent_mode_set() {
-	switch (SilentModeMenu) {
+	switch (stepper_cached_mode) {
 #ifdef TMC2130
-	case SILENT_MODE_NORMAL: SilentModeMenu = SILENT_MODE_STEALTH; break;
-	case SILENT_MODE_STEALTH: SilentModeMenu = SILENT_MODE_NORMAL; break;
-	default: SilentModeMenu = SILENT_MODE_NORMAL; break; // (probably) not needed
+	case SILENT_MODE_NORMAL: stepper_cached_mode = SILENT_MODE_STEALTH; break;
+	case SILENT_MODE_STEALTH: stepper_cached_mode = SILENT_MODE_NORMAL; break;
+	default: stepper_cached_mode = SILENT_MODE_NORMAL; break; // (probably) not needed
 #else
-	case SILENT_MODE_POWER: SilentModeMenu = SILENT_MODE_SILENT; break;
-	case SILENT_MODE_SILENT: SilentModeMenu = SILENT_MODE_AUTO; break;
-	case SILENT_MODE_AUTO: SilentModeMenu = SILENT_MODE_POWER; break;
-	default: SilentModeMenu = SILENT_MODE_POWER; break; // (probably) not needed
+	case SILENT_MODE_POWER: stepper_cached_mode = SILENT_MODE_SILENT; break;
+	case SILENT_MODE_SILENT: stepper_cached_mode = SILENT_MODE_AUTO; break;
+	case SILENT_MODE_AUTO: stepper_cached_mode = SILENT_MODE_POWER; break;
+	default: stepper_cached_mode = SILENT_MODE_POWER; break; // (probably) not needed
 #endif //TMC2130
 	}
-  eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+
+  eeprom_update_byte_notify((uint8_t *)EEPROM_SILENT, stepper_cached_mode);
 #ifdef TMC2130
   if (blocks_queued())
   {
@@ -3419,7 +3418,6 @@ static void lcd_silent_mode_set() {
   }
   tmc2130_wait_standstill_xy(1000);
   cli();
-  tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
   update_mode_profile();
   tmc2130_init(TMCInitParams(false, UserECoolEnabled()));
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
@@ -3431,7 +3429,7 @@ static void lcd_silent_mode_set() {
 #endif //TMC2130
 
 #ifdef TMC2130
-  if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET) && (SilentModeMenu != SILENT_MODE_NORMAL))
+  if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET) && (stepper_cached_mode != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
 #endif //TMC2130
 }
@@ -4124,14 +4122,14 @@ static void SETTINGS_SILENT_MODE()
     { // dont show in menu if we are in farm mode
 #ifdef TMC2130
         uint8_t eeprom_mode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-		bool bDesync = tmc2130_mode ^ eeprom_mode;
-        if (eeprom_mode == SILENT_MODE_NORMAL)
+        bool bDesync = stepper_cached_mode ^eeprom_mode;
+        if (stepper_cached_mode == SILENT_MODE_NORMAL)
         {
             if (bDesync)
             {
                 MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M915"), lcd_silent_mode_set);
             }
-			else
+            else
             {
                 MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
             }
@@ -4143,7 +4141,7 @@ static void SETTINGS_SILENT_MODE()
             {
                 MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M914") , lcd_silent_mode_set);
             }
-			else
+            else
             {
                 MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
             }
@@ -4452,7 +4450,6 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 static void lcd_settings_menu()
 {
-	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
@@ -5510,8 +5507,6 @@ static void lcd_tune_menu()
 		calculate_extruder_multipliers();
 	}
 
-	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
-
 	MENU_BEGIN();
 	ON_MENU_LEAVE(
 		refresh_saved_feedrate_multiplier_in_ram();
@@ -6536,7 +6531,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_current_set(0, 850); //set motor current higher
 		plan_buffer_line_curposXYZE(200);
 		st_synchronize();
-          if (SilentModeMenu != SILENT_MODE_OFF) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
+          if (stepper_cached_mode != SILENT_MODE_OFF) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
 		else st_current_set(0, tmp_motor_loud[0]); //set motor current back
 		current_position[axis] = current_position[axis] - move;
 		plan_buffer_line_curposXYZE(50);
