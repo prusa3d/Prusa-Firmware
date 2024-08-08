@@ -8315,7 +8315,7 @@ Sigma_Exit:
     //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),stepper_cached_mode,newMode,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
     if (code_seen('R'))
     {
-        newMode = stepper_cached_mode;
+        newMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
     }
     else if (code_seen('P'))
     {
