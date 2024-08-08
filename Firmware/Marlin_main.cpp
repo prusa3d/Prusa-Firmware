@@ -8319,10 +8319,8 @@ Sigma_Exit:
     }
     else if (code_seen('P'))
     {
-        uint8_t newMenuMode = (mcode_in_progress==914) ? SILENT_MODE_NORMAL : SILENT_MODE_STEALTH;
-
         // Update both EEPROM value and cached value in RAM
-        st_update_stepper_mode(newMenuMode);
+        st_update_stepper_mode(newMode);
         //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),stepper_cached_mode,stepper_cached_mode,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
     }
     else if (code_seen('Q'))
