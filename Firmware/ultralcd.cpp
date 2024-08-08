@@ -4122,7 +4122,7 @@ static void SETTINGS_SILENT_MODE()
     { // dont show in menu if we are in farm mode
 #ifdef TMC2130
         uint8_t eeprom_mode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-        bool bDesync = stepper_cached_mode ^eeprom_mode;
+        bool bDesync = stepper_cached_mode ^ eeprom_mode;
         if (stepper_cached_mode == SILENT_MODE_NORMAL)
         {
             if (bDesync)
