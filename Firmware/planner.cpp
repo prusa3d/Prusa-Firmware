@@ -56,7 +56,7 @@
 #include "stepper.h"
 #include "temperature.h"
 #include "fancheck.h"
-#include "ultralcd.h"
+#include "lcd.h"
 #include "language.h"
 #include "ConfigurationStore.h"
 

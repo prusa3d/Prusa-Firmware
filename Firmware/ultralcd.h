@@ -149,9 +149,6 @@ enum class CustomMsg : uint_least8_t
 extern CustomMsg custom_message_type;
 extern uint8_t custom_message_state;
 
-extern bool UserECoolEnabled();
-extern bool FarmOrUserECool();
-
 #ifdef TMC2130
 #define SILENT_MODE_NORMAL 0
 #define SILENT_MODE_STEALTH 1

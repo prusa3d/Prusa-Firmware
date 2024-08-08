@@ -25,7 +25,7 @@
 #include "stepper.h"
 #include "planner.h"
 #include "temperature.h"
-#include "ultralcd.h"
+#include "lcd.h"
 #include "cardreader.h"
 #include "speed_lookuptable.h"
 #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -1063,7 +1063,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 void st_init()
 {
 #ifdef TMC2130
-	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+	tmc2130_init(TMCInitParams(false, UserECoolEnabled()));
 #else
   st_current_init(); //Initialize Digipot Motor Current
   microstep_init(); //Initialize Microstepping Pins
