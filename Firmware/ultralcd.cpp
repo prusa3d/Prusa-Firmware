@@ -2390,7 +2390,7 @@ void lcd_menu_statistics()
 }
 
 
-static void _lcd_move(const char *name, uint8_t axis, int min, int max)
+static void _lcd_move(const char *name, const uint8_t axis)
 {
     if (homing_flag || mesh_bed_leveling_flag)
     {
@@ -2417,10 +2417,8 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 		if (! planner_queue_full())
 		{
 			current_position[axis] += lcd_encoder;
-			if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
-			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
 			lcd_encoder = 0;
-			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+			clamp_to_software_endstops(current_position);
 			plan_buffer_line_curposXYZE(get_feedrate_mm_s(manual_feedrate[axis]));
 			lcd_draw_update = 1;
 		}
@@ -2573,13 +2571,13 @@ static void lcd_menu_xyz_offset()
 // Note: the colon behind the text (X, Y, Z) is necessary to greatly shorten
 // the implementation of menu_draw_float31
 static void lcd_move_x() {
-  _lcd_move(PSTR("X:"), X_AXIS, X_MIN_POS, X_MAX_POS);
+  _lcd_move(PSTR("X:"), X_AXIS);
 }
 static void lcd_move_y() {
-  _lcd_move(PSTR("Y:"), Y_AXIS, Y_MIN_POS, Y_MAX_POS);
+  _lcd_move(PSTR("Y:"), Y_AXIS);
 }
 static void lcd_move_z() {
-  _lcd_move(PSTR("Z:"), Z_AXIS, Z_MIN_POS, Z_MAX_POS);
+  _lcd_move(PSTR("Z:"), Z_AXIS);
 }
 
 
