@@ -2420,7 +2420,6 @@ static void _lcd_move(const char *name, const uint8_t axis)
 			lcd_encoder = 0;
 			clamp_to_software_endstops(current_position);
 			plan_buffer_line_curposXYZE(get_feedrate_mm_s(manual_feedrate[axis]));
-			lcd_draw_update = 1;
 		}
 	}
 	if (lcd_draw_update)
@@ -2445,7 +2444,6 @@ void lcd_move_e()
 				current_position[E_AXIS] += lcd_encoder;
 				lcd_encoder = 0;
 				plan_buffer_line_curposXYZE(manual_feedrate[E_AXIS] / 60);
-				lcd_draw_update = 1;
 			}
 		}
 		if (lcd_draw_update)
