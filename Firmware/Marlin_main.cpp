@@ -5241,16 +5241,42 @@ void process_commands()
     }
 
     /*!
-    ### M78 - Show statistical information about the print jobs <a href="https://reprap.org/wiki/G-code#M78:_Show_statistical_information_about_the_print_jobs">M78: Show statistical information about the print jobs</a>
+    ### M78 - Get/set statistics <a href="https://reprap.org/wiki/G-code#M78:_Show_statistical_information_about_the_print_jobs">M78: Show statistical information about the print jobs</a>
+
+    #### Usage
+
+        M78 [ S | T ]
+
+    #### Parameters
+    - `S` - Set used filament length in cm
+    - `T` - Set total print time in minutes
     */
     case 78:
     {
         // @todo useful for maintenance notifications
-        SERIAL_ECHOPGM("STATS ");
-        SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME));
-        SERIAL_ECHOPGM(" min ");
-        SERIAL_ECHO(eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED));
-        SERIAL_ECHOLNPGM(" cm.");
+        const char *_m_fil;
+        const char *_m_time;
+        uint32_t _cm = 0;
+        uint32_t _min = 0;
+
+        if (printJobOngoing()) {
+          _m_fil = _O(MSG_FILAMENT_USED);
+          _m_time = _O(MSG_PRINT_TIME);
+          _cm = ((uint32_t)total_filament_used) / (1000);
+          _min = (print_job_timer.duration() / 60);
+        } else {
+          if (code_seen('S')) {
+          eeprom_update_dword_notify((uint32_t *)EEPROM_FILAMENTUSED, code_value());
+          }
+          if (code_seen('T')) {
+          eeprom_update_dword_notify((uint32_t *)EEPROM_TOTALTIME, code_value());
+          }
+          _m_fil = _O(MSG_TOTAL_FILAMENT);
+          _m_time = _O(MSG_TOTAL_PRINT_TIME);
+          _cm = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
+          _min = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME);
+        }
+        printf_P(_N("%S:%lu cm\n%S:%lu min\n"),_m_fil,_cm,_m_time,_min);
         break;
     }
 

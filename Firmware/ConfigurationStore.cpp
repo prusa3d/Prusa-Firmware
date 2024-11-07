@@ -106,6 +106,9 @@ void Config_PrintSettings(uint8_t level)
 #ifdef THERMAL_MODEL
     thermal_model_report_settings();
 #endif
+		printf_P(PSTR(
+        "%SStatistics:\n%S  M78 S%lu T%lu\n"),
+        echomagic, echomagic, eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED), eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME));
 }
 #endif
 
