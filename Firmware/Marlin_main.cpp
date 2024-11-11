@@ -5253,7 +5253,6 @@ void process_commands()
     */
     case 78:
     {
-        // @todo useful for maintenance notifications
         const char *_m_fil;
         const char *_m_time;
         uint32_t _cm = 0;
@@ -5262,8 +5261,8 @@ void process_commands()
         if (printJobOngoing()) {
           _m_fil = _O(MSG_FILAMENT_USED);
           _m_time = _O(MSG_PRINT_TIME);
-          _cm = ((uint32_t)total_filament_used) / (1000);
-          _min = (print_job_timer.duration() / 60);
+          _cm = (uint32_t)total_filament_used / 1000;
+          _min = print_job_timer.duration() / 60;
         } else {
           if (code_seen('S')) {
           eeprom_update_dword_notify((uint32_t *)EEPROM_FILAMENTUSED, code_value());
@@ -9179,7 +9178,7 @@ void setPwmFrequency(uint8_t pin, int val)
 #endif //FAST_PWM_FAN
 
 void save_statistics() {
-    uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: meter
+    uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: centimeter
     uint32_t _previous_time = eeprom_init_default_dword((uint32_t *)EEPROM_TOTALTIME, 0);        //_previous_time unit: min
 
     uint32_t time_minutes = print_job_timer.duration() / 60;

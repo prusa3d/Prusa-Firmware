@@ -108,7 +108,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | fah 250      | ^                     | needs XYZ calibration                             | ^            | ^
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown (legacy)                                  | ^            | ^
 | 0x0FF5 4085 | uint16  | _EEPROM_FREE_NR12_                    | ???          | ff ffh 65535          | _Free EEPROM space_                               | _free space_ | D3 Ax0ff5 C2
-| 0x0FF1 4081 | uint32  | EEPROM_FILAMENTUSED                   | ???          | 00 00 00 00h 0 __S/P__| Filament used in meters                           | ???          | D3 Ax0ff1 C4
+| 0x0FF1 4081 | uint32  | EEPROM_FILAMENTUSED                   | ???          | 00 00 00 00h 0 __S/P__| Filament used in cenitmeters                      | ???          | D3 Ax0ff1 C4
 | 0x0FED 4077 | uint32  | EEPROM_TOTALTIME                      | ???          | 00 00 00 00h 0 __S/P__| Total print time in minutes                       | ???          | D3 Ax0fed C4
 | 0x0FE5 4069 | float   | EEPROM_BED_CALIBRATION_CENTER         | ???          | ff ff ff ffh          | ???                                               | ???          | D3 Ax0fe5 C8
 | 0x0FDD 4061 | float   | EEPROM_BED_CALIBRATION_VEC_X          | ???          | ff ff ff ffh          | ???                                               | ???          | D3 Ax0fdd C8

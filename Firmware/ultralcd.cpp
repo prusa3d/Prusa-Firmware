@@ -2367,7 +2367,7 @@ void lcd_menu_statistics()
 	}
 	else
 	{
-		uint32_t _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED); // in meters
+		uint32_t _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED); // in centimeters
 		uint32_t _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); // in minutes
 		uint8_t _hours, _minutes;
 		uint32_t _days;
