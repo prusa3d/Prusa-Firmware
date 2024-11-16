@@ -869,7 +869,7 @@ void lcd_commands()
                 lay1cal_square(12, layer_height, extrusion_width);
                 break;
             case 2:
-                lay1cal_finish(MMU2::mmu2.Enabled());
+                lay1cal_finish();
                 break;
             case 1:
                 lcd_setstatuspgm(MSG_WELCOME);
