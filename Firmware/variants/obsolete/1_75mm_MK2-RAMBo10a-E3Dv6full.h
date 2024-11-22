@@ -117,6 +117,9 @@ EXTRUDER SETTINGS
 #endif
 #define BED_MAXTEMP 150
 
+//Lowertemp
+#define HEATER_LOWER_TEMP 50 //lower hotend temperature by 50°C
+
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
 // Define PID constants for extruder with PT100
 #define  DEFAULT_Kp 21.70
