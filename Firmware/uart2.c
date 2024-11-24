@@ -14,7 +14,7 @@ uint8_t uart2_ibuf[20] = {0, 0};
 FILE _uart2io = {0};
 
 
-int uart2_putchar(char c, _UNUSED FILE *stream)
+static int uart2_putchar(char c, _UNUSED FILE *stream)
 {
 	while (!uart2_txready);
 
@@ -23,7 +23,7 @@ int uart2_putchar(char c, _UNUSED FILE *stream)
 	return 0;
 }
 
-int uart2_getchar(_UNUSED FILE *stream)
+static int uart2_getchar(_UNUSED FILE *stream)
 {
 	if (rbuf_empty(uart2_ibuf)) return -1;
 	return rbuf_get(uart2_ibuf);
