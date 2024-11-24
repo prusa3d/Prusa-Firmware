@@ -10,9 +10,7 @@
 #define uart2_txready    (UCSR2A & (1 << UDRE2))
 
 uint8_t uart2_ibuf[20] = {0, 0};
-
 FILE _uart2io = {0};
-
 
 static int uart2_putchar(char c, _UNUSED FILE *stream)
 {
