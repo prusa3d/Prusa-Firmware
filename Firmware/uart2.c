@@ -45,34 +45,6 @@ void uart2_init(uint32_t baudRate)
 	fdev_setup_stream(uart2io, uart2_putchar, uart2_getchar, _FDEV_SETUP_WRITE | _FDEV_SETUP_READ); //setup uart2 i/o stream
 }
 
-//returns 1 if chars in input buffer match to str
-//returns -1 if chars does not match and 0 for empty buffer
-int8_t uart2_rx_str_P(const char* str)
-{
-	uint8_t r = rbuf_r(uart2_ibuf);            //get read index
-	uint8_t w = rbuf_w(uart2_ibuf);            //get write index
-//	printf_P(PSTR("uart2_rx_str_P r=%d w=%d\n"), r, w);
-	uint8_t e = rbuf_l(uart2_ibuf) - 1;        //get end index
-	uint8_t len = strlen_P(str);                 //get string length
-	str += len;                                //last char will be compared first
-//	printf_P(PSTR(" len=%d\n"), len);
-	while (len--)                              //loop over all chars
-	{
-		if (w == r) return 0;                  //empty buffer - return 0
-		if ((--w) == 255) w = e;               //decrement index
-		char c0 = pgm_read_byte(--str);        //read char from str
-		char c1 = uart2_ibuf[4 + w];           //read char from input buffer
-//		printf_P(PSTR(" uart2_rx_str_P w=%d l=%d c0=%02x c1=%02x\n"), w, len, c0, c1);
-		if (c0 == c1) continue;                //if match, continue with next char
-		if ((c0 == '\r') && (c1 == '\n'))      //match cr as lf
-			continue;
-		if ((c0 == '\n') && (c1 == '\r'))      //match lf as cr
-			continue;
-		return -1;                             //no match - return -1
-	}
-	return 1;                                  //all characters match - return 1
-}
-
 ISR(USART2_RX_vect)
 {
 	//printf_P(PSTR("USART2_RX_vect \n") );
