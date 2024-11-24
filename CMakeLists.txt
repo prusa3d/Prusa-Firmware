@@ -268,7 +268,7 @@ set(FW_SOURCES
     tmc2130.cpp
     tone04.c
     twi.cpp
-    uart2.c
+    uart2.cpp
     ultralcd.cpp
     util.cpp
     xflash.c
