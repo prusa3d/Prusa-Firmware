@@ -6,10 +6,7 @@
 #include "rbuf.h"
 #include "macros.h"
 
-#define UART2_BAUD 115200
 #define UART_BAUD_SELECT(baudRate,xtalCpu) (((float)(xtalCpu))/(((float)(baudRate))*8.0)-1.0+0.5)
-#define uart2_rxcomplete (UCSR2A & (1 << RXC2))
-#define uart2_txcomplete (UCSR2A & (1 << TXC2))
 #define uart2_txready    (UCSR2A & (1 << UDRE2))
 
 uint8_t uart2_ibuf[20] = {0, 0};
@@ -20,9 +17,9 @@ FILE _uart2io = {0};
 int uart2_putchar(char c, _UNUSED FILE *stream)
 {
 	while (!uart2_txready);
+
 	UDR2 = c; // transmit byte
-//	while (!uart2_txcomplete); // wait until byte sent
-//	UCSR2A |= (1 << TXC2); // delete TXCflag
+
 	return 0;
 }
 
@@ -47,10 +44,8 @@ void uart2_init(uint32_t baudRate)
 
 ISR(USART2_RX_vect)
 {
-	//printf_P(PSTR("USART2_RX_vect \n") );
 	if (rbuf_put(uart2_ibuf, UDR2) < 0) // put received byte to buffer
 	{ //rx buffer full
-		//uart2_rx_clr(); //for sure, clear input buffer
 		puts_P(PSTR("USART2 rx Full!!!"));
 	}
 }
