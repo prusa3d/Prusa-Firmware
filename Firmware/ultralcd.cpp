@@ -2266,11 +2266,25 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-    uint8_t clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
+    // The total length of the individual messages MSG_YES c=4, MSG_NO c=4 and MSG_EJECT c=8 with the selectors and spaces between
+    // exceeds the LCD width.
+    // 01234567890123456789
+    // >yyyy >nnnn >eeeeeeee
+    // As long the translations of MSG_YES, MSG_NO and MSG_EJECT combined length do not exceed 15 chars, we don't have to shorten
+    // the MSG_EJECT message/translation. We can set the second_col value to the length of the first choice + the selector and space.
+    // Examples:
+    // German
+    // 01234567890123456789
+    // >Ja >Nein  >Auswerf.
+    // Hungarian
+    // 01234567890123456789
+    // >Igen >Nem   >Kiadás
+
+    uint8_t clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), strlen_P(_T(MSG_YES))+2);
     while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
         load_filament_final_feed();
         st_synchronize();
-        clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
+        clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), strlen_P(_T(MSG_YES))+2);
     }
     if (clean == LCD_RIGHT_BUTTON_CHOICE) {
         unload_filament(FILAMENTCHANGE_FINALRETRACT);
