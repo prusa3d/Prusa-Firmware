@@ -2535,7 +2535,7 @@ msgstr "NEPOZNATA POGREŠKA"
 msgid "Unexpected error occurred."
 msgstr "Došlo je do neočekivane pogreške."
 
-#. MSG_EJECT c=8
+#. MSG_EJECT c=9
 #: ../../Firmware/messages.cpp:21 ../../Firmware/mmu2/errors_list.h:371
 #: ../../Firmware/ultralcd.cpp:2275 ../../Firmware/ultralcd.cpp:2279
 msgid "Eject"

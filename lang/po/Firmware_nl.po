@@ -2543,11 +2543,11 @@ msgstr "ONBEKENDE FOUT"
 msgid "Unexpected error occurred."
 msgstr "Er is een onverwachte fout opgetreden."
 
-#. MSG_EJECT c=8
+#. MSG_EJECT c=9
 #: ../../Firmware/messages.cpp:21 ../../Firmware/mmu2/errors_list.h:371
 #: ../../Firmware/ultralcd.cpp:2275 ../../Firmware/ultralcd.cpp:2279
 msgid "Eject"
-msgstr "Uitwerp."
+msgstr "Uitwerpen"
 
 #. MSG_TITLE_FILAMENT_CHANGE c=20
 #: ../../Firmware/mmu2/errors_list.h:189 ../../Firmware/mmu2/errors_list.h:236

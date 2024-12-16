@@ -2266,7 +2266,7 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-    // The total length of the individual messages MSG_YES c=4, MSG_NO c=4 and MSG_EJECT c=8 with the selectors and spaces between
+    // The total length of the individual messages MSG_YES c=4, MSG_NO c=4 and MSG_EJECT c=9 with the selectors and spaces between
     // exceeds the LCD width.
     // 01234567890123456789
     // >yyyy >nnnn >eeeeeeee
@@ -2275,7 +2275,7 @@ void lcd_load_filament_color_check()
     // Examples:
     // German
     // 01234567890123456789
-    // >Ja >Nein  >Auswerf.
+    // >Ja >Nein >Auswerfen
     // Hungarian
     // 01234567890123456789
     // >Igen >Nem   >Kiadás
