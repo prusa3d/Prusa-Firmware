@@ -59,14 +59,6 @@ uint16_t SP_min = 0x21FF;
 #ifdef DEBUG_YSTEP_DUP_PIN
 #define _STEP_PIN_Y_DUP_AXIS DEBUG_YSTEP_DUP_PIN
 #endif
-#ifdef Y_DUAL_STEPPER_DRIVERS
-#error Y_DUAL_STEPPER_DRIVERS not fully implemented
-#define _STEP_PIN_Y2_AXIS Y2_STEP_PIN
-#endif
-#ifdef Z_DUAL_STEPPER_DRIVERS
-#error Z_DUAL_STEPPER_DRIVERS not fully implemented
-#define _STEP_PIN_Z2_AXIS Z2_STEP_PIN
-#endif
 
 #ifdef TMC2130
 #define STEPPER_MINIMUM_PULSE TMC2130_MINIMUM_PULSE
@@ -1079,17 +1071,9 @@ void st_init()
   #endif
   #if defined(Y_DIR_PIN) && Y_DIR_PIN > -1
     SET_OUTPUT(Y_DIR_PIN);
-
-	#if defined(Y_DUAL_STEPPER_DRIVERS) && defined(Y2_DIR_PIN) && (Y2_DIR_PIN > -1)
-	  SET_OUTPUT(Y2_DIR_PIN);
-	#endif
   #endif
   #if defined(Z_DIR_PIN) && Z_DIR_PIN > -1
     SET_OUTPUT(Z_DIR_PIN);
-
-    #if defined(Z_DUAL_STEPPER_DRIVERS) && defined(Z2_DIR_PIN) && (Z2_DIR_PIN > -1)
-      SET_OUTPUT(Z2_DIR_PIN);
-    #endif
   #endif
   #if defined(E0_DIR_PIN) && E0_DIR_PIN > -1
     SET_OUTPUT(E0_DIR_PIN);
@@ -1108,20 +1092,10 @@ void st_init()
   #if defined(Y_ENABLE_PIN) && Y_ENABLE_PIN > -1
     SET_OUTPUT(Y_ENABLE_PIN);
     if(!Y_ENABLE_ON) WRITE(Y_ENABLE_PIN,HIGH);
-
-	#if defined(Y_DUAL_STEPPER_DRIVERS) && defined(Y2_ENABLE_PIN) && (Y2_ENABLE_PIN > -1)
-	  SET_OUTPUT(Y2_ENABLE_PIN);
-	  if(!Y_ENABLE_ON) WRITE(Y2_ENABLE_PIN,HIGH);
-	#endif
   #endif
   #if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
     SET_OUTPUT(Z_ENABLE_PIN);
     if(!Z_ENABLE_ON) WRITE(Z_ENABLE_PIN,HIGH);
-
-    #if defined(Z_DUAL_STEPPER_DRIVERS) && defined(Z2_ENABLE_PIN) && (Z2_ENABLE_PIN > -1)
-      SET_OUTPUT(Z2_ENABLE_PIN);
-      if(!Z_ENABLE_ON) WRITE(Z2_ENABLE_PIN,HIGH);
-    #endif
   #endif
   #if defined(E0_ENABLE_PIN) && (E0_ENABLE_PIN > -1)
     SET_OUTPUT(E0_ENABLE_PIN);
@@ -1201,19 +1175,11 @@ void st_init()
     SET_OUTPUT(DEBUG_YSTEP_DUP_PIN);
     WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
-    #if defined(Y_DUAL_STEPPER_DRIVERS) && defined(Y2_STEP_PIN) && (Y2_STEP_PIN > -1)
-      SET_OUTPUT(Y2_STEP_PIN);
-      WRITE(Y2_STEP_PIN,INVERT_Y_STEP_PIN);
-    #endif
     disable_y();
   #endif
   #if defined(Z_STEP_PIN) && (Z_STEP_PIN > -1)
     SET_OUTPUT(Z_STEP_PIN);
     WRITE(Z_STEP_PIN,INVERT_Z_STEP_PIN);
-    #if defined(Z_DUAL_STEPPER_DRIVERS) && defined(Z2_STEP_PIN) && (Z2_STEP_PIN > -1)
-      SET_OUTPUT(Z2_STEP_PIN);
-      WRITE(Z2_STEP_PIN,INVERT_Z_STEP_PIN);
-    #endif
     #ifdef PSU_Delta
       init_force_z();
     #endif // PSU_Delta
@@ -1373,7 +1339,7 @@ void babystep(const uint8_t axis,const bool direction)
     case X_AXIS:
     {
         enable_x();
-        uint8_t old_x_dir_pin = READ(X_DIR_PIN);  //if dualzstepper, both point to same direction.
+        uint8_t old_x_dir_pin = READ(X_DIR_PIN);
         uint8_t new_x_dir_pin = (INVERT_X_DIR)^direction;
 
         //setup new step
@@ -1401,7 +1367,7 @@ void babystep(const uint8_t axis,const bool direction)
     case Y_AXIS:
     {
         enable_y();
-        uint8_t old_y_dir_pin = READ(Y_DIR_PIN);  //if dualzstepper, both point to same direction.
+        uint8_t old_y_dir_pin = READ(Y_DIR_PIN);
         uint8_t new_y_dir_pin = (INVERT_Y_DIR)^direction;
 
         //setup new step
@@ -1429,35 +1395,23 @@ void babystep(const uint8_t axis,const bool direction)
     case Z_AXIS:
     {
         enable_z();
-        uint8_t old_z_dir_pin = READ(Z_DIR_PIN);  //if dualzstepper, both point to same direction.
+        uint8_t old_z_dir_pin = READ(Z_DIR_PIN);
         uint8_t new_z_dir_pin = (INVERT_Z_DIR)^direction^BABYSTEP_INVERT_Z;
 
         //setup new step
         if (new_z_dir_pin != old_z_dir_pin) {
             WRITE_NC(Z_DIR_PIN, new_z_dir_pin);
-#ifdef Z_DUAL_STEPPER_DRIVERS
-            WRITE_NC(Z2_DIR_PIN, new_z_dir_pin);
-#endif
             delayMicroseconds(STEPPER_SET_DIR_DELAY);
         }
 
         //perform step
         STEP_NC_HI(Z_AXIS);
-#ifdef Z_DUAL_STEPPER_DRIVERS
-        STEP_NC_HI(Z2_AXIS);
-#endif
         STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(Z_AXIS);
-#ifdef Z_DUAL_STEPPER_DRIVERS
-        STEP_NC_LO(Z2_AXIS);
-#endif
 
         //get old pin state back.
         if (new_z_dir_pin != old_z_dir_pin) {
             WRITE_NC(Z_DIR_PIN, old_z_dir_pin);
-#ifdef Z_DUAL_STEPPER_DRIVERS
-            WRITE_NC(Z2_DIR_PIN, old_z_dir_pin);
-#endif
         }
     }
     break;
