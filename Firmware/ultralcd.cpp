@@ -542,14 +542,14 @@ void lcdui_print_status_line(void) {
             break;
         }
     }
-    else if (((IS_SD_PRINTING) &&
-        (custom_message_type == CustomMsg::Status) &&
-        (lcd_status_message_level <= LCD_STATUS_INFO) &&
-        lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT))
+    else if (((IS_SD_PRINTING)
 #ifdef SHOW_FILENAME_AFTER_FINISH
         || (GetPrinterState() == PrinterState::SDPrintingFinished)
 #endif //SHOW_FILENAME_AFTER_FINISH
-        )
+        ) &&
+        (custom_message_type == CustomMsg::Status) &&
+        (lcd_status_message_level <= LCD_STATUS_INFO) &&
+        lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT))
     {
         // If printing from SD, show what we are printing
         const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
