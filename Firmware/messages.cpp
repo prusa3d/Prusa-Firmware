@@ -19,7 +19,7 @@ const char MSG_BED_LEVELING_FAILED_POINT_LOW[] PROGMEM_I1 = ISTR("Bed leveling f
 const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[] PROGMEM_I1 = ISTR("XYZ calibration failed. Please consult the manual."); ////MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 const char MSG_BELT_STATUS[] PROGMEM_I1 = ISTR("Belt status");////MSG_BELT_STATUS c=18
 const char MSG_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_EJECT c=9
-const char MSG_CANCEL[] PROGMEM_I1 = ISTR(">Cancel");////MSG_CANCEL c=9
+const char MSG_CANCEL[] PROGMEM_I1 = ISTR("Cancel");////MSG_CANCEL c=9
 const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////MSG_CALIBRATE_Z_AUTO c=20 r=2
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////MSG_CARD_MENU c=18
 const char MSG_CHECKING_X[] PROGMEM_I1 = ISTR("Checking X axis"); ////MSG_CHECKING_X c=20
