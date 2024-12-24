@@ -32,11 +32,11 @@ msgstr " 0.4 lub nowszy"
 msgid "%s level expected"
 msgstr "Oczekiwano wersji %s"
 
-#. MSG_CANCEL c=10
+#. MSG_CANCEL c=9
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid ">Cancel"
-msgstr ">Anuluj"
+msgid "Cancel"
+msgstr "Anuluj"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -740,7 +740,7 @@ msgstr "Użyty filament"
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete. Continue anyway?"
+msgid "File incomplete."
 msgstr "Plik niekompletny. Kontynuowac?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -795,45 +795,35 @@ msgstr "Przedni/lewy wentyl."
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level. Continue?"
-msgstr "G-code pocięty dla innej wersji. Kontynuować?"
+msgid "G-code sliced for a different level."
+msgstr "G-code pocięty dla innej wersji."
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
-msgstr ""
-"G-code pocięty na innym poziomie. Potnij model ponownie. Druk anulowany."
+msgid "G-code sliced for a different level. Please re-slice the model again."
+msgstr "G-code pocięty na innym poziomie. Potnij model ponownie."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-code pocięty dla innej drukarki. Kontynuować?"
+msgid "G-code sliced for a different printer type."
+msgstr "G-code pocięty dla innej drukarki."
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again."
-" Print cancelled."
-msgstr ""
-"G-code pocięty dla drukarki innego typu. Potnij model ponownie. Druk "
-"anulowany."
+msgid "G-code sliced for a different printer type. Please re-slice the model again."
+msgstr "G-code pocięty dla drukarki innego typu. Potnij model ponownie."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code pocięty dla nowszego firmware. Kontynuować?"
+msgid "G-code sliced for a newer firmware."
+msgstr "G-code pocięty dla nowszego firmware."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"G-code pocięty dla nowszego firmware. Zaktualizuj firmware. Druk anulowany."
+msgid "G-code sliced for a newer firmware. Please update the firmware."
+msgstr "G-code pocięty dla nowszego firmware. Zaktualizuj firmware."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1679,17 +1669,13 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "Średnica dyszy różni się od tej w G-code. Kontynuować?"
+msgid "Nozzle diameter differs from the G-code."
+msgstr "Średnica dyszy różni się od tej w G-code."
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in settings."
-" Print cancelled."
-msgstr ""
-"Średnica dyszy różni się od tej w G-code. Sprawdź ustawienia. Druk "
-"anulowany."
+msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
+msgstr "Średnica dyszy różni się od tej w G-code. Sprawdź ustawienia."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1791,10 +1777,9 @@ msgstr "Prawo [µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
+"beginning."
 msgstr ""
-"Włączenie Asystenta usunie obecne dane kalibracyjne i zacznie od początku. "
-"Kontynuować?"
+"Włączenie Asystenta usunie obecne dane kalibracyjne i zacznie od początku."
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2600,15 +2585,10 @@ msgstr "Dysza jest gorąca! Poczekaj na schłodzenie."
 msgid "Nozzle changed?"
 msgstr "Dysza została zmieniona?"
 
-#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+#. MSG_MISSING_FILAMENT c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded. Continue?"
-msgstr "Nie ma załadowanego filamentu. Kontynuować?"
-
-#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
-msgid "There is no filament loaded. Print cancelled."
-msgstr "Nie ma załadowanego filamentu. Druk anulowany."
+msgid "There is no filament loaded."
+msgstr "Nie ma załadowanego filamentu."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752

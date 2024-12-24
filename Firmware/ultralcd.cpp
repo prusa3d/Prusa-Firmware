@@ -1977,7 +1977,8 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             lcd_draw_update = 1;
 
             lcd_clear();
-            lcd_puts_at_P(0, 3, _T(MSG_CANCEL));
+            lcd_puts_at_P(0,3, PSTR(">"));
+            lcd_puts_at_P(1, 3, _T(MSG_CANCEL));
 
             lcd_set_cursor(0, 1);
             switch (eFilamentAction)
@@ -3053,6 +3054,17 @@ uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool all
 {
     return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
+//! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
+//! @param allow_timeouting if true, allows time outing of the screen
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
+//! @retval 0 cont choice selected by user
+//! @retval 1 cancel choice selected by user
+//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
+uint8_t lcd_show_multiscreen_message_cont_cancel_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection) //currently just max. n*4 + 3 lines supported (set in language header files)
+{
+    return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_CONTINUE_SHORT), _T(MSG_CANCEL), nullptr, 10);
+}
 //! @brief Show a two-choice prompt on the last line of the LCD
 //! @param selected Show first choice as selected if true, the second otherwise
 //! @param first_choice text caption of first possible choice
@@ -3628,7 +3640,7 @@ void lcd_v2_calibration() {
 	if (MMU2::mmu2.Enabled()) {
 		const uint8_t filament = choose_menu_P(
 			_T(MSG_SELECT_FILAMENT),
-			MSG_FILAMENT,(_T(MSG_CANCEL)+1)); //Hack to reuse MSG but strip 1st char off
+			MSG_FILAMENT,_T(MSG_CANCEL));
 		if (filament < MMU_FILAMENT_COUNT) {
 			lay1cal_filament = filament;
 		} else {
@@ -3671,7 +3683,7 @@ void lcd_wizard() {
 	bool result = true;
 	if (calibration_status_get(CALIBRATION_WIZARD_STEPS)) {
 		// calibration already performed: ask before clearing the previous status
-		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_RERUN), false);
+		result = !lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_WIZARD_RERUN), false);
 	}
 	if (result) {
 		calibration_status_clear(CALIBRATION_WIZARD_STEPS);
@@ -7124,7 +7136,7 @@ static void menu_action_sdfile(const char* filename)
     }
 
   if (!check_file(selected_filename)) {
-      result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_FILE_INCOMPLETE), false);
+      result = !lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_FILE_INCOMPLETE), false);
       lcd_update_enable(true);
   }
   if (result) {

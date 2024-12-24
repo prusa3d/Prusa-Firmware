@@ -32,11 +32,11 @@ msgstr " 0.4 v. ujabb"
 msgid "%s level expected"
 msgstr "Vart szint: %s"
 
-#. MSG_CANCEL c=10
+#. MSG_CANCEL c=9
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid ">Cancel"
-msgstr ">Megsem"
+msgid "Cancel"
+msgstr "Megsem"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -738,7 +738,7 @@ msgstr "Felhasznalt filam."
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete. Continue anyway?"
+msgid "File incomplete."
 msgstr "A fajl vege hianyzik. Folytatod igy is?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -793,47 +793,35 @@ msgstr "Elso/bal ventillator"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level. Continue?"
-msgstr "A G-kod mas szintre lett elokesztve. Folytassam?"
+msgid "G-code sliced for a different level."
+msgstr "A G-kod mas szintre lett elokesztve."
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
-msgstr ""
-"A G-kod mas szintre lett elokesztve. Szeleteld ujra a modellt. Nyomtatas "
-"megallitva."
+msgid "G-code sliced for a different level. Please re-slice the model again."
+msgstr "A G-kod mas szintre lett elokesztve. Szeleteld ujra a modellt."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type. Continue?"
-msgstr "A G-kod mas nyomtato tipusra lett elokesztve.Folytassam?"
+msgid "G-code sliced for a different printer type."
+msgstr "A G-kod mas nyomtato tipusra lett elokesztve."
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again."
-" Print cancelled."
-msgstr ""
-"A G-kod mas nyomtato tipusra lett elokesztve. Szeleteld ujra a modellt. "
-"Nyomtatas megallitva."
+msgid "G-code sliced for a different printer type. Please re-slice the model again."
+msgstr "A G-kod mas nyomtato tipusra lett elokesztve. Szeleteld ujra a modellt."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "A G-kod ujabb firmverre lett elokesztve.Folytassam?"
+msgid "G-code sliced for a newer firmware."
+msgstr "A G-kod ujabb firmverre lett elokesztve."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"A G-kod ujabb firmverre lett elokesztve. Frissitsd a nyomtato firmveret. "
-"Nyomtatas megallitva."
+msgid "G-code sliced for a newer firmware. Please update the firmware."
+msgstr "A G-kod ujabb firmverre lett elokesztve. Frissitsd a nyomtato firmveret."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1683,17 +1671,16 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "A fuvoka atmeroje elter a G-kodtol. Folytasasm?"
+msgid "Nozzle diameter differs from the G-code."
+msgstr "A fuvoka atmeroje elter a G-kodtol."
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
 msgid ""
 "Nozzle diameter differs from the G-code. Please check the value in settings."
-" Print cancelled."
 msgstr ""
 "A nyomtato fuvoka atmeroje elter a G-kodtol. Ellenorizd az erteket a "
-"beallitasokban. Nyomtatas megallitva."
+"beallitasokban."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1793,10 +1780,10 @@ msgstr "Jobb old.[µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
+"beginning."
 msgstr ""
 "A Varazslo futtatasa nullazza a jelenlegi kalibracios ertekeket es elolrol "
-"fog mindent kezdeni. Folytatod?"
+"fog mindent kezdeni."
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2609,15 +2596,10 @@ msgstr "A fúvóka forró! Várja meg a lehűlést."
 msgid "Nozzle changed?"
 msgstr "Fúvóka cserélve?"
 
-#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+#. MSG_MISSING_FILAMENT c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded. Continue?"
-msgstr "Nincs befűzve filament. Folytassam?"
-
-#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
-msgid "There is no filament loaded. Print cancelled."
-msgstr "Nincs befűzve filament. Nyomtatás megállítva."
+msgid "There is no filament loaded."
+msgstr "Nincs befűzve filament."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752

@@ -32,11 +32,11 @@ msgstr " 0.4 / mai nou"
 msgid "%s level expected"
 msgstr "nivel %s așteptat"
 
-#. MSG_CANCEL c=10
+#. MSG_CANCEL c=9
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid ">Cancel"
-msgstr ">Anulează"
+msgid "Cancel"
+msgstr "Anulează"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -740,7 +740,7 @@ msgstr "Filament folosit"
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete. Continue anyway?"
+msgid "File incomplete."
 msgstr "Fișier incomplet. Continuă oricum?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -795,47 +795,36 @@ msgstr "Ventilatoarele sunt"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level. Continue?"
-msgstr "Versiune de G-code e incorectă. Continuați?"
+msgid "G-code sliced for a different level."
+msgstr "Versiune de G-code e incorectă."
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
-msgstr ""
-"Versiune de G-code e incorectă. Vă rugăm pregătiți modelul din nou. Print "
-"anulat."
+msgid "G-code sliced for a different level. Please re-slice the model again."
+msgstr "Versiune de G-code e incorectă. Vă rugăm pregătiți modelul din nou."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-code pregătit pentru un alt tip de printer. Continuați?"
+msgid "G-code sliced for a different printer type."
+msgstr "G-code pregătit pentru un alt tip de printer."
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again."
-" Print cancelled."
-msgstr ""
-"G-code pregătit pentru un alt tip de printer. Vă rugăm să pregătiți modelul "
-"din nou. Print anulat."
+msgid "G-code sliced for a different printer type. Please re-slice the model again."
+msgstr "G-code pregătit pentru un alt tip de printer. Vă rugăm să pregătiți modelul "
+"din nou."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code pregătit pentru firmware mai nou. Continuați?"
+msgid "G-code sliced for a newer firmware."
+msgstr "G-code pregătit pentru firmware mai nou."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"G-code pregătit pentru firmware mai nou. Vă rugăm actualizați firmware-ul. "
-"Print anulat."
+msgid "G-code sliced for a newer firmware. Please update the firmware."
+msgstr "G-code pregătit pentru firmware mai nou. Vă rugăm actualizați firmware-ul."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1681,17 +1670,14 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "Diametrul vârfului diferă de cel din G-code. Continuați?"
+msgid "Nozzle diameter differs from the G-code."
+msgstr "Diametrul vârfului diferă de cel din G-code."
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in settings."
-" Print cancelled."
-msgstr ""
-"Diametrul vârfului diferă de cel din G-code. Vă rugăm verificați valoarea în"
-" setări. Print anulat."
+msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
+msgstr "Diametrul vârfului diferă de cel din G-code. Vă rugăm verificați valoarea în"
+" setări."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1793,10 +1779,10 @@ msgstr "Dreapta [µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
+"beginning."
 msgstr ""
 "Rularea Wizard-ului va șterge rezultatele curente ale calibrării și va porni"
-" de la început. Continuați?"
+" de la început."
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2609,15 +2595,10 @@ msgstr "Duza este fierbinte! Așteptați să se răcească."
 msgid "Nozzle changed?"
 msgstr "S-a schimbat duza?"
 
-#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+#. MSG_MISSING_FILAMENT c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded. Continue?"
-msgstr "Filamentul nu este detectat. Continuați?"
-
-#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
-msgid "There is no filament loaded. Print cancelled."
-msgstr "Filamentul nu este detectat. Print anulat."
+msgid "There is no filament loaded."
+msgstr "Filamentul nu este detectat."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752

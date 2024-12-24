@@ -32,11 +32,11 @@ msgstr " 0.4 ili noviji"
 msgid "%s level expected"
 msgstr "%s level ocekivan"
 
-#. MSG_CANCEL c=10
+#. MSG_CANCEL c=9
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid ">Cancel"
-msgstr ">Otkazati"
+msgid "Cancel"
+msgstr "Otkazati"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -735,7 +735,7 @@ msgstr "Iskoristeni fil."
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete. Continue anyway?"
+msgid "File incomplete."
 msgstr "Datoteka je nepotpuna. Svejedno nastaviti?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -790,47 +790,35 @@ msgstr "Prednji/lijevi vent"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level. Continue?"
-msgstr "G-kod izrezan za drugu razinu. Nastavite?"
+msgid "G-code sliced for a different level."
+msgstr "G-kod izrezan za drugu razinu."
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
-msgstr ""
-"G-kod izrezan za drugu razinu. Molimo ponovo izrezite model. Print je "
-"otkazan."
+msgid "G-code sliced for a different level. Please re-slice the model again."
+msgstr "G-kod izrezan za drugu razinu. Molimo ponovo izrezite model."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-kod izrezan za drugu vrstu printera. Nastavite?"
+msgid "G-code sliced for a different printer type."
+msgstr "G-kod izrezan za drugu vrstu printera."
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again."
-" Print cancelled."
-msgstr ""
-"G-kod izrezan za drugu vrstu printera. Molimo ponovo izrezite model. Print "
-"je otkazan."
+msgid "G-code sliced for a different printer type. Please re-slice the model again."
+msgstr "G-kod izrezan za drugu vrstu printera. Molimo ponovo izrezite model."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-kod izrezan za noviji firmware. Nastavite?"
+msgid "G-code sliced for a newer firmware."
+msgstr "G-kod izrezan za noviji firmware."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"G-kod izrezan za noviji firmware. Molimo azurirajte firmware. Prime je "
-"otkazan."
+msgid "G-code sliced for a newer firmware. Please update the firmware."
+msgstr "G-kod izrezan za noviji firmware. Molimo azurirajte firmware."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1677,17 +1665,15 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "Promjer mlaznice razlikuje se od G-koda. Nastavite?"
+msgid "Nozzle diameter differs from the G-code."
+msgstr "Promjer mlaznice razlikuje se od G-koda."
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in settings."
-" Print cancelled."
+msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
 msgstr ""
 "Promjer mlaznice printera razlikuje se od G-koda. Molimo provjerite "
-"vrijednost u postavkama. Print je otkazan."
+"vrijednost u postavkama."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1789,10 +1775,10 @@ msgstr "Desna str.[µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
+"beginning."
 msgstr ""
 "Pokrenuti carobnjak ce izbrisati trenutne rezultate kalibracije i poceti "
-"ispocetka. Nastavite?"
+"ispocetka."
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2602,15 +2588,10 @@ msgstr "Mlaznica je vruća! Pričekajte hlađenje."
 msgid "Nozzle changed?"
 msgstr "Mlaznica se promijenila?"
 
-#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+#. MSG_MISSING_FILAMENT c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded. Continue?"
-msgstr "Nema umetnute niti. Nastavite?"
-
-#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
-msgid "There is no filament loaded. Print cancelled."
-msgstr "Nema umetnute niti. Print je otkazan."
+msgid "There is no filament loaded."
+msgstr "Nema umetnute niti."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752

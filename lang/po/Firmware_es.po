@@ -32,11 +32,11 @@ msgstr " 0.4 o más nueva"
 msgid "%s level expected"
 msgstr "%s nivel esperado"
 
-#. MSG_CANCEL c=10
+#. MSG_CANCEL c=9
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid ">Cancel"
-msgstr ">Cancelar"
+msgid "Cancel"
+msgstr "Cancelar"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -738,7 +738,7 @@ msgstr "Filamento usado"
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete. Continue anyway?"
+msgid "File incomplete."
 msgstr "¿Archivo incompleto. Continuar de todos modos?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -793,47 +793,39 @@ msgstr "Vents. front/izqui."
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level. Continue?"
-msgstr "Código G laminado para un nivel dif. ¿Continuar?"
+msgid "G-code sliced for a different level."
+msgstr "Código G laminado para un nivel dif."
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
+msgid "G-code sliced for a different level. Please re-slice the model again."
 msgstr ""
 "Código G laminado para un nivel diferente. Vuelve a laminar el modelo de "
-"nuevo. Impresión cancelada."
+"nuevo."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type. Continue?"
+msgid "G-code sliced for a different printer type."
 msgstr "Código G laminado para un tipo de impresora dif.Cont.?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again."
-" Print cancelled."
+msgid "G-code sliced for a different printer type. Please re-slice the model again."
 msgstr ""
 "Código G laminado para una impresora diferente. Vuelve a laminar el modelo "
-"de nuevo. Impresión cancelada."
+"de nuevo."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "Código G laminado para nuevo firmware. ¿Continuar?"
+msgid "G-code sliced for a newer firmware."
+msgstr "Código G laminado para nuevo firmware."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"Código G laminado para nuevo firmware. Actualiza el firmware. Impresión "
-"cancelada."
+msgid "G-code sliced for a newer firmware. Please update the firmware."
+msgstr "Código G laminado para nuevo firmware. Actualiza el firmware."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1681,17 +1673,15 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "Diámetro boquilla impresora difiere de cod.G. ¿Continuar?"
+msgid "Nozzle diameter differs from the G-code."
+msgstr "Diámetro boquilla impresora difiere de cod.G."
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in settings."
-" Print cancelled."
+msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
 msgstr ""
 "Diámetro boquilla Impresora difiere de cod.G. Comprueba los valores en "
-"ajustes. Impresión cancelada."
+"ajustes."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1793,10 +1783,10 @@ msgstr "Derecha [µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
+"beginning."
 msgstr ""
 "Ejecutar el Asistente borrara los valores de calibración actuales y "
-"comenzará de nuevo. ¿Continuar?"
+"comenzará de nuevo."
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2608,15 +2598,10 @@ msgstr "La boquilla está caliente! Espere a que se enfríe."
 msgid "Nozzle changed?"
 msgstr "Cambió la boquilla?"
 
-#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+#. MSG_MISSING_FILAMENT c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded. Continue?"
-msgstr "No hay ningún filamento cargado. ¿Continuar?"
-
-#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
-msgid "There is no filament loaded. Print cancelled."
-msgstr "No hay ningún filamento cargado. Impresión cancelada."
+msgid "There is no filament loaded."
+msgstr "No hay ningún filamento cargado."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752

@@ -32,11 +32,11 @@ msgstr " 0.4 el nyare"
 msgid "%s level expected"
 msgstr "%s nivå förväntad"
 
-#. MSG_CANCEL c=10
+#. MSG_CANCEL c=9
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid ">Cancel"
-msgstr ">Avbryt"
+msgid "Cancel"
+msgstr "Avbryt"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -738,7 +738,7 @@ msgstr "Använt filament"
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete. Continue anyway?"
+msgid "File incomplete."
 msgstr "Filen är ofullständig. Fortsätta ändå?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -793,47 +793,36 @@ msgstr "Front/vänster fläkt"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level. Continue?"
-msgstr "G-code genererad för en annan nivå. Fortsätta?"
+msgid "G-code sliced for a different level."
+msgstr "G-code genererad för en annan nivå."
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
-msgstr ""
-"G-code genererad för en annan nivå. Vänligen re-generera modellen igen. "
-"Utskriften avbröts."
+msgid "G-code sliced for a different level. Please re-slice the model again."
+msgstr "G-code genererad för en annan nivå. Vänligen re-generera modellen igen."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-code genererad för en annan skrivartyp. Fortsätta?"
+msgid "G-code sliced for a different printer type."
+msgstr "G-code genererad för en annan skrivartyp."
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again."
-" Print cancelled."
-msgstr ""
-"G-code genererad för en annan skrivartyp. Vänligen re-generera modellen "
-"igen. Utskriften avbröts."
+msgid "G-code sliced for a different printer type. Please re-slice the model again."
+msgstr "G-code genererad för en annan skrivartyp. Vänligen re-generera modellen "
+"igen."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code genererad för en nyare firmware. Fortsätta?"
+msgid "G-code sliced for a newer firmware."
+msgstr "G-code genererad för en nyare firmware."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"G-code genererad för en nyare firmware. Vänligen uppdatera firmware. "
-"Utskriften avbröts."
+msgid "G-code sliced for a newer firmware. Please update the firmware."
+msgstr "G-code genererad för en nyare firmware. Vänligen uppdatera firmware."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1681,17 +1670,14 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code. Continue?"
-msgstr "Munstycksdiametern skiljer sig från G-codeen. Fortsätta?"
+msgid "Nozzle diameter differs from the G-code."
+msgstr "Munstycksdiametern skiljer sig från G-codeen."
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in settings."
-" Print cancelled."
-msgstr ""
-"Skrivarmunstyckets diameter skiljer sig från G-codeen. Kontrollera värdet i "
-"inställningarna. Utskriften avbröts."
+msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
+msgstr "Skrivarmunstyckets diameter skiljer sig från G-codeen. Kontrollera värdet i "
+"inställningarna."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1793,10 +1779,10 @@ msgstr "Höger sida[µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
+"beginning."
 msgstr ""
 "Att utföra guiden kommer att radera aktuella kalibreringsinställningar och "
-"börja om från början. Fortsätta?"
+"börja om från början."
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2597,15 +2583,10 @@ msgstr "Munstycket är varmt! Vänta på nedkylning."
 msgid "Nozzle changed?"
 msgstr "Har munstycket ändrats?"
 
-#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+#. MSG_MISSING_FILAMENT c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded. Continue?"
-msgstr "Det finns ingen filament laddad. Fortsätta?"
-
-#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
-msgid "There is no filament loaded. Print cancelled."
-msgstr "Det finns ingen filament laddad. Utskriften avbröts."
+msgid "There is no filament loaded."
+msgstr "Det finns ingen filament laddad."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752
