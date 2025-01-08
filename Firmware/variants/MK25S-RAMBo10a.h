@@ -5,7 +5,7 @@
 #include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK25S
@@ -24,7 +24,6 @@
 
 #define HEATBED_V2
 #define STEEL_SHEET
-//#define NEW_FIRST_LAYER_CAL //from front to back
 #define TACH0PULLUP
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
@@ -33,10 +32,9 @@
 //#define E3D_PT100_BED_WITH_AMP
 //#define E3D_PT100_BED_NO_AMP
 
-
 /*------------------------------------
  AXIS SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133}
@@ -155,24 +153,23 @@
 //#define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
 //#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 //#define CMD_DIAGNOSTICS //Show cmd queue length on printer display
-#endif /* DEBUG_BUILD */
-
+#endif //DEBUG_BUILD
 
 /*------------------------------------
  EXTRUDER SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // Mintemps
 #define HEATER_0_MINTEMP 30
 #define HEATER_MINTEMP_DELAY 15000                // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if HEATER_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see HEATER_MINTEMP_DELAY definition)"
-#endif
+#endif //HEATER_MINTEMP_DELAY>USHRT_MAX
 #define BED_MINTEMP 30
 #define BED_MINTEMP_DELAY 50000                   // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if BED_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
-#endif
+#endif //BED_MINTEMP_DELAY>USHRT_MAX
 #define SUPERPINDA_SUPPORT
 #define PINDA_MINTEMP 30 //The miniRAMBo thermistor readings below 30°C aren't very accurate
 #define PINDA_TEMP_COMP //Used to enable SuperPINDA toggle menu/function
@@ -180,43 +177,39 @@
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define HEATER_0_MAXTEMP 410
-#else
+#else //NOT E3D_PT100_EXTRUDER_WITH_AMP || E3D_PT100_EXTRUDER_NO_AMP
 #define HEATER_0_MAXTEMP 305
-#endif
+#endif //E3D_PT100_EXTRUDER_WITH_AMP || E3D_PT100_EXTRUDER_NO_AMP
 #define BED_MAXTEMP 125
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
 // Define PID constants for extruder with PT100
-#define  DEFAULT_Kp 21.70
-#define  DEFAULT_Ki 1.60
-#define  DEFAULT_Kd 73.76
-#else
+#define DEFAULT_Kp 21.70
+#define DEFAULT_Ki 1.60
+#define DEFAULT_Kd 73.76
+#else //NOT E3D_PT100_EXTRUDER_WITH_AMP || E3D_PT100_EXTRUDER_NO_AMP
 // Define PID constants for extruder
-//#define  DEFAULT_Kp 40.925
-//#define  DEFAULT_Ki 4.875
-//#define  DEFAULT_Kd 86.085
-#define  DEFAULT_Kp 16.13
-#define  DEFAULT_Ki 1.1625
-#define  DEFAULT_Kd 56.23
-#endif
+#define DEFAULT_Kp 16.13
+#define DEFAULT_Ki 1.1625
+#define DEFAULT_Kd 56.23
+#endif //E3D_PT100_EXTRUDER_WITH_AMP || E3D_PT100_EXTRUDER_NO_AMP
 
 // Extrude mintemp
 #define EXTRUDE_MINTEMP 175
-
-// Quick nozzle change supported
-//#define QUICK_NOZZLE_CHANGE
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
+//#define EXTRUDER_ALTFAN_DETECT
+//#define EXTRUDER_ALTFAN_SPEED_SILENT 128
 
 #define FANCHECK_AUTO_PRINT_FAN_THRS 70 //[RPS] - Used during selftest to identify swapped fans automatically
 #define FANCHECK_AUTO_FAIL_THRS 20 //[RPS] - Used during selftest to identify a faulty fan
 
 /*------------------------------------
  CHANGE FILAMENT SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // Filament change configuration
 #define FILAMENTCHANGEENABLE
@@ -239,20 +232,11 @@
 #define FILAMENTCHANGE_EXFEED 2
 #define FILAMENTCHANGE_ZFEED 15
 
-//Retract and then extrude some filament to prevent oozing.
-//After the loading sequence and after a print is canceled, the filament is retracted to get it out of the heat zone of the nozzle.
-//Then a small extrusion is performed to make sure the filament is close enough for the next print without oozing.
-//#define COMMUNITY_PREVENT_OOZE
-#ifdef COMMUNITY_PREVENT_OOZE
-#define FILAMENTCHANGE_COMMUNITY_ROOZEFEED -10 //E retract distance in mm for ooze prevention
-#define FILAMENTCHANGE_COMMUNITY_EOOZEFEED 4 //E extrude distance in mm for ooze prevention
-#endif //End COMMUNITY_PREVENT_OOZE
-
-#endif
+#endif //FILAMENTCHANGEENABLE
 
 /*------------------------------------
  ADDITIONAL FEATURES SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // temperature runaway
 #define TEMP_RUNAWAY_BED_HYSTERESIS 5
@@ -262,20 +246,8 @@
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 /*------------------------------------
- HOST FEATURES
- *------------------------------------*/
-
-// Uncomment if the host supports '//action:shutdown'. It will add "Shutdown host" to the LCD meun. 
-//#define HOST_SHUTDOWN
-
-// Uncomment if the host doesn't support '//action:ready' & '//action:notready'.
-// This will replace the "Set Ready"/"Set not Ready" LCD menu entry with
-// "Print from host" and send '//action:start' instead.
-//#define REPLACE_SETREADY
-
-/*------------------------------------
  MOTOR CURRENT SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // Motor Current setting for BIG RAMBo
 #define DIGIPOT_MOTOR_CURRENT {135,135,135,135,135} // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
@@ -288,11 +260,11 @@
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
 #define Z_SILENT 0
 #define Z_HIGH_POWER 200
-#endif
+#endif //BOARD_RAMBO_MINI_1_0 || BOARD_RAMBO_MINI_1_3
 
 /*------------------------------------
  BED SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 // Define Mesh Bed Leveling system to enable it
 #define MESH_BED_LEVELING
@@ -316,7 +288,7 @@
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 5     // Z probe to nozzle Y offset: -front +behind
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
-#endif
+#endif //MESH_BED_LEVELING
 
 // Bed Temperature Control
 // Select PID or bang-bang with PIDTEMPBED. If bang-bang, BED_LIMIT_SWITCHING will enable hysteresis
@@ -343,34 +315,32 @@
 #define BED_OFFSET_START 40
 #define BED_OFFSET_CENTER 50
 
-
 #ifdef PIDTEMPBED
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
 #if defined(E3D_PT100_BED_WITH_AMP) || defined(E3D_PT100_BED_NO_AMP)
 // Define PID constants for extruder with PT100
-#define  DEFAULT_bedKp 21.70
-#define  DEFAULT_bedKi 1.60
-#define  DEFAULT_bedKd 73.76
-#else
-#define  DEFAULT_bedKp 126.13
-#define  DEFAULT_bedKi 4.30
-#define  DEFAULT_bedKd 924.76
-#endif
+#define DEFAULT_bedKp 21.70
+#define DEFAULT_bedKi 1.60
+#define DEFAULT_bedKd 73.76
+#else //NOT E3D_PT100_BED_WITH_AMP || E3D_PT100_BED_NO_AMP
+#define DEFAULT_bedKp 126.13
+#define DEFAULT_bedKi 4.30
+#define DEFAULT_bedKd 924.76
+#endif //E3D_PT100_BED_WITH_AMP || E3D_PT100_BED_NO_AMP
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from pidautotune
-//    #define  DEFAULT_bedKp 97.1
-//    #define  DEFAULT_bedKi 1.41
-//    #define  DEFAULT_bedKd 1675.16
+//#define DEFAULT_bedKp 97.1
+//#define DEFAULT_bedKi 1.41
+//#define DEFAULT_bedKd 1675.16
 
 // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
-#endif // PIDTEMPBED
-
+#endif //PIDTEMPBED
 
 /*-----------------------------------
  PREHEAT SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 60
@@ -408,7 +378,7 @@
 
 /*------------------------------------
  THERMISTORS SETTINGS
- *------------------------------------*/
+*------------------------------------*/
 
 //
 //--NORMAL IS 4.7kohm PULLUP!-- 1kohm pullup can be used on hotend sensor, using correct resistor and table
@@ -451,16 +421,16 @@
 #define TEMP_SENSOR_0 247
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define TEMP_SENSOR_0 148
-#else
+#else //NOT E3D_PT100_BED_WITH_AMP || E3D_PT100_BED_NO_AMP
 #define TEMP_SENSOR_0 5
-#endif
+#endif //E3D_PT100_BED_WITH_AMP || E3D_PT100_BED_NO_AMP
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
 #elif defined(E3D_PT100_BED_NO_AMP)
 #define TEMP_SENSOR_BED 148
-#else
+#else //NOT E3D_PT100_BED_WITH_AMP || E3D_PT100_BED_NO_AMP
 #define TEMP_SENSOR_BED 1
-#endif
+#endif //E3D_PT100_BED_WITH_AMP || E3D_PT100_BED_NO_AMP
 #define TEMP_SENSOR_PINDA 1
 
 #define STACK_GUARD_TEST_VALUE 0xA2A2
@@ -491,7 +461,6 @@
 #define DEFAULT_PID_TEMP 210
 
 #define MIN_PRINT_FAN_SPEED 75
-
 
 #define M600_TIMEOUT 600  //seconds
 
@@ -530,12 +499,40 @@
 
 /*------------------------------------
  COMMUNITY FEATURES
- *------------------------------------*/
+*------------------------------------*/
+// Please place all community features here
 
 //Show filename instead of print time after SD card print finished
 //#define SHOW_FILENAME_AFTER_FINISH
 
 //Remove the "AutoLoad filament" LCD menu entry if autoload is enabled.
 //#define REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
+
+// Quick nozzle change supported
+//#define QUICK_NOZZLE_CHANGE
+
+//Retract and then extrude some filament to prevent oozing.
+//After the loading sequence and after a print is canceled, the filament is retracted to get it out of the heat zone of the nozzle.
+//Then a small extrusion is performed to make sure the filament is close enough for the next print without oozing.
+//#define COMMUNITY_PREVENT_OOZE
+#ifdef COMMUNITY_PREVENT_OOZE
+#define FILAMENTCHANGE_COMMUNITY_ROOZEFEED -10 //E retract distance in mm for ooze prevention
+#define FILAMENTCHANGE_COMMUNITY_EOOZEFEED 4 //E extrude distance in mm for ooze prevention
+#endif //COMMUNITY_PREVENT_OOZE
+
+// New first layer cal
+//#define NEW_FIRST_LAYER_CAL //from front to back
+
+/*------------------------------------
+ COMMUNITY FEATURES - HOST FEATURES
+*------------------------------------*/
+
+// Uncomment if the host supports '//action:shutdown'. It will add "Shutdown host" to the LCD menu.
+//#define HOST_SHUTDOWN
+
+// Uncomment if the host doesn't support '//action:ready' & '//action:notready'.
+// This will replace the "Set Ready"/"Set not Ready" LCD menu entry with
+// "Print from host" and send '//action:start' instead.
+//#define REPLACE_SETREADY
 
 #endif //__CONFIGURATION_PRUSA_H
