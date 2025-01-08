@@ -162,8 +162,7 @@ extern const char MSG_NOZZLE_DIFFERS_CONTINUE[];
 extern const char MSG_NOZZLE_DIFFERS_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];
 #ifdef STEEL_SHEET_TYPES
-extern const char MSG_SHEET_TYPE_CONTINUE[];
-extern const char MSG_SHEET_TYPE_CANCELLED[];
+extern const char MSG_CHECK_SHEET_TYPE[];
 #endif //STEEL_SHEET_TYPES
 extern const char MSG_MMU_MODE[];
 extern const char MSG_SD_CARD[];

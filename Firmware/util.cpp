@@ -275,19 +275,17 @@ void fCheckModeInit() {
 
 static void render_M862_warnings(const char* warning, const char* strict, uint8_t check)
 {
+#ifdef STEEL_SHEET_TYPES
+    if (check == 1 || check == 3) { // Warning, stop print if user selects 'No'
+#else
     if (check == 1) { // Warning, stop print if user selects 'No'
+#endif //STEEL_SHEET_TYPES
         if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
             lcd_print_stop();
         }
     } else if (check == 2) { // Strict, always stop print
         lcd_show_fullscreen_message_and_wait_P(strict);
         lcd_print_stop();
-#ifdef STEEL_SHEET_TYPES
-    } else if (check == 3 ) { // Always warn, stop print if user selects 'No' This doesn't time out
-        if (lcd_show_multiscreen_message_yes_no_and_wait_P(warning, false, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
-            lcd_print_stop();
-        }
-#endif //STEEL_SHEET_TYPES
     }
 }
 
@@ -453,8 +451,8 @@ void sheet_type_check(uint16_t nSheetType) {
     SERIAL_PROTOCOLLN((int)oCheckSheets);
 */
     render_M862_warnings(
-        _T(MSG_SHEET_TYPE_CONTINUE)
-        ,_T(MSG_SHEET_TYPE_CANCELLED)
+        _T(MSG_CHECK_SHEET_TYPE)
+        ,_T(MSG_CHECK_SHEET_TYPE) //Identical messages
         ,(uint8_t)oCheckSheets
     );
 }

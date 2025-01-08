@@ -160,8 +160,7 @@ const char MSG_NOZZLE_DIFFERS_CONTINUE[] PROGMEM_I1 = ISTR("Nozzle diameter diff
 const char MSG_NOZZLE_DIFFERS_CANCELLED[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code. Please check the value in settings."); ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////MSG_NOZZLE_DIAMETER c=10
 #ifdef STEEL_SHEET_TYPES
-const char MSG_SHEET_TYPE_CONTINUE[] PROGMEM_I1 = ISTR("Check selected sheet. Continue?"); ////MSG_SHEET_TYPE_CONTINUE c=20 r=3
-const char MSG_SHEET_TYPE_CANCELLED[] PROGMEM_I1 = ISTR("Check selected sheet. Print cancelled."); ////MSG_SHEET_TYPE_CANCELLED c=20 r=4
+const char MSG_CHECK_SHEET_TYPE[] PROGMEM_I1 = ISTR("Check selected steel sheet."); ////MSG_CHECK_SHEET_TYPE c=20 r=3
 #endif //STEEL_SHEET_TYPES
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////MSG_MMU_MODE c=8
 const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////MSG_SD_CARD c=8

@@ -2605,6 +2605,12 @@ msgstr "Filamentul nu este detectat."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Calibrarea Z este recomandată. Calibrează acum?"
 
+#. MSG_CHECK_SHEET_TYPE c=20 r=3
+#: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
+#: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
+msgid "Check selected steel sheet."
+msgstr "Verificați suprafața selectată."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."
 

@@ -2581,6 +2581,12 @@ msgstr "Det er ingen filament lastet."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Z-kalibrering anbefales. Kjøre det nå?"
 
+#. MSG_CHECK_SHEET_TYPE c=20 r=3
+#: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
+#: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
+msgid "Check selected steel sheet."
+msgstr "Sjekk valgt stålplaten."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Ta bort det gamle filamentet og trykk valghjulet for å laste et nytt."
 

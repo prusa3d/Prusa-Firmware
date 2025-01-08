@@ -2604,6 +2604,12 @@ msgstr "Nessun filamento caricato."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Si consiglia la calibrazione Z. Eseguirla ora?"
 
+#. MSG_CHECK_SHEET_TYPE c=20 r=3
+#: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
+#: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
+msgid "Check selected steel sheet."
+msgstr "Controllare la piastra d'acciaio selezionata."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Rimuovi il fil. precedente e premi la manopola per caricare il nuovo."
 

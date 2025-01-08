@@ -5841,7 +5841,7 @@ void process_commands()
       }
 #ifdef STEEL_SHEET_TYPES
       if (eeprom_read_byte((uint8_t*)EEPROM_CHECK_SHEET_TYPE) == (uint8_t)ClCheckMode::_Always) {
-        uint8_t result = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_SHEET_TYPE_CONTINUE), false, LCD_MIDDLE_BUTTON_CHOICE);
+        uint8_t result = lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_CHECK_SHEET_TYPE), false, LCD_MIDDLE_BUTTON_CHOICE);
         if (result == LCD_MIDDLE_BUTTON_CHOICE) {
           print_stop(false, true);
         }
