@@ -23,6 +23,20 @@
 #define MOTHERBOARD BOARD_EINSY_1_0a
 #define STEEL_SHEET
 //#define NEW_FIRST_LAYER_CAL //from front to back
+/* Sheet types
+ bit based
+ - 0 = Smooth
+ - 1 = Textured
+ - 2 = Satin
+ - 3 = NylonPA
+ - 4 = PolyPro
+ - 5 = Custom
+ - 6 = free
+ - 7 = free
+*/
+
+#define STEEL_SHEET_TYPES 6
+
 #define HAS_SECOND_SERIAL_PORT
 
 // PSU
@@ -172,7 +186,7 @@
 //#define DEBUG_PULLUP_CRASH //Test Pullup crash
 //#define DEBUG_PRINTER_STATES
 
-//#define DEBUG_EEPROM_CHANGES //Uses +1188 bytes Flash +6 bytes SRAM
+#define DEBUG_EEPROM_CHANGES //Uses +1188 bytes Flash +6 bytes SRAM
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_XFLASH   //debug external spi flash

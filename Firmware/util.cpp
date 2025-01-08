@@ -247,6 +247,10 @@ ClCheckMode oCheckModel;
 ClCheckMode oCheckVersion;
 ClCheckMode oCheckGcode;
 ClCheckMode oCheckFilament;
+#ifdef STEEL_SHEET_TYPES
+ClCheckSheetType oCheckSheetType;
+ClCheckMode oCheckSheets;
+#endif //STEEL_SHEET_TYPES
 
 void fCheckModeInit() {
     oCheckMode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODE, (uint8_t)ClCheckMode::_Warn);
@@ -263,6 +267,10 @@ void fCheckModeInit() {
     oCheckVersion = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_VERSION, (uint8_t)ClCheckMode::_Warn);
     oCheckGcode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_GCODE, (uint8_t)ClCheckMode::_Warn);
     oCheckFilament = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_FILAMENT, (uint8_t)ClCheckMode::_Warn);
+#ifdef STEEL_SHEET_TYPES
+    oCheckSheets = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_SHEET_TYPE, (uint8_t)ClCheckMode::_Warn);
+    oCheckSheetType = (ClCheckSheetType)eeprom_init_default_byte((uint8_t *)&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type, (uint8_t)ClCheckSheetType::_Smooth);
+#endif //STEEL_SHEET_TYPES
 }
 
 static void render_M862_warnings(const char* warning, const char* strict, uint8_t check)
@@ -274,6 +282,12 @@ static void render_M862_warnings(const char* warning, const char* strict, uint8_
     } else if (check == 2) { // Strict, always stop print
         lcd_show_fullscreen_message_and_wait_P(strict);
         lcd_print_stop();
+#ifdef STEEL_SHEET_TYPES
+    } else if (check == 3 ) { // Always warn, stop print if user selects 'No' This doesn't time out
+        if (lcd_show_multiscreen_message_yes_no_and_wait_P(warning, false, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
+            lcd_print_stop();
+        }
+#endif //STEEL_SHEET_TYPES
     }
 }
 
@@ -420,6 +434,31 @@ void gcode_level_check(uint16_t nGcodeLevel) {
     );
 }
 
+#ifdef STEEL_SHEET_TYPES
+void sheet_type_check(uint16_t nSheetType) {
+    uint16_t actualSheetType;
+    if (oCheckSheets == ClCheckMode::_None)
+        return;
+    actualSheetType = eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type);
+    if (nSheetType == actualSheetType)
+        return;
+/*
+    SERIAL_PROTOCOLPGM("Active sheet number: ");
+    SERIAL_PROTOCOL((int)eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)));
+    SERIAL_PROTOCOLPGM(" Sheet type differs from actual : ");
+    SERIAL_PROTOCOL((int)eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type));
+    SERIAL_PROTOCOLPGM(" expected: ");
+    SERIAL_PROTOCOL((int)nSheetType);
+    SERIAL_PROTOCOLPGM(" oCheckSheets: ");
+    SERIAL_PROTOCOLLN((int)oCheckSheets);
+*/
+    render_M862_warnings(
+        _T(MSG_SHEET_TYPE_CONTINUE)
+        ,_T(MSG_SHEET_TYPE_CANCELLED)
+        ,(uint8_t)oCheckSheets
+    );
+}
+#endif //STEEL_SHEET_TYPES
 
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
     unquoted_string smodel = unquoted_string(pStrPos);

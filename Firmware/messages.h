@@ -161,6 +161,10 @@ extern const char MSG_MISSING_FILAMENT[];
 extern const char MSG_NOZZLE_DIFFERS_CONTINUE[];
 extern const char MSG_NOZZLE_DIFFERS_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];
+#ifdef STEEL_SHEET_TYPES
+extern const char MSG_SHEET_TYPE_CONTINUE[];
+extern const char MSG_SHEET_TYPE_CANCELLED[];
+#endif //STEEL_SHEET_TYPES
 extern const char MSG_MMU_MODE[];
 extern const char MSG_SD_CARD[];
 extern const char MSG_SORT[];
@@ -427,6 +431,15 @@ extern const char MSG_POWERPANIC_DETECTED[];
 extern const char MSG_LCD_STATUS_CHANGED[];
 extern const char MSG_UNKNOWN_CODE[];
 extern const char MSG_FILAMENT_RUNOUT_DETECTED[];
+#ifdef STEEL_SHEET_TYPES
+extern const char MSG_SHEET_TYPE[];
+extern const char MSG_SHEET_TYPE_SMOOTH[];
+extern const char MSG_SHEET_TYPE_TEXTURED[];
+extern const char MSG_SHEET_TYPE_SATIN[];
+extern const char MSG_SHEET_TYPE_NYLON_PA[];
+extern const char MSG_SHEET_TYPE_PP[];
+extern const char MSG_SHEET_TYPE_CUSTOM[];
+#endif //STEEL_SHEET_TYPES
 
 // Common G-gcodes
 extern const char G1_E_F2700[];

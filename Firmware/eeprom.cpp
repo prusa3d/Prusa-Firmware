@@ -4,6 +4,9 @@
 
 #include "eeprom.h"
 #include "Marlin.h"
+#ifdef STEEL_SHEET_TYPES
+#include "messages.h"
+#endif //STEEL_SHEET_TYPES
 
 #include <avr/eeprom.h>
 #include <stdint.h>
@@ -46,6 +49,10 @@ void eeprom_init()
     }
     check_babystep();
 
+#ifdef STEEL_SHEET_TYPES
+    eeprom_default_sheet_type();
+#endif //STEEL_SHEET_TPYES
+
     // initialize custom mendel name in eeprom
     if (eeprom_read_byte((uint8_t*)EEPROM_CUSTOM_MENDEL_NAME) == EEPROM_EMPTY_VALUE) {
         //SERIAL_ECHOLN("Init Custom Mendel Name");
@@ -83,8 +90,8 @@ void eeprom_adjust_bed_reset() {
 //! | 3     | Textur2   |
 //! | 4     | Satin     |
 //! | 5     | NylonPA   |
-//! | 6     | Custom1   |
-//! | 7     | Custom2   |
+//! | 6     | PolyPro   |
+//! | 7     | Custom    |
 //!
 //! @param[in] index
 //! @param[out] sheetName
@@ -94,25 +101,53 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
 
     if (index < 2)
     {
+#ifdef STEEL_SHEET_TYPES
+        strcpy_P(sheetName.c, MSG_SHEET_TYPE_SMOOTH);
+#else
         strcpy_P(sheetName.c, PSTR("Smooth"));
+#endif //STEEL_SHEET_TYPES
     }
     else if (index < 4)
     {
+#ifdef STEEL_SHEET_TYPES
+        strcpy_P(sheetName.c, MSG_SHEET_TYPE_TEXTURED);
+#else
         strcpy_P(sheetName.c, PSTR("Textur"));
+#endif //STEEL_SHEET_TYPES
     }
     else if (index < 5)
     {
+#ifdef STEEL_SHEET_TYPES
+        strcpy_P(sheetName.c, MSG_SHEET_TYPE_SATIN);
+#else
         strcpy_P(sheetName.c, PSTR("Satin  "));
+#endif //STEEL_SHEET_TYPES
     }
     else if (index < 6)
     {
+#ifdef STEEL_SHEET_TYPES
+        strcpy_P(sheetName.c, MSG_SHEET_TYPE_NYLON_PA);
+#else
         strcpy_P(sheetName.c, PSTR("NylonPA"));
+#endif //STEEL_SHEET_TYPES
     }
+#ifdef STEEL_SHEET_TYPES
+    else if (index < 7)
+    {
+        strcpy_P(sheetName.c, MSG_SHEET_TYPE_PP);
+    }
+    else
+    {
+        strcpy_P(sheetName.c, MSG_SHEET_TYPE_CUSTOM);
+    }
+    if (index <4)
+#else
     else
     {
         strcpy_P(sheetName.c, PSTR("Custom"));
     }
     if (index <4 || index >5)
+#endif //STEEL_SHEET_TYPES
     {
         sheetName.c[6] = '0' + ((index % 2)+1);
         sheetName.c[7] = '\0';
@@ -136,6 +171,20 @@ int8_t eeprom_next_initialized_sheet(int8_t sheet)
     }
     return -1;
 }
+
+#ifdef STEEL_SHEET_TYPES
+void eeprom_default_sheet_type()
+{
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[0].type, 1); //Smooth
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[1].type, 1); //Smooth
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[2].type, 2); //Textur
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[3].type, 2); //Textur
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[4].type, 4); //Satin
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[5].type, 8); //NylonPA
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[6].type, 16); //PolyPro
+    eeprom_update_byte_notify((uint8_t*)EEPROM_CHECK_SHEET_TYPE,1);
+}
+#endif //STEEL_SHEET_TYPES
 
 #ifdef DEBUG_EEPROM_CHANGES
 static void eeprom_byte_notify(uint8_t *dst, uint8_t previous_value, uint8_t value, bool write) {

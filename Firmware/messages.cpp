@@ -159,6 +159,10 @@ const char MSG_MISSING_FILAMENT[] PROGMEM_I1 = ISTR("There is no filament loaded
 const char MSG_NOZZLE_DIFFERS_CONTINUE[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code."); ////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 const char MSG_NOZZLE_DIFFERS_CANCELLED[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code. Please check the value in settings."); ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////MSG_NOZZLE_DIAMETER c=10
+#ifdef STEEL_SHEET_TYPES
+const char MSG_SHEET_TYPE_CONTINUE[] PROGMEM_I1 = ISTR("Check selected sheet. Continue?"); ////MSG_SHEET_TYPE_CONTINUE c=20 r=3
+const char MSG_SHEET_TYPE_CANCELLED[] PROGMEM_I1 = ISTR("Check selected sheet. Print cancelled."); ////MSG_SHEET_TYPE_CANCELLED c=20 r=4
+#endif //STEEL_SHEET_TYPES
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////MSG_MMU_MODE c=8
 const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////MSG_SD_CARD c=8
 const char MSG_SORT[] PROGMEM_I1 = ISTR("Sort"); ////MSG_SORT c=7
@@ -425,6 +429,15 @@ const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=
 const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
 const char MSG_UNKNOWN_CODE[] PROGMEM_N1 = "Unknown %c code: %s\n";
 const char MSG_FILAMENT_RUNOUT_DETECTED[] PROGMEM_N1 = "Filament runout detected!"; ////c=20 r=2
+#ifdef STEEL_SHEET_TYPES
+const char MSG_SHEET_TYPE[] PROGMEM_N1 = "Type"; ////c=8
+const char MSG_SHEET_TYPE_SMOOTH[] PROGMEM_N1 = "Smooth"; ////c=6
+const char MSG_SHEET_TYPE_TEXTURED[] PROGMEM_N1 = "Textur"; ////c=6
+const char MSG_SHEET_TYPE_SATIN[] PROGMEM_N1 = "Satin  "; ////c=7
+const char MSG_SHEET_TYPE_NYLON_PA[] PROGMEM_N1 = "NylonPA"; ////c=7
+const char MSG_SHEET_TYPE_PP[] PROGMEM_N1 = "PolyPro"; ////c=7
+const char MSG_SHEET_TYPE_CUSTOM[] PROGMEM_N1 = "Custom "; ////c=7
+#endif //STEEL_SHEET_TYPES
 
 // Common G-gcodes
 const char G1_E_F2700[] PROGMEM_N1 = "G1 E%-.3f F2700";

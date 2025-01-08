@@ -5839,6 +5839,14 @@ void process_commands()
           extended_capabilities_report();
 #endif //EXTENDED_CAPABILITIES_REPORT
       }
+#ifdef STEEL_SHEET_TYPES
+      if (eeprom_read_byte((uint8_t*)EEPROM_CHECK_SHEET_TYPE) == (uint8_t)ClCheckMode::_Always) {
+        uint8_t result = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_SHEET_TYPE_CONTINUE), false, LCD_MIDDLE_BUTTON_CHOICE);
+        if (result == LCD_MIDDLE_BUTTON_CHOICE) {
+          print_stop(false, true);
+        }
+      }
+#endif //STEEL_SHEET_TYPES
       break;
 
     /*!
@@ -7174,22 +7182,27 @@ void process_commands()
     Get and Set Sheet parameters
     #### Usage
 
-         M850 [ S | Z | L | B | P | A ]
+         M850 [ S | Z | L | T | A ]
 
     #### Parameters
      - `S` - Sheet id [0-7]
      - `Z` - Z offset
      - `L` - Label [aA-zZ, 0-9 max 7 chars]
-     - `B` - Bed temp
-     - `P` - PINDA temp
+     - `T` - Type
+      - `0` - Smooth
+      - `1` - Textured
+      - `2` - Satin
+      - `3` - PA Nylon
+      - `4` - PP
      - `A` - Active [0|1]
     */
-    uint8_t iSel = 0;
+  uint8_t iSel = 0;
 	int16_t zraw = 0;
 	float z_val = 0;
 	char strLabel[8];
-	uint8_t iBedC = 0;
-	uint8_t iPindaC = 0;
+#ifdef STEEL_SHEET_TYPES
+	uint8_t iType = 0;
+#endif //STEEL_SHEET_TYPES
 	bool bIsActive=false;
 	strLabel[7] = '\0'; // null terminate.
 	size_t max_sheets = sizeof(EEPROM_Sheets_base->s)/sizeof(EEPROM_Sheets_base->s[0]);
@@ -7238,25 +7251,19 @@ void process_commands()
 		eeprom_read_block(strLabel, EEPROM_Sheets_base->s[iSel].name, sizeof(Sheet::name));
 	}
 
-	if (code_seen('B'))
+#ifdef STEEL_SHEET_TYPES
+	if (code_seen('T'))
 	{
-		iBedC = code_value_uint8();
-		eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].bed_temp, iBedC);
+		iType = code_value_uint8();
+		eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].type, iType);
 	}
 	else
 	{
-		iBedC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].bed_temp);
+		iType = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].type);
 	}
-
-	if (code_seen('P'))
-	{
-		iPindaC = code_value_uint8();
-		eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
-	}
-	else
-	{
-		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
-	}
+  // Reset Sheet type if out of range
+  if (iType > STEEL_SHEET_TYPES -1) eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].type, 0);
+#endif //STEEL_SHEET_TYPES
 
 	if (code_seen('A'))
 	{
@@ -7284,10 +7291,10 @@ void process_commands()
 	SERIAL_PROTOCOL((int)zraw);
 	SERIAL_PROTOCOLPGM(" L");
 	SERIAL_PROTOCOL(strLabel);
-	SERIAL_PROTOCOLPGM(" B");
-	SERIAL_PROTOCOL((int)iBedC);
-	SERIAL_PROTOCOLPGM(" P");
-	SERIAL_PROTOCOL((int)iPindaC);
+#ifdef STEEL_SHEET_TYPES
+	SERIAL_PROTOCOLPGM(" T");
+	SERIAL_PROTOCOL((int)iType);
+#endif //STEEL_SHEET_TYPES
 	SERIAL_PROTOCOLPGM(" A");
 	SERIAL_PROTOCOLLN((int)bIsActive);
 	break;
@@ -7417,6 +7424,7 @@ void process_commands()
       - M862.4 { P<fw_version> | Q }
       - M862.5 { P<gcode_level> | Q }
       - M862.6 Not used but reserved by 32-bit
+      - M862.7 { P<sheet type> | Q }
 
     When run with P<> argument, the check is performed against the input value.
     When run with Q argument, the current value is shown.
@@ -7501,6 +7509,18 @@ void process_commands()
                     break;
                case ClPrintChecking::_Features:  // ~ .6 used by 32-bit
                     break;
+#ifdef STEEL_SHEET_TYPES
+               case ClPrintChecking::_SheetType:      // ~ .7
+                    if(code_seen('P'))
+                         {
+                         uint16_t nSheetType;
+                         nSheetType=(uint16_t)code_value_long();
+                         sheet_type_check(nSheetType);
+                         }
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLN((int)eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type));
+                    break;
+#endif //STEEL_SHEET_TYPES
                default:
                     break;
                }

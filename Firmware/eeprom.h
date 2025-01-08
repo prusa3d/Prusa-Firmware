@@ -31,8 +31,8 @@ typedef struct
 {
     unsigned char name[MAX_SHEET_NAME_LENGTH]; //!< Can be null terminated, doesn't need to be null terminated
     int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
-    uint8_t bed_temp; //!< 0 .. 254 [°C] NOTE: currently only written-to and never used
-    uint8_t pinda_temp; //!< 0 .. 254 [°C] NOTE: currently only written-to and never used
+    uint8_t type; //!< 0 .. 7
+    uint8_t reserved; //! currently only reserved
 } Sheet;
 
 typedef struct
@@ -279,36 +279,36 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D49 3401 | uint16  | EEPROM_SHEETS_BASE                    | ???          | ffh 255               | ???                                               | LCD menu     | D3 Ax0d49 C89
 | 0x0D49 3401 | char    | _1st Sheet block_                     |536d6f6f746831| ffffffffffffff        | 1st sheet - Name: _Smooth1_                       | ^            | D3 Ax0d49 C7
 | 0x0D50 3408 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 1st sheet - Z offset                              | ^            | D3 Ax0d50 C2
-| 0x0D52 3410 | uint8   | ^                                     | 00h 0        | ffh 255               | 1st sheet - bed temp                              | ^            | D3 Ax0d52 C1
-| 0x0D53 3411 | uint8   | ^                                     | 00h 0        | ffh 255               | 1st sheet - PINDA temp                            | ^            | D3 Ax0d53 C1
+| 0x0D52 3410 | uint8   | ^                                     | 00h 0        | ffh 255               | 1st sheet - Type                                  | ^            | D3 Ax0d52 C1
+| 0x0D53 3411 | uint8   | ^                                     | 00h 0        | ffh 255               | 1st sheet - Reserved                              | ^            | D3 Ax0d53 C1
 | 0x0D54 3412 | char    | _2nd Sheet block_                     |536d6f6f746832| ffffffffffffff        | 2nd sheet - Name: _Smooth2_                       | ^            | D3 Ax0d54 C7
 | 0x0D5B 3419 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 2nd sheet - Z offset                              | ^            | D3 Ax0d5b C2
-| 0x0D5D 3421 | uint8   | ^                                     | 00h 0        | ffh 255               | 2nd sheet - bed temp                              | ^            | D3 Ax0d5d C1
-| 0x0D5E 3422 | uint8   | ^                                     | 00h 0        | ffh 255               | 2nd sheet - PINDA temp                            | ^            | D3 Ax0d5e C1
+| 0x0D5D 3421 | uint8   | ^                                     | 00h 0        | ffh 255               | 2nd sheet - Type                                  | ^            | D3 Ax0d5d C1
+| 0x0D5E 3422 | uint8   | ^                                     | 00h 0        | ffh 255               | 2nd sheet - Reserved                              | ^            | D3 Ax0d5e C1
 | 0x0D5F 3423 | char    | _3rd Sheet block_                     |54657874757231| ffffffffffffff        | 3rd sheet - Name: _Textur1_                       | ^            | D3 Ax0d5f C7
 | 0x0D66 3430 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 3rd sheet - Z offset                              | ^            | D3 Ax0d66 C2
-| 0x0D68 3432 | uint8   | ^                                     | 00h 0        | ffh 255               | 3rd sheet - bed temp                              | ^            | D3 Ax0d68 C1
-| 0x0D69 3433 | uint8   | ^                                     | 00h 0        | ffh 255               | 3rd sheet - PINDA temp                            | ^            | D3 Ax0d69 C1
+| 0x0D68 3432 | uint8   | ^                                     | 00h 0        | ffh 255               | 3rd sheet - Type                                  | ^            | D3 Ax0d68 C1
+| 0x0D69 3433 | uint8   | ^                                     | 00h 0        | ffh 255               | 3rd sheet - Reserved                              | ^            | D3 Ax0d69 C1
 | 0x0D6A 3434 | char    | _4th Sheet block_                     |54657874757232| ffffffffffffff        | 4th sheet - Name: _Textur2_                       | ^            | D3 Ax0d6a C7
 | 0x0D71 3441 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 4th sheet - Z offset                              | ^            | D3 Ax0d71 C2
-| 0x0D73 3443 | uint8   | ^                                     | 00h 0        | ffh 255               | 4th sheet - bed temp                              | ^            | D3 Ax0d73 C1
-| 0x0D74 3444 | uint8   | ^                                     | 00h 0        | ffh 255               | 4th sheet - PINDA temp                            | ^            | D3 Ax0d74 C1
-| 0x0D75 3445 | char    | _5th Sheet block_                     |536174696e2020| ffffffffffffff        | 5th sheet - Name: _Satin  _                       | ^            | D3 Ax0d75 C7
+| 0x0D73 3443 | uint8   | ^                                     | 00h 0        | ffh 255               | 4th sheet - Type                                  | ^            | D3 Ax0d73 C1
+| 0x0D74 3444 | uint8   | ^                                     | 00h 0        | ffh 255               | 4th sheet - Reserved                              | ^            | D3 Ax0d74 C1
+| 0x0D75 3445 | char    | _5th Sheet block_                     |536174696e2020| ffffffffffffff        | 5th sheet - Name: _Satin_                         | ^            | D3 Ax0d75 C7
 | 0x0D7C 3452 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 5th sheet - Z offset                              | ^            | D3 Ax0d7c C2
-| 0x0D7E 3454 | uint8   | ^                                     | 00h 0        | ffh 255               | 5th sheet - bed temp                              | ^            | D3 Ax0d7e C1
-| 0x0D7F 3455 | uint8   | ^                                     | 00h 0        | ffh 255               | 5th sheet - PINDA temp                            | ^            | D3 Ax0d7f C1
+| 0x0D7E 3454 | uint8   | ^                                     | 00h 0        | ffh 255               | 5th sheet - Type                                  | ^            | D3 Ax0d7e C1
+| 0x0D7F 3455 | uint8   | ^                                     | 00h 0        | ffh 255               | 5th sheet - Reserved                              | ^            | D3 Ax0d7f C1
 | 0x0D80 3456 | char    | _6th Sheet block_                     |4e796c6f6e5041| ffffffffffffff        | 6th sheet - Name: _NylonPA_                       | ^            | D3 Ax0d80 C7
 | 0x0D87 3463 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 6th sheet - Z offset                              | ^            | D3 Ax0d87 C2
-| 0x0D89 3465 | uint8   | ^                                     | 00h 0        | ffh 255               | 6th sheet - bed temp                              | ^            | D3 Ax0d89 C1
-| 0x0D8A 3466 | uint8   | ^                                     | 00h 0        | ffh 255               | 6th sheet - PINDA temp                            | ^            | D3 Ax0d8a C1
-| 0x0D8B 3467 | char    | _7th Sheet block_                     |437573746f6d31| ffffffffffffff        | 7th sheet - Name: _Custom1_                       | ^            | D3 Ax0d8b C7
+| 0x0D89 3465 | uint8   | ^                                     | 00h 0        | ffh 255               | 6th sheet - Type                                  | ^            | D3 Ax0d89 C1
+| 0x0D8A 3466 | uint8   | ^                                     | 00h 0        | ffh 255               | 6th sheet - Reserved                              | ^            | D3 Ax0d8a C1
+| 0x0D8B 3467 | char    | _7th Sheet block_                     |437573746f6d31| ffffffffffffff        | 7th sheet - Name: _PP_                       | ^            | D3 Ax0d8b C7
 | 0x0D92 3474 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 7th sheet - Z offset                              | ^            | D3 Ax0d92 C2
-| 0x0D94 3476 | uint8   | ^                                     | 00h 0        | ffh 255               | 7th sheet - bed temp                              | ^            | D3 Ax0d94 C1
-| 0x0D95 3477 | uint8   | ^                                     | 00h 0        | ffh 255               | 7th sheet - PINDA temp                            | ^            | D3 Ax0d95 C1
-| 0x0D96 3478 | char    | _8th Sheet block_                     |437573746f6d32| ffffffffffffff        | 8th sheet - Name: _Custom2_                       | ^            | D3 Ax0d96 C7
+| 0x0D94 3476 | uint8   | ^                                     | 00h 0        | ffh 255               | 7th sheet - Type                                  | ^            | D3 Ax0d94 C1
+| 0x0D95 3477 | uint8   | ^                                     | 00h 0        | ffh 255               | 7th sheet - Reserved                              | ^            | D3 Ax0d95 C1
+| 0x0D96 3478 | char    | _8th Sheet block_                     |437573746f6d32| ffffffffffffff        | 8th sheet - Name: _Custom_                        | ^            | D3 Ax0d96 C7
 | 0x0D9D 3485 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 8th sheet - Z offset                              | ^            | D3 Ax0d9d C2
-| 0x0D9F 3487 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - bed temp                              | ^            | D3 Ax0d9f C1
-| 0x0DA0 3488 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - PINDA temp                            | ^            | D3 Ax0da0 C1
+| 0x0D9F 3487 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - Type                                  | ^            | D3 Ax0d9f C1
+| 0x0DA0 3488 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - Reserved                              | ^            | D3 Ax0da0 C1
 | 0x0DA1 3489 | uint8   | active_sheet                          | 00h 0        | ffh 255               | Active sheet index                                | ^            | D3 Ax0da1 C1
 | 0x0D48 3400 | uint8   | EEPROM_FSENSOR_PCB                    | ffh 255      | ffh 255               | Filament Sensor type IR unknown                   | LCD Support  | D3 Ax0d48 C1
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Filament Sensor type IR 0.3 or older              | ^            | ^
@@ -414,9 +414,13 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | ???          | ^                     | Z-axis                                            | ^            | D3 Ax0d29 C4
 | ^           | ^       | ^                                     | ???          | ^                     | Y-axis                                            | ^            | D3 Ax0d25 C4
 | ^           | ^       | ^                                     | ???          | ^                     | X-axis                                            | ^            | D3 Ax0c21 C4
-| 0x0C11 3089 | uint8   | EEPROM_CHECK_FILAMENT                 | 01h 1        | ffh 255               | Check mode for filament is: __warn__              | LCD menu     | D3 Ax0c11 C1
+| 0x0C20 3104 | uint8   | EEPROM_CHECK_FILAMENT                 | 01h 1        | ffh 255               | Check mode for filament is: __warn__              | LCD menu     | D3 Ax0c20 C1
 | ^           | ^       | ^                                     | 02h 2        | ^                     | Check mode for filament is: __strict__            | ^            | ^
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Check mode for filament is: __none__              | ^            | ^
+| 0x0C1f 3103 | uint8   | EEPROM_CHECK_SHEET_TYPE               | 01h 1        | ffh 255               | Check mode for sheet type is: __warn__            | LCD menu     | D3 Ax0c1f C1
+| ^           | ^       | ^                                     | 00h 0        | ^                     | Check mode for sheet type is: __none__            | ^            | ^
+| ^           | ^       | ^                                     | 02h 2        | ^                     | Check mode for sheet type is: __strict__          | ^            | ^
+| ^           | ^       | ^                                     | 03h 3        | ^                     | Check mode for sheet type is: __always__          | ^            | ^
 
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
@@ -668,8 +672,9 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_UVLO_MIN_SEGMENT_TIME_US (EEPROM_UVLO_MIN_TRAVEL_FEEDRATE-4) //uint32_t
 #define EEPROM_UVLO_MAX_JERK (EEPROM_UVLO_MIN_SEGMENT_TIME_US-4*4) // 4 x float
 #define EEPROM_CHECK_FILAMENT (EEPROM_UVLO_MAX_JERK-1) // uint8_t
+#define EEPROM_CHECK_SHEET_TYPE (EEPROM_CHECK_FILAMENT-1) // uint8_t
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_CHECK_FILAMENT
+#define EEPROM_LAST_ITEM EEPROM_CHECK_SHEET_TYPE
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
@@ -708,6 +713,9 @@ struct SheetName
     char c[sizeof(Sheet::name) + 1];
 };
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
+#ifdef STEEL_SHEET_TYPES
+void eeprom_default_sheet_type();
+#endif //STEEL_SHEET_TYPES
 int8_t eeprom_next_initialized_sheet(int8_t sheet);
 void eeprom_switch_to_next_sheet();
 bool eeprom_is_sheet_initialized(uint8_t sheet_num);
