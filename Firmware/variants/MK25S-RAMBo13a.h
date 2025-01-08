@@ -189,6 +189,7 @@
 #define DEFAULT_Kd 73.76
 #else //NOT E3D_PT100_EXTRUDER_WITH_AMP || E3D_PT100_EXTRUDER_NO_AMP
 // Define PID constants for extruder
+#define MAX_OVERSHOOT_PID_AUTOTUNE 20
 #define DEFAULT_Kp 16.13
 #define DEFAULT_Ki 1.1625
 #define DEFAULT_Kd 56.23
