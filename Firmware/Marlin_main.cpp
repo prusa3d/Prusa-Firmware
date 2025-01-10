@@ -5840,8 +5840,8 @@ void process_commands()
 #endif //EXTENDED_CAPABILITIES_REPORT
       }
 #ifdef STEEL_SHEET_TYPES
-      if (eeprom_read_byte((uint8_t*)EEPROM_CHECK_SHEET_TYPE) == (uint8_t)ClCheckMode::_Always) {
-        uint8_t result = lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_CHECK_SHEET_TYPE), false, LCD_MIDDLE_BUTTON_CHOICE);
+      if ((eeprom_read_byte((uint8_t*)EEPROM_CHECK_SHEET_TYPE) == (uint8_t)ClCheckMode::_Always) && printer_active()) {
+        uint8_t result = lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_CHECK_SHEET_TYPE), true, LCD_MIDDLE_BUTTON_CHOICE);
         if (result == LCD_MIDDLE_BUTTON_CHOICE) {
           print_stop(false, true);
         }
@@ -7424,7 +7424,7 @@ void process_commands()
       - M862.4 { P<fw_version> | Q }
       - M862.5 { P<gcode_level> | Q }
       - M862.6 Not used but reserved by 32-bit
-      - M862.7 { P<sheet type> | Q }
+      - M862.7 { P<sheet type> | W<warn sheet type>| Q }
 
     When run with P<> argument, the check is performed against the input value.
     When run with Q argument, the current value is shown.
@@ -7500,8 +7500,8 @@ void process_commands()
                case ClPrintChecking::_Gcode:      // ~ .5
                     if(code_seen('P'))
                          {
-                         uint16_t nGcodeLevel;
-                         nGcodeLevel=(uint16_t)code_value_long();
+                         uint8_t nGcodeLevel;
+                         nGcodeLevel=(uint8_t)code_value_uint8();
                          gcode_level_check(nGcodeLevel);
                          }
                     else if(code_seen('Q'))
@@ -7513,9 +7513,14 @@ void process_commands()
                case ClPrintChecking::_SheetType:      // ~ .7
                     if(code_seen('P'))
                          {
-                         uint16_t nSheetType;
-                         nSheetType=(uint16_t)code_value_long();
-                         sheet_type_check(nSheetType);
+                         uint8_t nSheetType;
+                         uint8_t wSheetType;
+                         nSheetType=(uint8_t)code_value_uint8();
+                         if(code_seen('W'))
+                            {
+                            wSheetType=(uint8_t)code_value_uint8();
+                            }
+                         sheet_type_check(nSheetType, wSheetType);
                          }
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN((int)eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type));

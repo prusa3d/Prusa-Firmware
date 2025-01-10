@@ -135,9 +135,9 @@ void nozzle_diameter_check(uint16_t nDiameter);
 void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel);
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel);
 void fw_version_check(const char *pVersion);
-void gcode_level_check(uint16_t nGcodeLevel);
+void gcode_level_check(uint8_t nGcodeLevel);
 #ifdef STEEL_SHEET_TYPES
-void sheet_type_check(uint16_t nSheetType);
+void sheet_type_check(uint8_t nSheetType, uint8_t wSheetType);
 #endif //STEEL_SHEET_TYPES
 
 /// Check if the filament is present before starting a print job.

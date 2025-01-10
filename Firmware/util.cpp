@@ -412,10 +412,10 @@ done:
     return true;
 }
 
-void gcode_level_check(uint16_t nGcodeLevel) {
+void gcode_level_check(uint8_t nGcodeLevel) {
     if (oCheckGcode == ClCheckMode::_None)
         return;
-    if (nGcodeLevel <= (uint16_t)GCODE_LEVEL)
+    if (nGcodeLevel <= (uint8_t)GCODE_LEVEL)
         return;
 
     // SERIAL_ECHO_START;
@@ -433,23 +433,32 @@ void gcode_level_check(uint16_t nGcodeLevel) {
 }
 
 #ifdef STEEL_SHEET_TYPES
-void sheet_type_check(uint16_t nSheetType) {
-    uint16_t actualSheetType;
+void sheet_type_check(uint8_t nSheetType, uint8_t wSheetType) {
+    uint8_t actualSheetType;
     if (oCheckSheets == ClCheckMode::_None)
         return;
     actualSheetType = eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type);
-    if (nSheetType == actualSheetType)
-        return;
+    bool n_SheetType = (nSheetType & actualSheetType) ? 1 : 0; //Expected sheet found
+    bool w_SheetType = (wSheetType & actualSheetType) ? 1 : 0; //Warn sheet found
 /*
     SERIAL_PROTOCOLPGM("Active sheet number: ");
     SERIAL_PROTOCOL((int)eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)));
-    SERIAL_PROTOCOLPGM(" Sheet type differs from actual : ");
+    SERIAL_PROTOCOLPGM(" actual sheet type: ");
     SERIAL_PROTOCOL((int)eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type));
-    SERIAL_PROTOCOLPGM(" expected: ");
+    SERIAL_PROTOCOLPGM(" expected sheet type: ");
     SERIAL_PROTOCOL((int)nSheetType);
+    SERIAL_PROTOCOLPGM(" warn sheet type: ");
+    SERIAL_PROTOCOL((int)wSheetType);
+    SERIAL_PROTOCOLPGM(" n_sheet found: ");
+    SERIAL_PROTOCOL((int)n_SheetType);
+    SERIAL_PROTOCOLPGM(" w_sheet not found: ");
+    SERIAL_PROTOCOL((int)w_SheetType);
     SERIAL_PROTOCOLPGM(" oCheckSheets: ");
     SERIAL_PROTOCOLLN((int)oCheckSheets);
 */
+    if (n_SheetType && !w_SheetType && oCheckSheets != ClCheckMode::_Always)
+        return;
+
     render_M862_warnings(
         _T(MSG_CHECK_SHEET_TYPE)
         ,_T(MSG_CHECK_SHEET_TYPE) //Identical messages
