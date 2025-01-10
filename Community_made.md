@@ -104,7 +104,7 @@ Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/
 - [X] **Community**   since Nov 2024
 - [X] **Maintained**  since Nov 2024
 
-# New First layer
+# Show filename after SD print finished
 Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4821)
 - Maintainers: @3d-gussner
 - Co-maintainers:
