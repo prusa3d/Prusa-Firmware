@@ -50,7 +50,9 @@ void eeprom_init()
     check_babystep();
 
 #ifdef STEEL_SHEET_TYPES
-    eeprom_default_sheet_type();
+    if (eeprom_read_byte((uint8_t*)EEPROM_CHECK_SHEET_TYPE) == EEPROM_EMPTY_VALUE) {
+        eeprom_default_sheet_type();
+    }
 #endif //STEEL_SHEET_TPYES
 
     // initialize custom mendel name in eeprom
