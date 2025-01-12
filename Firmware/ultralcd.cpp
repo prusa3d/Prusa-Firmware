@@ -4047,7 +4047,8 @@ static void fsensor_reinit() {
 }
 
 static void lcd_fsensor_enabled_set(void) {
-    fsensor.setEnabled(!fsensor.isEnabled());
+    bool current_setting = eeprom_read_byte((uint8_t *)EEPROM_FSENSOR);
+    fsensor.setEnabled(!current_setting);
 }
 
 static void lcd_fsensor_runout_set() {
@@ -4084,7 +4085,7 @@ static void lcd_fsensor_settings_menu() {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_BACK));
 
-    MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), fsensor.isEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_enabled_set);
+    MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), eeprom_read_byte((uint8_t *)EEPROM_FSENSOR) ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_enabled_set);
 
     if (fsensor.isEnabled()) {
         if (fsensor.isError()) {
