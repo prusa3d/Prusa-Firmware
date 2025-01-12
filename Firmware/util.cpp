@@ -379,7 +379,7 @@ bool filament_presence_check() {
         goto done;
     }
 
-    if (fsensor.isEnabled() && !fsensor.getFilamentPresent()) {
+    if (fsensor.isReady() && !fsensor.getFilamentPresent()) {
         if (oCheckFilament == ClCheckMode::_None) {
             goto done;
         }

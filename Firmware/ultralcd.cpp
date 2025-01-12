@@ -4380,7 +4380,7 @@ static void sheets_menu()
 static void nozzle_change()
 {
 #ifdef FILAMENT_SENSOR
-    if (fsensor.isEnabled() && fsensor.getFilamentPresent()) {
+    if (fsensor.isReady() && fsensor.getFilamentPresent()) {
         lcd_show_fullscreen_message_and_wait_P(_T(MSG_UNLOAD_FILAMENT_REPEAT));
         lcd_return_to_status();
         return;
@@ -5348,7 +5348,7 @@ static void lcd_main_menu()
 #endif //MMU_HAS_CUTTER
             } else {
 #ifdef FILAMENT_SENSOR
-                if (fsensor.isEnabled()) {
+                if (fsensor.isReady()) {
                     if (!fsensor.getAutoLoadEnabled()) {
                         MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
                     }
