@@ -161,7 +161,7 @@ msgid ""
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
 "reset."
 msgstr ""
-"Bed leveling mislukt. Sensor heeft niet geactiveerd. Puin op tuit? Wacht op "
+"Bed leveling mislukt. Sensor werd niet geactiveerd. Printkop vuil? Wacht op "
 "reset."
 
 #. MSG_SELFTEST_BEDHEATER c=20
@@ -204,12 +204,12 @@ msgstr "COMMUNICATIEFOUT"
 #. MSG_CALIBRATE_BED c=18
 #: ../../Firmware/messages.cpp:328 ../../Firmware/ultralcd.cpp:4539
 msgid "Calibrate XYZ"
-msgstr "Kalibratie XYZ"
+msgstr "Kalibreer XYZ"
 
 #. MSG_HOMEYZ c=18
 #: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:4541
 msgid "Calibrate Z"
-msgstr "Kalibratie Z"
+msgstr "Kalibreer Z"
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 #: ../../Firmware/messages.cpp:278 ../../Firmware/ultralcd.cpp:2830
@@ -217,8 +217,8 @@ msgid ""
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibreren van XYZ. Draai de knop om de Z-wagen omhoog te gaan tot het einde"
-" stoppers. Druk knop als klaar."
+"XYZ aan het kalibreren. Draai de knop om de Z-as wagens omhoog te "
+"sturen tot de eindstoppers. Druk knop wanneer klaar."
 
 #. MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:2009 ../../Firmware/messages.cpp:23
@@ -232,13 +232,13 @@ msgid ""
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibreren van Z. Draai de knop om de Z-wagen omhoog te gaan tot het einde "
-"stoppers. Druk knop als klaar."
+"Z aan het kalibreren. Draai de knop om de Z-as wagens omhoog te "
+"sturen tot de eindstoppers. Druk knop wanneer klaar."
 
 #. MSG_CALIBRATING_HOME c=20
 #: ../../Firmware/messages.cpp:373 ../../Firmware/ultralcd.cpp:6965
 msgid "Calibrating home"
-msgstr "Kalibreren start"
+msgstr "Kalibreren thuispositie"
 
 #. MSG_CALIBRATION c=18
 #: ../../Firmware/messages.cpp:71 ../../Firmware/ultralcd.cpp:5346
@@ -261,8 +261,7 @@ msgstr "Kan selector of spanrol niet bewegen."
 msgid ""
 "Cannot perform the action, filament is already loaded. Unload it first."
 msgstr ""
-"De actie kan niet worden uitgevoerd, de filament is al geladen. Eerst "
-"uitladen."
+"Kan de actie niet uitvoeren, filament is al geladen. Laad het eerst uit."
 
 #. MSG_SD_REMOVED c=20
 #: ../../Firmware/messages.cpp:376 ../../Firmware/ultralcd.cpp:7385
@@ -272,7 +271,7 @@ msgstr "SD verwijderd"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/messages.cpp:336 ../../Firmware/ultralcd.cpp:5286
 msgid "Change SD card"
-msgstr "Wissel SD kaart"
+msgstr "Wissel SD-kaart"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:43 ../../Firmware/ultralcd.cpp:5216
@@ -294,49 +293,49 @@ msgstr "Wissel ok"
 #: ../../Firmware/messages.cpp:25 ../../Firmware/ultralcd.cpp:5930
 #: ../../Firmware/ultralcd.cpp:6955
 msgid "Checking X axis"
-msgstr "Controleer X as"
+msgstr "X-as controleren"
 
 #. MSG_CHECKING_Y c=20
 #: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:5940
 #: ../../Firmware/ultralcd.cpp:6956
 msgid "Checking Y axis"
-msgstr "Controleer Y as"
+msgstr "Y-as controleren"
 
 #. MSG_SELFTEST_CHECK_Z c=20
 #: ../../Firmware/messages.cpp:370 ../../Firmware/ultralcd.cpp:6957
 msgid "Checking Z axis"
-msgstr "Controleer Z as"
+msgstr "Z-as controleren"
 
 #. MSG_SELFTEST_CHECK_BED c=20
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:6958
 msgid "Checking bed"
-msgstr "Controleer bed"
+msgstr "Bed controleren"
 
 #. MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ../../Firmware/messages.cpp:369 ../../Firmware/ultralcd.cpp:6954
 msgid "Checking endstops"
-msgstr "Controleer endstops"
+msgstr "Eindstoppers controleren"
 
 #. MSG_CHECKING_FILE c=17
 #: ../../Firmware/messages.cpp:374 ../../Firmware/ultralcd.cpp:7050
 msgid "Checking file"
-msgstr "Bestand controle"
+msgstr "Bestand controleren"
 
 #. MSG_SELFTEST_CHECK_HOTEND c=20
 #: ../../Firmware/messages.cpp:371 ../../Firmware/ultralcd.cpp:6960
 msgid "Checking hotend"
-msgstr "Controleer hotend"
+msgstr "Printkop controleren"
 
 #. MSG_SELFTEST_CHECK_FSENSOR c=20
 #: ../../Firmware/messages.cpp:100 ../../Firmware/ultralcd.cpp:6961
 #: ../../Firmware/ultralcd.cpp:6962
 msgid "Checking sensors"
-msgstr "Controleer sensors"
+msgstr "Sensors controleren"
 
 #. MSG_CHECKS c=18
 #: ../../Firmware/messages.cpp:320 ../../Firmware/ultralcd.cpp:4391
 msgid "Checks"
-msgstr "Checks"
+msgstr "Controles"
 
 #. MSG_TM_ACK_ERROR c=18
 #: ../../Firmware/messages.cpp:197 ../../Firmware/ultralcd.cpp:5267
@@ -393,7 +392,7 @@ msgid ""
 "Normal mode"
 msgstr ""
 "Crashdetectie kan\n"
-"alleen in normaal\n"
+"alleen in Normaal\n"
 "gebruikt worden"
 
 #. MSG_CUT_FILAMENT c=16
@@ -443,8 +442,8 @@ msgid ""
 " Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"Afstand tussen tip van de tuit en het print oppervlak is nog niet "
-"vastgesteld. Volg de handleiding, First steps, sectie First layer "
+"Afstand tussen uiteinde van de printkop en het printoppervlak is nog niet "
+"ingesteld. Volg de handleiding, rubriek First steps, sectie First layer "
 "calibration."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
@@ -453,8 +452,8 @@ msgid ""
 "Do you want to repeat last step to readjust distance between nozzle and "
 "heatbed?"
 msgstr ""
-"Wilt u de laatste stap herhalen om de afstand tussen de tuit en de bed "
-"opnieuw in te stellen?"
+"Wilt u de vorige stap herhalen om de afstand tussen het uiteinde van "
+"de printkop en het printbed opnieuw in te stellen?"
 
 #. MSG_DONE c=8
 #: ../../Firmware/messages.cpp:33 ../../Firmware/mmu2/errors_list.h:367
@@ -551,7 +550,7 @@ msgstr "F. autoladen"
 #: ../../Firmware/messages.cpp:50 ../../Firmware/ultralcd.cpp:4070
 #: ../../Firmware/ultralcd.cpp:4077
 msgid "F. jam detect"
-msgstr "F.Jam ontdek."
+msgstr "F.blok. ontdek."
 
 #. MSG_FSENSOR_RUNOUT c=13
 #: ../../Firmware/messages.cpp:48 ../../Firmware/ultralcd.cpp:4067
