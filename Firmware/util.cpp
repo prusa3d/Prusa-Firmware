@@ -280,10 +280,12 @@ static void render_M862_warnings(const char* warning, const char* strict, uint8_
 #else
     if (check == 1) { // Warning, stop print if user selects 'No'
 #endif //STEEL_SHEET_TYPES
+        sendHostNotification_P(warning);
         if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
             lcd_print_stop();
         }
     } else if (check == 2) { // Strict, always stop print
+        sendHostNotification_P(strict);
         lcd_show_fullscreen_message_and_wait_P(strict);
         lcd_print_stop();
     }
