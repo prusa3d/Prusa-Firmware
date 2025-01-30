@@ -2589,7 +2589,7 @@ msgstr "Odporúča sa kalibrácia Z. Spustiť ju teraz?"
 #: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
 #: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
 msgid "Check selected steel sheet."
-msgstr "Skontrolujte vybraný platňa."
+msgstr "Skontrolujte vybranú platňu."
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyberte starý filament a stlačte tlačidlo pre zavedenie nového."

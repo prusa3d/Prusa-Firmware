@@ -2609,7 +2609,7 @@ msgstr "Calibrarea Z este recomandată. Calibrează acum?"
 #: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
 #: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
 msgid "Check selected steel sheet."
-msgstr "Verificați suprafața selectată."
+msgstr "Verificați suprafața de print selectată"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."
