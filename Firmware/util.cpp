@@ -211,6 +211,7 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         return false;
 
     if (upgrade) {
+        sendHostNotification_P(_O(MSG_NEW_FIRMWARE_AVAILABLE));
         lcd_display_message_fullscreen_P(_T(MSG_NEW_FIRMWARE_AVAILABLE));
         lcd_puts_at_P(0, 2, PSTR(""));
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
@@ -280,13 +281,13 @@ static void render_M862_warnings(const char* warning, const char* strict, uint8_
 #else
     if (check == 1) { // Warning, stop print if user selects 'No'
 #endif //STEEL_SHEET_TYPES
-        sendHostNotification_P(warning);
-        if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
+        sendHostNotification_P(_O(warning));
+        if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(warning), true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
             lcd_print_stop();
         }
     } else if (check == 2) { // Strict, always stop print
-        sendHostNotification_P(strict);
-        lcd_show_fullscreen_message_and_wait_P(strict);
+        sendHostNotification_P(_O(strict));
+        lcd_show_fullscreen_message_and_wait_P(_T(strict));
         lcd_print_stop();
     }
 }
@@ -307,8 +308,8 @@ void nozzle_diameter_check(uint16_t nDiameter) {
     // SERIAL_ECHOLN((float)(nDiameter/1000.0));
 
     render_M862_warnings(
-        _T(MSG_NOZZLE_DIFFERS_CONTINUE)
-        ,_T(MSG_NOZZLE_DIFFERS_CANCELLED)
+        MSG_NOZZLE_DIFFERS_CONTINUE
+        ,MSG_NOZZLE_DIFFERS_CANCELLED
         ,(uint8_t)oCheckMode
     );
 
@@ -330,8 +331,8 @@ void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel) {
     // SERIAL_ECHOPGM("expected: ");
     // SERIAL_ECHOLN(nPrinterModel);
     render_M862_warnings(
-        _T(MSG_GCODE_DIFF_PRINTER_CONTINUE)
-        ,_T(MSG_GCODE_DIFF_PRINTER_CANCELLED)
+        MSG_GCODE_DIFF_PRINTER_CONTINUE
+        ,MSG_GCODE_DIFF_PRINTER_CANCELLED
         ,(uint8_t)oCheckModel
     );
 }
@@ -380,8 +381,8 @@ void fw_version_check(const char *pVersion) {
 */
 
     render_M862_warnings(
-        _T(MSG_GCODE_NEWER_FIRMWARE_CONTINUE)
-        ,_T(MSG_GCODE_NEWER_FIRMWARE_CANCELLED)
+        MSG_GCODE_NEWER_FIRMWARE_CONTINUE
+        ,MSG_GCODE_NEWER_FIRMWARE_CANCELLED
         ,(uint8_t)oCheckVersion
     );
 }
@@ -399,8 +400,8 @@ bool filament_presence_check() {
         }
 
         render_M862_warnings(
-            _T(MSG_MISSING_FILAMENT)
-            ,_T(MSG_MISSING_FILAMENT) //Identical messages
+            MSG_MISSING_FILAMENT
+            ,MSG_MISSING_FILAMENT //Identical messages
             ,(uint8_t)oCheckFilament
         );
 
@@ -428,8 +429,8 @@ void gcode_level_check(uint8_t nGcodeLevel) {
     // SERIAL_ECHOLN(nGcodeLevel);
 
     render_M862_warnings(
-        _T(MSG_GCODE_DIFF_CONTINUE)
-        ,_T(MSG_GCODE_DIFF_CANCELLED)
+        MSG_GCODE_DIFF_CONTINUE
+        ,MSG_GCODE_DIFF_CANCELLED
         ,(uint8_t)oCheckGcode
     );
 }
@@ -462,8 +463,8 @@ void sheet_type_check(uint8_t nSheetType, uint8_t wSheetType) {
         return;
 
     render_M862_warnings(
-        _T(MSG_CHECK_SHEET_TYPE)
-        ,_T(MSG_CHECK_SHEET_TYPE) //Identical messages
+        MSG_CHECK_SHEET_TYPE
+        ,MSG_CHECK_SHEET_TYPE //Identical messages
         ,(uint8_t)oCheckSheets
     );
 }
@@ -481,8 +482,8 @@ void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) 
     }
 
     render_M862_warnings(
-        _T(MSG_GCODE_DIFF_PRINTER_CONTINUE)
-        ,_T(MSG_GCODE_DIFF_PRINTER_CANCELLED)
+        MSG_GCODE_DIFF_PRINTER_CONTINUE
+        ,MSG_GCODE_DIFF_PRINTER_CANCELLED
         ,(uint8_t)oCheckModel
     );
 }
