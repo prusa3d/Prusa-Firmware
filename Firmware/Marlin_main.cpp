@@ -7262,7 +7262,7 @@ void process_commands()
 		iType = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].type);
 	}
   // Reset Sheet type if out of range
-  if (iType > STEEL_SHEET_TYPES -1) eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].type, 0);
+  if (iType > 32) eeprom_update_byte_notify(&EEPROM_Sheets_base->s[iSel].type, 0);
 #endif //STEEL_SHEET_TYPES
 
 	if (code_seen('A'))
