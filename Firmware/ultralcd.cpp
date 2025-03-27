@@ -365,7 +365,7 @@ void lcdui_print_percent_done(void)
 		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
 		if ((nextSheet >= 0) && (sheetNR != nextSheet))
 		{
-			char sheet[sizeof(Sheet::name)];
+			char sheet[sizeof(Sheet::name)+1UL];
 			eeprom_read_block(sheet, EEPROM_Sheets_base->s[sheetNR].name, sizeof(Sheet::name));
 			sheet[sizeof(Sheet::name)] = '\0';
 			lcd_printf_P(PSTR("%-7s"),sheet);
