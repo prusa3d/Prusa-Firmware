@@ -9913,7 +9913,11 @@ void long_pause() //long pause print
 
     // Stop heaters
     heating_status = HeatingStatus::NO_HEATING;
+#ifdef HEATER_LOWER_TEMP
+    setTargetHotend(target_temperature[active_extruder]- HEATER_LOWER_TEMP);
+#else
     setTargetHotend(0);
+#endif //HEATER_LOWER_TEMP
 
     // Lift z
     raise_z(pause_position[Z_AXIS]);
