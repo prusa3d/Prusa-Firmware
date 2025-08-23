@@ -35,7 +35,7 @@ enum class ClPrintChecking:uint_least8_t
     _Version=4,
     _Gcode=5,
     _Features=6,
-    _PrinterState=7
+    _SheetType=7
 };
 
 enum class ClNozzleDiameter:uint_least8_t
@@ -47,11 +47,27 @@ enum class ClNozzleDiameter:uint_least8_t
     _Diameter_Undef=EEPROM_EMPTY_VALUE
 };
 
+#ifdef STEEL_SHEET_TYPES
+enum class ClCheckSheetType:uint_least8_t
+{
+    _Smooth     =0b00000001,
+    _Textured   =0b00000010,
+    _Satin      =0b00000100,
+    _NylonPA    =0b00001000,
+    _PP         =0b00010000,
+    _Custom     =0b00100000,
+    _Undef      =0b00000000,
+};
+#endif //STEEL_SHEET_TYPES
+
 enum class ClCheckMode:uint_least8_t
 {
     _None,
     _Warn,
     _Strict,
+#ifdef STEEL_SHEET_TYPES
+    _Always,
+#endif //STEEL_SHEET_TYPES
     _Undef=EEPROM_EMPTY_VALUE
 };
 
@@ -109,13 +125,20 @@ extern ClCheckMode oCheckModel;
 extern ClCheckMode oCheckVersion;
 extern ClCheckMode oCheckGcode;
 extern ClCheckMode oCheckFilament;
+#ifdef STEEL_SHEET_TYPES
+extern ClCheckMode oCheckSheets;
+extern ClCheckSheetType oCheckSheetType;
+#endif //STEEL_SHEET_TYPES
 
 void fCheckModeInit();
 void nozzle_diameter_check(uint16_t nDiameter);
 void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel);
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel);
 void fw_version_check(const char *pVersion);
-void gcode_level_check(uint16_t nGcodeLevel);
+void gcode_level_check(uint8_t nGcodeLevel);
+#ifdef STEEL_SHEET_TYPES
+void sheet_type_check(uint8_t nSheetType, uint8_t wSheetType);
+#endif //STEEL_SHEET_TYPES
 
 /// Check if the filament is present before starting a print job.
 /// Depending on the check level set in the menus the printer will:

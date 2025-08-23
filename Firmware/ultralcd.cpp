@@ -365,9 +365,9 @@ void lcdui_print_percent_done(void)
 		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
 		if ((nextSheet >= 0) && (sheetNR != nextSheet))
 		{
-			char sheet[8];
-			eeprom_read_block(sheet, EEPROM_Sheets_base->s[sheetNR].name, 7);
-			sheet[7] = '\0';
+			char sheet[sizeof(Sheet::name)+1UL];
+			eeprom_read_block(sheet, EEPROM_Sheets_base->s[sheetNR].name, sizeof(Sheet::name));
+			sheet[sizeof(Sheet::name)] = '\0';
 			lcd_printf_P(PSTR("%-7s"),sheet);
 			return; //do not also print the percentage
 		}
@@ -2669,12 +2669,6 @@ static void lcd_babystep_z()
 		// Only update the EEPROM when leaving the menu.
           uint8_t active_sheet=eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 		eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[active_sheet].z_offset)),_md->babystepMemZ);
-
-        // NOTE: bed_temp and pinda_temp are not currently read/used anywhere.
-		eeprom_update_byte_notify(&(EEPROM_Sheets_base->s[active_sheet].bed_temp),target_temperature_bed);
-#ifdef PINDA_THERMISTOR
-		eeprom_update_byte_notify(&(EEPROM_Sheets_base->s[active_sheet].pinda_temp),current_temperature_pinda);
-#endif //PINDA_THERMISTOR
 		calibration_status_set(CALIBRATION_STATUS_LIVE_ADJUST);
 	}
 	menu_back_if_clicked();
@@ -4291,6 +4285,63 @@ do\
 }\
 while (0)
 
+#ifdef STEEL_SHEET_TYPES
+static void lcd_sheet_type_cycle(void) {
+    uint8_t nSheetType;
+    switch(oCheckSheetType){
+    case ClCheckSheetType::_Smooth:
+        oCheckSheetType=ClCheckSheetType::_Textured;
+        nSheetType=2;
+        break;
+    case ClCheckSheetType::_Textured:
+        oCheckSheetType=ClCheckSheetType::_Satin;
+        nSheetType=4;
+        break;
+    case ClCheckSheetType::_Satin:
+        oCheckSheetType=ClCheckSheetType::_NylonPA;
+        nSheetType=8;
+        break;
+    case ClCheckSheetType::_NylonPA:
+        oCheckSheetType=ClCheckSheetType::_PP;
+        nSheetType=16;
+        break;
+    case ClCheckSheetType::_PP:
+        oCheckSheetType=ClCheckSheetType::_Custom;
+        nSheetType=32;
+        break;
+    case ClCheckSheetType::_Custom:
+        oCheckSheetType=ClCheckSheetType::_Smooth;
+        nSheetType=1;
+        break;
+    case ClCheckSheetType::_Undef:
+        oCheckSheetType=ClCheckSheetType::_Smooth;
+        nSheetType=1;
+        break;
+    default:
+        oCheckSheetType=ClCheckSheetType::_Smooth;
+        nSheetType=1;
+    }
+    eeprom_update_byte_notify(&EEPROM_Sheets_base->s[selected_sheet].type, nSheetType);
+}
+
+
+#define SETTINGS_SHEET_TYPE \
+do\
+{\
+    switch (oCheckSheetType)\
+    {\
+    case ClCheckSheetType::_Smooth: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, MSG_SHEET_TYPE_SMOOTH, lcd_sheet_type_cycle); break;\
+    case ClCheckSheetType::_Textured: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, MSG_SHEET_TYPE_TEXTURED, lcd_sheet_type_cycle); break;\
+    case ClCheckSheetType::_Satin: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, MSG_SHEET_TYPE_SATIN, lcd_sheet_type_cycle); break;\
+    case ClCheckSheetType::_NylonPA: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, MSG_SHEET_TYPE_NYLON_PA, lcd_sheet_type_cycle); break;\
+    case ClCheckSheetType::_PP: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, MSG_SHEET_TYPE_PP, lcd_sheet_type_cycle); break;\
+    case ClCheckSheetType::_Custom: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, MSG_SHEET_TYPE_CUSTOM, lcd_sheet_type_cycle); break;\
+    case ClCheckSheetType::_Undef: MENU_ITEM_TOGGLE_P(MSG_SHEET_TYPE, _O(MSG_UNKNOWN), lcd_sheet_type_cycle); break;\
+    }\
+}\
+while (0)
+#endif//STEEL_SHEET_TYPES
+
 static void lcd_check_update_RAM(ClCheckMode * oCheckSetting) {
     switch(*oCheckSetting) {
         case ClCheckMode::_None:
@@ -4300,6 +4351,11 @@ static void lcd_check_update_RAM(ClCheckMode * oCheckSetting) {
             *oCheckSetting = ClCheckMode::_Strict;
             break;
         case ClCheckMode::_Strict:
+#ifdef STEEL_SHEET_TYPES
+            *oCheckSetting = ClCheckMode::_Always;
+            break;
+        case ClCheckMode::_Always:
+#endif //STEEL_SHEET_TYPES
             *oCheckSetting = ClCheckMode::_None;
             break;
         default:
@@ -4327,6 +4383,13 @@ static void lcd_check_filament_set() {
     eeprom_update_byte_notify((uint8_t*)EEPROM_CHECK_FILAMENT,(uint8_t)oCheckFilament);
 }
 
+#ifdef STEEL_SHEET_TYPES
+static void lcd_check_sheet_type_set() {
+    lcd_check_update_RAM(&oCheckSheets);
+    eeprom_update_byte_notify((uint8_t*)EEPROM_CHECK_SHEET_TYPE,(uint8_t)oCheckSheets);
+}
+#endif //STEEL_SHEET_TYPES
+
 static void settings_check_toggle(ClCheckMode * oCheckSetting, const char* msg, void (*func)(void)) {
     switch(*oCheckSetting) {
         case ClCheckMode::_None:
@@ -4338,6 +4401,11 @@ static void settings_check_toggle(ClCheckMode * oCheckSetting, const char* msg, 
         case ClCheckMode::_Strict:
             MENU_ITEM_TOGGLE_P(msg, _T(MSG_STRICT), func);
             break;
+#ifdef STEEL_SHEET_TYPES
+        case ClCheckMode::_Always:
+            MENU_ITEM_TOGGLE_P(msg, _T(MSG_ALWAYS), func);
+            break;
+#endif //STEEL_SHEET_TYPES
         default:
             MENU_ITEM_TOGGLE_P(msg, _T(MSG_NONE), func);
     }
@@ -4351,6 +4419,9 @@ static void lcd_checking_menu(void)
     settings_check_toggle(&oCheckModel, _T(MSG_MODEL), lcd_check_model_set);
     settings_check_toggle(&oCheckVersion, MSG_FIRMWARE, lcd_check_version_set);
     settings_check_toggle(&oCheckFilament, MSG_FILAMENT, lcd_check_filament_set);
+#ifdef STEEL_SHEET_TYPES
+    settings_check_toggle(&oCheckSheets, _T(MSG_SHEET), lcd_check_sheet_type_set);
+#endif //STEEL_SHEET_TYPES
     MENU_END();
 }
 
@@ -4358,6 +4429,9 @@ template <uint8_t number>
 static void select_sheet_menu()
 {
     selected_sheet = number;
+#ifdef STEEL_SHEET_TYPES
+    oCheckSheetType = (ClCheckSheetType)eeprom_read_byte((uint8_t *)&EEPROM_Sheets_base->s[selected_sheet].type);
+#endif //STEEL_SHEET_TYPES
     lcd_sheet_menu();
 }
 
@@ -5038,7 +5112,9 @@ static void change_sheet()
 //! @brief Send a notification to the host. Param 'message' must reside in program memory!
 void sendHostNotification_P(const char* message)
 {
-    printf_P(MSG_HOST_ACTION_NOTIFICATION, message);
+    if (M79_timer_get_status()) {
+        printf_P(MSG_HOST_ACTION_NOTIFICATION, message);
+    }
 }
 
 static void lcd_rename_sheet_menu()
@@ -5092,6 +5168,9 @@ static void lcd_reset_sheet()
 {
     SheetName sheetName;
     eeprom_default_sheet_name(selected_sheet, sheetName);
+#ifdef STEEL_SHEET_TYPES
+    eeprom_default_sheet_type();
+#endif // STEEL_SHEET_TYPES
 	eeprom_update_word_notify(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),EEPROM_EMPTY_VALUE16);
 	eeprom_update_block_notify(sheetName.c,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
 	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
@@ -5125,6 +5204,9 @@ static void lcd_sheet_menu()
         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
     }
     MENU_ITEM_SUBMENU_P(_T(MSG_RENAME), lcd_rename_sheet_menu);
+#ifdef STEEL_SHEET_TYPES
+    SETTINGS_SHEET_TYPE;
+#endif //STEEL_SHEET_TYPES
 	MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_reset_sheet);
 
     MENU_END();

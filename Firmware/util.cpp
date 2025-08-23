@@ -211,6 +211,7 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         return false;
 
     if (upgrade) {
+        sendHostNotification_P(_O(MSG_NEW_FIRMWARE_AVAILABLE));
         lcd_display_message_fullscreen_P(_T(MSG_NEW_FIRMWARE_AVAILABLE));
         lcd_puts_at_P(0, 2, PSTR(""));
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
@@ -247,6 +248,10 @@ ClCheckMode oCheckModel;
 ClCheckMode oCheckVersion;
 ClCheckMode oCheckGcode;
 ClCheckMode oCheckFilament;
+#ifdef STEEL_SHEET_TYPES
+ClCheckSheetType oCheckSheetType;
+ClCheckMode oCheckSheets;
+#endif //STEEL_SHEET_TYPES
 
 void fCheckModeInit() {
     oCheckMode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODE, (uint8_t)ClCheckMode::_Warn);
@@ -263,16 +268,26 @@ void fCheckModeInit() {
     oCheckVersion = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_VERSION, (uint8_t)ClCheckMode::_Warn);
     oCheckGcode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_GCODE, (uint8_t)ClCheckMode::_Warn);
     oCheckFilament = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_FILAMENT, (uint8_t)ClCheckMode::_Warn);
+#ifdef STEEL_SHEET_TYPES
+    oCheckSheets = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_SHEET_TYPE, (uint8_t)ClCheckMode::_Warn);
+    oCheckSheetType = (ClCheckSheetType)eeprom_init_default_byte((uint8_t *)&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type, (uint8_t)ClCheckSheetType::_Smooth);
+#endif //STEEL_SHEET_TYPES
 }
 
 static void render_M862_warnings(const char* warning, const char* strict, uint8_t check)
 {
+#ifdef STEEL_SHEET_TYPES
+    if (check == 1 || check == 3) { // Warning, stop print if user selects 'No'
+#else
     if (check == 1) { // Warning, stop print if user selects 'No'
-        if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
+#endif //STEEL_SHEET_TYPES
+        sendHostNotification_P(_O(warning));
+        if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(warning), true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
             lcd_print_stop();
         }
     } else if (check == 2) { // Strict, always stop print
-        lcd_show_fullscreen_message_and_wait_P(strict);
+        sendHostNotification_P(_O(strict));
+        lcd_show_fullscreen_message_and_wait_P(_T(strict));
         lcd_print_stop();
     }
 }
@@ -293,8 +308,8 @@ void nozzle_diameter_check(uint16_t nDiameter) {
     // SERIAL_ECHOLN((float)(nDiameter/1000.0));
 
     render_M862_warnings(
-        _T(MSG_NOZZLE_DIFFERS_CONTINUE)
-        ,_T(MSG_NOZZLE_DIFFERS_CANCELLED)
+        MSG_NOZZLE_DIFFERS_CONTINUE
+        ,MSG_NOZZLE_DIFFERS_CANCELLED
         ,(uint8_t)oCheckMode
     );
 
@@ -316,8 +331,8 @@ void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel) {
     // SERIAL_ECHOPGM("expected: ");
     // SERIAL_ECHOLN(nPrinterModel);
     render_M862_warnings(
-        _T(MSG_GCODE_DIFF_PRINTER_CONTINUE)
-        ,_T(MSG_GCODE_DIFF_PRINTER_CANCELLED)
+        MSG_GCODE_DIFF_PRINTER_CONTINUE
+        ,MSG_GCODE_DIFF_PRINTER_CANCELLED
         ,(uint8_t)oCheckModel
     );
 }
@@ -366,8 +381,8 @@ void fw_version_check(const char *pVersion) {
 */
 
     render_M862_warnings(
-        _T(MSG_GCODE_NEWER_FIRMWARE_CONTINUE)
-        ,_T(MSG_GCODE_NEWER_FIRMWARE_CANCELLED)
+        MSG_GCODE_NEWER_FIRMWARE_CONTINUE
+        ,MSG_GCODE_NEWER_FIRMWARE_CANCELLED
         ,(uint8_t)oCheckVersion
     );
 }
@@ -385,8 +400,8 @@ bool filament_presence_check() {
         }
 
         render_M862_warnings(
-            _T(MSG_MISSING_FILAMENT)
-            ,_T(MSG_MISSING_FILAMENT) //Identical messages
+            MSG_MISSING_FILAMENT
+            ,MSG_MISSING_FILAMENT //Identical messages
             ,(uint8_t)oCheckFilament
         );
 
@@ -400,10 +415,10 @@ done:
     return true;
 }
 
-void gcode_level_check(uint16_t nGcodeLevel) {
+void gcode_level_check(uint8_t nGcodeLevel) {
     if (oCheckGcode == ClCheckMode::_None)
         return;
-    if (nGcodeLevel <= (uint16_t)GCODE_LEVEL)
+    if (nGcodeLevel <= (uint8_t)GCODE_LEVEL)
         return;
 
     // SERIAL_ECHO_START;
@@ -414,12 +429,46 @@ void gcode_level_check(uint16_t nGcodeLevel) {
     // SERIAL_ECHOLN(nGcodeLevel);
 
     render_M862_warnings(
-        _T(MSG_GCODE_DIFF_CONTINUE)
-        ,_T(MSG_GCODE_DIFF_CANCELLED)
+        MSG_GCODE_DIFF_CONTINUE
+        ,MSG_GCODE_DIFF_CANCELLED
         ,(uint8_t)oCheckGcode
     );
 }
 
+#ifdef STEEL_SHEET_TYPES
+void sheet_type_check(uint8_t nSheetType, uint8_t wSheetType) {
+    uint8_t actualSheetType;
+    if (oCheckSheets == ClCheckMode::_None)
+        return;
+    actualSheetType = eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type);
+    bool n_SheetType = (nSheetType & actualSheetType) ? 1 : 0; //Expected sheet found
+    bool w_SheetType = (wSheetType & actualSheetType) ? 1 : 0; //Warn sheet found
+/*
+    SERIAL_PROTOCOLPGM("Active sheet number: ");
+    SERIAL_PROTOCOL((int)eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)));
+    SERIAL_PROTOCOLPGM(" actual sheet type: ");
+    SERIAL_PROTOCOL((int)eeprom_read_byte(&EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].type));
+    SERIAL_PROTOCOLPGM(" expected sheet type: ");
+    SERIAL_PROTOCOL((int)nSheetType);
+    SERIAL_PROTOCOLPGM(" warn sheet type: ");
+    SERIAL_PROTOCOL((int)wSheetType);
+    SERIAL_PROTOCOLPGM(" n_sheet found: ");
+    SERIAL_PROTOCOL((int)n_SheetType);
+    SERIAL_PROTOCOLPGM(" w_sheet not found: ");
+    SERIAL_PROTOCOL((int)w_SheetType);
+    SERIAL_PROTOCOLPGM(" oCheckSheets: ");
+    SERIAL_PROTOCOLLN((int)oCheckSheets);
+*/
+    if (n_SheetType && !w_SheetType && oCheckSheets != ClCheckMode::_Always)
+        return;
+
+    render_M862_warnings(
+        MSG_CHECK_SHEET_TYPE
+        ,MSG_CHECK_SHEET_TYPE //Identical messages
+        ,(uint8_t)oCheckSheets
+    );
+}
+#endif //STEEL_SHEET_TYPES
 
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
     unquoted_string smodel = unquoted_string(pStrPos);
@@ -433,8 +482,8 @@ void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) 
     }
 
     render_M862_warnings(
-        _T(MSG_GCODE_DIFF_PRINTER_CONTINUE)
-        ,_T(MSG_GCODE_DIFF_PRINTER_CANCELLED)
+        MSG_GCODE_DIFF_PRINTER_CONTINUE
+        ,MSG_GCODE_DIFF_PRINTER_CANCELLED
         ,(uint8_t)oCheckModel
     );
 }

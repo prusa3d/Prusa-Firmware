@@ -25,6 +25,20 @@
 #define HEATBED_V2
 #define STEEL_SHEET
 //#define NEW_FIRST_LAYER_CAL //from front to back
+/* Sheet types
+ bit based
+ - 0 = Smooth
+ - 1 = Textured
+ - 2 = Satin
+ - 3 = NylonPA
+ - 4 = PolyPro
+ - 5 = Custom
+ - 6 = free
+ - 7 = free
+*/
+
+#define STEEL_SHEET_TYPES 6
+
 #define TACH0PULLUP
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)

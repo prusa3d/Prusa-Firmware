@@ -2606,6 +2606,12 @@ msgstr "Nincs befűzve filament."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Z kalibráció javasolt. Futtassam most?"
 
+#. MSG_CHECK_SHEET_TYPE c=20 r=3
+#: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
+#: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
+msgid "Check selected steel sheet."
+msgstr "Nezd meg a kiválasztott az acellapot."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vedd ki a regi fil., majd nyomd meg a gombot az uj fil. betoltesehez."
 

@@ -2598,6 +2598,12 @@ msgstr "Nema umetnute niti."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Preporuča se Z kalibracija. Pokrenuti ga sada?"
 
+#. MSG_CHECK_SHEET_TYPE c=20 r=3
+#: ../../Firmware/Marlin_main.cpp:5844 ../../Firmware/messages.cpp:163
+#: ../../Firmware/util.cpp:454 ../../Firmware/util.cpp:455
+msgid "Check selected steel sheet."
+msgstr "Provjerite odabrani čelični ploca."
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Uklonite stari fil. i pritisnite gumb za pocetak stavljanja novog."
 
