@@ -59,7 +59,55 @@ Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/
 # E3D Revo
 **The E3D REVO support is a community effort thanks to these Contributors, E3D and others.**
 - Maintainers: **E3D**
-- Co-maintainers:
+- Co-maintainers: @3d-gussner
 - Contributors: @alexiri @kromeninja @ulab @JWvP @snafu1282 @matthiazzz @sdh2 @jdrozdz @peschkaj @MarcelTh @zuidwijk @davejhilton @WhiterRice @NightSkySK @D-an-W
 - [X] **Active**      since June 2023
 - [X] **Maintained**  since April 2023
+
+# QUICK Nozzle change
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4600)
+- Maintainers: @sarusani
+- Co-maintainers: @3d-gussner
+- Contributors:
+- [X] **Community**   since Feb 2024
+- [X] **Maintained**  since Feb 2024
+
+# Prevent oozing after filament load
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4534)
+- Maintainers: @sarusani
+- Co-maintainers: @3d-gussner
+- Contributors:
+- [X] **Community**   since Dec 2023
+- [X] **Maintained**  since Dec 2023
+
+# Shutdown host
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4553)
+- Maintainers: @sarusani
+- Co-maintainers: @3d-gussner
+- Contributors:
+- [X] **Community**   since Jan 2024
+- [X] **Maintained**  since Jan 2024
+
+# Allow to replace Set Ready menu entry
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4737)
+- Maintainers: @sarusani
+- Co-maintainers: @3d-gussner
+- Contributors: @gudnimg @Ro3Deee @AttilaSVK
+- [X] **Community**   since Aug 2024
+- [X] **Maintained**  since Aug 2024
+
+# New First layer
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4811)
+- Maintainers: @3d-gussner
+- Co-maintainers:
+- Contributors: @gudnimg @leptun @DRracer @wavexx @ingbrzy @stelgenhof @AttilaSVK @arekm @ErwanAliasr1 @Ilovemyhous
+- [X] **Community**   since Nov 2024
+- [X] **Maintained**  since Nov 2024
+
+# Show filename after SD print finished
+Please read more about it [here](https://github.com/prusa3d/Prusa-Firmware/pull/4821)
+- Maintainers: @3d-gussner
+- Co-maintainers:
+- Contributors:
+- [X] **Community**   since Dec 2024
+- [X] **Maintained**  since Dec 2024
