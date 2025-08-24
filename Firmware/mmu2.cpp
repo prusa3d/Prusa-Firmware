@@ -386,7 +386,7 @@ bool MMU2::tool_change(uint8_t slot) {
             !marlin_printingIsActive()) {
             // If Tcodes are used manually through the serial
             // we need to unload manually as well -- but only if FINDA detects filament
-            unload();
+            UnloadInner();
         }
 
         ReportingRAII rep(CommandInProgress::ToolChange);
@@ -482,10 +482,6 @@ void MMU2::UnloadInner() {
         IncrementMMUFails();
     }
     MakeSound(Confirm);
-
-    // no active tool
-    SetCurrentTool(MMU2_NO_TOOL);
-    tool_change_extruder = MMU2_NO_TOOL;
 }
 
 bool MMU2::unload() {
@@ -499,6 +495,10 @@ bool MMU2::unload() {
         ReportingRAII rep(CommandInProgress::UnloadFilament);
         UnloadInner();
     }
+
+    // no active tool
+    SetCurrentTool(MMU2_NO_TOOL);
+    tool_change_extruder = MMU2_NO_TOOL;
 
     ScreenUpdateEnable();
     return true;
