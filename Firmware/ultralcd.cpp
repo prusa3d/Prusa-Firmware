@@ -12,6 +12,7 @@
 #include "stepper.h"
 #include "ConfigurationStore.h"
 #include "printers.h"
+#include "eeprom.h"
 #include <string.h>
 #include "stopwatch.h"
 
@@ -102,6 +103,7 @@ static void lcd_settings_menu();
 static void lcd_control_temperature_menu();
 #ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save();
+static void lcd_tmc2130_wave_algorithm_toggle();
 #endif
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
@@ -4030,12 +4032,23 @@ void lcd_settings_linearity_correction_menu(void)
         lcd_settings_linearity_correction_menu_save();
     );
 	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+
+	// Algorithm selection toggle (read from EEPROM to support runtime changes)
+	uint8_t current_algorithm = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_ALGORITHM);
+
+	if (current_algorithm == TMC2130_WAVE_ALGORITHM_CONSTANT_TORQUE) {
+		MENU_ITEM_TOGGLE_P(_T(MSG_WAVE_ALGORITHM), _T(MSG_ALGORITHM_CONST_TQ), lcd_tmc2130_wave_algorithm_toggle);
+	} else {
+		MENU_ITEM_TOGGLE_P(_T(MSG_WAVE_ALGORITHM), _T(MSG_ALGORITHM_DEFAULT), lcd_tmc2130_wave_algorithm_toggle);
+	}
+
+	// Unified parameter range (0-200 maps to power factors 1.0-1.2 for both algorithms)
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
-	MENU_ITEM_EDIT_int3_P(_T(MSG_X_CORRECTION), &tmc2130_wave_fac[X_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
-	MENU_ITEM_EDIT_int3_P(_T(MSG_Y_CORRECTION), &tmc2130_wave_fac[Y_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
-	MENU_ITEM_EDIT_int3_P(_T(MSG_Z_CORRECTION), &tmc2130_wave_fac[Z_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT_int3_P(_T(MSG_X_CORRECTION), &tmc2130_wave_fac[X_AXIS], TMC2130_WAVE_FAC1000_MIN, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT_int3_P(_T(MSG_Y_CORRECTION), &tmc2130_wave_fac[Y_AXIS], TMC2130_WAVE_FAC1000_MIN, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT_int3_P(_T(MSG_Z_CORRECTION), &tmc2130_wave_fac[Z_AXIS], TMC2130_WAVE_FAC1000_MIN, TMC2130_WAVE_FAC1000_MAX);
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
-	MENU_ITEM_EDIT_int3_P(_T(MSG_EXTRUDER_CORRECTION), &tmc2130_wave_fac[E_AXIS], TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT_int3_P(_T(MSG_EXTRUDER_CORRECTION), &tmc2130_wave_fac[E_AXIS], TMC2130_WAVE_FAC1000_MIN, TMC2130_WAVE_FAC1000_MAX);
 	MENU_END();
 }
 #endif // TMC2130
@@ -4542,6 +4555,24 @@ static void lcd_settings_linearity_correction_menu_save() {
 
     // Re-init the TMC2130 driver to apply changes, if any
     tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+}
+
+// Toggle between Default and Constant Torque algorithms
+static void lcd_tmc2130_wave_algorithm_toggle() {
+    // Read current algorithm from EEPROM
+    uint8_t current_algorithm = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_ALGORITHM);
+
+    // Toggle to the other algorithm
+    uint8_t new_algorithm = (current_algorithm == TMC2130_WAVE_ALGORITHM_CONSTANT_TORQUE) ?
+                           TMC2130_WAVE_ALGORITHM_DEFAULT : TMC2130_WAVE_ALGORITHM_CONSTANT_TORQUE;
+
+    // Save new algorithm to EEPROM
+    eeprom_update_byte_notify((uint8_t*)EEPROM_TMC2130_WAVE_ALGORITHM, new_algorithm);
+
+    // Immediately reapply wave settings on all axes to enable runtime changes
+    for (uint8_t axis = 0; axis < NUM_AXIS; axis++) {
+        tmc2130_set_wave(axis, 247, tmc2130_wave_fac[axis]);
+    }
 }
 #endif //TMC2130
 

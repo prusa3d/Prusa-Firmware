@@ -463,9 +463,24 @@ msgid "Done"
 msgstr "Gotowe"
 
 #. MSG_EXTRUDER_CORRECTION c=13
-#: ../../Firmware/messages.cpp:319 ../../Firmware/ultralcd.cpp:4014
+#: ../../Firmware/messages.cpp:320 ../../Firmware/ultralcd.cpp:4047
 msgid "E-correct"
 msgstr "Korekcja-E"
+
+#. MSG_WAVE_ALGORITHM c=13
+#: ../../Firmware/messages.cpp:321
+msgid "Algorithm"
+msgstr "Algorytm"
+
+#. MSG_ALGORITHM_DEFAULT c=13
+#: ../../Firmware/messages.cpp:322
+msgid "Default"
+msgstr "Domyslny"
+
+#. MSG_ALGORITHM_CONST_TQ c=13
+#: ../../Firmware/messages.cpp:323
+msgid "Const tq"
+msgstr "Staly moment"
 
 #. MSG_PROGRESS_ERR_HELP_FIL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:19

@@ -22,9 +22,13 @@ extern const char eMotorCurrentScalingEnabled[];
 #define TMC2130_MODE_NORMAL 0
 #define TMC2130_MODE_SILENT 1
 
-#define TMC2130_WAVE_FAC1000_MIN  30
+#define TMC2130_WAVE_FAC1000_MIN  0
 #define TMC2130_WAVE_FAC1000_MAX 200
 #define TMC2130_WAVE_FAC1000_STP   1
+
+// Wave algorithm selection
+#define TMC2130_WAVE_ALGORITHM_DEFAULT         0xFF  // Default Prusa algorithm (0xFF = uninitialized EEPROM)
+#define TMC2130_WAVE_ALGORITHM_CONSTANT_TORQUE 1     // Constant torque algorithm
 
 #define TMC2130_MINIMUM_PULSE 0   // minimum pulse width in uS
 #define TMC2130_SET_DIR_DELAY 20  // minimum delay after setting direction in uS

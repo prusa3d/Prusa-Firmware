@@ -318,6 +318,9 @@ extern const char MSG_X_CORRECTION [] PROGMEM_I1 = ISTR("X-correct"); ////MSG_X_
 extern const char MSG_Y_CORRECTION [] PROGMEM_I1 = ISTR("Y-correct"); ////MSG_Y_CORRECTION c=13
 extern const char MSG_Z_CORRECTION [] PROGMEM_I1 = ISTR("Z-correct"); ////MSG_Z_CORRECTION c=13
 extern const char MSG_EXTRUDER_CORRECTION [] PROGMEM_I1 = ISTR("E-correct"); ////MSG_EXTRUDER_CORRECTION c=13
+extern const char MSG_WAVE_ALGORITHM [] PROGMEM_I1 = ISTR("Algorithm"); ////MSG_WAVE_ALGORITHM c=13
+extern const char MSG_ALGORITHM_DEFAULT [] PROGMEM_I1 = ISTR("Default"); ////MSG_ALGORITHM_DEFAULT c=13
+extern const char MSG_ALGORITHM_CONST_TQ [] PROGMEM_I1 = ISTR("Const tq"); ////MSG_ALGORITHM_CONST_TQ c=13
 extern const char MSG_CHECKS [] PROGMEM_I1 = ISTR("Checks"); ////MSG_CHECKS c=18
 extern const char MSG_TEMPERATURE [] PROGMEM_I1 = ISTR("Temperature"); ////MSG_TEMPERATURE c=18
 extern const char MSG_MOVE_AXIS [] PROGMEM_I1 = ISTR("Move axis"); ////MSG_MOVE_AXIS c=18
