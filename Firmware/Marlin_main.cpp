@@ -5707,6 +5707,22 @@ void process_commands()
 	  break;
 #endif
 
+/*!
+    ### M88 - Move Z axis to a full-step position
+    */
+#ifdef TMC2130
+    case 88:
+      if (axis_known_position[Z_AXIS]) {
+        float target_z = current_position[Z_AXIS] + float(1024 - tmc2130_rd_MSCNT(Z_AXIS)) / (tmc2130_get_res(Z_AXIS) * cs.axis_steps_per_mm[Z_AXIS]) + 0.16f;
+        if (target_z <= max_pos[Z_AXIS]) {
+          current_position[Z_AXIS] = target_z;
+          plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
+          st_synchronize();
+        }
+      }
+    break;
+#endif
+
     /*!
     ### M92 - Set Axis steps-per-unit <a href="https://reprap.org/wiki/G-code#M92:_Set_axis_steps_per_unit">M92: Set axis_steps_per_unit</a>
     Allows programming of steps per unit (usually mm) for motor drives. These values are reset to firmware defaults on power on, unless saved to EEPROM if available (M500 in Marlin)
