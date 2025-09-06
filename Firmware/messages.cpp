@@ -413,6 +413,7 @@ const char MSG_HOST_ACTION_START[] PROGMEM_N1 = "//action:start"; ////
 const char MSG_HOST_ACTION_UVLO_RECOVERY_READY[] PROGMEM_N1 = "//action:uvlo_recovery_ready"; ////
 const char MSG_HOST_ACTION_UVLO_AUTO_RECOVERY_READY[] PROGMEM_N1 = "//action:uvlo_auto_recovery_ready"; ////
 const char MSG_HOST_ACTION_NOTIFICATION[] PROGMEM_N1 = "//action:notification %S\n"; ////
+const char MSG_FULLSTEP_Z[] PROGMEM_N1 = "Fullstep Z axis"; ////
 #ifdef HOST_SHUTDOWN
 const char MSG_HOST_ACTION_SHUTDOWN[] PROGMEM_N1 = "//action:shutdown"; ////
 #endif //HOST_SHUTOWN
