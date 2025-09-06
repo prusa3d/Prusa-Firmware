@@ -475,10 +475,8 @@ static void _menu_edit_P()
             // disable after first use and/or if the initial value is not minEditValue
             _md->minJumpValue = 0;
         }
-
 		_md->currentValue += lcd_encoder;
 		lcd_encoder = 0; // Consume knob rotation event
-
 		// Constrain the value in case it's outside the allowed limits
 		_md->currentValue = constrain(_md->currentValue, _md->minEditValue, _md->maxEditValue);
 		lcd_set_cursor(0, 1);

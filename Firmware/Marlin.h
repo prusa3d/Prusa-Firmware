@@ -121,13 +121,8 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 #endif
 
 #if defined(Y_ENABLE_PIN) && Y_ENABLE_PIN > -1
-  #ifdef Y_DUAL_STEPPER_DRIVERS
-    #define  enable_y() { WRITE(Y_ENABLE_PIN, Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN,  Y_ENABLE_ON); }
-    #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN, !Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
-  #else
-    #define  enable_y() WRITE(Y_ENABLE_PIN, Y_ENABLE_ON)
-    #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
-  #endif
+  #define  enable_y() WRITE(Y_ENABLE_PIN, Y_ENABLE_ON)
+  #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
 #else
   #define enable_y() ;
   #define disable_y() ;
@@ -135,21 +130,11 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 
 #if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
 	#if defined(Z_AXIS_ALWAYS_ON)
-		  #ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		  #else
 			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
 			#define poweroff_z() {}
-		  #endif
 	#else
-		#ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		#else
 			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
 			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		#endif
 	#endif
 #else
     #define  poweron_z() {}

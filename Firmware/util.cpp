@@ -268,7 +268,7 @@ void fCheckModeInit() {
 static void render_M862_warnings(const char* warning, const char* strict, uint8_t check)
 {
     if (check == 1) { // Warning, stop print if user selects 'No'
-        if (lcd_show_multiscreen_message_yes_no_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
+        if (lcd_show_multiscreen_message_cont_cancel_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
             lcd_print_stop();
         }
     } else if (check == 2) { // Strict, always stop print
@@ -385,8 +385,8 @@ bool filament_presence_check() {
         }
 
         render_M862_warnings(
-            _T(MSG_MISSING_FILAMENT_CONTINUE)
-            ,_T(MSG_MISSING_FILAMENT_CANCELLED)
+            _T(MSG_MISSING_FILAMENT)
+            ,_T(MSG_MISSING_FILAMENT) //Identical messages
             ,(uint8_t)oCheckFilament
         );
 

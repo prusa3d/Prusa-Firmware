@@ -324,6 +324,10 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define SDSUPPORT
 #define LCD_WIDTH 20
 #define LCD_HEIGHT 4
+#define LCD_BACKLIGHT_LEVEL_HIGH 130
+#define LCD_BACKLIGHT_LEVEL_LOW 50
+#define LCD_BACKLIGHT_FORCE_ON 30
+#define LCD_BACKLIGHT_TIMEOUT 15
 
 
 // Increase the FAN pwm frequency. Removes the PWM noise but increases heating in the FET/Arduino
@@ -358,8 +362,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // Try to maintain a minimum distance from the bed even when Z is
 // unknown when doing the following operations
-#define MIN_Z_FOR_LOAD    50 // lcd filament loading or autoload
-#define MIN_Z_FOR_UNLOAD  20 // lcd filament unloading
+#define MIN_Z_FOR_LOAD    35 // lcd filament loading or autoload (values for load and unload have been unified to prevent movement between unload & load operations!)
+#define MIN_Z_FOR_UNLOAD  35 // lcd filament unloading
 #define MIN_Z_FOR_SWAP    27 // filament change (including M600)
 #define MIN_Z_FOR_PREHEAT 10 // lcd preheat
 

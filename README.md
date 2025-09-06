@@ -49,6 +49,12 @@ Assuming a recent Debian/Ubuntu distribution, install the dependencies globally 
 
     sudo apt-get install cmake ninja python3-pyelftools python3-polib python3-regex gettext
 
+When using a recent Fedora(non-atomic)/RHEL distribution, install the dependencies globally with:
+
+    sudo dnf install cmake ninja-build python3-pyelftools python3-polib python3-regex gettext
+
+When using a Fedora Atomic/UBlue distribution use `rpm-ostree install --allow-inactive` instead of `sudo dnf install`
+
 Prusa-Firmware depends on a pinned version of `avr-gcc` and the external `prusa3dboards` package. These can be setup using `./utils/bootstrap.py`:
 
     # automatically setup dependencies

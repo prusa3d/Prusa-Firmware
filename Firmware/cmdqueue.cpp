@@ -670,7 +670,9 @@ void get_command()
           sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
           SERIAL_ECHO_START;
           SERIAL_ECHOLN(time);
+#ifndef SHOW_FILENAME_AFTER_FINISH
           lcd_setstatus(time);
+#endif //SHOW_FILENAME_AFTER_FINISH
           card.printingHasFinished();
           card.checkautostart(true);
 

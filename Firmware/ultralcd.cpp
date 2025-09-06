@@ -542,7 +542,11 @@ void lcdui_print_status_line(void) {
             break;
         }
     }
-    else if ((IS_SD_PRINTING) &&
+    else if (((IS_SD_PRINTING)
+#ifdef SHOW_FILENAME_AFTER_FINISH
+        || (GetPrinterState() == PrinterState::SDPrintingFinished)
+#endif //SHOW_FILENAME_AFTER_FINISH
+        ) &&
         (custom_message_type == CustomMsg::Status) &&
         (lcd_status_message_level <= LCD_STATUS_INFO) &&
         lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT))
@@ -1977,7 +1981,8 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             lcd_draw_update = 1;
 
             lcd_clear();
-            lcd_puts_at_P(0, 3, _T(MSG_CANCEL));
+            lcd_puts_at_P(0,3, PSTR(">"));
+            lcd_puts_at_P(1, 3, _T(MSG_CANCEL));
 
             lcd_set_cursor(0, 1);
             switch (eFilamentAction)
@@ -2266,24 +2271,38 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-    uint8_t clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
+    // The total length of the individual messages MSG_YES c=4, MSG_NO c=4 and MSG_EJECT c=9 with the selectors and spaces between
+    // exceeds the LCD width.
+    // 01234567890123456789
+    // >yyyy >nnnn >eeeeeeee
+    // As long the translations of MSG_YES, MSG_NO and MSG_EJECT combined length do not exceed 15 chars, we don't have to shorten
+    // the MSG_EJECT message/translation. We can set the second_col value to the length of the first choice + the selector and space.
+    // Examples:
+    // German
+    // 01234567890123456789
+    // >Ja >Nein >Auswerfen
+    // Hungarian
+    // 01234567890123456789
+    // >Igen >Nem   >Kiadás
+
+    uint8_t clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), strlen_P(_T(MSG_YES))+2);
     while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
         load_filament_final_feed();
         st_synchronize();
-        clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), 8);
+        clean = lcd_show_multiscreen_message_with_choices_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE, _T(MSG_YES), _T(MSG_NO), _T(MSG_EJECT), strlen_P(_T(MSG_YES))+2);
     }
     if (clean == LCD_RIGHT_BUTTON_CHOICE) {
         unload_filament(FILAMENTCHANGE_FINALRETRACT);
     }
 }
 
-#ifdef FILAMENT_SENSOR
+#if defined(FILAMENT_SENSOR) && !defined(REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY)
 static void lcd_menu_AutoLoadFilament()
 {
     lcd_display_message_fullscreen_nonBlocking_P(_T(MSG_AUTOLOADING_ENABLED));
     menu_back_if_clicked();
 }
-#endif //FILAMENT_SENSOR
+#endif //FILAMENT_SENSOR && REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
 
 static void preheat_or_continue(FilamentAction action) {
 
@@ -3039,6 +3058,17 @@ uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool all
 {
     return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
+//! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
+//! @param allow_timeouting if true, allows time outing of the screen
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
+//! @retval 0 cont choice selected by user
+//! @retval 1 cancel choice selected by user
+//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
+uint8_t lcd_show_multiscreen_message_cont_cancel_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection) //currently just max. n*4 + 3 lines supported (set in language header files)
+{
+    return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_CONTINUE_SHORT), _T(MSG_CANCEL), nullptr, 10);
+}
 //! @brief Show a two-choice prompt on the last line of the LCD
 //! @param selected Show first choice as selected if true, the second otherwise
 //! @param first_choice text caption of first possible choice
@@ -3614,7 +3644,7 @@ void lcd_v2_calibration() {
 	if (MMU2::mmu2.Enabled()) {
 		const uint8_t filament = choose_menu_P(
 			_T(MSG_SELECT_FILAMENT),
-			MSG_FILAMENT,(_T(MSG_CANCEL)+1)); //Hack to reuse MSG but strip 1st char off
+			MSG_FILAMENT,_T(MSG_CANCEL));
 		if (filament < MMU_FILAMENT_COUNT) {
 			lay1cal_filament = filament;
 		} else {
@@ -3657,7 +3687,7 @@ void lcd_wizard() {
 	bool result = true;
 	if (calibration_status_get(CALIBRATION_WIZARD_STEPS)) {
 		// calibration already performed: ask before clearing the previous status
-		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_RERUN), false);
+		result = !lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_WIZARD_RERUN), false);
 	}
 	if (result) {
 		calibration_status_clear(CALIBRATION_WIZARD_STEPS);
@@ -5324,13 +5354,16 @@ static void lcd_main_menu()
                     if (!fsensor.getAutoLoadEnabled()) {
                         MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
                     }
-                    if (!fsensor.getFilamentPresent()) {
-                        if (fsensor.getAutoLoadEnabled()) {
-                            MENU_ITEM_SUBMENU_P(_T(MSG_AUTOLOAD_FILAMENT), lcd_menu_AutoLoadFilament);
-                        }
-                    } else {
+                    if (fsensor.getFilamentPresent()) {
                         MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
                     }
+#ifndef REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
+                    else {
+                        if (fsensor.getAutoLoadEnabled()) {
+                            MENU_ITEM_SUBMENU_P(_T(MSG_AUTOLOAD_FILAMENT), lcd_menu_AutoLoadFilament);
+                        }                        
+                    }
+#endif //REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY 
                 } else {
 #endif //FILAMENT_SENSOR
                     MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
@@ -5593,7 +5626,7 @@ static void lcd_backlight_menu()
     MENU_ITEM_EDIT_int3_P(_T(MSG_BL_HIGH), &backlightLevel_HIGH, backlightLevel_LOW, 255);
     MENU_ITEM_EDIT_int3_P(_T(MSG_BL_LOW), &backlightLevel_LOW, 0, backlightLevel_HIGH);
 	MENU_ITEM_TOGGLE_P(_T(MSG_MODE), ((backlightMode==BACKLIGHT_MODE_BRIGHT) ? _T(MSG_BRIGHT) : ((backlightMode==BACKLIGHT_MODE_DIM) ? _T(MSG_DIM) : _T(MSG_AUTO))), backlight_mode_toggle);
-    MENU_ITEM_EDIT_int3_P(_T(MSG_TIMEOUT), &backlightTimer_period, 1, 999);
+    MENU_ITEM_EDIT_int3_P(_T(MSG_TIMEOUT), &backlightTimer_period, LCD_BACKLIGHT_TIMEOUT, LCD_BACKLIGHT_TIMEOUT*60);
 
     MENU_END();
 }
@@ -7113,7 +7146,7 @@ static void menu_action_sdfile(const char* filename)
     }
 
   if (!check_file(selected_filename)) {
-      result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_FILE_INCOMPLETE), false);
+      result = !lcd_show_multiscreen_message_cont_cancel_and_wait_P(_T(MSG_FILE_INCOMPLETE), false);
       lcd_update_enable(true);
   }
   if (result) {
