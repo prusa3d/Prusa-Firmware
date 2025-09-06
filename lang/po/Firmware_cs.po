@@ -32,11 +32,11 @@ msgstr " 0.4 nebo novější"
 msgid "%s level expected"
 msgstr "%s očekávaná verze"
 
-#. MSG_CANCEL c=9
+#. MSG_CANCEL c=10
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid "Cancel"
-msgstr "Zrušit"
+msgid ">Cancel"
+msgstr ">Zrušit"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -731,8 +731,8 @@ msgstr "Spotřebováno filam."
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete."
-msgstr "Soubor nekompletní."
+msgid "File incomplete. Continue anyway?"
+msgstr "Soubor nekompletní. Pokračovat?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
 #: ../../Firmware/messages.cpp:45
@@ -786,35 +786,44 @@ msgstr "Přední/levý vent."
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level."
-msgstr "G-code je připraven pro jinou verzi."
+msgid "G-code sliced for a different level. Continue?"
+msgstr "G-code je připraven pro jinou verzi. Pokračovat?"
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid "G-code sliced for a different level. Please re-slice the model again."
-msgstr "G-code je připraven pro jinou verzi. Vyslicujte model znovu."
+msgid ""
+"G-code sliced for a different level. Please re-slice the model again. Print "
+"cancelled."
+msgstr ""
+"G-code je připraven pro jinou verzi. Vyslicujte model znovu. Tisk zrušen."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type."
+msgid "G-code sliced for a different printer type. Continue?"
 msgstr "G-code je připraven pro jiný typ tiskárny.Pokračovat?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid "G-code sliced for a different printer type. Please re-slice the model again."
-msgstr "G-code je připraven pro jiný typ tiskarny. Vyslicujte model znovu."
+msgid ""
+"G-code sliced for a different printer type. Please re-slice the model again."
+" Print cancelled."
+msgstr ""
+"G-code je připraven pro jiný typ tiskarny. Vyslicujte model znovu. Tisk "
+"zrušen."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware."
-msgstr "G-code je pripraven pro novější FW."
+msgid "G-code sliced for a newer firmware. Continue?"
+msgstr "G-code je pripraven pro novější FW. Pokračovat?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid "G-code sliced for a newer firmware. Please update the firmware."
-msgstr "G-code je připraven pro novější FW. Aktualizujte FW."
+msgid ""
+"G-code sliced for a newer firmware. Please update the firmware. Print "
+"cancelled."
+msgstr "G-code je připraven pro novější FW. Aktualizujte FW. Tisk zrušen."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1654,13 +1663,17 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code."
-msgstr "Průměr trysky tiskárny se liší od G-code."
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "Průměr trysky tiskárny se liší od G-code. Pokračovat?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
-msgstr "Průměr trysky tiskárny se liší od G-code. Zkontrolujte nastavení."
+msgid ""
+"Nozzle diameter differs from the G-code. Please check the value in settings."
+" Print cancelled."
+msgstr ""
+"Průměr trysky tiskárny se liší od G-code. Zkontrolujte nastavení. Tisk "
+"zrušen."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1762,10 +1775,10 @@ msgstr "Vpravo [µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning."
+"beginning. Continue?"
 msgstr ""
 "Spuštění Průvodce vymaže uložene výsledky všech kalibrací a spustí "
-"kalibrační proces od začátku."
+"kalibrační proces od začátku. Pokračovat?"
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2505,7 +2518,7 @@ msgstr "NEZNÁMÁ CHYBA"
 msgid "Unexpected error occurred."
 msgstr "Došlo k neočekávané chybě."
 
-#. MSG_EJECT c=9
+#. MSG_EJECT c=8
 #: ../../Firmware/messages.cpp:21 ../../Firmware/mmu2/errors_list.h:371
 #: ../../Firmware/ultralcd.cpp:2275 ../../Firmware/ultralcd.cpp:2279
 msgid "Eject"
@@ -2572,10 +2585,15 @@ msgstr "Tryska je horká! Počkejte na vychladnutí."
 msgid "Nozzle changed?"
 msgstr "Vyměnili jste trysku?"
 
-#. MSG_MISSING_FILAMENT c=20 r=3
+#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded."
-msgstr "Není vložen filament."
+msgid "There is no filament loaded. Continue?"
+msgstr "Není vložen filament. Pokračovat?"
+
+#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
+#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
+msgid "There is no filament loaded. Print cancelled."
+msgstr "Není vložen filament. Tisk zrušen."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752
