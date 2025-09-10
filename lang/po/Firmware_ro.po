@@ -2627,7 +2627,7 @@ msgstr "Calibrarea Z este recomandată. Calibrează acum?"
 #. MSG_FULLSTEP_Z c=18
 #: ../../Firmware/messages.cpp:380 ../../Firmware/ultralcd.cpp:4529
 msgid "Fullstep Z axis"
-msgstr "Axul Z pas complet"
+msgstr "Z pas complet"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Scoateți fil. vechi și apăsați butonul pentru a încărca unul nou."

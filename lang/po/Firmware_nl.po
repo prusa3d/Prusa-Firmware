@@ -2628,7 +2628,7 @@ msgstr "Z-kalibratie aanbevolen. Nu uitvoeren?"
 #. MSG_FULLSTEP_Z c=18
 #: ../../Firmware/messages.cpp:380 ../../Firmware/ultralcd.cpp:4529
 msgid "Fullstep Z axis"
-msgstr "Volledige stap Z-as"
+msgstr "Volledige stap Z"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
