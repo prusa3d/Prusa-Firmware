@@ -4606,15 +4606,15 @@ void process_commands()
             calibration_status_set(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
 
-        /*!
-        ### G88 - Reserved <a href="https://reprap.org/wiki/G-code#G88:_Reserved">G88: Reserved</a>
 
-        Currently has no effect.
+        /*!
+        ### G88 - Move Z axis to next full-step position
         */
 
-        // Prusa3D specific: Don't know what it is for, it is in V2Calibration.gcode
-
 		    case 88:
+            if (axis_known_position[Z_AXIS]) {
+                move_z_to_next_fullstep();
+            }
 			      break;
 
 
@@ -5705,22 +5705,6 @@ void process_commands()
 		safetyTimer.start();
 	  }
 	  break;
-#endif
-
-/*!
-    ### M88 - Move Z axis to a full-step position
-    */
-#ifdef TMC2130
-    case 88:
-      if (axis_known_position[Z_AXIS]) {
-        float target_z = current_position[Z_AXIS] + float(1024 - tmc2130_rd_MSCNT(Z_AXIS)) / (tmc2130_get_res(Z_AXIS) * cs.axis_steps_per_mm[Z_AXIS]) + 0.16f;
-        if (target_z <= max_pos[Z_AXIS]) {
-          current_position[Z_AXIS] = target_z;
-          plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
-          st_synchronize();
-        }
-      }
-    break;
 #endif
 
     /*!

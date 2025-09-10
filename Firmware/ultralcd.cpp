@@ -4526,7 +4526,7 @@ static void lcd_calibration_menu()
     }
     MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), G28W);
     if (axis_known_position[Z_AXIS]) {
-        MENU_ITEM_GCODE_P(_T(MSG_FULLSTEP_Z), PSTR("M88"));
+        MENU_ITEM_GCODE_P(_T(MSG_FULLSTEP_Z), PSTR("G88"));
     }
 #ifdef TMC2130
     MENU_ITEM_FUNCTION_P(_T(MSG_BELTTEST), lcd_belttest_v);

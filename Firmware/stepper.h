@@ -67,6 +67,8 @@ bool enable_endstops(bool check); // Enable/disable endstop checking. Return the
 bool enable_z_endstop(bool check);
 void invert_z_endstop(bool endstop_invert);
 
+void move_z_to_next_fullstep(); //Move Z axis up to the next fullstep
+
 void checkStepperErrors(); //Print errors detected by the stepper
 
 extern block_t *current_block;  // A pointer to the block currently being traced
