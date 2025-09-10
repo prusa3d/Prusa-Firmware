@@ -776,6 +776,11 @@ msgstr ""
 msgid "Front/left fans"
 msgstr ""
 
+#. MSG_FULLSTEP_Z c=18
+#: ../../Firmware/messages.cpp:380 ../../Firmware/ultralcd.cpp:4529
+msgid "Fullstep Z axis"
+msgstr ""
+
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
 msgid "G-code sliced for a different level. Continue?"

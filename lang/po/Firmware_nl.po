@@ -2625,6 +2625,11 @@ msgstr "Geen filament geladen. Printen geannuleerd."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Z-kalibratie aanbevolen. Nu uitvoeren?"
 
+#. MSG_FULLSTEP_Z c=18
+#: ../../Firmware/messages.cpp:380 ../../Firmware/ultralcd.cpp:4529
+msgid "Fullstep Z axis"
+msgstr "Volledige stap Z-as"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr ""
 #~ "Verwijder de oude filament en druk op de knop om nieuwe filament te laden."

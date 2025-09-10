@@ -2600,6 +2600,11 @@ msgstr "Není vložen filament. Tisk zrušen."
 msgid "Z calibration recommended. Run it now?"
 msgstr "Doporučujeme kalibraci osy Z. Spustit nyní?"
 
+#. MSG_FULLSTEP_Z c=18
+#: ../../Firmware/messages.cpp:380 ../../Firmware/ultralcd.cpp:4529
+msgid "Fullstep Z axis"
+msgstr "Plný krok osy Z"
+
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
 

@@ -377,6 +377,7 @@ extern const char MSG_SD_REMOVED [] PROGMEM_I1 = ISTR("Card removed"); ////MSG_S
 extern const char MSG_NEW_FIRMWARE_AVAILABLE [] PROGMEM_I1 = ISTR("New firmware version available:"); ////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 extern const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE [] PROGMEM_I1 = ISTR("Please upgrade."); ////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 extern const char MSG_FW_MK3_DETECTED [] PROGMEM_I1 = ISTR(PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer"); ////MSG_FW_MK3_DETECTED c=20 r=4
+extern const char MSG_FULLSTEP_Z[] PROGMEM_I1 = ISTR("Fullstep Z axis"); ////MSG_FULLSTEP_Z c=18
 //not internationalized messages
 const char MSG_SPOOL_JOIN[] PROGMEM_N1 = "SpoolJoin"; ////MSG_SPOOL_JOIN c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = "Firmware"; ////MSG_FIRMWARE c=8
@@ -413,7 +414,6 @@ const char MSG_HOST_ACTION_START[] PROGMEM_N1 = "//action:start"; ////
 const char MSG_HOST_ACTION_UVLO_RECOVERY_READY[] PROGMEM_N1 = "//action:uvlo_recovery_ready"; ////
 const char MSG_HOST_ACTION_UVLO_AUTO_RECOVERY_READY[] PROGMEM_N1 = "//action:uvlo_auto_recovery_ready"; ////
 const char MSG_HOST_ACTION_NOTIFICATION[] PROGMEM_N1 = "//action:notification %S\n"; ////
-const char MSG_FULLSTEP_Z[] PROGMEM_N1 = "Fullstep Z axis"; ////
 #ifdef HOST_SHUTDOWN
 const char MSG_HOST_ACTION_SHUTDOWN[] PROGMEM_N1 = "//action:shutdown"; ////
 #endif //HOST_SHUTOWN
