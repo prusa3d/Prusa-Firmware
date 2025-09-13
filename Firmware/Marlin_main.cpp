@@ -3630,7 +3630,7 @@ extern uint8_t st_backlash_y;
 //!@n G81 - Mesh bed leveling status
 //!@n G86 - Disable babystep correction after home
 //!@n G87 - Enable babystep correction after home
-//!@n G88 - Reserved
+//!@n G88 - Move Z axis to next full-step position
 //!@n G90 - Use Absolute Coordinates
 //!@n G91 - Use Relative Coordinates
 //!@n G92 - Set current position to coordinates given
