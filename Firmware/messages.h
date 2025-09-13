@@ -157,7 +157,8 @@ extern const char MSG_GCODE_NEWER_FIRMWARE_CONTINUE[];
 extern const char MSG_GCODE_NEWER_FIRMWARE_CANCELLED[];
 extern const char MSG_GCODE_DIFF_CONTINUE[];
 extern const char MSG_GCODE_DIFF_CANCELLED[];
-extern const char MSG_MISSING_FILAMENT[];
+extern const char MSG_MISSING_FILAMENT_CONTINUE[];
+extern const char MSG_MISSING_FILAMENT_CANCELLED[];
 extern const char MSG_NOZZLE_DIFFERS_CONTINUE[];
 extern const char MSG_NOZZLE_DIFFERS_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];
@@ -252,9 +253,7 @@ extern const char MSG_LOADING_COLOR [];
 extern const char MSG_CORRECTLY [];
 extern const char MSG_NOT_LOADED [];
 extern const char MSG_NOT_COLOR [];
-#ifndef REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
 extern const char MSG_AUTOLOADING_ENABLED [];
-#endif //REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
 extern const char MSG_FILAMENT_USED [];
 extern const char MSG_PRINT_TIME [];
 extern const char MSG_TOTAL_FILAMENT [];
@@ -416,6 +415,7 @@ extern const char MSG_HOST_ACTION_START[];
 extern const char MSG_HOST_ACTION_UVLO_RECOVERY_READY[];
 extern const char MSG_HOST_ACTION_UVLO_AUTO_RECOVERY_READY[];
 extern const char MSG_HOST_ACTION_NOTIFICATION[];
+extern const char MSG_FULLSTEP_Z[];
 #ifdef HOST_SHUTDOWN
 extern const char MSG_HOST_ACTION_SHUTDOWN[];
 #endif //HOST_SHUTOWN

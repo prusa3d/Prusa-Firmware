@@ -18,8 +18,8 @@ const char MSG_BED_HEATING[] PROGMEM_I1 = ISTR("Bed Heating"); ////MSG_BED_HEATI
 const char MSG_BED_LEVELING_FAILED_POINT_LOW[] PROGMEM_I1 = ISTR("Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."); ////MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[] PROGMEM_I1 = ISTR("XYZ calibration failed. Please consult the manual."); ////MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 const char MSG_BELT_STATUS[] PROGMEM_I1 = ISTR("Belt status");////MSG_BELT_STATUS c=18
-const char MSG_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_EJECT c=9
-const char MSG_CANCEL[] PROGMEM_I1 = ISTR("Cancel");////MSG_CANCEL c=9
+const char MSG_EJECT[] PROGMEM_I1 = ISTR("Eject"); ////MSG_EJECT c=8
+const char MSG_CANCEL[] PROGMEM_I1 = ISTR(">Cancel");////MSG_CANCEL c=10
 const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////MSG_CALIBRATE_Z_AUTO c=20 r=2
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////MSG_CARD_MENU c=18
 const char MSG_CHECKING_X[] PROGMEM_I1 = ISTR("Checking X axis"); ////MSG_CHECKING_X c=20
@@ -149,15 +149,16 @@ const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////MSG_NONE c=8
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////MSG_WARN c=8
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////MSG_STRICT c=8
 const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////MSG_MODEL c=8
-const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type."); ////MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
-const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again."); ////MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
-const char MSG_GCODE_NEWER_FIRMWARE_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a newer firmware."); ////MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
-const char MSG_GCODE_NEWER_FIRMWARE_CANCELLED[] PROGMEM_I1 = ISTR("G-code sliced for a newer firmware. Please update the firmware."); ////MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
-const char MSG_GCODE_DIFF_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different level."); ////MSG_GCODE_DIFF_CONTINUE c=20 r=3
-const char MSG_GCODE_DIFF_CANCELLED[] PROGMEM_I1 = ISTR("G-code sliced for a different level. Please re-slice the model again."); ////MSG_GCODE_DIFF_CANCELLED c=20 r=8
-const char MSG_MISSING_FILAMENT[] PROGMEM_I1 = ISTR("There is no filament loaded."); ////MSG_MISSING_FILAMENT c=20 r=3
-const char MSG_NOZZLE_DIFFERS_CONTINUE[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code."); ////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
-const char MSG_NOZZLE_DIFFERS_CANCELLED[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code. Please check the value in settings."); ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
+const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type. Continue?"); ////MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
+const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."); ////MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
+const char MSG_GCODE_NEWER_FIRMWARE_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a newer firmware. Continue?"); ////MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
+const char MSG_GCODE_NEWER_FIRMWARE_CANCELLED[] PROGMEM_I1 = ISTR("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."); ////MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
+const char MSG_GCODE_DIFF_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different level. Continue?"); ////MSG_GCODE_DIFF_CONTINUE c=20 r=3
+const char MSG_GCODE_DIFF_CANCELLED[] PROGMEM_I1 = ISTR("G-code sliced for a different level. Please re-slice the model again. Print cancelled."); ////MSG_GCODE_DIFF_CANCELLED c=20 r=8
+const char MSG_MISSING_FILAMENT_CONTINUE[] PROGMEM_I1 = ISTR("There is no filament loaded. Continue?"); ////MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
+const char MSG_MISSING_FILAMENT_CANCELLED[] PROGMEM_I1 = ISTR("There is no filament loaded. Print cancelled."); ////MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
+const char MSG_NOZZLE_DIFFERS_CONTINUE[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code. Continue?"); ////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
+const char MSG_NOZZLE_DIFFERS_CANCELLED[] PROGMEM_I1 = ISTR("Nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."); ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////MSG_NOZZLE_DIAMETER c=10
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////MSG_MMU_MODE c=8
 const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////MSG_SD_CARD c=8
@@ -253,9 +254,7 @@ extern const char MSG_LOADING_COLOR [] PROGMEM_I1 = ISTR("Loading color"); ////M
 extern const char MSG_CORRECTLY [] PROGMEM_I1 = ISTR("Changed correctly"); ////MSG_CORRECTLY c=19
 extern const char MSG_NOT_LOADED [] PROGMEM_I1 = ISTR("Filament not loaded"); ////MSG_NOT_LOADED c=19
 extern const char MSG_NOT_COLOR [] PROGMEM_I1 = ISTR("Color not correct"); ////MSG_NOT_COLOR c=19
-#ifndef REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
 extern const char MSG_AUTOLOADING_ENABLED [] PROGMEM_I1 = ISTR("Autoloading filament is active, just press the knob and insert filament..."); ////MSG_AUTOLOADING_ENABLED c=20 r=4
-#endif //REMOVE_AUTOLOAD_FILAMENT_MENU_ENTRY
 extern const char MSG_FILAMENT_USED [] PROGMEM_I1 = ISTR("Filament used"); ////MSG_FILAMENT_USED c=19
 extern const char MSG_PRINT_TIME [] PROGMEM_I1 = ISTR("Print time"); ////MSG_PRINT_TIME c=19
 extern const char MSG_TOTAL_FILAMENT [] PROGMEM_I1 = ISTR("Total filament"); ////MSG_TOTAL_FILAMENT c=19
@@ -296,7 +295,7 @@ extern const char MSG_MODE_CHANGE_IN_PROGRESS [] PROGMEM_I1 = ISTR("Mode change 
 extern const char MSG_COPY_SEL_LANG [] PROGMEM_I1 = ISTR("Copy selected language?"); ////MSG_COPY_SEL_LANG c=20 r=3
 extern const char MSG_SHEET_OFFSET [] PROGMEM_I1 = ISTR("Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"); ////MSG_SHEET_OFFSET c=20 r=4
 extern const char MSG_PLEASE_LOAD_PLA [] PROGMEM_I1 = ISTR("Please load filament first."); ////MSG_PLEASE_LOAD_PLA c=20 r=4
-extern const char MSG_WIZARD_RERUN [] PROGMEM_I1 = ISTR("Running Wizard will delete current calibration results and start from the beginning."); ////MSG_WIZARD_RERUN c=20 r=7
+extern const char MSG_WIZARD_RERUN [] PROGMEM_I1 = ISTR("Running Wizard will delete current calibration results and start from the beginning. Continue?"); ////MSG_WIZARD_RERUN c=20 r=7
 extern const char MSG_MMU_INSERT_FILAMENT_FIRST_TUBE [] PROGMEM_I1 = ISTR("Please insert filament into the first tube of the MMU, then press the knob to load it."); ////MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 extern const char MSG_WIZARD_LOAD_FILAMENT [] PROGMEM_I1 = ISTR("Please insert filament into the extruder, then press the knob to load it."); ////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 extern const char MSG_WIZARD_V2_CAL [] PROGMEM_I1 = ISTR("Now I will calibrate distance between tip of the nozzle and heatbed surface."); ////MSG_WIZARD_V2_CAL c=20 r=8
@@ -373,11 +372,12 @@ extern const char MSG_SELFTEST_CHECK_HOTEND [] PROGMEM_I1 = ISTR("Checking hoten
 extern const char MSG_SELFTEST_CHECK_ALLCORRECT [] PROGMEM_I1 = ISTR("All correct"); ////MSG_SELFTEST_CHECK_ALLCORRECT c=20
 extern const char MSG_CALIBRATING_HOME [] PROGMEM_I1 = ISTR("Calibrating home"); ////MSG_CALIBRATING_HOME c=20
 extern const char MSG_CHECKING_FILE [] PROGMEM_I1 = ISTR("Checking file"); ////MSG_CHECKING_FILE c=17
-extern const char MSG_FILE_INCOMPLETE [] PROGMEM_I1 = ISTR("File incomplete."); ////MSG_FILE_INCOMPLETE c=20 r=3
+extern const char MSG_FILE_INCOMPLETE [] PROGMEM_I1 = ISTR("File incomplete. Continue anyway?"); ////MSG_FILE_INCOMPLETE c=20 r=3
 extern const char MSG_SD_REMOVED [] PROGMEM_I1 = ISTR("Card removed"); ////MSG_SD_REMOVED c=20
 extern const char MSG_NEW_FIRMWARE_AVAILABLE [] PROGMEM_I1 = ISTR("New firmware version available:"); ////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 extern const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE [] PROGMEM_I1 = ISTR("Please upgrade."); ////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 extern const char MSG_FW_MK3_DETECTED [] PROGMEM_I1 = ISTR(PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer"); ////MSG_FW_MK3_DETECTED c=20 r=4
+extern const char MSG_FULLSTEP_Z[] PROGMEM_I1 = ISTR("Fullstep Z axis"); ////MSG_FULLSTEP_Z c=18
 //not internationalized messages
 const char MSG_SPOOL_JOIN[] PROGMEM_N1 = "SpoolJoin"; ////MSG_SPOOL_JOIN c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = "Firmware"; ////MSG_FIRMWARE c=8

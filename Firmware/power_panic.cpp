@@ -135,17 +135,7 @@ void uvlo_() {
     st_synchronize();
     disable_e0();
 
-    // Read out the current Z motor microstep counter to move the axis up towards
-    // a full step before powering off. NOTE: we need to ensure to schedule more
-    // than "dropsegments" steps in order to move (this is always the case here
-    // due to UVLO_Z_AXIS_SHIFT being used)
-    uint16_t z_res = tmc2130_get_res(Z_AXIS);
-    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
-    current_position[Z_AXIS] += float(1024 - z_microsteps)
-                                / (z_res * cs.axis_steps_per_mm[Z_AXIS])
-                                + UVLO_Z_AXIS_SHIFT;
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
-    st_synchronize();
+    move_z_to_next_fullstep();
     poweroff_z();
 
     // Write the file position.

@@ -3630,7 +3630,7 @@ extern uint8_t st_backlash_y;
 //!@n G81 - Mesh bed leveling status
 //!@n G86 - Disable babystep correction after home
 //!@n G87 - Enable babystep correction after home
-//!@n G88 - Reserved
+//!@n G88 - Move Z axis to next full-step position
 //!@n G90 - Use Absolute Coordinates
 //!@n G91 - Use Relative Coordinates
 //!@n G92 - Set current position to coordinates given
@@ -3710,7 +3710,7 @@ extern uint8_t st_backlash_y;
 //!@n M221 - Set extrude factor override percentage
 //!@n M226 - Wait for Pin state
 //!@n M240 - Trigger camera
-//!@n M256 - Set LCD brightness
+//!@n M250 - Set LCD contrast C<contrast value> (value 0..63)
 //!@n M300 - Play tone
 //!@n M301 - Set hotend PID
 //!@n M302 - Allow cold extrude, or set minimum extrude temperature
@@ -4606,15 +4606,15 @@ void process_commands()
             calibration_status_set(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
 
-        /*!
-        ### G88 - Reserved <a href="https://reprap.org/wiki/G-code#G88:_Reserved">G88: Reserved</a>
 
-        Currently has no effect.
+        /*!
+        ### G88 - Move Z axis to next full-step position
         */
 
-        // Prusa3D specific: Don't know what it is for, it is in V2Calibration.gcode
-
 		    case 88:
+            if (axis_known_position[Z_AXIS]) {
+                move_z_to_next_fullstep();
+            }
 			      break;
 
 
@@ -6515,11 +6515,11 @@ void process_commands()
 
     #### Parameters
     - `S` - frequency in Hz. Not all firmware versions support this parameter
-    - `P` - duration in milliseconds max 3500ms
+    - `P` - duration in milliseconds
     */
     case 300: // M300
     {
-      uint16_t beepP = code_seen('P') ? min(code_value(), 3500) : 1000;
+      uint16_t beepP = code_seen('P') ? code_value() : 1000;
       uint16_t beepS;
       if (!code_seen('S'))
           beepS = 0;
@@ -6640,42 +6640,6 @@ void process_commands()
      }
     break;
     #ifdef PREVENT_DANGEROUS_EXTRUDE
-
-    /*!
-    ### M256 - Set LCD brightness <a href="https://reprap.org/wiki/G-code#M256:_Set_LCD_brightness">M256: Set LCD brightness</a>
-    Set and/or get the LCD brightness. The value is constrained based on the LCD, but typically a value of 0 is the dimmest and 255 is the brightest.
-    #### Usage
-
-        M256 [ B | D | S | T ]
-
-    #### Parameters
-    - `B` - Normal Brightness value (0 - 255), default 130
-    - `D` - Dimmed Brightness value (0 - 255), default 50
-    - `S` - Brightness mode, default Auto
-      - `0` - Dim
-      - `1` - Bright
-      - `2` - Auto
-    - `T` - Brightness timeout  (15 - 900), default 15 seconds
-    */
-    #ifdef LCD_BL_PIN
-     case 256:
-    {
-      if (backlightSupport) {
-        if (code_seen('B') ) backlightLevel_HIGH = code_value_uint8();
-        if (code_seen('D')) backlightLevel_LOW = code_value_uint8();
-        if (code_seen('S')) {
-          uint8_t mode = code_value_uint8();
-          if (mode <= BACKLIGHT_MODE_AUTO) {
-            backlightMode = static_cast<Backlight_Mode>(mode);
-         }
-        }
-        if (code_seen('T')) backlightTimer_period = constrain(code_value_short(), LCD_BACKLIGHT_TIMEOUT, LCD_BACKLIGHT_TIMEOUT*60);
-        printf_P(PSTR("M256 B%d D%d S%d T%u\n"), backlightLevel_HIGH, backlightLevel_LOW, backlightMode, backlightTimer_period);
-        backlight_save();
-      }
-    }
-    break;
-    #endif //LCD_BL_PIN
 
     /*!
     ### M302 - Allow cold extrude, or set minimum extrude temperature <a href="https://reprap.org/wiki/G-code#M302:_Allow_cold_extrudes">M302: Allow cold extrudes</a>

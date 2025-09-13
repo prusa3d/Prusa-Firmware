@@ -32,11 +32,11 @@ msgstr " 0.4 o superiore"
 msgid "%s level expected"
 msgstr "atteso livello %s"
 
-#. MSG_CANCEL c=9
+#. MSG_CANCEL c=10
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:1986
 #: ../../Firmware/ultralcd.cpp:3623
-msgid "Cancel"
-msgstr "Annulla"
+msgid ">Cancel"
+msgstr ">Annulla"
 
 #. MSG_BABYSTEPPING_Z c=13
 #: ../../Firmware/messages.cpp:269 ../../Firmware/ultralcd.cpp:2652
@@ -740,7 +740,7 @@ msgstr "Fil. utilizzato"
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/messages.cpp:375 ../../Firmware/ultralcd.cpp:7119
-msgid "File incomplete."
+msgid "File incomplete. Continue anyway?"
 msgstr "File incompleto. Continuare comunque?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
@@ -795,37 +795,47 @@ msgstr "Ventola frontale/sin"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:156 ../../Firmware/util.cpp:417
-msgid "G-code sliced for a different level."
-msgstr "G-code processato per un livello diverso."
+msgid "G-code sliced for a different level. Continue?"
+msgstr "G-code processato per un livello diverso. Continuare?"
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:157 ../../Firmware/util.cpp:418
-msgid "G-code sliced for a different level. Please re-slice the model again."
+msgid ""
+"G-code sliced for a different level. Please re-slice the model again. Print "
+"cancelled."
 msgstr ""
 "G-code processato per un livello diverso. Per favore esegui nuovamente lo "
-"slice del modello."
+"slice del modello. Stampa annullata."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:152 ../../Firmware/util.cpp:319
 #: ../../Firmware/util.cpp:436
-msgid "G-code sliced for a different printer type."
-msgstr "G-code processato per una stampante diversa."
+msgid "G-code sliced for a different printer type. Continue?"
+msgstr "G-code processato per una stampante diversa. Continuare?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:153 ../../Firmware/util.cpp:320
 #: ../../Firmware/util.cpp:437
-msgid "G-code sliced for a different printer type. Please re-slice the model again."
-msgstr "G-code processato per un'altra stampante. Per favore rislice il modello."
+msgid ""
+"G-code sliced for a different printer type. Please re-slice the model again."
+" Print cancelled."
+msgstr ""
+"G-code processato per un'altra stampante. Per favore rislice il modello. "
+"Annullamento stampa."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:154 ../../Firmware/util.cpp:369
-msgid "G-code sliced for a newer firmware."
-msgstr "G-code processato per un FW piu recente."
+msgid "G-code sliced for a newer firmware. Continue?"
+msgstr "G-code processato per un FW piu recente. Continuare?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:155 ../../Firmware/util.cpp:370
-msgid "G-code sliced for a newer firmware. Please update the firmware."
-msgstr "G-code processato per un FW piu recente. Per favore aggiorna il FW."
+msgid ""
+"G-code sliced for a newer firmware. Please update the firmware. Print "
+"cancelled."
+msgstr ""
+"G-code processato per un FW piu recente. Per favore aggiorna il FW. Stampa "
+"annullata."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4325
@@ -1672,13 +1682,17 @@ msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:160 ../../Firmware/util.cpp:296
-msgid "Nozzle diameter differs from the G-code."
-msgstr "Diametro ugello diverso da G-Code."
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "Diametro ugello diverso da G-Code. Continuare?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:161 ../../Firmware/util.cpp:297
-msgid "Nozzle diameter differs from the G-code. Please check the value in settings."
-msgstr "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni."
+msgid ""
+"Nozzle diameter differs from the G-code. Please check the value in settings."
+" Print cancelled."
+msgstr ""
+"Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni. "
+"Stampa annullata."
 
 #. MSG_DESC_PULLEY_CANNOT_MOVE c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:246 ../../Firmware/mmu2/errors_list.h:302
@@ -1780,10 +1794,10 @@ msgstr "Destra [µm]"
 #: ../../Firmware/messages.cpp:298 ../../Firmware/ultralcd.cpp:3666
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
-"beginning."
+"beginning. Continue?"
 msgstr ""
 "Se avvi il Wizard perderai la calibrazione preesistente e dovrai "
-"ricominciare dall'inizio."
+"ricominciare dall'inizio. Continuare?"
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:164 ../../Firmware/ultralcd.cpp:4476
@@ -2526,7 +2540,7 @@ msgstr "ERRORE SCONOSCIUTO"
 msgid "Unexpected error occurred."
 msgstr "Si è verificato un errore imprevisto."
 
-#. MSG_EJECT c=9
+#. MSG_EJECT c=8
 #: ../../Firmware/messages.cpp:21 ../../Firmware/mmu2/errors_list.h:371
 #: ../../Firmware/ultralcd.cpp:2275 ../../Firmware/ultralcd.cpp:2279
 msgid "Eject"
@@ -2594,15 +2608,25 @@ msgstr "L'ugello è caldo! Attendere il raffreddamento."
 msgid "Nozzle changed?"
 msgstr "L'ugello è cambiato?"
 
-#. MSG_MISSING_FILAMENT c=20 r=3
+#. MSG_MISSING_FILAMENT_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:158 ../../Firmware/util.cpp:388
-msgid "There is no filament loaded."
-msgstr "Nessun filamento caricato."
+msgid "There is no filament loaded. Continue?"
+msgstr "Nessun filamento caricato. Continuare?"
+
+#. MSG_MISSING_FILAMENT_CANCELLED c=20 r=8
+#: ../../Firmware/messages.cpp:159 ../../Firmware/util.cpp:389
+msgid "There is no filament loaded. Print cancelled."
+msgstr "Nessun filamento caricato. Stampa annullata."
 
 #. MSG_Z_CALIBRATION_PROMPT c=20 r=3
 #: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:3752
 msgid "Z calibration recommended. Run it now?"
 msgstr "Si consiglia la calibrazione Z. Eseguirla ora?"
+
+#. MSG_FULLSTEP_Z c=18
+#: ../../Firmware/messages.cpp:380 ../../Firmware/ultralcd.cpp:4529
+msgid "Fullstep Z axis"
+msgstr "Z passo pieno"
 
 #~ msgid "Remove old filament and press the knob to start loading new filament."
 #~ msgstr "Rimuovi il fil. precedente e premi la manopola per caricare il nuovo."
