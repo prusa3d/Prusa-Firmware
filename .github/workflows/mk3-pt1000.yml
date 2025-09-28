@@ -1,0 +1,32 @@
+name: MK3 PT1000 Build
+
+on:
+  workflow_dispatch:  # adds the "Run workflow" button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build gcc-avr binutils-avr avr-libc make python3
+
+      - name: Configure & Compile
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release
+          ninja
+
+      - name: Upload firmware (.hex)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Firmware
+          path: build/*.hex
