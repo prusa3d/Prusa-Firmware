@@ -1,15 +1,16 @@
 name: ci-build
 
 on:
+  workflow_dispatch: 
   pull_request:
     branches:
-    - '*'
+      - '*'
   push:
     branches: [ MK3, MK3_* ]
     tags:
-    - 'v*'
-    - 't*'
-    - 'c*'
+      - 'v*'
+      - 't*'
+      - 'c*'
 
 env:
   GH_ANNOTATIONS: 1
@@ -18,161 +19,151 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
-    # setup base required dependencies
-    - name: Setup dependencies
-      run: |
+      # setup base required dependencies
+      - name: Setup dependencies
+        run: |
           sudo apt-get update
-          sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib
+          sudo apt-get install -y cmake ninja-build python3-pyelftools python3-regex python3-polib gcc-avr binutils-avr avr-libc
 
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkout ${{ github.event.pull_request.head.ref }}
-      uses: actions/checkout@v4
-      if: ${{ github.event.pull_request }}
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        submodules: true
-        fetch-depth: 0
+      # checkout for PRs
+      - name: Checkout ${{ github.event.pull_request.head.ref }}
+        uses: actions/checkout@v4
+        if: ${{ github.event.pull_request }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: true
+          fetch-depth: 0
 
-    - name: Checkout ${{ github.event.ref }}
-      uses: actions/checkout@v4
-      if: ${{ !github.event.pull_request }}
-      with:
-        ref: ${{ github.event.ref }}
-        submodules: true
-        fetch-depth: 0
+      # checkout for pushes/tags
+      - name: Checkout ${{ github.event.ref }}
+        uses: actions/checkout@v4
+        if: ${{ !github.event.pull_request }}
+        with:
+          ref: ${{ github.event.ref }}
+          submodules: true
+          fetch-depth: 0
 
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      id: cache-pkgs
-      with:
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: cache-pkgs
+        with:
           path: ".dependencies"
           key: "build-deps-1_0_0-linux"
 
-    - name: Setup build dependencies
-      run: |
-          ./utils/bootstrap.py
+      - name: Setup build dependencies
+        run: ./utils/bootstrap.py
 
-    - name: Cache permissions
-      run: sudo chmod -R 744 .dependencies
+      - name: Cache permissions
+        run: sudo chmod -R 744 .dependencies
 
-    - name: Build
-      run: |
-          mkdir build
+      - name: Build
+        run: |
+          mkdir -p build
           cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja
           ninja
 
-    - name: Upload artifacts
-      if: ${{ !github.event.pull_request }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: Firmware
-        path: build/*.hex
+      # NEW: collect any hex produced anywhere under the workspace
+      - name: Collect HEX files
+        if: ${{ !github.event.pull_request }}
+        run: |
+          mkdir -p out
+          # copy top-level build hexes
+          find build -maxdepth 2 -type f -name "*.hex" -print -exec cp {} out/ \;
+          # copy any other hexes (fallback)
+          find . -type f -name "*.hex" -print -exec cp {} out/ \;
+          ls -l out || true
 
-    - name: RELEASE THE KRAKEN
-      if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/t') || startsWith(github.ref, 'refs/tags/c')
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: ${{ github.ref_name }}
-        draft: true
-        files: |
-          ${{ github.workspace }}/build/release/*.hex
-          ${{ github.workspace }}/build/release/*.zip
+      - name: Upload artifacts
+        if: ${{ !github.event.pull_request }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Firmware
+          path: out/*.hex
+
+      - name: RELEASE THE KRAKEN
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/t') || startsWith(github.ref, 'refs/tags/c')
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ github.ref_name }}
+          draft: true
+          files: |
+            ${{ github.workspace }}/build/release/*.hex
+            ${{ github.workspace }}/build/release/*.zip
 
   check-lang:
     runs-on: ubuntu-latest
-
     steps:
-    # setup base required dependencies
-    - name: Setup dependencies
-      run: |
+      - name: Setup dependencies
+        run: |
           sudo apt-get update
-          sudo apt-get install gcc-11 g++11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
-
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkout ${{ github.event.pull_request.head.ref }}
-      uses: actions/checkout@v4
-      if: ${{ github.event.pull_request }}
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        submodules: true
-        fetch-depth: 0
-
-    - name: Checkout ${{ github.event.ref }}
-      uses: actions/checkout@v4
-      if: ${{ !github.event.pull_request }}
-      with:
-        ref: ${{ github.event.ref }}
-        submodules: true
-        fetch-depth: 0
-
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      id: cache-pkgs
-      with:
+          sudo apt-get install -y gcc-11 g++-11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
+      - name: Checkout ${{ github.event.pull_request.head.ref }}
+        uses: actions/checkout@v4
+        if: ${{ github.event.pull_request }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: true
+          fetch-depth: 0
+      - name: Checkout ${{ github.event.ref }}
+        uses: actions/checkout@v4
+        if: ${{ !github.event.pull_request }}
+        with:
+          ref: ${{ github.event.ref }}
+          submodules: true
+          fetch-depth: 0
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: cache-pkgs
+        with:
           path: ".dependencies"
           key: "build-deps-1_0_0-linux"
-
-    - name: Setup build dependencies
-      run: |
-          ./utils/bootstrap.py
-
-    - name: Cache permissions
-      run: sudo chmod -R 744 .dependencies
-
-    - name: Run check
-      run: |
-          mkdir build
+      - name: Setup build dependencies
+        run: ./utils/bootstrap.py
+      - name: Cache permissions
+        run: sudo chmod -R 744 .dependencies
+      - name: Run check
+        run: |
+          mkdir -p build
           cd build
-          cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release
           ninja check_lang
 
   tests:
     runs-on: ubuntu-latest
-
     steps:
-    # setup base required dependencies
-    - name: Setup dependencies
-      run: |
+      - name: Setup dependencies
+        run: |
           sudo apt-get update
-          sudo apt-get install gcc-11 g++11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
-
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkout ${{ github.event.pull_request.head.ref }}
-      uses: actions/checkout@v4
-      if: ${{ github.event.pull_request }}
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        submodules: true
-        fetch-depth: 0
-
-    - name: Checkout ${{ github.event.ref }}
-      uses: actions/checkout@v4
-      if: ${{ !github.event.pull_request }}
-      with:
-        ref: ${{ github.event.ref }}
-        submodules: true
-        fetch-depth: 0
-
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      id: cache-pkgs
-      with:
+          sudo apt-get install -y gcc-11 g++-11 lcov cmake ninja-build python3-pyelftools python3-regex python3-polib
+      - name: Checkout ${{ github.event.pull_request.head.ref }}
+        uses: actions/checkout@v4
+        if: ${{ github.event.pull_request }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: true
+          fetch-depth: 0
+      - name: Checkout ${{ github.event.ref }}
+        uses: actions/checkout@v4
+        if: ${{ !github.event.pull_request }}
+        with:
+          ref: ${{ github.event.ref }}
+          submodules: true
+          fetch-depth: 0
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: cache-pkgs
+        with:
           path: ".dependencies"
           key: "build-deps-1_0_0-linux"
-
-    - name: Setup build dependencies
-      run: |
-          ./utils/bootstrap.py
-
-    - name: Cache permissions
-      run: sudo chmod -R 744 .dependencies
-
-    - name: Run check
-      run: |
-          mkdir build
+      - name: Setup build dependencies
+        run: ./utils/bootstrap.py
+      - name: Cache permissions
+        run: sudo chmod -R 744 .dependencies
+      - name: Run check
+        run: |
+          mkdir -p build
           cd build
           cmake .. -G Ninja
           ninja test_run_all

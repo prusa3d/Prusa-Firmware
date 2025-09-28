@@ -599,15 +599,9 @@
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
-#if defined(E3D_PT100_EXTRUDER_WITH_AMP)
-#define TEMP_SENSOR_0 247
-#elif defined(E3D_PT100_EXTRUDER_NO_AMP)
-#define TEMP_SENSOR_0 148
-#else
-#define TEMP_SENSOR_0 5
-#endif
-#if defined(E3D_PT100_BED_WITH_AMP)
-#define TEMP_SENSOR_BED 247
+// Revo with PT1000 thermistor on Einsy (4.7k pull-up)
+#define TEMP_SENSOR_0 1047
+
 #elif defined(E3D_PT100_BED_NO_AMP)
 #define TEMP_SENSOR_BED 148
 #else
