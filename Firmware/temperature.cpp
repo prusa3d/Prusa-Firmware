@@ -2138,13 +2138,13 @@ static bool calibrated()
     if(!(data.C > 0)) return false;
     if(isnan(data.fS)) return false;
     if(!(data.L > 0)) return false;
-    if(!(data.Ta_corr != NAN)) return false;
+    if(isnan(data.Ta_corr)) return false;
     for(uint8_t i = 0; i != THERMAL_MODEL_R_SIZE; ++i) {
         if(!(thermal_model::data.R[i] >= 0))
             return false;
     }
-    if(!(data.warn != NAN)) return false;
-    if(!(data.err != NAN)) return false;
+    if(isnan(data.warn)) return false;
+    if(isnan(data.err)) return false;
     return true;
 }
 
